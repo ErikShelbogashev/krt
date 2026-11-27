@@ -12,9 +12,11 @@ class Triangle(
     override val id: String = "Triangle[${UUID.randomUUID()}]",
 ) : Traceable {
 
+    private val edge1 = v1 - v0
+    private val edge2 = v2 - v0
+    private val outwardNormal = edge1.cross(edge2).unit()
+
     override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
-        val edge1 = v1 - v0
-        val edge2 = v2 - v0
         val h = ray.direction.cross(edge2)
         val a = edge1.dot(h)
 
@@ -43,7 +45,6 @@ class Triangle(
         }
 
         val hitPoint = ray.at(t)
-        val outwardNormal = edge1.cross(edge2).unit()
         return Hit.create(hitPoint, t, ray, outwardNormal, material)
     }
 
