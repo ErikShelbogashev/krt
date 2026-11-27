@@ -2,16 +2,24 @@ package raytracer.model
 
 import kotlin.random.Random
 
-class World(val objects: MutableList<Traceable> = mutableListOf()) {
+/**
+ * Scene resource: a single mutable reference to an immutable list of objects (ADR 0005).
+ * Writers replace the whole list, readers (the render pool) always see a consistent snapshot.
+ */
+class World(objects: List<Traceable> = emptyList()) {
+
+    @Volatile
+    var objects: List<Traceable> = objects
+        private set
 
     fun translateObjectById(objectId: String, offset: Point3) {
-        objects.find { it.id() == objectId }?.translate(offset)
+        objects = objects.translateFirst(objectId, offset)
     }
 
-    fun getObjectIds(): List<String> = objects.filter { it.id() != null }.map { it.id()!! }
+    fun getObjectIds(): List<String> = objects.map { it.id }
 
     fun add(obj: Traceable) {
-        objects.add(obj)
+        objects = objects + obj
     }
 
     fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
@@ -42,14 +50,16 @@ class World(val objects: MutableList<Traceable> = mutableListOf()) {
 
             world.add(Sphere(Point3(0.0, 1.0, 0.0), 1.0, Dielectric(1.5)))
             world.add(Sphere(Point3(0.0, 1.0, 2.0), 1.0, Emissive(Color(0.1, 0.7, 0.4), 2.0)))
-            world.add(object : Sphere(Point3(-4.0, 1.0, 0.0), 2.0, Lambert(Color(0.4, 0.2, 0.1))) {
-                override fun id(): String {
-                    return "TEST"
-                }
-            })
+            world.add(Sphere(Point3(-4.0, 1.0, 0.0), 2.0, Lambert(Color(0.4, 0.2, 0.1)), id = "TEST"))
             world.add(Sphere(Point3(4.0, 1.0, 0.0), 1.0, Metal(Color(0.7, 0.6, 0.5), 0.05)))
 
             return world
         }
     }
+}
+
+private fun List<Traceable>.translateFirst(objectId: String, offset: Point3): List<Traceable> {
+    val index = indexOfFirst { it.id == objectId }
+    if (index < 0) return this
+    return toMutableList().also { it[index] = it[index].translate(offset) }
 }
