@@ -24,6 +24,7 @@ object FrameSampling {
     /**
      * The order of [pixelOrder] in place, without a pixel object per pixel: [order] gets the indices `j * width + i`
      * of the pixels, shuffled with the same draws from [random] as [pixelOrder], so frames stay the same.
+     * Fills the pooled array of the caller in place: a deliberate hot-path exception (ADR 0010).
      */
     fun fillPixelOrder(order: IntArray, random: Random) {
         for (index in order.indices) order[index] = index
