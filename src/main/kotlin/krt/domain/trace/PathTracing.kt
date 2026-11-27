@@ -47,10 +47,17 @@ object PathTracing {
         val response = when {
             shadow != null -> 0.0
             scattered.lobe == Lobe.VOLUME -> 1 / (4 * PI)
-            else -> maxOf(0.0, (scattered.normal ?: hit.normal).dot(light.direction)) / PI
+            else -> diffuse(maxOf(0.0, (scattered.normal ?: hit.normal).dot(light.direction)))
         }
         return light.emitted * scattered.attenuation * (response / light.pdf)
     }
+
+    /**
+     * Response of a diffuse bounce to light at [cosine] to the normal: BRDF × cosine. Diffuse bounces in krt go
+     * from the normal to a random point in the unit ball around its tip (Lambert of the classic scene), whose
+     * directions have the density 2 cos³ / π, so that is what the surface does with direct light too (ADR 0012).
+     */
+    private fun diffuse(cosine: Double): Double = 2 * cosine * cosine * cosine / PI
 
     /** Hits closer than this are self-intersections of the surface the ray starts on. */
     private const val T_MIN = 0.001
