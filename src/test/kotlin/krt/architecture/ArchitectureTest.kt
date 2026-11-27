@@ -9,7 +9,7 @@ import com.lemonappdev.konsist.api.verify.assertTrue
 import kotlin.test.Test
 
 /**
- * Правила из AGENTS.md и ADR 0001, которые проверяются автоматически.
+ * Правила из AGENTS.md, ADR 0001 и ADR 0008, которые проверяются автоматически.
  */
 class ArchitectureTest {
 
@@ -70,6 +70,49 @@ class ArchitectureTest {
     }
 
     @Test
+    fun `trace kernel is a pure computation`() {
+        val forbidden = listOf(
+            "krt.app.",
+            "krt.i9ns.",
+            "krt.infra.",
+            "androidx.",
+            "java.awt.",
+            "javax.swing.",
+            "java.io.",
+            "java.nio.",
+            "java.util.concurrent.",
+            "kotlinx.coroutines.",
+        )
+        kernelFiles().assertFalse { file ->
+            file.imports.any { import -> forbidden.any { import.name.startsWith(it) } }
+        }
+    }
+
+    @Test
+    fun `trace kernel reads neither time nor global randomness`() {
+        val forbidden = listOf(
+            "Random.Default",
+            "System.currentTimeMillis",
+            "System.nanoTime",
+            "Instant.now",
+            "System.getenv",
+        )
+        kernelFiles().assertFalse { file -> forbidden.any { file.text.contains(it) } }
+    }
+
+    @Test
+    fun `trace kernel has no lazy sequences on the hot path`() {
+        kernelFiles().assertFalse { file -> file.text.contains("asSequence") || file.text.contains("sequence {") }
+    }
+
+    @Test
+    fun `scene model does not depend on the trace kernel`() {
+        production.files
+            .filter { it.packagee?.name?.matches(Regex("""krt\.domain\.\w+\.model(\..*)?""")) == true }
+            .assertFalse { file -> file.imports.any { it.name.startsWith(KERNEL_PACKAGE) } }
+    }
+
+    @Test
     fun `operation has a single public method invoke`() {
         production.classes()
             .withNameEndingWith("Op")
@@ -106,7 +149,12 @@ class ArchitectureTest {
         Konsist.scopeFromProject().imports.assertFalse { it.isWildcard }
     }
 
+    private fun kernelFiles() = production.files.filter { it.packagee?.name?.startsWith(KERNEL_PACKAGE) == true }
+
     private companion object {
+        // ADR 0008: вычислительное ядро.
+        const val KERNEL_PACKAGE = "krt.domain.trace"
+
         // AGENTS.md, «Пороги»: связей не больше 8 строго. Корень композиции не считается.
         const val MAX_DEPENDENCIES = 8
     }
