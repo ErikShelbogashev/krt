@@ -3,6 +3,7 @@ package krt.app
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import javax.swing.SwingUtilities
 import javax.imageio.ImageIO
 import kotlin.random.Random
 import kotlin.test.AfterTest
@@ -121,7 +122,22 @@ class OperationsTest {
         assertEquals(frame.pixels.map { it and RGB }, savedPixels.map { it and RGB })
     }
 
+    @Test
+    fun `save image in GPU mode writes the same view traced on the CPU`() {
+        app.changeCameraSettings { imageWidth = 48; imageHeight = 32; samplesPerPixel = 2 }
+        app.setRenderMode(RenderMode.GPU)
+        val file = File.createTempFile("krt-gpu-frame", ".png").apply { delete(); deleteOnExit() }
+        app.saveImage(file)
+        val deadline = System.currentTimeMillis() + SAVE_TIMEOUT_MS
+        while (!file.exists() && System.currentTimeMillis() < deadline) SwingUtilities.invokeAndWait {}
+        SwingUtilities.invokeAndWait {} // the UI thread writes the file: let it finish
+        val saved = ImageIO.read(file)
+        assertEquals(48 to 32, saved.width to saved.height)
+        assertTrue(saved.getRGB(0, 0, 48, 32, null, 0, 48).any { it and RGB != 0 })
+    }
+
     private companion object {
+        const val SAVE_TIMEOUT_MS = 30_000L
         const val RGB = 0xFFFFFF
     }
 }

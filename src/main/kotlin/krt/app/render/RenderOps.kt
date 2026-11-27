@@ -55,12 +55,19 @@ class ChangeRenderSettingsOp(
 }
 
 class SaveImageOp(
+    private val renderController: RenderController,
+    private val rayTracer: RayTracer,
+    private val camera: Camera,
     private val frameBuffer: FrameBuffer,
     private val pngFiles: PngFiles,
 ) {
-    /** Writes the CPU frame as it is now, mid-render too, to [file]. */
+    /**
+     * Writes the frame to [file]: the CPU frame as it is now, mid-render too, or in GPU mode the same view traced
+     * on the CPU, once it is done.
+     */
     operator fun invoke(file: File) {
-        val frame = frameBuffer.frame
-        pngFiles.write(file, frame.pixels, frame.width, frame.height)
+        renderController.frameToSave(frameBuffer.frame, rayTracer, camera) { frame ->
+            pngFiles.write(file, frame.pixels, frame.width, frame.height)
+        }
     }
 }

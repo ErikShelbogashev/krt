@@ -66,7 +66,7 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
                     },
                     actions = {
                         LoadModelButton(onOpen = { app.loadModel(it) })
-                        SaveImageButton(onSave = { app.saveImage(it) }, enabled = mode != RenderMode.GPU)
+                        SaveImageButton(onSave = { app.saveImage(it) })
                     },
                 )
                 Row(Modifier.weight(1f)) {
