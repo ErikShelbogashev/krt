@@ -37,11 +37,6 @@ class Camera(
     private var _target = target
     private var _vup = vup
 
-    var vup: Point3 = _vup
-        set(value) {
-            field = value
-            updateCamera()
-        }
     var fov: Double = fov
         set(value) {
             field = value
