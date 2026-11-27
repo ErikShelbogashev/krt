@@ -6,9 +6,9 @@ import krt.platform.math.Point3
 import krt.platform.math.Ray
 
 class Triangle(
-    private val v0: Point3,
-    private val v1: Point3,
-    private val v2: Point3,
+    val v0: Point3,
+    val v1: Point3,
+    val v2: Point3,
     val material: Material,
     override val id: String = "Triangle[${UUID.randomUUID()}]",
 ) : Traceable {

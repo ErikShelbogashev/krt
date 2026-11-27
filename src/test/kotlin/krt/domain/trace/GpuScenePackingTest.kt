@@ -13,6 +13,7 @@ import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
+import krt.domain.scene.model.Triangle
 import krt.platform.math.Color
 import krt.platform.math.Point3
 import krt.platform.math.Ray
@@ -56,11 +57,22 @@ class GpuScenePackingTest {
     }
 
     @Test
+    fun `triangles keep their first vertex and the edges from it`() {
+        val triangle = Triangle(Point3(1.0, 0.0, 0.0), Point3(3.0, 0.0, 0.0), Point3(1.0, 2.0, 1.0), Lambert(Color.ONE))
+        val scene = Packed(GpuScenePacking.pack(listOf(triangle)))
+        val at = scene.primitive(0)
+        assertEquals(GpuScenePacking.TRIANGLE, scene.code(at))
+        val expected = listOf(Point3(1.0, 0.0, 0.0), Point3(2.0, 0.0, 0.0), Point3(0.0, 2.0, 1.0))
+        assertEquals(expected, listOf(1, 4, 7).map { scene.vector(at + it) })
+        scene.assertMaterial(0, GpuScenePacking.LAMBERT, 1.0, 1.0, 1.0, 0.0)
+    }
+
+    @Test
     fun `the walk of the shader over the packed BVH finds the hits of the CPU`() {
-        val objects = World.default(Random(42)).objects
+        val random = Random(9)
+        val objects = World.default(Random(42)).objects + List(TRIANGLES) { randomTriangle(random) }
         val scene = Packed(GpuScenePacking.pack(objects))
         val cpu = TraceScene(objects)
-        val random = Random(9)
         repeat(RAYS) {
             val ray = Ray(Point3.random(random, -RANGE, RANGE), Point3.random(random, -1.0, 1.0))
             val expected = cpu.hit(ray, T_MIN, Double.POSITIVE_INFINITY)?.t
@@ -89,8 +101,7 @@ class GpuScenePackingTest {
 
         fun number(index: Int): Double = GpuScenePacking.decode(code(index))
 
-        fun vector(index: Int): Point3 =
-            Point3(round(number(index)), round(number(index + 1)), round(number(index + 2)))
+        fun vector(index: Int): Point3 = Point3(number(index), number(index + 1), number(index + 2)).rounded()
 
         fun primitive(slot: Int): Int = scene.primitiveStart + slot * GpuScenePacking.PRIMITIVE_VALUES
 
@@ -113,7 +124,7 @@ class GpuScenePackingTest {
                 }
                 val first = code(base + 7)
                 for (slot in first until first + code(base + 8)) {
-                    sphereHit(primitive(slot), ray, closest)?.let { closest = it }
+                    hit(primitive(slot), ray, closest)?.let { closest = it }
                 }
                 node++
             }
@@ -132,6 +143,15 @@ class GpuScenePackingTest {
             return exit >= near
         }
 
+        private fun hit(base: Int, ray: Ray, tMax: Double): Double? =
+            if (code(base) == GpuScenePacking.TRIANGLE) triangleHit(base, ray, tMax) else sphereHit(base, ray, tMax)
+
+        private fun triangleHit(base: Int, ray: Ray, tMax: Double): Double? {
+            val v0 = vector(base + 1)
+            val triangle = Triangle(v0, v0 + vector(base + 4), v0 + vector(base + 7), Lambert(Color.ONE))
+            return triangle.hit(ray, T_MIN, tMax)?.t
+        }
+
         private fun sphereHit(base: Int, ray: Ray, tMax: Double): Double? {
             val oc = ray.origin - Point3(number(base + 1), number(base + 2), number(base + 3))
             val radius = number(base + 4)
@@ -144,7 +164,15 @@ class GpuScenePackingTest {
             return listOf(near, far).firstOrNull { it in T_MIN..tMax }
         }
 
-        private fun round(value: Double) = Math.round(value * 1000) / 1000.0
+        private fun Point3.rounded() = Point3(round(x), round(y), round(z))
+
+        private fun round(value: Double) = Math.round(value * PRECISION) / PRECISION
+    }
+
+    private fun randomTriangle(random: Random): Triangle {
+        val corner = Point3.random(random, -RANGE, RANGE)
+        val edge = { Point3.random(random, -1.0, 1.0) }
+        return Triangle(corner, corner + edge(), corner + edge(), Lambert(Color.ONE))
     }
 
     private companion object {
@@ -152,5 +180,7 @@ class GpuScenePackingTest {
         const val RANGE = 12.0
         const val T_MIN = 0.001
         const val TOLERANCE = 1e-2
+        const val TRIANGLES = 200
+        const val PRECISION = 1e4
     }
 }

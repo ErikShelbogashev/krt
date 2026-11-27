@@ -32,6 +32,7 @@ const float FAR = 1.0e30;
 const float PI = 3.14159265358979;
 
 const float SPHERE = 0.0;
+const float TRIANGLE = 1.0;
 
 const float LAMBERT = 0.0;
 const float METAL = 1.0;
@@ -104,9 +105,30 @@ float3 sky(float3 direction) {
     return float3(1.0) * (1.0 - t) + float3(0.5, 0.7, 1.0) * t;
 }
 
+// Möller–Trumbore, as Triangle.hit: the triangle at [base] is its first vertex and the edges from it.
+float intersectTriangle(float base, float3 origin, float3 direction, float tMax) {
+    float3 v0 = vector(base + 1.0);
+    float3 edge1 = vector(base + 4.0);
+    float3 edge2 = vector(base + 7.0);
+    float3 h = cross(direction, edge2);
+    float a = dot(edge1, h);
+    if (abs(a) < 1.0e-10) { return -1.0; }
+    float f = 1.0 / a;
+    float3 s = origin - v0;
+    float u = f * dot(s, h);
+    if (u < 0.0 || u > 1.0) { return -1.0; }
+    float3 q = cross(s, edge1);
+    float v = f * dot(direction, q);
+    if (v < 0.0 || u + v > 1.0) { return -1.0; }
+    float t = f * dot(edge2, q);
+    if (t < T_MIN || t > tMax) { return -1.0; }
+    return t;
+}
+
 // Distance along the ray to primitive [slot] within [T_MIN, tMax], or -1 when the ray misses it.
 float intersect(float slot, float3 origin, float3 direction, float tMax) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    if (code(base) == TRIANGLE) { return intersectTriangle(base, origin, direction, tMax); }
     float3 center = vector(base + 1.0);
     float radius = number(base + 4.0);
     float3 oc = origin - center;
@@ -125,6 +147,7 @@ float intersect(float slot, float3 origin, float3 direction, float tMax) {
 // Normal of primitive [slot] at [p], pointing out of it.
 float3 outwardNormal(float slot, float3 p) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    if (code(base) == TRIANGLE) { return normalize(cross(vector(base + 4.0), vector(base + 7.0))); }
     return (p - vector(base + 1.0)) / number(base + 4.0);
 }
 

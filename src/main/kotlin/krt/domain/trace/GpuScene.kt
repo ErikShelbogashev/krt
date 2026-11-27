@@ -8,6 +8,7 @@ import krt.domain.scene.model.Material
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
+import krt.domain.scene.model.Triangle
 
 /**
  * Scene packed for the GPU shader (ADR 0009): one RGBA_8888 texture [width] texels wide, one number per texel.
@@ -18,7 +19,7 @@ import krt.domain.scene.model.Traceable
  * - [nodeCount] BVH nodes from texel 0, [GpuScenePacking.NODE_VALUES] each: box min x, y, z, max x, y, z,
  *   skip link, first primitive, primitive count (0 for an inner node); see [FlatBvh];
  * - [primitiveCount] primitives from [primitiveStart] in the order of the leaves, [GpuScenePacking.PRIMITIVE_VALUES]
- *   each: kind, then the centre and radius of a sphere;
+ *   each: kind, then the centre and radius of a sphere or the first vertex and the two edges from it of a triangle;
  * - their materials from [materialStart], [GpuScenePacking.MATERIAL_VALUES] each: material code, colour r, g, b
  *   and one parameter (fuzz of a metal, refraction index of a dielectric).
  */
@@ -44,6 +45,7 @@ object GpuScenePacking {
     const val RANGE = 4096.0
 
     const val SPHERE = 0
+    const val TRIANGLE = 1
 
     const val LAMBERT = 0
     const val METAL = 1
@@ -62,7 +64,7 @@ object GpuScenePacking {
     private const val BOX_VALUES = 6
 
     fun pack(objects: List<Traceable>): GpuScene {
-        val primitives = objects.filterIsInstance<Sphere>().toTypedArray<Traceable>()
+        val primitives = objects.filter { it is Sphere || it is Triangle }.toTypedArray()
         val bvh = Bvh(primitives).flatten()
         val primitiveStart = bvh.nodeCount * NODE_VALUES
         val materialStart = primitiveStart + primitives.size * PRIMITIVE_VALUES
@@ -96,13 +98,34 @@ object GpuScenePacking {
     }
 
     private fun primitiveCodes(primitive: Traceable): IntArray {
-        val sphere = primitive as Sphere
-        val geometry = doubleArrayOf(sphere.center.x, sphere.center.y, sphere.center.z, sphere.radius)
-        return intArrayOf(SPHERE) + IntArray(PRIMITIVE_VALUES - 1) { geometry.getOrNull(it)?.let(::encode) ?: 0 }
+        val (kind, geometry) = when (primitive) {
+            is Sphere -> SPHERE to sphereGeometry(primitive)
+            is Triangle -> TRIANGLE to triangleGeometry(primitive)
+            else -> error("not a GPU primitive: $primitive")
+        }
+        return intArrayOf(kind) + IntArray(PRIMITIVE_VALUES - 1) { geometry.getOrNull(it)?.let(::encode) ?: 0 }
+    }
+
+    private fun sphereGeometry(sphere: Sphere): DoubleArray =
+        doubleArrayOf(sphere.center.x, sphere.center.y, sphere.center.z, sphere.radius)
+
+    /** First vertex and the edges from it to the other two, as the intersection test of the shader takes them. */
+    private fun triangleGeometry(triangle: Triangle): DoubleArray {
+        val edge1 = triangle.v1 - triangle.v0
+        val edge2 = triangle.v2 - triangle.v0
+        return doubleArrayOf(
+            triangle.v0.x, triangle.v0.y, triangle.v0.z, edge1.x, edge1.y, edge1.z, edge2.x, edge2.y, edge2.z,
+        )
     }
 
     private fun materialCodes(primitive: Traceable): IntArray {
-        val values = material((primitive as Sphere).material)
+        val values = material(
+            when (primitive) {
+                is Sphere -> primitive.material
+                is Triangle -> primitive.material
+                else -> error("not a GPU primitive: $primitive")
+            },
+        )
         return IntArray(MATERIAL_VALUES) { if (it == 0) values[0].toInt() else encode(values[it]) }
     }
 
