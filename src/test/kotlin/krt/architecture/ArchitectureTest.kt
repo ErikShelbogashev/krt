@@ -145,9 +145,37 @@ class ArchitectureTest {
     }
 
     @Test
+    fun `domain models are immutable`() {
+        // ADR 0005: no `var` property in a model, local variables of a computation aside.
+        modelFiles().assertFalse { file ->
+            file.properties(includeNested = true).any { it.hasVarModifier }
+        }
+    }
+
+    @Test
+    fun `domain models do not depend on resources`() {
+        modelFiles().assertFalse { file ->
+            file.imports.any { it.name.startsWith("krt.domain.") && ".model." !in it.name }
+        }
+    }
+
+    @Test
+    fun `Skia stays with the GPU renderer, the views that draw frames and the platform`() {
+        // ADR 0009, 0010: the GPU resource and the frame buffer in krt.domain.render, the viewport and its
+        // operations in krt.app.render, conversions in krt.platform, and the window's wiring in the root package.
+        val allowed = listOf("krt.domain.render", "krt.app.render", "krt.platform.skia", "krt")
+        production.files
+            .filter { file -> file.imports.any { it.name.startsWith("org.jetbrains.skia") } }
+            .assertTrue { it.packagee?.name in allowed }
+    }
+
+    @Test
     fun `no wildcard imports`() {
         Konsist.scopeFromProject().imports.assertFalse { it.isWildcard }
     }
+
+    private fun modelFiles() =
+        production.files.filter { it.packagee?.name?.matches(Regex("""krt\.domain\.\w+\.model(\..*)?""")) == true }
 
     private fun kernelFiles() = production.files.filter { it.packagee?.name?.startsWith(KERNEL_PACKAGE) == true }
 
