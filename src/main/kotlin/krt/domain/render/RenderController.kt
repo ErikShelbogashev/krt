@@ -1,6 +1,5 @@
 package krt.domain.render
 
-import java.awt.Color
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
 import java.util.concurrent.Executors
@@ -113,12 +112,7 @@ class RenderController(
         onUpdate: (() -> Unit),
     ) {
         val segments = FrameSampling.wireframe(world.objects, camera)
-        val graphics = image.createGraphics()
-        graphics.color = Color.BLACK
-        graphics.fillRect(0, 0, image.width, image.height)
-        graphics.color = Color.WHITE
-        segments.forEach { graphics.drawLine(it.start.x, it.start.y, it.end.x, it.end.y) }
-        graphics.dispose()
+        WireframeRaster.draw(segments, (image.raster.dataBuffer as DataBufferInt).data, image.width, image.height)
         onUpdate.invoke()
     }
 
