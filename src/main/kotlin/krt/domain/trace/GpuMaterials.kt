@@ -42,7 +42,7 @@ object GpuMaterials {
      * - Emissive: emitted light;
      * - Plastic: albedo, coat roughness, coat refraction index;
      * - Checker: even cells, coat roughness, coat refraction index, odd cells, cell size;
-     * - Isotropic (the particles of fog): albedo;
+     * - Isotropic (the particles of fog): albedo, 1 when enclosed in glass;
      * - Soap bubble: none, film thickness in nm, film refraction index;
      * - Iridescent: base, film thickness in nm, film refraction index, none, roughness;
      * - Conductor: η, GGX α along and across the tangent, k;
@@ -72,7 +72,7 @@ object GpuMaterials {
     }
 
     private fun physical(material: Material): DoubleArray? = when (material) {
-        is Isotropic -> values(ISOTROPIC, material.albedo)
+        is Isotropic -> values(ISOTROPIC, material.albedo, if (material.enclosed) 1.0 else 0.0)
         is Velvet -> values(VELVET, material.base, material.roughness, material.diffuseChance, odd = material.sheen)
         is Patterned -> patterned(PATTERNED, material.pattern, material.roughness, material.bump)
         is GlowingPattern -> patterned(GLOWING, material.pattern, material.intensity, 0.0)

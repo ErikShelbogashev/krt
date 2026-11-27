@@ -21,9 +21,10 @@ class Fog(
     val density: Double,
     val albedo: Color,
     override val id: String = "Fog[${java.util.UUID.randomUUID()}]",
+    val enclosed: Boolean = false,
 ) : Traceable {
 
-    val material = Isotropic(albedo)
+    val material = Isotropic(albedo, enclosed)
 
     override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
         val span = span(ray, tMin, tMax) ?: return null
@@ -44,7 +45,7 @@ class Fog(
 
     override fun bounds(): Aabb = Aabb(center - Point3(radius, radius, radius), center + Point3(radius, radius, radius))
 
-    override fun translate(offset: Point3): Fog = Fog(center + offset, radius, density, albedo, id)
+    override fun translate(offset: Point3): Fog = Fog(center + offset, radius, density, albedo, id, enclosed)
 
     override fun linearize(coefficient: Double): List<LineSegment> =
         Sphere(center, radius, material).linearize(coefficient)
@@ -54,10 +55,15 @@ class Fog(
     }
 }
 
-/** Particles of a medium: they scatter light equally in every direction, tinted by [albedo]. */
-class Isotropic(val albedo: Color) : Material {
+/**
+ * Particles of a medium: they scatter light equally in every direction, tinted by [albedo]. Particles [enclosed] in
+ * glass do not sample the lights ([Lobe.ENCLOSED_VOLUME]).
+ */
+class Isotropic(val albedo: Color, val enclosed: Boolean = false) : Material {
+    private val lobe = if (enclosed) Lobe.ENCLOSED_VOLUME else Lobe.VOLUME
+
     override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered =
-        Scattered(ray.next(hit.p, Point3.randomInUnitSphere(random).unit()), albedo, Lobe.VOLUME)
+        Scattered(ray.next(hit.p, Point3.randomInUnitSphere(random).unit()), albedo, lobe)
 }
 
 /** A pseudo-random number in [0, 1) from the bits of a ray: the same ray, the same number. */

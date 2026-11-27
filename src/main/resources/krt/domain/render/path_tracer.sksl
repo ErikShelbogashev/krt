@@ -652,7 +652,8 @@ float3 trace(float3 origin, float3 direction) {
             }
         } else if (kind == ISOTROPIC) {
             scattered = normalize(randomInUnitSphere());
-            lobe = VOLUME;
+            // Particles enclosed in glass do not sample the lights: every shadow ray would end on the glass.
+            lobe = param > 0.5 ? SPECULAR : VOLUME;
         } else {
             scattered = normal + randomInUnitSphere();
             if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }

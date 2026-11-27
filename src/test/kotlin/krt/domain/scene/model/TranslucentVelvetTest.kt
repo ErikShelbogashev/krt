@@ -32,6 +32,17 @@ class TranslucentVelvetTest {
     }
 
     @Test
+    fun `particles inside a translucent ball do not sample the lights, open fog does`() {
+        val ray = Ray(Point3(0.0, 0.0, -0.5), Point3(0.0, 0.0, 1.0))
+        val inside = assertNotNull(jade.inside.hit(ray, 0.001, 100.0))
+        assertEquals(Lobe.ENCLOSED_VOLUME, inside.material.scatter(ray, inside, Random(1))?.lobe)
+        assertTrue(!Lobe.ENCLOSED_VOLUME.samplesLights)
+        val fog = Fog(Point3.ZERO, 1.0, 50.0, Color.ONE)
+        val open = assertNotNull(fog.hit(ray, 0.001, 100.0))
+        assertEquals(Lobe.VOLUME, open.material.scatter(ray, open, Random(1))?.lobe)
+    }
+
+    @Test
     fun `a translucent ball moves as one`() {
         val moved = jade.translate(Point3(1.0, 0.0, 0.0))
         assertEquals(Point3(1.0, 0.0, 0.0), moved.surface.center)
