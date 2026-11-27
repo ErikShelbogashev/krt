@@ -70,13 +70,23 @@ class Fractal(
         val epsilon = radius * SURFACE
         var found = false
         var step = 0
+        // On scalars, the march allocates nothing per step.
+        val (ox, oy, oz) = oc
+        val (dx, dy, dz) = ray.direction
         while (!found && t < leave && step < MAX_STEPS) {
-            val d = distance(ray.at(t))
+            val d = FractalDistance.of(
+                kind, (ox + dx * t) / scale, (oy + dy * t) / scale, (oz + dz * t) / scale, iterations, parameter, seed,
+            ) * scale
             found = d < epsilon
             if (!found) t += d / speed
             step++
         }
-        return if (found) Hit.create(ray.at(t), t, ray, normalAt(ray.at(t)), material, lightSampled = false) else null
+        return if (found) surfaceAt(ray, t) else null
+    }
+
+    private fun surfaceAt(ray: Ray, t: Double): Hit {
+        val p = ray.at(t)
+        return Hit.create(p, t, ray, normalAt(p), material, lightSampled = false)
     }
 
     /** The normal at [p]: the gradient of the distance, by four taps on a tetrahedron. */
@@ -152,8 +162,9 @@ object FractalDistance {
             val phi = atan2(y, x) * power
             dr = power * r.pow(power - 1) * dr + 1
             val zr = r.pow(power)
-            x = zr * sin(theta) * cos(phi) + px
-            y = zr * sin(theta) * sin(phi) + py
+            val sinTheta = sin(theta)
+            x = zr * sinTheta * cos(phi) + px
+            y = zr * sinTheta * sin(phi) + py
             z = zr * cos(theta) + pz
             r = sqrt(x * x + y * y + z * z)
             i++
