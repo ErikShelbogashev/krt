@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.asComposeShader
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -49,12 +48,14 @@ import krt.app.shell.ViewportBackground
 import krt.platform.layout.FrameFit
 import krt.platform.layout.FramePlacement
 import krt.platform.layout.FrameScaling
+import krt.platform.skia.DrawnOnceShader
 import org.jetbrains.skia.Shader
 
 /**
- * The frame on a dark background: the CPU frame as pixels, or the GPU frame drawn by its shader (ADR 0009),
- * fitted to the viewport or at its pixel size. A drag over the viewport rotates the camera by the distance
- * in frame pixels, so rotation feels the same at any scale; key presses go to [onKey].
+ * The frame on a dark background: the CPU frame as pixels, or the GPU frame drawn by its shader
+ * (ADR 0009) once at its own size; fitted to the viewport or at its pixel size. A drag over the viewport
+ * rotates the camera by the distance in frame pixels, so rotation feels the same at any scale; key presses
+ * go to [onKey].
  */
 @Composable
 fun Viewport(
@@ -83,6 +84,10 @@ fun Viewport(
     ) {
         val placement =
             FrameFit.place(frameSize.width, frameSize.height, constraints.maxWidth, constraints.maxHeight, scaling)
+        // A new picture on every draw would defeat Skia's cache, so it is kept until the frame or its scale changes.
+        val shownGpuFrame = remember(gpuFrame, frameSize, placement.scale) {
+            gpuFrame?.let { DrawnOnceShader.of(it, frameSize.width, frameSize.height, placement.scale) }
+        }
         var dragFrom by remember { mutableStateOf(IntOffset.Zero) }
         Canvas(
             Modifier.fillMaxSize().pointerInput(placement) {
@@ -99,7 +104,7 @@ fun Viewport(
                     },
                 )
             },
-        ) { drawFrame(image, gpuFrame, frameSize, placement) }
+        ) { drawFrame(image, shownGpuFrame, frameSize, placement) }
         Row(Modifier.align(Alignment.TopStart).padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OverlayChip(modeTitle)
             OverlayChip("${frameSize.width} × ${frameSize.height}")
@@ -136,10 +141,8 @@ private fun FramePlacement.framePoint(offset: Offset) = IntOffset(frameX(offset.
 private fun DrawScope.drawFrame(image: ImageBitmap?, gpuFrame: Shader?, frameSize: IntSize, placement: FramePlacement) {
     if (gpuFrame != null) {
         translate(placement.left, placement.top) {
-            scale(placement.scale, pivot = Offset.Zero) {
-                val size = Size(frameSize.width.toFloat(), frameSize.height.toFloat())
-                drawRect(ShaderBrush(gpuFrame.asComposeShader()), size = size)
-            }
+            val size = Size(frameSize.width * placement.scale, frameSize.height * placement.scale)
+            drawRect(ShaderBrush(gpuFrame.asComposeShader()), size = size)
         }
         return
     }
