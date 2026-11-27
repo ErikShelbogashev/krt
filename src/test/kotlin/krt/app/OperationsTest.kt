@@ -1,6 +1,7 @@
 package krt.app
 
 import java.io.File
+import javax.imageio.ImageIO
 import kotlin.random.Random
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -102,5 +103,21 @@ class OperationsTest {
         assertEquals(3, app.rayTracer.maxDepth)
         assertEquals(10, app.renderController.batchSize)
         assertEquals(2, published)
+    }
+
+    @Test
+    fun `save image writes the current frame as PNG`() {
+        app.redraw()
+        val file = File.createTempFile("krt-frame", ".png").apply { deleteOnExit() }
+        app.saveImage(file)
+        val saved = ImageIO.read(file)
+        val frame = app.frameBuffer.frame
+        assertEquals(frame.width to frame.height, saved.width to saved.height)
+        val savedPixels = saved.getRGB(0, 0, saved.width, saved.height, null, 0, saved.width)
+        assertEquals(frame.pixels.map { it and RGB }, savedPixels.map { it and RGB })
+    }
+
+    private companion object {
+        const val RGB = 0xFFFFFF
     }
 }

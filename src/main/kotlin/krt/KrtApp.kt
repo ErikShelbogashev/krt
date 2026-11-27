@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.IntSize
 import krt.app.camera.CameraTab
 import krt.app.render.RenderModeSelector
 import krt.app.render.RenderTab
+import krt.app.render.SaveImageButton
 import krt.app.render.StatusBar
 import krt.app.render.Viewport
 import krt.app.scene.LoadModelButton
@@ -30,6 +31,7 @@ import krt.app.shell.KrtTheme
 import krt.app.shell.TopBar
 import krt.domain.camera.CameraMove
 import krt.domain.render.Frame
+import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
 import krt.domain.scene.model.Traceable
 import krt.infra.AppContext
@@ -63,7 +65,10 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
                             app.setRenderMode(it)
                         })
                     },
-                    actions = { LoadModelButton(onOpen = { app.loadModel(it) }) },
+                    actions = {
+                        LoadModelButton(onOpen = { app.loadModel(it) })
+                        SaveImageButton(onSave = { app.saveImage(it) }, enabled = mode != RenderMode.GPU)
+                    },
                 )
                 Row(Modifier.weight(1f)) {
                     Viewport(
