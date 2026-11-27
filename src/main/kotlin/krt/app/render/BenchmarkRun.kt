@@ -41,17 +41,14 @@ import krt.domain.render.model.Benchmark
 import krt.domain.render.model.BenchmarkConfig
 import krt.domain.render.model.BenchmarkResult
 import krt.domain.render.model.BenchmarkSample
+import krt.domain.render.model.DoneWatch
+import krt.domain.render.model.FlightRecording
 import krt.domain.render.model.RenderProgress
 import krt.domain.scene.model.DemoScene
 
-private const val NS_PER_MS = 1e6
-private const val MS_PER_S = 1000.0
 
 /** Window frames a run waits before its first frame counts, so the scene is set up and compiled. */
 private const val WARM_UP_FRAMES = 10
-
-/** How long a run may take to finish its frame before or after its flight. */
-private const val DONE_TIMEOUT_MS = 120_000.0
 
 /** Live figures of the run in progress, for the overlay. */
 private data class Live(val run: Int, val config: BenchmarkConfig?, val step: Int, val fps: Double)
@@ -89,8 +86,8 @@ fun BenchmarkRun(
             currentOnStart(config)
             repeat(WARM_UP_FRAMES) { withFrameNanos { } }
             awaitDone(currentProgress) { stopped }
-            val sample = fly(currentFlightOf(config.scene), currentProgress, currentOnPose, { stopped }) { step, fps ->
-                live = Live(index, config, step, fps)
+            val sample = fly(currentFlightOf(config.scene), currentProgress, currentOnPose, { stopped }) { recording ->
+                live = Live(index, config, recording.poses - 1, recording.fps)
             }
             results += Benchmark.summarize(config, sample)
         }
@@ -153,39 +150,31 @@ private fun RunCard(live: Live, runs: Int, onStop: () -> Unit) {
     }
 }
 
-/** The flight of one run, one pose per window frame. */
+/** Pumps the flight of one run: a pose per window frame; [FlightRecording] keeps the figures. */
 private suspend fun fly(
     flight: FlightPath,
     progress: () -> RenderProgress,
     onPose: (FlightPose) -> Unit,
     stopped: () -> Boolean,
-    onStep: (Int, Double) -> Unit,
+    onStep: (FlightRecording) -> Unit,
 ): BenchmarkSample {
-    val intervals = ArrayList<Double>(BenchmarkConfig.STEPS)
-    val shown = ArrayList<RenderProgress>(BenchmarkConfig.STEPS)
-    val start = withFrameNanos { it }
-    var last = start
-    for (step in 0 until BenchmarkConfig.STEPS) {
-        if (stopped()) break
-        shown += progress()
-        onPose(flight.pose(step, BenchmarkConfig.STEPS))
-        val now = withFrameNanos { it }
-        intervals += (now - last) / NS_PER_MS
-        last = now
-        onStep(step, intervals.size * MS_PER_S * NS_PER_MS / (now - start))
+    var recording = FlightRecording.startingAt(withFrameNanos { it })
+    while (recording.poses < BenchmarkConfig.STEPS && !stopped()) {
+        val shown = progress()
+        onPose(flight.pose(recording.poses, BenchmarkConfig.STEPS))
+        recording = recording.frame(withFrameNanos { it }, shown)
+        onStep(recording)
     }
     val settle = if (stopped()) null else awaitDone(progress, stopped)
-    return BenchmarkSample(intervals, shown, (last - start) / NS_PER_MS, settle, stopped())
+    return recording.sample(settle, stopped())
 }
 
-/** Milliseconds until the frame on screen is done, or null when stopped or timed out. */
+/** Pumps window frames while [DoneWatch] says to wait; its result is the time to the finished frame. */
 private suspend fun awaitDone(progress: () -> RenderProgress, stopped: () -> Boolean): Double? {
-    val start = withFrameNanos { it }
-    var elapsed = 0.0
-    while (!stopped() && !progress().isDone && elapsed <= DONE_TIMEOUT_MS) {
-        elapsed = (withFrameNanos { it } - start) / NS_PER_MS
-    }
-    return elapsed.takeIf { progress().isDone && !stopped() }
+    val watch = DoneWatch(withFrameNanos { it })
+    var now = watch.startNanos
+    while (watch.waiting(now, progress(), stopped())) now = withFrameNanos { it }
+    return watch.result(now, progress(), stopped())
 }
 
 private fun consumeAll(event: PointerEvent) {
