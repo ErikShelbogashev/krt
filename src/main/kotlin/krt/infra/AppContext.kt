@@ -7,6 +7,7 @@ import krt.app.camera.RotateCameraOp
 import krt.app.render.ChangeRayTracerSettingsOp
 import krt.app.render.ChangeRenderSettingsOp
 import krt.app.render.RedrawOp
+import krt.app.render.SaveImageOp
 import krt.app.render.SetRenderModeOp
 import krt.app.scene.LoadModelOp
 import krt.app.scene.MoveObjectOp
@@ -15,6 +16,7 @@ import krt.domain.render.FrameBuffer
 import krt.domain.render.RayTracer
 import krt.domain.render.RenderController
 import krt.domain.scene.World
+import krt.i9ns.png.PngFiles
 
 /**
  * Composition root (ADR 0006): creates resources and operations once and wires them together.
@@ -26,6 +28,7 @@ class AppContext(
     val camera: Camera,
     val renderController: RenderController,
     val frameBuffer: FrameBuffer,
+    pngFiles: PngFiles = PngFiles(),
 ) : AutoCloseable {
     val redraw = RedrawOp(renderController, rayTracer, camera, frameBuffer)
     val rotateCamera = RotateCameraOp(camera, renderController, rayTracer, frameBuffer)
@@ -34,6 +37,7 @@ class AppContext(
     val loadModel = LoadModelOp(world, renderController, rayTracer, camera, frameBuffer)
     val moveObject = MoveObjectOp(world, renderController, rayTracer, camera, frameBuffer)
     val setRenderMode = SetRenderModeOp(renderController, rayTracer, camera, frameBuffer)
+    val saveImage = SaveImageOp(frameBuffer, pngFiles)
     val changeRayTracerSettings = ChangeRayTracerSettingsOp(renderController, rayTracer, camera, frameBuffer)
     val changeRenderSettings = ChangeRenderSettingsOp(renderController, rayTracer, camera, frameBuffer)
 
