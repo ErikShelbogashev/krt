@@ -1,0 +1,14 @@
+# Поверх конфигурации detekt по умолчанию (buildUponDefaultConfig = true).
+# Пороги из AGENTS.md, раздел «Пороги».
+
+complexity:
+  CognitiveComplexMethod:
+    active: true
+    # Верхняя граница для трансформаций. Более строгие пороги для портов (≤1)
+    # и действий (≤4) detekt по роли функции не различает, их держит ревью.
+    allowedComplexity: 15
+
+naming:
+  FunctionNaming:
+    # Composable-функции называются в PascalCase.
+    ignoreAnnotated: ['Composable']
