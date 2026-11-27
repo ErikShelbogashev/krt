@@ -37,11 +37,7 @@ class World(objects: List<Traceable> = emptyList()) {
         objects = objects + objs
     }
 
-    fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
-        return objects.asSequence()
-            .mapNotNull { it.hit(ray, tMin, tMax) }
-            .minByOrNull { it.t }
-    }
+    fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? = objects.closestHit(ray, tMin, tMax)
 
     companion object {
         fun default(random: Random): World {
@@ -71,6 +67,19 @@ class World(objects: List<Traceable> = emptyList()) {
             return world
         }
     }
+}
+
+/**
+ * The hit with the smallest t. Each found hit narrows the search interval, so farther objects
+ * are rejected early. On equal t the first object in the list wins, as before.
+ */
+private fun List<Traceable>.closestHit(ray: Ray, tMin: Double, tMax: Double): Hit? {
+    var closest: Hit? = null
+    for (i in indices) {
+        val hit = this[i].hit(ray, tMin, closest?.t ?: tMax)
+        if (hit != null && (closest == null || hit.t < closest.t)) closest = hit
+    }
+    return closest
 }
 
 private fun List<Traceable>.translateFirst(objectId: String, offset: Point3): List<Traceable> {
