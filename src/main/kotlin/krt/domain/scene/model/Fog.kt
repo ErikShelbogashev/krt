@@ -27,20 +27,17 @@ class Fog(
     val material = Isotropic(albedo, enclosed)
 
     override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
-        val span = span(ray, tMin, tMax) ?: return null
-        val t = span.start - ln(1.0 - Hashing.uniform(ray)) / density / ray.direction.length()
-        return if (t < span.endInclusive) Hit(ray.at(t), t, UP, true, material) else null
-    }
-
-    /** Where the ray is inside the sphere within [tMin, tMax], or null when it is not. */
-    private fun span(ray: Ray, tMin: Double, tMax: Double): ClosedFloatingPointRange<Double>? {
         val oc = ray.origin - center
         val a = ray.direction.dot(ray.direction)
         val halfB = oc.dot(ray.direction)
         val discriminant = halfB * halfB - a * (oc.dot(oc) - radius * radius)
         if (discriminant < 0) return null
         val root = sqrt(discriminant)
-        return (maxOf((-halfB - root) / a, tMin)..minOf((-halfB + root) / a, tMax)).takeUnless { it.isEmpty() }
+        // Where the ray is inside the sphere within [tMin, tMax]; it scatters there after a random free path.
+        val enter = maxOf((-halfB - root) / a, tMin)
+        val leave = minOf((-halfB + root) / a, tMax)
+        val t = if (enter < leave) enter - ln(1.0 - Hashing.uniform(ray)) / density / sqrt(a) else leave
+        return if (t < leave) Hit(ray.at(t), t, UP, true, material) else null
     }
 
     override fun bounds(): Aabb = Aabb(center - Point3(radius, radius, radius), center + Point3(radius, radius, radius))
@@ -77,13 +74,18 @@ internal object Hashing {
     private const val SHIFT_C = 31
 
     fun uniform(ray: Ray): Double {
-        var h = 0L
-        val (origin, direction) = ray.origin to ray.direction
-        for (value in doubleArrayOf(origin.x, origin.y, origin.z, direction.x, direction.y, direction.z)) {
-            h = mix(h + java.lang.Double.doubleToLongBits(value) + GOLDEN)
-        }
+        val origin = ray.origin
+        val direction = ray.direction
+        var h = mix(step(0L, origin.x))
+        h = mix(step(h, origin.y))
+        h = mix(step(h, origin.z))
+        h = mix(step(h, direction.x))
+        h = mix(step(h, direction.y))
+        h = mix(step(h, direction.z))
         return (h ushr (Long.SIZE_BITS - MANTISSA_BITS)).toDouble() / (1L shl MANTISSA_BITS)
     }
+
+    private fun step(h: Long, value: Double): Long = h + java.lang.Double.doubleToLongBits(value) + GOLDEN
 
     /** SplitMix64's finaliser. */
     private fun mix(value: Long): Long {
