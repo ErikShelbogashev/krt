@@ -1,0 +1,200 @@
+{
+  "schema": "krt-showcase-target-v1",
+  "status": "target-spec-for-upcoming-renderer",
+  "intent": "Use the prism, frosted cards, skin, fabric, wood and two color-temperature emitters in one readable office composition.",
+  "effect_coverage": [
+    "dispersion",
+    "rough_glass_ggx",
+    "anisotropic_conductor_ggx",
+    "homogeneous_volume",
+    "subsurface_scattering",
+    "fabric_sheen",
+    "procedural_wood",
+    "procedural_bump",
+    "textured_emission",
+    "color_temperature",
+    "smooth_vertex_normals",
+    "light_sampling"
+  ],
+  "materials": {
+    "spectral_prism": {
+      "type": "Dielectric",
+      "indexOfReflection": 1.52,
+      "dispersion": 0.0042,
+      "roughness": 0.005,
+      "tint": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "density": 0.0
+    },
+    "frosted_notification_glass": {
+      "type": "Dielectric",
+      "indexOfReflection": 1.45,
+      "dispersion": 0.0,
+      "roughness": 0.24,
+      "tint": [
+        0.78,
+        0.9,
+        1.0
+      ],
+      "density": 0.12
+    },
+    "brushed_aluminium": {
+      "type": "Conductor",
+      "metal": "ALUMINIUM",
+      "roughness": 0.2,
+      "anisotropy": 0.78,
+      "tangent_axis": "object_x"
+    },
+    "skin_soft": {
+      "type": "Subsurface",
+      "model": "homogeneous_random_walk",
+      "albedo": [
+        0.86,
+        0.52,
+        0.36
+      ],
+      "mean_free_path": [
+        0.7,
+        0.35,
+        0.22
+      ]
+    },
+    "office_velvet": {
+      "type": "Sheen",
+      "base": [
+        0.34,
+        0.12,
+        0.72
+      ],
+      "roughness": 0.55,
+      "sheen": 0.8
+    },
+    "procedural_desk_wood": {
+      "type": "Plastic",
+      "roughness": 0.28,
+      "texture": {
+        "type": "wood",
+        "scale": 1.7,
+        "rings": 7.0,
+        "distortion": 0.18
+      },
+      "bump": {
+        "source": "same",
+        "strength": 0.12
+      }
+    },
+    "notification_emission": {
+      "type": "Emissive",
+      "temperature_kelvin": 6500,
+      "intensity": 4.0,
+      "texture": {
+        "type": "object_mask",
+        "pattern": "notification_badges"
+      }
+    },
+    "warm_lamp": {
+      "type": "Emissive",
+      "temperature_kelvin": 2900,
+      "intensity": 18.0
+    },
+    "daylight_panel": {
+      "type": "Emissive",
+      "temperature_kelvin": 5600,
+      "intensity": 22.0
+    }
+  },
+  "bindings": [
+    {
+      "objects": [
+        "dispersion_prism"
+      ],
+      "material": "spectral_prism"
+    },
+    {
+      "objects": [
+        "notification_*_card"
+      ],
+      "material": "frosted_notification_glass"
+    },
+    {
+      "objects": [
+        "laptop_*"
+      ],
+      "material": "brushed_aluminium"
+    },
+    {
+      "objects": [
+        "worker_head",
+        "worker_arm_*"
+      ],
+      "material": "skin_soft"
+    },
+    {
+      "objects": [
+        "worker_torso"
+      ],
+      "material": "office_velvet"
+    },
+    {
+      "objects": [
+        "desk_top"
+      ],
+      "material": "procedural_desk_wood"
+    },
+    {
+      "objects": [
+        "notification_*_badge",
+        "laptop_display"
+      ],
+      "material": "notification_emission"
+    },
+    {
+      "objects": [
+        "desk_lamp_diffuser"
+      ],
+      "material": "warm_lamp"
+    },
+    {
+      "objects": [
+        "sun_window_emitter"
+      ],
+      "material": "daylight_panel"
+    }
+  ],
+  "volumes": [
+    {
+      "name": "office_haze",
+      "type": "Fog",
+      "shape": "sphere",
+      "center": [
+        0,
+        1.5,
+        5.0
+      ],
+      "radius": 10.5,
+      "density": 0.035,
+      "albedo": [
+        0.82,
+        0.9,
+        1.0
+      ],
+      "purpose": "visible blind-shaped god rays"
+    }
+  ],
+  "light_sampling": {
+    "enabled": true,
+    "include": [
+      "sun_window_emitter",
+      "desk_lamp_diffuser",
+      "notification_*_badge",
+      "laptop_display"
+    ]
+  },
+  "hero_shot_notes": [
+    "Aim the window panel through the prism onto rainbow_catcher.",
+    "Keep haze subtle enough that notification cards remain readable."
+  ]
+}

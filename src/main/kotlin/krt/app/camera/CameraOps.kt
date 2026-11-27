@@ -68,7 +68,7 @@ class ResetCameraViewOp(
     private val frameBuffer: FrameBuffer,
 ) {
     operator fun invoke() {
-        camera.resetView(world.look.fov, world.look.aperture)
+        camera.resetView(world.look)
         renderFrame(renderController, rayTracer, camera, frameBuffer)
     }
 }

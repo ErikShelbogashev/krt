@@ -1,0 +1,217 @@
+{
+  "schema": "krt-showcase-target-v1",
+  "status": "target-spec-for-upcoming-renderer",
+  "intent": "A cinematic stress test for fog, sampled practical lights, neon, brushed servers, translucent red resin and glass.",
+  "effect_coverage": [
+    "homogeneous_volume",
+    "god_rays",
+    "light_sampling",
+    "rough_glass_ggx",
+    "dispersion",
+    "anisotropic_conductor_ggx",
+    "subsurface_scattering",
+    "fabric_sheen",
+    "procedural_marble",
+    "procedural_bump",
+    "textured_emission",
+    "color_temperature",
+    "smooth_vertex_normals"
+  ],
+  "materials": {
+    "red_resin_subsurface": {
+      "type": "Subsurface",
+      "model": "homogeneous_random_walk",
+      "albedo": [
+        0.95,
+        0.025,
+        0.02
+      ],
+      "mean_free_path": [
+        1.1,
+        0.12,
+        0.08
+      ],
+      "surface_roughness": 0.08
+    },
+    "safety_glass": {
+      "type": "Dielectric",
+      "indexOfReflection": 1.52,
+      "dispersion": 0.0028,
+      "roughness": 0.1,
+      "tint": [
+        0.82,
+        0.96,
+        1.0
+      ],
+      "density": 0.08
+    },
+    "server_brushed_aluminium": {
+      "type": "Conductor",
+      "metal": "ALUMINIUM",
+      "roughness": 0.32,
+      "anisotropy": 0.82,
+      "tangent_axis": "object_z"
+    },
+    "team_fabric": {
+      "type": "Sheen",
+      "base": [
+        0.08,
+        0.18,
+        0.42
+      ],
+      "roughness": 0.68,
+      "sheen": 0.78
+    },
+    "team_skin": {
+      "type": "Subsurface",
+      "model": "homogeneous_random_walk",
+      "albedo": [
+        0.88,
+        0.56,
+        0.39
+      ],
+      "mean_free_path": [
+        0.55,
+        0.28,
+        0.17
+      ]
+    },
+    "marble_runway": {
+      "type": "Plastic",
+      "roughness": 0.2,
+      "texture": {
+        "type": "marble",
+        "scale": 0.65,
+        "vein_frequency": 5.0,
+        "turbulence": 2.2
+      },
+      "bump": {
+        "source": "same",
+        "strength": 0.07
+      }
+    },
+    "deploy_neon": {
+      "type": "Emissive",
+      "temperature_kelvin": 1800,
+      "color_override": [
+        1.0,
+        0.015,
+        0.01
+      ],
+      "intensity": 35.0,
+      "texture": {
+        "type": "object_mask",
+        "pattern": "pixel_letters"
+      }
+    },
+    "server_led_emission": {
+      "type": "Emissive",
+      "temperature_kelvin": 9000,
+      "intensity": 12.0,
+      "texture": {
+        "type": "pulse_stripes",
+        "frequency": 8.0
+      }
+    },
+    "warning_bulb_emission": {
+      "type": "Emissive",
+      "temperature_kelvin": 2200,
+      "intensity": 45.0
+    }
+  },
+  "bindings": [
+    {
+      "objects": [
+        "deploy_button"
+      ],
+      "material": "red_resin_subsurface"
+    },
+    {
+      "objects": [
+        "button_safety_glass"
+      ],
+      "material": "safety_glass"
+    },
+    {
+      "objects": [
+        "server_rack_*"
+      ],
+      "material": "server_brushed_aluminium"
+    },
+    {
+      "objects": [
+        "developer_torso",
+        "observer_*_torso"
+      ],
+      "material": "team_fabric"
+    },
+    {
+      "objects": [
+        "developer_head",
+        "developer_arm_*",
+        "developer_reaching_hand",
+        "observer_*_head",
+        "observer_*_arm_*"
+      ],
+      "material": "team_skin"
+    },
+    {
+      "objects": [
+        "runway"
+      ],
+      "material": "marble_runway"
+    },
+    {
+      "objects": [
+        "deploy_sign_*"
+      ],
+      "material": "deploy_neon"
+    },
+    {
+      "objects": [
+        "server_led_*",
+        "runway_light_*"
+      ],
+      "material": "server_led_emission"
+    },
+    {
+      "objects": [
+        "warning_bulb_*"
+      ],
+      "material": "warning_bulb_emission"
+    }
+  ],
+  "volumes": [
+    {
+      "name": "server_room_haze",
+      "type": "Fog",
+      "shape": "sphere",
+      "center": [
+        0,
+        2.5,
+        4.0
+      ],
+      "radius": 12.0,
+      "density": 0.055,
+      "albedo": [
+        0.62,
+        0.72,
+        0.88
+      ],
+      "purpose": "volumetric cones from neon, runway lights and warning bulbs"
+    }
+  ],
+  "light_sampling": {
+    "enabled": true,
+    "include": [
+      "deploy_sign_*",
+      "server_led_*",
+      "runway_light_*",
+      "warning_bulb_*"
+    ]
+  },
+  "hero_shot_notes": [
+    "Keep the glass cover tilted or open in the final composition if it hides the button.",
+    "Use the warning bulbs as backlights so fog produces crossed cones behind the developer."
+  ]
+}

@@ -70,8 +70,28 @@ object Flights {
         ),
     )
 
+    /** Around the voxel scenes, Y-up after import: high and wide, then low and close to the heroes. */
+    private fun voxel(target: Point3, distance: Double): FlightPath = FlightPath(
+        listOf(
+            FlightPose(target + Point3(0.5, 0.35, 0.75) * distance, target),
+            FlightPose(target + Point3(0.85, 0.25, 0.1) * distance, target + Point3(0.0, -1.0, 0.0)),
+            FlightPose(target + Point3(0.55, 0.12, -0.45) * distance, target),
+            FlightPose(target + Point3(-0.4, 0.2, -0.55) * distance, target + Point3(0.0, -0.5, 0.0)),
+            FlightPose(target + Point3(-0.8, 0.3, 0.2) * distance, target),
+            FlightPose(target + Point3(-0.25, 0.1, 0.5) * distance, target + Point3(0.0, -1.5, 1.0)),
+            FlightPose(target + Point3(0.2, 0.5, 0.8) * distance, target),
+        ),
+    )
+
+    private val NOTIFICATIONS = voxel(Point3(0.0, 4.0, -1.0), 24.0)
+    private val LAPTOP_CREW = voxel(Point3(0.0, 4.0, -1.0), 28.0)
+    private val DEPLOY = voxel(Point3(0.0, 3.5, -2.0), 27.0)
+
     fun of(scene: DemoScene): FlightPath = when (scene) {
-        DemoScene.SHOWCASE, DemoScene.MATERIALS -> SHOWCASE
+        DemoScene.SHOWCASE, DemoScene.MATERIALS, DemoScene.FRACTALS -> SHOWCASE
+        DemoScene.NOTIFICATIONS -> NOTIFICATIONS
+        DemoScene.LAPTOP_CREW -> LAPTOP_CREW
+        DemoScene.DEPLOY -> DEPLOY
         DemoScene.CLASSIC -> CLASSIC
     }
 }

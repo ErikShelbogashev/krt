@@ -8,12 +8,14 @@ detekt = "2.0.0-alpha.6"
 compose-rules = "0.6.8"
 jmh = "1.37"
 gradle-jmh-plugin = "0.7.4"
+kotlinx-serialization = "1.11.0"
 
 [libraries]
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 compose-rules-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "compose-rules" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

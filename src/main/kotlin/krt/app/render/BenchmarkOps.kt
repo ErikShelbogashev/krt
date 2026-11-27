@@ -14,6 +14,7 @@ import krt.domain.render.model.SettingsSnapshot
 import krt.domain.render.model.ViewState
 import krt.domain.render.renderFrame
 import krt.domain.scene.World
+import krt.i9ns.scenefile.SceneLibrary
 import krt.i9ns.textfile.TextFiles
 
 class CaptureSettingsOp(
@@ -33,6 +34,7 @@ class CaptureSettingsOp(
 
 class StartBenchmarkRunOp(
     private val world: World,
+    private val scenes: SceneLibrary,
     private val camera: Camera,
     private val renderController: RenderController,
     private val rayTracer: RayTracer,
@@ -40,13 +42,14 @@ class StartBenchmarkRunOp(
 ) {
     /** Sets up one run: its scene, renderer, frame size, the benchmark's samples and depth, the start view. */
     operator fun invoke(config: BenchmarkConfig) {
-        world.load(config.scene.objects(), config.scene.look)
+        val scene = scenes.load(config.scene)
+        world.load(scene.objects, scene.look, config.scene)
         renderController.mode = config.mode
         rayTracer.maxDepth = BenchmarkConfig.DEPTH
         camera.samplesPerPixel = BenchmarkConfig.SAMPLES
         camera.imageWidth = config.width
         camera.imageHeight = config.height
-        camera.resetView(config.scene.look.fov, config.scene.look.aperture)
+        camera.resetView(scene.look)
         frameBuffer.resizeTo(config.width, config.height)
         renderFrame(renderController, rayTracer, camera, frameBuffer)
     }

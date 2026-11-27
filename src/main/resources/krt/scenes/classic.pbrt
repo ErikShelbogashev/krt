@@ -1,0 +1,2512 @@
+# A krt scene in pbrt-v4's format; #krt lines are krt's own, pbrt reads them as comments.
+#krt Look "bool sampleLights" false "bool motionBlur" false
+# pbrt's camera space is left-handed, krt's right-handed: the mirror keeps the picture the same.
+Scale -1 1 1
+LookAt 13.0 2.0 3.0  0.0 0.0 0.0  0 1 0
+Camera "perspective" "float fov" 90.0 "float lensradius" 0.05 "float focaldistance" 13.490737563232042
+Film "rgb" "integer xresolution" 800 "integer yresolution" 600
+Sampler "zsobol" "integer pixelsamples" 64
+Integrator "volpath" "integer maxdepth" 12
+
+WorldBegin
+#krt Sky "rgb horizon" [1.0 1.0 1.0] "rgb zenith" [0.5 0.7 1.0]
+LightSource "infinite" "rgb L" [0.75 0.85 1.0]
+
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5 0.5 0.5]
+  Translate 0.0 -1000.0 0.0
+  Shape "sphere" "float radius" 1000.0
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7719256532042644 0.053453176725482075 0.03506229806215192]
+  Translate -10.210477377995817 0.2 -10.21345731705921
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.012371266271348736 0.5467337141718771 0.3935945461895596]
+  Translate -10.2160862587043 0.2 -9.867038746319372
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.8111801691472724 0.574900519283123 0.23612938112835366]
+  Translate -10.466316528031115 0.2 -8.125930989132023
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.11326430362016646 0.5277857895792166 0.6668171549881686]
+  Translate -10.95165066003658 0.2 -7.373483695273204
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0033143281666974094 0.5990061591978612 0.05811224205700029]
+  Translate -10.83385472947709 0.2 -6.385016703484693
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -10.367034929174594 0.2 -5.83309795163367
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2586480300750357 0.032895491742099395 0.1838614947442197]
+  Translate -10.920121330477734 0.2 -4.64695855819189
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.019117885215784412 0.34154027433198253 0.0071923362340399226]
+  Translate -10.800558775980807 0.2 -3.3055926753143545
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0019182577716432153 0.20011775359663728 0.009869000374094496]
+  Translate -10.954632117326861 0.2 -2.42503903255141
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.30554742125924506 3.668013241463338E-4 0.13575090415569294]
+  Translate -10.613455272250496 0.2 -1.609783422538806
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.961242621725263 0.748644254671316 0.5553683716738733] "float fuzz" 0.4064810038425415
+  Material "conductor" "rgb reflectance" [0.961242621725263 0.748644254671316 0.5553683716738733] "float roughness" 0.02729989758117884
+  Translate -10.906670012599607 0.2 -0.9065942004983236
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.16532683520046104 0.11553530122569018 0.03624935404933721]
+  Translate -10.623222814587374 0.2 0.15113815080339452
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.18066655132241294 0.13009307658815722 0.7097303634572799]
+  Translate -10.221499793320085 0.2 1.6953734672579834
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07094514491157149 0.0802531733097306 0.3305458444661789]
+  Translate -10.934436827176887 0.2 2.4343588890724908
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.25834200305802035 0.14646781586310237 0.01803621532818977]
+  Translate -10.16003506962205 0.2 3.596832516371365
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.007772553979186147 0.7993622466799353 0.11154128479240326]
+  Translate -10.891472533902798 0.2 4.049428799481327
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9876462828605604 0.6664931364822974 0.9725283618766839] "float fuzz" 0.43304341562285115
+  Material "conductor" "rgb reflectance" [0.9876462828605604 0.6664931364822974 0.9725283618766839] "float roughness" 0.03516622563791465
+  Translate -10.414350970516649 0.2 5.29260006084649
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.036769479164092136 0.10819143483681827 0.003170193796314194]
+  Translate -10.262926182104584 0.2 6.366440815454399
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.21698545006927308 0.31357296086351255 0.36048044246227595]
+  Translate -10.203337480749575 0.2 7.495679459611437
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.009929126809816951 0.0554008944409917 0.5258900025629384]
+  Translate -10.436995563286326 0.2 8.642756700252386
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.17187233028367263 0.1936833953622544 0.6610303496760842]
+  Translate -10.203373511893208 0.2 9.425739773620602
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6302058622819489 0.2674274875818706 0.02460750041766659]
+  Translate -10.3877974480445 0.2 10.786387809534038
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0780238248214784 0.04593116439698426 0.7525839390019055]
+  Translate -9.101950410741448 0.2 -10.166734934153318
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9277401771138201 0.5640327257288036 0.8934669006058775] "float fuzz" 0.390754538609105
+  Material "conductor" "rgb reflectance" [0.9277401771138201 0.5640327257288036 0.8934669006058775] "float roughness" 0.02331396414268409
+  Translate -9.806131010757682 0.2 -9.37932955605154
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.673587071058886 0.6598504917127826 0.13514223924416968]
+  Translate -9.234168915603172 0.2 -8.668435098685055
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.013743543112480005 0.1369131738837865 0.03868886280995665]
+  Translate -9.760435425303703 0.2 -7.476454795009992
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.024287228103689815 0.3082585671469717 0.004397504524674466]
+  Translate -9.813566145579966 0.2 -6.535208247800617
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3453608161903643 0.33248567835457893 0.02972734386715021]
+  Translate -9.367452751147624 0.2 -5.901091311539514
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3216298266669899 0.004893548599306515 0.08461728211122227]
+  Translate -9.611636445888339 0.2 -4.902866800207499
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06796039405482183 0.6087081021965154 0.16690453469184016]
+  Translate -9.456368010910165 0.2 -3.7206468577449434
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.36695826820806254 0.07332030133853792 0.07900311000956516]
+  Translate -9.2869528028294 0.2 -2.679492240279906
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.04094246016147463 0.26395413925946454 0.16798183520962323]
+  Translate -9.184416297822882 0.2 -1.1014577736523
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.17161347356767506 0.07895949654960968 0.7850633038107063]
+  Translate -9.204207884023752 0.2 -0.599313874287392
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4638935715277538 0.3468051762394461 0.15931411821059407]
+  Translate -9.23167527170636 0.2 0.6056919227003261
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.27178289632993036 0.09047740970372277 0.5654662047636863]
+  Translate -9.170433033477128 0.2 1.1431385605502167
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.08138958501698051 0.5596509680057011 0.006473194634081108]
+  Translate -9.32561605977476 0.2 2.493453786911987
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -9.693044705569246 0.2 3.7588962551508804
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -9.182142659522071 0.2 4.783981080884072
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9399010774460741 0.9873172129587621 0.996083998862074] "float fuzz" 0.364074360410821
+  Material "conductor" "rgb reflectance" [0.9399010774460741 0.9873172129587621 0.996083998862074] "float roughness" 0.017569539589775748
+  Translate -9.415204607751907 0.2 5.2589840279035505
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.43156642073632706 0.05251942397364772 0.10604516430381052]
+  Translate -9.741093737686532 0.2 6.206790521081559
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4992398031695577 0.5315101278778773 0.37946467013144713]
+  Translate -9.476496725432279 0.2 7.576648883792314
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.31887466168967704 0.39239274189433554 0.40469580757806317]
+  Translate -9.23718053019068 0.2 8.797810274563908
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3232789082145985 0.0769125927304291 0.0038509584365278406]
+  Translate -9.960118891238176 0.2 9.620531225531147
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4365727543803291 0.8069479520043795 0.46327384124952004]
+  Translate -9.330463700152439 0.2 10.600410879268225
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.28118668408826597 0.061818906082908694 0.32941615150873027]
+  Translate -8.919442587602052 0.2 -10.846403287316972
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.25730075822927767 0.8363332156544322 0.036710756236661514]
+  Translate -8.634816936101961 0.2 -9.254937230138298
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.35289727655749015 0.21157576812327852 0.18857862627313915]
+  Translate -8.133585803733395 0.2 -8.696156429015028
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.41410607178602027 0.005866957947220859 0.4207724249851287]
+  Translate -8.793841898928475 0.2 -7.2656064104591325
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.5761682802427992 0.8616671343114856 0.9157642346985967] "float fuzz" 0.24064053257007006
+  Material "conductor" "rgb reflectance" [0.5761682802427992 0.8616671343114856 0.9157642346985967] "float roughness" 0.0033533209348999135
+  Translate -8.726006053996953 0.2 -6.152100896080808
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.27735610391284915 0.3087890337676914 0.4526285380948503]
+  Translate -8.449799126959954 0.2 -5.140446526135746
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.990840297502478 0.5417898388380893 0.7583968726042924] "float fuzz" 0.021046196541587958
+  Material "conductor" "rgb reflectance" [0.990840297502478 0.5417898388380893 0.7583968726042924] "float roughness" 1.9619795985533657E-7
+  Translate -8.456585622269936 0.2 -4.156160909226102
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3760637024034983 0.7308849018628425 0.2654113722835965]
+  Translate -8.16606065999346 0.2 -3.3510969792150775
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.5825724866434724 0.5365492847598393 0.748826206055329] "float fuzz" 0.14238506020639202
+  Material "conductor" "rgb reflectance" [0.5825724866434724 0.5365492847598393 0.748826206055329] "float roughness" 4.1101501998652197E-4
+  Translate -8.163533285510887 0.2 -2.4444320657318728
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.22036537532337225 0.006709838920571323 0.3821473838022654]
+  Translate -8.358150386331543 0.2 -1.973246622381289
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7407034488933639 0.11134217613593701 0.08592615086860873]
+  Translate -8.730012545892858 0.2 -0.11607796472345666
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.05245154878603967 0.07240161445781448 0.0038078912283569556]
+  Translate -8.892209987804163 0.2 0.39963580802843984
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.855810089760827 0.26578581383852634 0.5075573770452187]
+  Translate -8.686353097535688 0.2 1.1632168004226093
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.14662181651459924 0.006616434136663844 0.4477905095047743]
+  Translate -8.84919686994161 0.2 2.247563691631402
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.5892696693765287 0.638107663592459 0.7061895905287436] "float fuzz" 0.02944673733494535
+  Material "conductor" "rgb reflectance" [0.5892696693765287 0.638107663592459 0.7061895905287436] "float roughness" 7.51880341168284E-7
+  Translate -8.986294684602445 0.2 3.247931692447668
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -8.225767721920164 0.2 4.370002839807274
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6087769305479339 0.9921049758306697 0.6709556157178829] "float fuzz" 0.2451574242319397
+  Material "conductor" "rgb reflectance" [0.6087769305479339 0.9921049758306697 0.6709556157178829] "float roughness" 0.003612269955933
+  Translate -8.733888578128564 0.2 5.12258247331354
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.009774418194223384 0.12173471947502924 0.6445916624126685]
+  Translate -8.998374956004831 0.2 6.046113669165912
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -8.36528959913172 0.2 7.534326114409439
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -8.3324093309366 0.2 8.058853464502338
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4321541044195054 0.11557189721493434 0.5522120520126911]
+  Translate -8.33671197645145 0.2 9.192070675826665
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.11647248699745857 0.1885118190123437 0.5760061305908563]
+  Translate -8.248332463371744 0.2 10.649869681896986
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6116241703089498 0.8951079511339518 0.07104153468577039]
+  Translate -7.139211306343985 0.2 -10.413764513215503
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.05471682442089981 0.41347793521724846 0.5052358193198997]
+  Translate -7.142926381844512 0.2 -9.7590137577561
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7174831625859338 0.23138272309498875 0.18331741838076812]
+  Translate -7.533675847326569 0.2 -8.85268019795604
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.24685165069398032 0.642471558335202 0.9632161830552629]
+  Translate -7.154533846351736 0.2 -7.81525952192769
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -7.486697191712922 0.2 -6.536950708851769
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3600892420730666 0.39226462978138477 0.26374837881028296]
+  Translate -7.536893432432275 0.2 -5.732150053795873
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.695267700700811 0.5655995967117675 0.6126175240026513] "float fuzz" 0.34011246841406084
+  Material "conductor" "rgb reflectance" [0.695267700700811 0.5655995967117675 0.6126175240026513] "float roughness" 0.013381050609566316
+  Translate -7.37941523791929 0.2 -4.371331231783945
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.08576184787360121 0.46930048744644526 0.5013976980407862]
+  Translate -7.469657551003963 0.2 -3.8332241475812854
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.14891009577408543 0.0027962532656659695 0.42972985502907024]
+  Translate -7.252255489587822 0.2 -2.104716300922419
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.09725286299737193 0.32893032670605443 0.1288756852099878]
+  Translate -7.60723586245293 0.2 -1.1301644136754878
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7381896373438279 0.6076667978670842 0.9416076568779748] "float fuzz" 0.18325739023447501
+  Material "conductor" "rgb reflectance" [0.7381896373438279 0.6076667978670842 0.9416076568779748] "float roughness" 0.0011278360961339176
+  Translate -7.932888336687972 0.2 -0.6787213970673015
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.20704448047980872 0.026703970195991255 0.29802547989255906]
+  Translate -7.812502143666181 0.2 0.870165461648359
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.05093895513064261 0.02901618628050756 0.4996264782365687]
+  Translate -7.3196718827361575 0.2 1.2381302695795495
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10621031110435314 0.08609934671821003 0.00829474682983369]
+  Translate -7.362156557319041 0.2 2.591617317087689
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.18353517428927824 0.10725470122240328 0.1461313079639233]
+  Translate -7.404409863065429 0.2 3.6372905446118584
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5188597213136776 0.052693320547287634 0.015743960454812002]
+  Translate -7.2498500024730985 0.2 4.0288279277173356
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.04601673319605965 0.4692220903159874 0.5273540072530591]
+  Translate -7.758026240413518 0.2 5.535003070730598
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6219998507344912 0.35940051805889023 0.030195799144798932]
+  Translate -7.930513202739377 0.2 6.412576994479489
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.11659076238970871 0.7945726106010955 0.024958595875015095]
+  Translate -7.751611415639701 0.2 7.329540481152442
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2629301974866751 0.31345858733468535 0.008073731172441555]
+  Translate -7.648715977608884 0.2 8.696493313078934
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.33164118922433566 0.31871690686759535 0.27495555492128443]
+  Translate -7.2342496380350285 0.2 9.140622027401333
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5457189162472857 0.23854554814506554 0.632571068636822]
+  Translate -7.302900494383102 0.2 10.793294624462424
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.28796405825552923 0.050800439257554085 0.020680622084263616]
+  Translate -6.289425618797807 0.2 -10.61776643778194
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5365504398730055 0.20446527760178776 0.010832007231281313]
+  Translate -6.209338671678392 0.2 -9.282424203824744
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -6.684803259207691 0.2 -8.863333101271808
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5753569786382974 0.27500209476508924 0.16848012873525423]
+  Translate -6.949958022642108 0.2 -7.920507513681005
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0759714330741447 0.4736500244955023 0.30563885114729655]
+  Translate -6.811636773088655 0.2 -6.695272987582005
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07312413462542822 0.09499859020691126 0.5226387347310585]
+  Translate -6.517405986143169 0.2 -5.161899675342449
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6486660931630568 0.7991304709173981 0.7337992236968793] "float fuzz" 0.4599722257407161
+  Material "conductor" "rgb reflectance" [0.6486660931630568 0.7991304709173981 0.7337992236968793] "float roughness" 0.04476374723813543
+  Translate -6.434876681371746 0.2 -4.18102341002277
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.37531318922257784 0.009513981804909054 0.33593445140547035]
+  Translate -6.806915668223073 0.2 -3.8631120610540024
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1351507081270231 0.1768415713171847 0.6761908238047776]
+  Translate -6.147055405096259 0.2 -2.650606296149969
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6674979435095076 0.006717761358964236 0.0543328332136327]
+  Translate -6.438200157291478 0.2 -1.8147566410917402
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1717659166267289 0.12078673321787751 0.09730613546761416]
+  Translate -6.610545856457387 0.2 -0.9216422949682187
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3277199319052857 0.13788486745080847 0.4646248988871789]
+  Translate -6.645075178845634 0.2 0.5587597797923175
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.060168567358109486 0.24033677143711132 0.014413012859574468]
+  Translate -6.666102745460372 0.2 1.1020464860772283
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4504963889741125 0.36745462024371917 0.0029615120434317225]
+  Translate -6.674341707128253 0.2 2.15567211424398
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3668473212175955 0.16344426622238414 9.059859124261996E-4]
+  Translate -6.407316781369413 0.2 3.5421507909084564
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3156517253382104 0.3432380982553677 0.17508702626079103]
+  Translate -6.202795281820539 0.2 4.678514357317018
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.058514607753144016 0.7074327099318817 0.005842496732782258]
+  Translate -6.138080044342697 0.2 5.160535793415437
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0572625479684268 0.19519692402828742 0.09651118831831494]
+  Translate -6.726217118442439 0.2 6.213404478821981
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2194852878168935 0.779009865955024 0.3311667574330317]
+  Translate -6.5528783156010455 0.2 7.1272429163851205
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.12193778413598354 0.13187754090332215 0.3192632612777677]
+  Translate -6.75887826786399 0.2 8.790772533475838
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.04752443592569638 0.6257855681349171 0.24528362095165104]
+  Translate -6.596458163652122 0.2 9.159244155382103
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1495241459972813 0.3523692172353084 0.3370777591329659]
+  Translate -6.240547910306372 0.2 10.180345280312185
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7411611522717677 0.7326806646534209 0.991326223320635] "float fuzz" 0.056395376633261274
+  Material "conductor" "rgb reflectance" [0.7411611522717677 0.7326806646534209 0.991326223320635] "float roughness" 1.011518908795018E-5
+  Translate -5.448284164304869 0.2 -10.686943728308227
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4265866082666625 0.016766899930160527 0.14736346535235156]
+  Translate -5.3237166726883345 0.2 -9.598033175831578
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.43217961520462767 0.4214121018375161 0.5677119967710642]
+  Translate -5.582890499780705 0.2 -8.209490732408785
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.39612963421518677 0.16096471747726201 0.19339734472794656]
+  Translate -5.37363209529536 0.2 -7.115641834174708
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.593489710224464 0.9062188187139176 0.17032296470724795]
+  Translate -5.426507476248656 0.2 -6.892479243475782
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.09332590920005698 0.2811399709228844 0.20575164995243406]
+  Translate -5.852591346398004 0.2 -5.597426394519772
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.26632705225617004 0.2070951425228985 0.10724037499928946]
+  Translate -5.552429001539704 0.2 -4.295572750264595
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7738115381567028 0.04272324329915715 0.3645640913077682]
+  Translate -5.662150663367636 0.2 -3.1870184612300827
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2835823027130829 0.05248943523551138 0.05917343558628387]
+  Translate -5.3621159558635245 0.2 -2.939171455029551
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.048417861163431775 0.00382184644375969 0.01975804710608732]
+  Translate -5.943271051157686 0.2 -1.9998784631561712
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.16060719938272106 0.028468345384814714 0.013618472877159645]
+  Translate -5.974079397928671 0.2 -0.9402939860134263
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.001827930341082056 0.18290167975019878 0.8069290623378904]
+  Translate -5.576350315644986 0.2 0.3018303710073365
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.04364313278190149 0.5953590419145582 0.2273143917295457]
+  Translate -5.975266758820095 0.2 1.8092419531603992
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6305562361717245 0.7088971161211961 0.9750854738502772] "float fuzz" 0.30706203738208465
+  Material "conductor" "rgb reflectance" [0.6305562361717245 0.7088971161211961 0.9750854738502772] "float roughness" 0.008890056246057407
+  Translate -5.9491817369093996 0.2 2.4834068388763173
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.042364115663834384 0.12677315761162902 0.1909090811493128]
+  Translate -5.452286812815952 0.2 3.41054949949456
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4844519396612824 0.5976883806967872 0.3600459213229659]
+  Translate -5.357751540629254 0.2 4.386564056093515
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.02620195570884325 0.3749516418166671 0.26439446406575584]
+  Translate -5.8818114306580815 0.2 5.5985575003756916
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.8582537773479579 0.8159956747115333 0.5024487251362642] "float fuzz" 0.1591464037007792
+  Material "conductor" "rgb reflectance" [0.8582537773479579 0.8159956747115333 0.5024487251362642] "float roughness" 6.414861977667579E-4
+  Translate -5.743062666027938 0.2 6.893742283095183
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2276815042956497 0.19772483197594837 0.46490092222863855]
+  Translate -5.162340192639556 0.2 7.131176177434603
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.028420423688806075 0.1667641723964621 0.059901521106272226]
+  Translate -5.904046523437943 0.2 8.15007040614461
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0038241549769625193 0.08784240596906918 0.45417266344968427]
+  Translate -5.320379010482032 0.2 9.363878094654456
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1923836560868597 0.22799343724284715 0.18391306564941848]
+  Translate -5.746338186024784 0.2 10.503626570407155
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1473963891885416 0.3973010803644404 0.23347128242630905]
+  Translate -4.489891445535266 0.2 -10.640073116810694
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7280075213081182 0.028653478080056284 0.4667683800865858]
+  Translate -4.833312515798966 0.2 -9.134099059342407
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0036284817355094743 0.06528962367970036 0.03226279633024185]
+  Translate -4.155094410576351 0.2 -8.80001956781794
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7296723312601947 0.7865086308782053 0.8346292542398188] "float fuzz" 0.3978941217309025
+  Material "conductor" "rgb reflectance" [0.7296723312601947 0.7865086308782053 0.8346292542398188] "float roughness" 0.025065137574750866
+  Translate -4.966441225678118 0.2 -7.55829261766174
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -4.201716760188879 0.2 -6.4166557953959495
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7234376832949989 0.20326931156043468 0.15291056989351767]
+  Translate -4.776351851357339 0.2 -5.850152330767133
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0022909129741855373 0.009020670762336393 0.048830065499932206]
+  Translate -4.56169648575846 0.2 -4.533741483534058
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.09744023925698331 0.16868748300353764 0.27975123998669493]
+  Translate -4.979383336891384 0.2 -3.58707522215729
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9826711973083733 0.5351738631307987 0.6066929652828837] "float fuzz" 5.888007157883179E-4
+  Material "conductor" "rgb reflectance" [0.9826711973083733 0.5351738631307987 0.6066929652828837] "float roughness" 1.2019137875991865E-13
+  Translate -4.180766170556817 0.2 -2.5339029896924874
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4096747368045062 0.19053242040834267 0.21052051333327162]
+  Translate -4.774842327286221 0.2 -1.1105583367433294
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0351557570247281 0.010919352793736415 0.0796954902677102]
+  Translate -4.8286176579970475 0.2 -0.366532154686277
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -4.780200862808138 0.2 0.21009471835760007
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1476569457760433 0.32923814030320453 0.3432596805716931]
+  Translate -4.921051334441083 0.2 1.0105779523182887
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2317120326150163 0.14571492468432168 0.421873831551307]
+  Translate -4.53598755400187 0.2 2.8115288579292286
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3778365394774217 0.3543423786721174 0.015544812641781817]
+  Translate -4.992807104073575 0.2 3.0364503849309528
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.01789782732726239 0.005784285061041717 0.46654345597936736]
+  Translate -4.613289019959043 0.2 4.75880966325751
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.15865681402670323 0.8400535692593022 0.6891009408415701]
+  Translate -4.723552856983038 0.2 5.115130339034328
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10668336539051852 0.46571311893908535 0.4537642010417589]
+  Translate -4.362205411355593 0.2 6.569607878062281
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7852068330308508 0.4232784225076803 0.3844045814020335]
+  Translate -4.818359425257526 0.2 7.666168475783102
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06630344468357952 0.6254673420367056 0.329807455650879]
+  Translate -4.5207438800187365 0.2 8.181323441245361
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06625884519185832 0.7129565391243436 0.11201246654068577]
+  Translate -4.794718891996444 0.2 9.04613196873036
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.309679315389736 0.05889125247281092 0.5176626008813997]
+  Translate -4.222560984737247 0.2 10.78293518994163
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.028348839776112387 0.10954259012134371 0.09444588023961953]
+  Translate -3.2997326921120305 0.2 -10.63444820766791
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6868709154579595 0.07259654054890508 0.04950952550887253]
+  Translate -3.236683795507691 0.2 -9.273694182222057
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6377339474825326 0.014761757637603498 0.3407574695805804]
+  Translate -3.5950150827221177 0.2 -8.366072903058775
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.27978445214572617 0.30986128285801334 0.1032496987520874]
+  Translate -3.901251550899738 0.2 -7.573467745792049
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5228666726008359 0.02598322029861257 0.09230577703110387]
+  Translate -3.4549357941959546 0.2 -6.583366261393637
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6151584849559937 0.009267918544817108 0.07460120789650515]
+  Translate -3.1103746128555567 0.2 -5.299802140138552
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2741149832258425 0.07290243606113622 0.49238675976144863]
+  Translate -3.6976187302024393 0.2 -4.476070621171152
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.05335371669120422 0.2749574048836842 0.05856251341398792]
+  Translate -3.427418502021614 0.2 -3.451412475847145
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.8376295424525093 0.9526775848562172 0.722218163741951] "float fuzz" 0.008290905390656855
+  Material "conductor" "rgb reflectance" [0.8376295424525093 0.9526775848562172 0.722218163741951] "float roughness" 4.7250655456074074E-9
+  Translate -3.357880008818443 0.2 -2.345776240116708
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.18494190147141382 0.43408799016222427 0.30337361460475276]
+  Translate -3.330981691591017 0.2 -1.8072633515311287
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1792964443593373 0.28157854773741237 0.32288302833919214]
+  Translate -3.575216515208222 0.2 -0.7467402305707214
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2723792347898244 0.11848711176779388 0.35024333799759494]
+  Translate -3.261673411964945 0.2 0.0738561835069185
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.002817199662352259 0.29689314575985565 0.06672063276297743]
+  Translate -3.3156826399524473 0.2 1.7411195295203958
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07620675225941324 0.06704458565759046 0.21984581206380716]
+  Translate -3.252068486167633 0.2 2.5989518134075764
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3344447763156152 0.32975368467063987 0.10494268397419029]
+  Translate -3.340979336779572 0.2 3.583702384381804
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10508371452501009 0.10574754200920991 0.4896831598826026]
+  Translate -3.3603066092720084 0.2 4.448301436213141
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.8985504687817105 0.5253648474704801 0.8530346534312667] "float fuzz" 0.007922133446986557
+  Material "conductor" "rgb reflectance" [0.8985504687817105 0.5253648474704801 0.8530346534312667] "float roughness" 3.9388424971652E-9
+  Translate -3.6119087845112987 0.2 5.696527311597478
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.09056853018943052 0.08119361495820478 0.06608402323044148]
+  Translate -3.7643606369027287 0.2 6.525827087529037
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.16727052662128705 0.23195150606983597 0.39926581673796036]
+  Translate -3.218624316175874 0.2 7.303064107940152
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.49193705332972243 0.728508137330195 0.11611832962475079]
+  Translate -3.8717583037259806 0.2 8.793590227477353
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3178951731547983 0.1948587707817705 0.17664579212639858]
+  Translate -3.233928212668599 0.2 9.68066384034727
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2637645843042757 2.1634725613113375E-4 0.06607008065299498]
+  Translate -3.81530700645468 0.2 10.435355860582842
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.658488040869095 0.9759690134924404 0.5224210286948667] "float fuzz" 0.0183389287942739
+  Material "conductor" "rgb reflectance" [0.658488040869095 0.9759690134924404 0.5224210286948667] "float roughness" 1.1310865991560016E-7
+  Translate -2.6539507092092287 0.2 -10.516725562795955
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.21755949072646547 0.04796928740020341 0.5555814600532443]
+  Translate -2.7211383727995906 0.2 -9.987433321060903
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4036932459107136 0.23675345817112362 0.12722058955995427]
+  Translate -2.9778201880462882 0.2 -8.57334931789738
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9621107485137219 0.6270903829969812 0.633452660122378] "float fuzz" 0.13776093521207694
+  Material "conductor" "rgb reflectance" [0.9621107485137219 0.6270903829969812 0.633452660122378] "float roughness" 3.6016734097299365E-4
+  Translate -2.787487593935719 0.2 -7.932560274919853
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.008673304104839017 0.9498925395762692 0.014062111710511875]
+  Translate -2.6783417719645213 0.2 -6.218281771626994
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.026102549903615123 0.013118399869713087 0.6849459815776459]
+  Translate -2.5517729509893172 0.2 -5.282553184642492
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6778384326887621 0.7756351258739544 0.9001198743306832] "float fuzz" 0.1442950738701726
+  Material "conductor" "rgb reflectance" [0.6778384326887621 0.7756351258739544 0.9001198743306832] "float roughness" 4.335168869521455E-4
+  Translate -2.826964259681287 0.2 -4.21180698692866
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10875530046514152 0.2292265629044319 0.1116106384730803]
+  Translate -2.4066441839148016 0.2 -3.119559027806757
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -2.411670320909363 0.2 -2.185481526825977
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.12579004337254648 0.14030754861144093 0.26397414794965207]
+  Translate -2.6236201313643033 0.2 -1.5612193853464504
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6791621178396411 0.003752935711123557 0.6352507978167399]
+  Translate -2.980297082788423 0.2 -0.6162810081842351
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.20235059264921054 0.08495612459201382 0.062111146784019036]
+  Translate -2.456054487691775 0.2 0.5786815212532517
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.8772356618117988 0.7992844454157392 0.7975529814382654] "float fuzz" 0.19413598096835982
+  Material "conductor" "rgb reflectance" [0.8772356618117988 0.7992844454157392 0.7975529814382654] "float roughness" 0.0014204440705421215
+  Translate -2.4821605938900997 0.2 1.398892322207764
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06152036653013967 0.14397089538054691 0.09618402127743526]
+  Translate -2.4804189652692927 0.2 2.424551839720872
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2946234447275571 0.388420760452621 0.047619346676755187]
+  Translate -2.8180353832024934 0.2 3.3639676021140743
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1601661367192579 0.18019466773814566 0.43357498891542817]
+  Translate -2.4710040500198662 0.2 4.51116242013262
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.29514860460765857 0.03495202972149406 0.10528336446273019]
+  Translate -2.6381610475211663 0.2 5.760588665701678
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4137792448302835 0.4935830945786571 0.05632734131453558]
+  Translate -2.800200622812938 0.2 6.58200944730971
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -2.9138865116737196 0.2 7.796218828601069
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.22219536516510727 0.23996759552974245 0.023207495316949087]
+  Translate -2.781209064293197 0.2 8.077415480751254
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.789987424530421 0.23113964216331054 0.21634440315865444]
+  Translate -2.2540365487263077 0.2 9.044277075492655
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.031102918453832826 0.6370236064486885 0.01170598008018421]
+  Translate -2.4399190693333783 0.2 10.723784403760016
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2933762194812813 0.6167559086842027 0.1425452875612676]
+  Translate -1.9901536834411009 0.2 -10.837235290527756
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2711544930954778 0.18478408282881031 0.23991582075191706]
+  Translate -1.2440544851007198 0.2 -9.801210218280152
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.47540084536265137 0.12664639656689503 0.8952754839634192]
+  Translate -1.867158308184331 0.2 -8.686063579099335
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9336702673374668 0.7369966953578759 0.8945443899508176] "float fuzz" 0.07656258157024276
+  Material "conductor" "rgb reflectance" [0.9336702673374668 0.7369966953578759 0.8945443899508176] "float roughness" 3.4361038014188035E-5
+  Translate -1.6850750444873663 0.2 -7.6086002743375385
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.8606754288637004 0.6428606101119135 0.6953056332985939] "float fuzz" 0.11881653204827414
+  Material "conductor" "rgb reflectance" [0.8606754288637004 0.6428606101119135 0.6953056332985939] "float roughness" 1.9930008737842255E-4
+  Translate -1.2843038620569303 0.2 -6.630797556328454
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.13186380233774397 0.06564334748909591 0.22142619908098338]
+  Translate -1.1406464138762242 0.2 -5.465229897697578
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate -1.7170231818116972 0.2 -4.173786616638337
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.033402469912450605 0.7488876119868632 0.011655728876495505]
+  Translate -1.570815507049749 0.2 -3.7237046016700206
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7311585187205418 0.7140098461282824 0.9755820780546776] "float fuzz" 0.11932097242836387
+  Material "conductor" "rgb reflectance" [0.7311585187205418 0.7140098461282824 0.9755820780546776] "float roughness" 2.0270624853413498E-4
+  Translate -1.5671896113174333 0.2 -2.6614262471193584
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1406555173376166 0.2484474085769549 0.01798696787772181]
+  Translate -1.9831654810648687 0.2 -1.6120708683342766
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.38804790250013627 0.09039639226088561 0.11173325253257016]
+  Translate -1.5922920874889788 0.2 -0.9998446252548747
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4104252862933766 0.47210818639821955 0.031316152838503274]
+  Translate -1.5367035869434804 0.2 0.5432856159954349
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06633890343249994 0.09885149624302768 0.24957581048019858]
+  Translate -1.7013768303001318 0.2 1.8140802283625423
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.25034521268914905 0.38904564311903567 0.17658746072541673]
+  Translate -1.4485008499279055 0.2 2.7538952778361976
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.5664233638236813 0.6888994152268577 0.9634274442454875] "float fuzz" 0.3856392759286043
+  Material "conductor" "rgb reflectance" [0.5664233638236813 0.6888994152268577 0.9634274442454875] "float roughness" 0.022116939760223442
+  Translate -1.5542058721404912 0.2 3.1386288042669923
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7388622562660363 0.4641034309123859 0.10074036805767789]
+  Translate -1.3940031991903046 0.2 4.775971459394758
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.15126417082895793 0.8644146530422868 0.80536072675586]
+  Translate -1.6471567643703764 0.2 5.171265524787127
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3167750671755151 0.14627837957734105 0.4454680512800223]
+  Translate -1.833340935607874 0.2 6.795806951573034
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.021645369894263716 0.1030062218441524 0.07026042000277545]
+  Translate -1.7502828778027368 0.2 7.1027238823111984
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.8273317964693448 0.005640607224888365 0.04145505864782482]
+  Translate -1.7641210681810784 0.2 8.459501845924162
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.21796425679547138 0.016329987948692063 0.05600679818162418]
+  Translate -1.4578621473396138 0.2 9.151842808349794
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.23102322794671448 0.29622934378301863 0.2473425471256252]
+  Translate -1.1845493131713578 0.2 10.65002401491266
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.632229433743529 0.8562766770856908 0.6199126351863544]
+  Translate -0.6428531289150419 0.2 -10.854052269721745
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.04967107635133622 0.21957224821187432 0.01129433227802684]
+  Translate -0.33090580157121785 0.2 -9.182336118950847
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9450058346684707 0.5248496576378305 0.7660205068287744] "float fuzz" 0.11679475848136112
+  Material "conductor" "rgb reflectance" [0.9450058346684707 0.5248496576378305 0.7660205068287744] "float roughness" 1.8607730683732832E-4
+  Translate -0.5260156668187367 0.2 -8.495372503175584
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.03765648053312071 0.0911412407000308 0.04915976584717715]
+  Translate -0.588899167795897 0.2 -7.234959680149946
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.8263573255166318 0.5234176012991889 0.8789138919769608] "float fuzz" 0.1961909090760578
+  Material "conductor" "rgb reflectance" [0.8263573255166318 0.5234176012991889 0.8789138919769608] "float roughness" 0.0014815472892206333
+  Translate -0.7725369761050455 0.2 -6.410420751112259
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.22542247574333982 0.00592323587658195 0.23559268445637108]
+  Translate -0.8738674821073331 0.2 -5.285929441604969
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9566133547358773 0.9747053002127861 0.9574438817449391] "float fuzz" 0.23356901971623611
+  Material "conductor" "rgb reflectance" [0.9566133547358773 0.9747053002127861 0.9574438817449391] "float roughness" 0.002976192048691212
+  Translate -0.7273963015629462 0.2 -4.4378152974345415
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07831191609518465 0.0402879162150926 0.26124280358858526]
+  Translate -0.5029119539655404 0.2 -3.626155608314986
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10416682671731037 0.08305710201294814 0.08084183831321809]
+  Translate -0.8145494060431543 0.2 -2.966538795331575
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.35284058513598976 0.48079450264115553 0.7486795873257075]
+  Translate -0.9268472134753225 0.2 -1.6738022981617062
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.655732924344951 0.824471556462967 0.8039397948891778] "float fuzz" 0.22623240620348373
+  Material "conductor" "rgb reflectance" [0.655732924344951 0.824471556462967 0.8039397948891778] "float roughness" 0.002619505162690584
+  Translate -0.9753231713635144 0.2 -0.10931185380505626
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7533264163044882 0.875614462967369 0.999227067173206] "float fuzz" 0.0501734496963358
+  Material "conductor" "rgb reflectance" [0.7533264163044882 0.875614462967369 0.999227067173206] "float roughness" 6.337177164670168E-6
+  Translate -0.4919951114600136 0.2 0.053190218182163476
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.08763945277269199 0.11525824593350477 0.15556105975419487]
+  Translate -0.333793054131299 0.2 1.5392270995629929
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5053478462117454 0.06874625216486444 0.06775431416117529]
+  Translate -0.8876811741907545 0.2 2.438177076556821
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4800272886450539 0.34565856398860423 0.718187832833142]
+  Translate -0.8879299614111146 0.2 3.091942641200312
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4727294220507402 0.6523158450857005 0.022379343589663134]
+  Translate -0.6669653439490068 0.2 4.309693530947891
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.08282828934439115 0.1055498151794529 0.17378686931102985]
+  Translate -0.3207450062972279 0.2 5.0241181832899064
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7385244213694941 0.883556730764703 0.8503707495324861] "float fuzz" 0.4854792174483776
+  Material "conductor" "rgb reflectance" [0.7385244213694941 0.883556730764703 0.8503707495324861] "float roughness" 0.055549809367313366
+  Translate -0.1230599049181057 0.2 6.185810152369083
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6092967949410373 0.6570950419468817 0.9460157862307246] "float fuzz" 0.41753161147762463
+  Material "conductor" "rgb reflectance" [0.6092967949410373 0.6570950419468817 0.9460157862307246] "float roughness" 0.030391871664668776
+  Translate -0.14364588293614022 0.2 7.386293097238125
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.14586709097285203 0.13826267227398345 0.07539841044331896]
+  Translate -0.891869541253083 0.2 8.09553930066863
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.002351617450694978 0.030849513205980776 0.03197751999517753]
+  Translate -0.8253625827305022 0.2 9.377413148068948
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.32835437065223605 0.23623585388542184 0.7563967641872249]
+  Translate -0.45933235719404264 0.2 10.33337563365896
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.004053481481448473 0.25938686599452854 0.6061178256698676]
+  Translate 0.394020339916414 0.2 -10.318627447601516
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 0.406666495595577 0.2 -9.692512952478051
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6601939903372771 0.5160574205843607 0.5532669348255079] "float fuzz" 0.30179843401116935
+  Material "conductor" "rgb reflectance" [0.6601939903372771 0.5160574205843607 0.5532669348255079] "float roughness" 0.008295984420859565
+  Translate 0.2042951700884364 0.2 -8.529943198350727
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5362485650699335 0.021001783537019928 0.0548550826482343]
+  Translate 0.2904108550083358 0.2 -7.212192550413995
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7124053171294255 0.7479442793242587 0.7756102721073211] "float fuzz" 0.3979808050796135
+  Material "conductor" "rgb reflectance" [0.7124053171294255 0.7479442793242587 0.7756102721073211] "float roughness" 0.025086987007114783
+  Translate 0.6572122222170688 0.2 -6.886978608646436
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2993555159161094 0.07837024963639884 0.706492579049025]
+  Translate 0.2868745725789893 0.2 -5.848921691929341
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0026866263584494994 0.23275497028289938 0.34810883070758447]
+  Translate 0.7155445918259435 0.2 -4.890503218739279
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.010987494595517884 0.1569313602534897 0.09641012399637214]
+  Translate 0.3517383884040137 0.2 -3.5790485067311986
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.537994635964185 0.6914304683481345 0.6665410706825121] "float fuzz" 0.34282861477969206
+  Material "conductor" "rgb reflectance" [0.537994635964185 0.6914304683481345 0.6665410706825121] "float roughness" 0.0138136438809399
+  Translate 0.8905771298502125 0.2 -2.759555208522788
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.77058014311986 0.983902028244248 0.6591372948319555] "float fuzz" 0.06755906154349983
+  Material "conductor" "rgb reflectance" [0.77058014311986 0.983902028244248 0.6591372948319555] "float roughness" 2.0832166251152012E-5
+  Translate 0.45004566732866985 0.2 -1.4683076410628368
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2710827123846723 0.048973730267535306 0.5491669897181691]
+  Translate 0.06709454839510114 0.2 -0.5613264353538332
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5806448431295393 0.07394175496314724 0.12432373522507893]
+  Translate 0.3585966491951864 0.2 0.8632426486584953
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2787887805465799 0.26671132496909744 0.5063857357509104]
+  Translate 0.6692014509383444 0.2 1.7626139212421226
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4801381035954841 0.0822657845058097 0.2911333558956908]
+  Translate 0.26726476237320795 0.2 2.4723640324005505
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.05340917865953466 0.20677382300169406 0.41221401118718054]
+  Translate 0.85316773851741 0.2 3.464288095246405
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.04345614745639314 0.474690571079963 0.364145693436018]
+  Translate 0.6996335899597979 0.2 4.764005193869399
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.710291865052256 0.6367386482014524 0.8563050073738834] "float fuzz" 0.37400394225862904
+  Material "conductor" "rgb reflectance" [0.710291865052256 0.6367386482014524 0.8563050073738834] "float roughness" 0.01956612032438583
+  Translate 0.21157244267825293 0.2 5.6412730206819175
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6724983524596011 0.7264979314436786 0.8345482581247673] "float fuzz" 0.05098326885704835
+  Material "conductor" "rgb reflectance" [0.6724983524596011 0.7264979314436786 0.8345482581247673] "float roughness" 6.756327756275352E-6
+  Translate 0.578347643762088 0.2 6.395161113171866
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 0.8796292250276058 0.2 7.472071937548788
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.11773613472078595 0.16339786260819608 7.969928824546133E-4]
+  Translate 0.39082340019376033 0.2 8.495156498420915
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.048029915953463856 0.11770264724066107 0.12512015668829643]
+  Translate 0.2762182002687827 0.2 9.429529031184282
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07526520379599794 0.3615282954000842 0.3506292798342415]
+  Translate 0.31127518082948985 0.2 10.018730660351354
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.03815489046166936 0.024608008082768387 0.11008824401281798]
+  Translate 1.8326485395730658 0.2 -10.605641197341148
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.12664993529144816 0.0949857512408124 0.14169330200920704]
+  Translate 1.8821430610476513 0.2 -9.187220221773622
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.31332900831517896 0.0011268572820394768 0.20789445272137302]
+  Translate 1.5378174572393537 0.2 -8.119742909582952
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2607523659473758 0.036047578324255224 0.24339220409747964]
+  Translate 1.8763959621097737 0.2 -7.266261673300793
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.8506146763212206 0.11902206837053533 0.06412777291489229]
+  Translate 1.095032798675637 0.2 -6.570552299843413
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 1.882569202248548 0.2 -5.428542180903728
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.5319819738923839 0.736183559312279 0.8671575468085719] "float fuzz" 0.27731507343174294
+  Material "conductor" "rgb reflectance" [0.5319819738923839 0.736183559312279 0.8671575468085719] "float roughness" 0.005914171376009421
+  Translate 1.1727896329817333 0.2 -4.862447475333876
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1876646618473009 0.5239222114528258 0.056781038649387196]
+  Translate 1.2513035271724502 0.2 -3.219722583597945
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6593736578455167 0.42890415216988403 0.1791370631591845]
+  Translate 1.452495347113572 0.2 -2.465130763943319
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06650457579464111 0.08827003765113094 0.31265184490633874]
+  Translate 1.1171649204401974 0.2 -1.2017416807485157
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.012170947520809614 0.7925399333227036 0.09394172667599225]
+  Translate 1.2005910348497726 0.2 -0.864545074503013
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 1.8479073276864666 0.2 0.26111496276245205
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1491289087531833 0.19435265120606252 0.4540159722258203]
+  Translate 1.6441782864474823 0.2 1.891743461714541
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07813854773010658 0.14964812483630052 0.5525933139137154]
+  Translate 1.2996890164456314 0.2 2.8633126734496903
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06148146048297333 0.08579187672056104 0.6330575629256293]
+  Translate 1.5367825280353395 0.2 3.5194436775905737
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.5172605711584739 0.8841709046046737 0.5196605280866562] "float fuzz" 0.3873344892853899
+  Material "conductor" "rgb reflectance" [0.5172605711584739 0.8841709046046737 0.5196605280866562] "float roughness" 0.022508402761361224
+  Translate 1.1334536324942739 0.2 4.204461219667666
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.016825396087400208 0.7889218368222493 0.19626323100036236]
+  Translate 1.2613767700958884 0.2 5.68366594852906
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.011721766547912862 0.05648311573821607 0.10208989175263147]
+  Translate 1.4085219296946059 0.2 6.249233631755699
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4470265529127409 0.02404099855666302 0.023244152820062196]
+  Translate 1.1619069786632958 0.2 7.069283775716719
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6804917303145201 0.7789556786012679 0.7852373588378376] "float fuzz" 0.3561588246100195
+  Material "conductor" "rgb reflectance" [0.6804917303145201 0.7789556786012679 0.7852373588378376] "float roughness" 0.01609069628857879
+  Translate 1.4466022091710253 0.2 8.789987124011585
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.779555807372913 0.14540977785383424 0.05897966472663202]
+  Translate 1.7369910736721903 0.2 9.387544111736743
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.567150949670125 0.7455725796427184 0.7391123247391334] "float fuzz" 0.10517041068306304
+  Material "conductor" "rgb reflectance" [0.567150949670125 0.7455725796427184 0.7391123247391334] "float roughness" 1.2234163473004715E-4
+  Translate 1.27409215180667 0.2 10.38780773967064
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6300711590786962 0.8651303984800116 0.8893222727675634] "float fuzz" 0.01596707168683592
+  Material "conductor" "rgb reflectance" [0.6300711590786962 0.8651303984800116 0.8893222727675634] "float roughness" 6.499816567785253E-8
+  Translate 2.5018561615879555 0.2 -10.470318037561455
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.19421100641208278 0.05455420724643878 0.0016015561084802349]
+  Translate 2.2692788786563147 0.2 -9.635685925605713
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0373939649197582 0.2116798506406556 0.33768385859883865]
+  Translate 2.6764917825599333 0.2 -8.62335959921862
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.16691697826619548 0.10274606509130264 0.17990370029071712]
+  Translate 2.331572897989134 0.2 -7.406621981136603
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.8098048357390069 0.014400505356447987 0.02495457888712052]
+  Translate 2.1598816556466667 0.2 -6.912625438195539
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3981055238799429 0.4289362895752521 0.5654101456840309]
+  Translate 2.162650359395863 0.2 -5.588890780662779
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6385904807083327 0.152255939635927 0.40004253332556755]
+  Translate 2.0786048399393255 0.2 -4.746310027094629
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.015514071591497964 0.06405351071462104 0.0012965732300210257]
+  Translate 2.139787413394621 0.2 -3.2651975817883576
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3245200168963654 0.5435733399686932 0.17481171028267312]
+  Translate 2.806932838497649 0.2 -2.931876298022935
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3365767924430317 0.3635676758289119 0.3000523395750282]
+  Translate 2.4884193506176318 0.2 -1.9655491574476844
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.05154745466982229 0.5222191169601891 0.12203346276150544]
+  Translate 2.2065028415051677 0.2 -0.765150613239564
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.09398902609381776 0.4155460730470896 0.07264946178706647]
+  Translate 2.538443820972198 0.2 0.8093961519306778
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.026124485396280706 0.061354939707092236 0.27708509195443193]
+  Translate 2.112718669327694 0.2 1.16776532312331
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.05783871652955915 0.2507207553378778 0.014863355135482375]
+  Translate 2.7122888251005657 0.2 2.497373342436459
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.17557449649892745 0.0093631908705911 0.5447084126865752]
+  Translate 2.603213222194745 0.2 3.2893589678960398
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07944280642480127 0.0694468902450121 0.22267381499806815]
+  Translate 2.4059078413809187 0.2 4.803325834528891
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [3.9979851492123915E-4 0.33970808128061347 0.3737524372555422]
+  Translate 2.744255570100343 0.2 5.653368000583902
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9210119088864177 0.9202688480359802 0.8696777124921203] "float fuzz" 0.2916159350768754
+  Material "conductor" "rgb reflectance" [0.9210119088864177 0.9202688480359802 0.8696777124921203] "float roughness" 0.007231776698737965
+  Translate 2.779597896737495 0.2 6.757662607468236
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6409864137596424 0.5910774784546067 0.621773827912692] "float fuzz" 0.4908623245739537
+  Material "conductor" "rgb reflectance" [0.6409864137596424 0.5910774784546067 0.621773827912692] "float roughness" 0.058054888988011796
+  Translate 2.667884210360139 0.2 7.083982970722298
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0035761303463469536 0.18086885276382042 4.4338347375123446E-5]
+  Translate 2.6057351236907786 0.2 8.516698421144138
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6825655377712352 0.023867854265679788 0.08243918821191275]
+  Translate 2.6686452414579342 0.2 9.890008212066473
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.956057543329347 0.6558121427683362 0.5372633157566642] "float fuzz" 0.2907099559180075
+  Material "conductor" "rgb reflectance" [0.956057543329347 0.6558121427683362 0.5372633157566642] "float roughness" 0.007142325212165452
+  Translate 2.4728655875814907 0.2 10.319734287190737
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.27383838779931463 0.03638990303502275 0.26922242409121705]
+  Translate 3.165316297895031 0.2 -10.395641484148983
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2256774963131359 0.015287873623712256 0.05564889969858357]
+  Translate 3.492666291852282 0.2 -9.390353572741088
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 3.7224287186720475 0.2 -8.603957979917954
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6535753469319527 0.11456589241873143 0.030748874130045314]
+  Translate 3.6768816275774476 0.2 -7.858580006672029
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.44484143559658723 0.6689609516486329 0.3036833305444099]
+  Translate 3.2871592323506587 0.2 -6.118699980715867
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.030165642312588718 0.28059895445040445 0.17474507698349928]
+  Translate 3.5896486596582546 0.2 -5.704023261594159
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.22493389664391858 0.36227714179738746 0.1793043773841056]
+  Translate 3.516104775217336 0.2 -4.349549355403057
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.12418415784421419 0.016761130020546668 0.2237410312991362]
+  Translate 3.8813357423813666 0.2 -3.3849582257544633
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.025770779395557015 0.05117312752327576 0.2400899374587516]
+  Translate 3.348458729044955 0.2 -2.665198585912359
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0456195947807918 0.005775523855765566 0.1840987886766421]
+  Translate 3.5255683245541967 0.2 -1.1096296828522725
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.49715629731048955 0.010830692436237441 0.004310391597749694]
+  Translate 3.038033295271056 0.2 -0.36163168296407866
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6333685661683511 0.807973236521849 0.5510613799401062] "float fuzz" 0.46970081424589477
+  Material "conductor" "rgb reflectance" [0.6333685661683511 0.807973236521849 0.5510613799401062] "float roughness" 0.048672679138824164
+  Translate 3.588791411802844 0.2 1.2282067724518244
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.28293264475897695 0.6466383993978871 0.15969875167493783]
+  Translate 3.5887538665918877 0.2 2.1132474026973505
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6916922908470383 0.6233607730985324 0.8939475184955419] "float fuzz" 0.3828229539957939
+  Material "conductor" "rgb reflectance" [0.6916922908470383 0.6233607730985324 0.8939475184955419] "float roughness" 0.02147790318614399
+  Translate 3.308562911645436 0.2 3.3046513186736206
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.042839784601976176 0.10098211426422019 0.14128991794905923]
+  Translate 3.3680368247681374 0.2 4.418435579625078
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2409309247901776 0.1412928397436148 0.014340320164368722]
+  Translate 3.6245682517520423 0.2 5.201697490230854
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 3.116327658359562 0.2 6.306529450897433
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4424381936078033 0.009383258163640364 0.007972954129822334]
+  Translate 3.303685387776469 0.2 7.896316840905536
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.046783094894741854 0.09298006955726346 0.45681788292486997]
+  Translate 3.7222494950393363 0.2 8.768947828009209
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.16506370569730375 0.033441952508134094 0.0553387244015509]
+  Translate 3.4281934001148766 0.2 9.586593953918745
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 3.1264748033769716 0.2 10.145987000923679
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3138374706538133 0.17470705648737742 0.07682109121608063]
+  Translate 4.64335480094781 0.2 -10.666268744986114
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.008498112626603084 0.020767093588666834 0.09153926910671502]
+  Translate 4.814894353473054 0.2 -9.741415170665624
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9233620476198743 0.8420446456373487 0.6380277147939277] "float fuzz" 0.07738625644373054
+  Material "conductor" "rgb reflectance" [0.9233620476198743 0.8420446456373487 0.6380277147939277] "float roughness" 3.586372145231697E-5
+  Translate 4.229591400151552 0.2 -8.102668999698462
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.21773144893165283 0.005191827446304477 0.10670454375520586]
+  Translate 4.64941883070487 0.2 -7.58742026669611
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.012809083525874794 0.07506599962726834 0.09693578210489143]
+  Translate 4.055620713632516 0.2 -6.604703771120514
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10659252138703368 0.33704033850334003 0.5338156655316433]
+  Translate 4.752520777911978 0.2 -5.965441681936483
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5659502642164028 0.39932228403125797 0.022827431494677444]
+  Translate 4.158281923144603 0.2 -4.667053992595259
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4665116926449217 0.5820588900048067 0.038563035448078396]
+  Translate 4.694921940344788 0.2 -3.877455555575982
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.009468164833160455 0.10553702543038361 0.1866088642457969]
+  Translate 4.375390380172645 0.2 -2.3081570696720903
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07442669842536703 0.8196318884622916 0.25943635063533904]
+  Translate 4.431189394649278 0.2 -1.1165350792786977
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6145861151753945 0.15815405227862345 0.20493233350855686]
+  Translate 4.082782542203447 0.2 1.6030579954594986
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10574257008525217 0.09410315857139034 0.11884854243752846]
+  Translate 4.190170578541885 0.2 2.0497518319619528
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.106513425494706 0.021242170145528403 0.12534924175546774]
+  Translate 4.686340743908956 0.2 3.626573184900343
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.011211503784868512 0.18068566676214065 0.164125981009856]
+  Translate 4.853981079572425 0.2 4.173591898197324
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0506119657318336 0.648889229833488 0.38953704230834635]
+  Translate 4.894144243587125 0.2 5.2114498584290105
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07222452820419492 0.8153845023054879 0.2378604039047579]
+  Translate 4.5639075378632565 0.2 6.251809721602141
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2830368715876783 0.24570664739169462 0.42493379845150275]
+  Translate 4.098565953741943 0.2 7.6516621787240435
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.49986699327996137 0.44697064566036804 0.28230397206780233]
+  Translate 4.166430875211512 0.2 8.473543692283872
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.26684693633995327 0.14180954358739317 0.5078131199573664]
+  Translate 4.188484092134557 0.2 9.323721074063027
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5431820695233833 0.03678206356101154 0.5816814487898209]
+  Translate 4.547680201941259 0.2 10.719218259052305
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.009097668025403717 0.2729438373617967 0.22956353350290737]
+  Translate 5.730364985828563 0.2 -10.497988680740931
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.02578774651815927 0.11286068103828864 0.5602352178802888]
+  Translate 5.373904142640739 0.2 -9.742123726066056
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10100832343056995 0.23503365159698983 0.4775081768298075]
+  Translate 5.7007720483554545 0.2 -8.491793000955536
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.18731650053104112 0.13417111474733784 0.24846006766106066]
+  Translate 5.808837968677498 0.2 -7.412941932824688
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.31129368665544593 0.10086548591879002 0.342414566594129]
+  Translate 5.5900155885468505 0.2 -6.398192525166295
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.35725901155088086 0.4773340767119939 0.05857820918731658]
+  Translate 5.271852514433974 0.2 -5.16034699550934
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.08018420100939153 0.3997301059050536 0.02848119748572779]
+  Translate 5.678380221048352 0.2 -4.522615034768505
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.36927458461472357 0.06225340193016847 0.39770764538454445]
+  Translate 5.791640252999185 0.2 -3.9171860404403627
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.23259200973790417 0.01860702296121435 0.3998720824734722]
+  Translate 5.387699753704646 0.2 -2.6752638593543683
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.020349727903222883 0.27800834520224965 0.2522841734983776]
+  Translate 5.395255919805207 0.2 -1.7436321369979735
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6012075141861988 0.8900695423409455 0.6929202844278346] "float fuzz" 0.4778676633944386
+  Material "conductor" "rgb reflectance" [0.6012075141861988 0.8900695423409455 0.6929202844278346] "float roughness" 0.052147149504344
+  Translate 5.439586777859006 0.2 -0.35675048276448096
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10671004403435902 0.020135442982152245 0.025615713838179704]
+  Translate 5.47334838914586 0.2 0.8195762096497996
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.02559506617544863 0.061246908433502716 0.010816316645256717]
+  Translate 5.31530793721187 0.2 1.3439754269097182
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1561311393573116 0.06495594931511242 0.5184078061127203]
+  Translate 5.664948766370323 0.2 2.2534915959395807
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7206878681313311 0.5164462781560022 0.09526876997809892]
+  Translate 5.027838810678911 0.2 3.160316657478407
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.19774473379474058 0.05409464470300992 0.8083953635029346]
+  Translate 5.715923202050477 0.2 4.7628283140924825
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.020757095063317417 0.12012192829218059 0.2222688600905657]
+  Translate 5.8258416340267205 0.2 5.399458115286854
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.16180321858545235 0.5017927927569356 0.2674327003660627]
+  Translate 5.084257884963377 0.2 6.72111504232779
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0753899698995239 0.22267255994743634 0.05409264645778541]
+  Translate 5.088328563204668 0.2 7.069808360152201
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6231795292357408 0.2498981617118695 0.05825746246203325]
+  Translate 5.080251940561192 0.2 8.167509487892707
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.5274233641928927 0.9621193550206741 0.8462457423487331] "float fuzz" 0.306345868068522
+  Material "conductor" "rgb reflectance" [0.5274233641928927 0.9621193550206741 0.8462457423487331] "float roughness" 0.008807407853554782
+  Translate 5.725878516282299 0.2 9.398167628308947
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.025374724586128362 0.19493741840781084 0.8533219058190262]
+  Translate 5.507975025557567 0.2 10.180775801342229
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.8935168966489061 0.5205138693327513 0.5995060393812339] "float fuzz" 0.2075417984165321
+  Material "conductor" "rgb reflectance" [0.8935168966489061 0.5205138693327513 0.5995060393812339] "float roughness" 0.0018553348524161328
+  Translate 6.5260078731794255 0.2 -10.216464878588116
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.6437454335133972 0.9207815942059969 0.6785342354276596] "float fuzz" 0.30923162537114846
+  Material "conductor" "rgb reflectance" [0.6437454335133972 0.9207815942059969 0.6785342354276596] "float roughness" 0.009143987267944737
+  Translate 6.362796689630792 0.2 -9.791694981179155
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5319251648657843 0.20163686867388417 0.4936800605302861]
+  Translate 6.472891562503603 0.2 -8.698405205118718
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.26161508074724105 0.20335871463813052 0.011048914786668062]
+  Translate 6.10065282397116 0.2 -7.635303160527615
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7268915838320852 0.7147949639360124 0.7179293360631662] "float fuzz" 0.21235770135770915
+  Material "conductor" "rgb reflectance" [0.7268915838320852 0.7147949639360124 0.7179293360631662] "float roughness" 0.0020336305756949915
+  Translate 6.535694279717191 0.2 -6.658528417279444
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3565344282386834 0.33193400714175536 0.026027301414604048]
+  Translate 6.014654533990166 0.2 -5.189441394755917
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10047697261215187 0.29820827713523246 0.024118899857602915]
+  Translate 6.878921434804822 0.2 -4.277793285029733
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2738719994142454 0.05745983227513924 0.5677755386744557]
+  Translate 6.2372947242364845 0.2 -3.495729407790482
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10717364283898716 0.3325926094997922 0.7577276728581751]
+  Translate 6.136616504656322 0.2 -2.7853241243068037
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0607251755327692 0.3868878764850904 0.5579672682261554]
+  Translate 6.541650688699596 0.2 -1.3120646886299152
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4228585771945883 0.2115086286660915 0.12675410382775293]
+  Translate 6.014571972415187 0.2 -0.549404532762789
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1583132550251351 0.1757073048624 0.08019290984023056]
+  Translate 6.235459605166372 0.2 0.327835722071416
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.16055845345129607 0.20419103292538354 0.1239082672164548]
+  Translate 6.1459676003610255 0.2 1.5374027737747575
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.5845743428393169 0.7304005400967934 0.8556890411973117] "float fuzz" 0.43270749371924483
+  Material "conductor" "rgb reflectance" [0.5845743428393169 0.7304005400967934 0.8556890411973117] "float roughness" 0.03505723548508316
+  Translate 6.758558942532601 0.2 2.2968784662339847
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.03433404670474525 0.40402104168273417 0.06404513557323711]
+  Translate 6.689197725291198 0.2 3.339083488115044
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.41130534298718585 0.2574276754414302 0.2573907319469132]
+  Translate 6.864615404248979 0.2 4.215562749270526
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2737618628899902 0.2652854611211472 0.15806536399591445]
+  Translate 6.494443500871411 0.2 5.597636170620815
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7667067819790916 0.9412680773984143 0.8827714081070099] "float fuzz" 0.1906610859136686
+  Material "conductor" "rgb reflectance" [0.7667067819790916 0.9412680773984143 0.8827714081070099] "float roughness" 0.0013214424345868061
+  Translate 6.042833805806182 0.2 6.699582499962917
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3449840295997352 0.014664638027109744 0.3656303585284994]
+  Translate 6.434392207071016 0.2 7.089845563566077
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9372538441469197 0.6210416376828418 0.9898285764002606] "float fuzz" 0.4831374819799844
+  Material "conductor" "rgb reflectance" [0.9372538441469197 0.6210416376828418 0.9898285764002606] "float roughness" 0.05448574908377625
+  Translate 6.04761889773248 0.2 8.694133366002221
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.005576076421801686 0.05500143854930622 0.14338980931769293]
+  Translate 6.267122007572355 0.2 9.2076319951363
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.009365028461839136 0.02193269143944188 0.20231727117600315]
+  Translate 6.795628938502998 0.2 10.619923783575842
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.11996172895068219 0.03670527296100118 0.4264137149813168]
+  Translate 7.089331132497285 0.2 -10.939616834411614
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6473644391935054 0.0724088045177291 0.7159946024554595]
+  Translate 7.415637452357905 0.2 -9.845521217290665
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.14223797906904342 0.006134845597895593 0.0066181457764896475]
+  Translate 7.854055265054669 0.2 -8.793423778442516
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.18453673640192092 0.02315188528572291 0.16184441419281537]
+  Translate 7.665545463983268 0.2 -7.715036817621485
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.21617591477424167 0.3550974168722187 0.08239076351152635]
+  Translate 7.060745664541462 0.2 -6.760319570749108
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.02586946971361173 0.4672593682891314 0.10962261169701518]
+  Translate 7.865359140243917 0.2 -5.223721573414755
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.017113039389779906 0.11370998095269799 0.14223016633546665]
+  Translate 7.4000960174264625 0.2 -4.737820564880887
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.061501728071582114 0.2720405719115592 0.04786000213736352]
+  Translate 7.68828535220352 0.2 -3.578666204699169
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07505881335590525 0.49136448188547244 0.3728330333772231]
+  Translate 7.8753809633272525 0.2 -2.3670274763626384
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5623736844652365 0.39527460205818515 0.5848165975678553]
+  Translate 7.827017871192493 0.2 -1.264462204578138
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6196758303962372 0.07626291664289668 0.2665803030703003]
+  Translate 7.582821911022796 0.2 -0.7590355305192382
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6986422665127314 0.07114561550234856 0.7895344562059943]
+  Translate 7.865735373879292 0.2 0.8381556829591175
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 7.587991492191797 0.2 1.494802661636487
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06902129827633874 0.20494198937703156 0.12954443996283818]
+  Translate 7.761751178738967 0.2 2.023339575926374
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06855278512376126 0.15077931044700743 0.19297285314644033]
+  Translate 7.519306381632582 0.2 3.2641826707381436
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.35834286865396614 0.3449400199257627 0.1614307270325133]
+  Translate 7.50128313032343 0.2 4.172433088635574
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4791544171053314 0.049607513881989994 0.08593829223487036]
+  Translate 7.06013620264591 0.2 5.389045442344271
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.019017716598538202 0.07144504961691879 0.12208457027021333]
+  Translate 7.281485530696128 0.2 6.884427547819507
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.30400201275173655 0.0825234515830419 0.3040059489646564]
+  Translate 7.46819002199542 0.2 7.448373172938481
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7306995268137166 0.42439224636662487 0.3172931388594127]
+  Translate 7.64405141871823 0.2 8.253536960240686
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.020566061032683495 0.18910938038710262 0.1533575723476953]
+  Translate 7.023795112142745 0.2 9.707198514892157
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0023650138467309783 0.20030580748439136 0.30993869504217014]
+  Translate 7.186427345151504 0.2 10.081213844139247
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.11844800115454301 0.021489680190586065 0.027348062323450228]
+  Translate 8.285378816742606 0.2 -10.112922650514312
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.05880235536441903 0.10771870722673604 0.06816322521360008]
+  Translate 8.478899302078867 0.2 -9.711237160181074
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.016976340206873945 0.047518935180354174 0.1527129489247032]
+  Translate 8.332644509628864 0.2 -8.139020684473996
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7994426921967892 0.5379310231317989 0.7306727317148682] "float fuzz" 0.21803777477987646
+  Material "conductor" "rgb reflectance" [0.7994426921967892 0.5379310231317989 0.7306727317148682] "float roughness" 0.002260096404861748
+  Translate 8.419940247761067 0.2 -7.80296749617819
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10373780253401038 0.4589749418914724 0.01630213554180163]
+  Translate 8.497188847561711 0.2 -6.461414244779292
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0544476563208965 0.1418385578090129 0.004494100651309422]
+  Translate 8.851913857821 0.2 -5.720105586176397
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7568183521761003 0.9066814167143251 0.6561661002539748] "float fuzz" 0.3273397097013647
+  Material "conductor" "rgb reflectance" [0.7568183521761003 0.9066814167143251 0.6561661002539748] "float roughness" 0.011481397994454821
+  Translate 8.527327688871353 0.2 -4.262466406681511
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.00573372945132145 0.7959065125649712 0.44882434335785043]
+  Translate 8.160090156386486 0.2 -3.2994006956612436
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4723369162050569 0.323045384002043 0.9289748884951619]
+  Translate 8.450254534442008 0.2 -2.334301163867787
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.15516151486438187 0.023040479673917088 0.34127150741281653]
+  Translate 8.619332310625671 0.2 -1.1296748241291348
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.9029646344999173 0.07469013315802137 0.027420758951356875]
+  Translate 8.390257346134828 0.2 -0.9624723105055686
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.04680376028647474 0.5006149725090332 0.5995195363454151]
+  Translate 8.045356348476508 0.2 0.5534538111894898
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.44023628914337193 0.4189006327031097 0.013301996710220072]
+  Translate 8.666251827438597 0.2 1.013778173278341
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.13488685392252062 0.49944641008447344 0.05872288711841729]
+  Translate 8.30706764816432 0.2 2.5841742788565094
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.9947470173133136 0.7782016466113959 0.5781982274691889] "float fuzz" 0.0128275479752738
+  Material "conductor" "rgb reflectance" [0.9947470173133136 0.7782016466113959 0.5781982274691889] "float roughness" 2.7075381856875372E-8
+  Translate 8.511223245711548 0.2 3.2757061280074633
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.005380111025910593 0.4245077034004173 0.6084137221588232]
+  Translate 8.128855105828185 0.2 4.265596587800976
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3069491798666259 0.046055114513607234 0.0194490903081476]
+  Translate 8.8883767191861 0.2 5.604084643512859
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.012097520431424771 0.28967536702157703 0.30601353751169014]
+  Translate 8.308569341647237 0.2 6.578419033359126
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6567753035037592 0.04744734020835486 0.23452595740366503]
+  Translate 8.488856841299276 0.2 7.038178660996986
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.10833358937972344 0.4405484247001132 0.3056684575184594]
+  Translate 8.119736062244085 0.2 8.60495957942189
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.016039793530585402 0.31856579145584396 0.1609442976424255]
+  Translate 8.561112674969555 0.2 9.598618169035122
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [3.068719966302884E-4 0.4867235721803151 0.36863929398209466]
+  Translate 8.88164832330572 0.2 10.090742768070044
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.01785514335940244 0.15164122472296662 0.1192704458376513]
+  Translate 9.245078043345238 0.2 -10.323286269255618
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.02737445945966797 0.429347144371878 0.022973280715979538]
+  Translate 9.772294877083166 0.2 -9.421194419114718
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3754056677765455 0.22190210110732084 0.02170960492918875]
+  Translate 9.756301862166268 0.2 -8.579089178190864
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.24088151415163492 0.008954340365902041 0.3508161139256972]
+  Translate 9.362111642241418 0.2 -7.218126603691546
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0118489524216276 0.24170956995040382 0.287564192332039]
+  Translate 9.803610131507998 0.2 -6.883562661925076
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2391834388128851 0.03743618131372529 0.17885610406677763]
+  Translate 9.447259078435692 0.2 -5.682863786864982
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5242803964105255 0.19736033095207403 0.41032113467145903]
+  Translate 9.878697839545989 0.2 -4.107634076424659
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 9.356137430036899 0.2 -3.236264272978424
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.6444367680733425 0.15458384662684632 0.04490999057952091]
+  Translate 9.494799566886677 0.2 -2.9477581524240315
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06111431361048905 0.4339309360894878 0.4785665017511421]
+  Translate 9.449860577967417 0.2 -1.4748083584120815
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.02511649834427854 0.017679888373993712 0.02001810583949632]
+  Translate 9.535343120268116 0.2 -0.9501990159027025
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.994555844819991 0.9254661514412535 0.7957656358321569] "float fuzz" 0.3536194888309878
+  Material "conductor" "rgb reflectance" [0.994555844819991 0.9254661514412535 0.7957656358321569] "float roughness" 0.01563668790516921
+  Translate 9.837590917930278 0.2 0.1842663811283639
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3342723911080513 0.8363478323271973 0.018220333390965543]
+  Translate 9.348775766802223 0.2 1.333385850576445
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.8483907129143067 0.05209402600374808 0.10497051612819336]
+  Translate 9.537699195023995 0.2 2.1471481062837365
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.13061100330100964 0.8902756703978058 0.324985527161095]
+  Translate 9.542440644185804 0.2 3.272769934846967
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4105230824645569 0.04845604629717144 0.8283557270258293]
+  Translate 9.801352250233808 0.2 4.502691543738287
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4057951644760376 0.03307509716474091 0.6701152573463879]
+  Translate 9.574237098658243 0.2 5.339155184144102
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 9.843114000923254 0.2 6.639272166803911
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.009485350161231915 0.30726929330092173 0.6941514645561394]
+  Translate 9.860719105398937 0.2 7.877489983642271
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.39407809558664114 0.4820497037126697 0.042362038541537306]
+  Translate 9.424733451949102 0.2 8.470953761953677
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7512155993605685 0.7719660692637964 0.5744199844868622] "float fuzz" 0.027769044017118938
+  Material "conductor" "rgb reflectance" [0.7512155993605685 0.7719660692637964 0.5744199844868622] "float roughness" 5.946257546266583E-7
+  Translate 9.398216150701181 0.2 9.308010583674424
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3287178990629518 0.10805763237259855 0.09202628485626814]
+  Translate 9.011939720620049 0.2 10.311816660195714
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.1469916020839052 0.008687624475167912 0.07665581179949191]
+  Translate 10.651681515962634 0.2 -10.149178509177732
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 10.00675727338146 0.2 -9.251352723222757
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.42858431608370073 0.11253883447687704 0.5216687423604137]
+  Translate 10.37029369057373 0.2 -8.55036556530752
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5950454191982573 0.04131026857338268 0.7767194238143359]
+  Translate 10.641469427583294 0.2 -7.579553681518299
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.8313330585751643 0.40912332762761927 0.5116646152656393]
+  Translate 10.876942934693115 0.2 -6.997424588013267
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.8105309298422669 0.0668276007384221 0.018389597729080023]
+  Translate 10.0578993172876 0.2 -5.131177577637474
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0016875404065367604 0.6876641844744291 0.20835739976655018]
+  Translate 10.000546037771826 0.2 -4.558477518946967
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3191652116510187 0.33974716082740286 0.09514845401410499]
+  Translate 10.62429278954911 0.2 -3.7841506132837455
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7687621772628391 0.1152398063872386 0.323069825412886]
+  Translate 10.033600029346244 0.2 -2.477030367396125
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.900594480383782 0.047589823340983335 0.196574045202821]
+  Translate 10.209002715476721 0.2 -1.4939686050155188
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7651944234525511 0.019669224743613687 0.016854114575585756]
+  Translate 10.32868123553204 0.2 -0.2475620160068951
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.12435610767318517 0.13125904943195052 0.07969368436185183]
+  Translate 10.443069718888804 0.2 0.14683056826015653
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.06442604308425368 0.01987108031227517 0.03504881794804838]
+  Translate 10.55479197142087 0.2 1.7076012636908064
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.3648591821510658 0.08458185798440587 0.46635667865699065]
+  Translate 10.259803652480263 0.2 2.7844425676562654
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5678981830506863 0.23124779833566533 0.4077339627565081]
+  Translate 10.606409087518198 0.2 3.4448798987257714
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.4047138112499279 0.4799579323957102 0.05422531245579341]
+  Translate 10.81221035368899 0.2 4.463043672152672
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.07771336778681527 0.663031528429762 0.4864091323403176]
+  Translate 10.518030501180903 0.2 5.615974057303449
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.5614716758028194 0.33725582337118243 0.1448273575517729]
+  Translate 10.361418789319355 0.2 6.023248647346949
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.5037658828701466 0.5419864134376791 0.6130808262268997] "float fuzz" 0.4228847461803924
+  Material "conductor" "rgb reflectance" [0.5037658828701466 0.5419864134376791 0.6130808262268997] "float roughness" 0.03198070845100369
+  Translate 10.864569688241982 0.2 7.516128071121722
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.0010392019033156608 0.7193888608361448 0.2914755771056646]
+  Translate 10.489398414670712 0.2 8.508704285212616
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.2127621047012302 0.09572427292412826 0.5545349878217194]
+  Translate 10.196876165363118 0.2 9.588288986442803
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "diffuse" "rgb reflectance" [0.7647349488674572 0.31987425569833033 0.2418760443890172]
+  Translate 10.801068570440435 0.2 10.598101309800475
+  Shape "sphere" "float radius" 0.2
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "float eta" 1.5
+  Translate 0.0 1.0 0.0
+  Shape "sphere" "float radius" 1.0
+AttributeEnd
+AttributeBegin
+  AreaLightSource "diffuse" "rgb L" [0.1 0.7 0.4] "float scale" 2.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Translate 0.0 1.0 2.0
+  Shape "sphere" "float radius" 1.0
+AttributeEnd
+AttributeBegin
+  #krt Name "TEST"
+  Material "diffuse" "rgb reflectance" [0.4 0.2 0.1]
+  Translate -4.0 1.0 0.0
+  Shape "sphere" "float radius" 2.0
+AttributeEnd
+AttributeBegin
+  #krt Material "metal" "rgb albedo" [0.7 0.6 0.5] "float fuzz" 0.05
+  Material "conductor" "rgb reflectance" [0.7 0.6 0.5] "float roughness" 6.250000000000001E-6
+  Translate 4.0 1.0 0.0
+  Shape "sphere" "float radius" 1.0
+AttributeEnd

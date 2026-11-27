@@ -23,7 +23,8 @@ import krt.app.render.RenderTab
 import krt.app.render.SaveImageButton
 import krt.app.render.StatusBar
 import krt.app.render.Viewport
-import krt.app.scene.LoadModelButton
+import krt.app.scene.OpenSceneButton
+import krt.app.scene.SceneWarningsDialog
 import krt.app.scene.SceneTab
 import krt.app.shell.Inspector
 import krt.app.shell.KrtTheme
@@ -34,6 +35,7 @@ import krt.domain.render.Frame
 import krt.domain.render.model.RenderProgress
 import krt.domain.scene.model.DemoScene
 import krt.domain.scene.model.SceneCatalog
+import krt.domain.scene.model.SceneOpening
 import krt.domain.scene.model.Traceable
 import krt.infra.AppContext
 import krt.platform.skia.ArgbBitmapConverter
@@ -56,8 +58,12 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
     var dark by remember { mutableStateOf(true) }
     var mode by remember { mutableStateOf(app.renderController.mode) }
     val benchmark = rememberBenchmarkState()
+    var opening by remember { mutableStateOf(SceneOpening(false, emptyList())) }
     KrtTheme(dark) {
         Surface(modifier, color = MaterialTheme.colorScheme.background) {
+            if (opening.notes.isNotEmpty()) {
+                SceneWarningsDialog(opening, onDismiss = { opening = SceneOpening(false, emptyList()) })
+            }
             Box(Modifier.fillMaxSize()) {
                 Column(Modifier.fillMaxSize()) {
                     TopBar(
@@ -71,7 +77,7 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
                             })
                         },
                         actions = {
-                            LoadModelButton(onOpen = { app.loadModel(it) })
+                            OpenSceneButton(onOpen = { opening = app.openScene(it) })
                             SaveImageButton(onSave = { app.saveImage(it) })
                             BenchmarkButton(benchmark)
                         },
@@ -124,7 +130,7 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>, camera: Came
         },
         sceneTab = {
             SceneTab(
-                scene = DemoScene.showing(app.world.look),
+                scene = app.world.source,
                 onScene = { app.loadScene(it) },
                 catalog = catalog,
                 selectedId = selectedId,

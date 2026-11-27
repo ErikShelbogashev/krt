@@ -17,9 +17,9 @@ import krt.app.render.SaveBenchmarkReportOp
 import krt.app.render.StartBenchmarkRunOp
 import krt.app.render.SaveImageOp
 import krt.app.render.SetRenderModeOp
-import krt.app.scene.LoadModelOp
 import krt.app.scene.LoadSceneOp
 import krt.app.scene.MoveObjectOp
+import krt.app.scene.OpenSceneOp
 import krt.domain.camera.Camera
 import krt.domain.render.FrameBuffer
 import krt.domain.render.RayTracer
@@ -27,6 +27,7 @@ import krt.domain.render.RenderController
 import krt.domain.scene.World
 import krt.domain.scene.model.DemoScene
 import krt.i9ns.png.PngFiles
+import krt.i9ns.scenefile.SceneLibrary
 import krt.i9ns.textfile.TextFiles
 
 /**
@@ -39,6 +40,7 @@ class AppContext(
     val camera: Camera,
     val renderController: RenderController,
     val frameBuffer: FrameBuffer,
+    val scenes: SceneLibrary = SceneLibrary(),
     pngFiles: PngFiles = PngFiles(),
     textFiles: TextFiles = TextFiles(),
 ) : AutoCloseable {
@@ -48,14 +50,14 @@ class AppContext(
     val changeCameraSettings = ChangeCameraSettingsOp(camera, renderController, rayTracer, frameBuffer)
     val setCameraView = SetCameraViewOp(camera, renderController, rayTracer, frameBuffer)
     val resetCameraView = ResetCameraViewOp(world, camera, renderController, rayTracer, frameBuffer)
-    val loadScene = LoadSceneOp(world, camera, renderController, rayTracer, frameBuffer)
+    val loadScene = LoadSceneOp(world, scenes, camera, renderController, rayTracer, frameBuffer)
     val captureSettings = CaptureSettingsOp(world, camera, renderController, rayTracer)
-    val startBenchmarkRun = StartBenchmarkRunOp(world, camera, renderController, rayTracer, frameBuffer)
+    val startBenchmarkRun = StartBenchmarkRunOp(world, scenes, camera, renderController, rayTracer, frameBuffer)
     val flyCamera = FlyCameraOp(camera, renderController, rayTracer, frameBuffer)
     val restoreSettings = RestoreSettingsOp(world, camera, renderController, rayTracer, frameBuffer)
     val saveBenchmarkReport = SaveBenchmarkReportOp(textFiles)
     val focusOnObject = FocusOnObjectOp(world, camera, renderController, rayTracer, frameBuffer)
-    val loadModel = LoadModelOp(world, renderController, rayTracer, camera, frameBuffer)
+    val openScene = OpenSceneOp(world, scenes, camera, renderController, rayTracer, frameBuffer)
     val moveObject = MoveObjectOp(world, renderController, rayTracer, camera, frameBuffer)
     val setRenderMode = SetRenderModeOp(renderController, rayTracer, camera, frameBuffer)
     val reportGpuFrame = ReportGpuFrameOp(renderController)
@@ -72,9 +74,12 @@ class AppContext(
 
         /** The window's context, starting with [scene], laid out the same way every time. */
         fun create(scene: DemoScene = DemoScene.SHOWCASE): AppContext {
-            val world = World(scene.objects(), scene.look)
-            val camera = Camera.default().apply { resetView(scene.look.fov, scene.look.aperture) }
+            val scenes = SceneLibrary()
+            val description = scenes.load(scene)
+            val world = World(description.objects, description.look, scene)
+            val camera = Camera.default().apply { resetView(description.look) }
             return AppContext(
+                scenes = scenes,
                 world = world,
                 rayTracer = RayTracer(world, DEFAULT_MAX_DEPTH),
                 camera = camera,

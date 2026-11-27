@@ -1,0 +1,75 @@
+# A krt scene in pbrt-v4's format; #krt lines are krt's own, pbrt reads them as comments.
+#krt Look "bool sampleLights" true "bool motionBlur" false
+# pbrt's camera space is left-handed, krt's right-handed: the mirror keeps the picture the same.
+Scale -1 1 1
+LookAt 13.0 2.0 3.0  0.0 0.0 0.0  0 1 0
+Camera "perspective" "float fov" 34.0 "float lensradius" 0.015 "float focaldistance" 13.490737563232042
+Film "rgb" "integer xresolution" 800 "integer yresolution" 600
+Sampler "zsobol" "integer pixelsamples" 64
+Integrator "volpath" "integer maxdepth" 12
+
+WorldBegin
+#krt Sky "rgb horizon" [0.18 0.14 0.2] "rgb zenith" [0.01 0.015 0.04]
+LightSource "infinite" "rgb L" [0.095 0.07750000000000001 0.12000000000000001]
+
+AttributeBegin
+  #krt Name "Floor"
+  #krt Material "checker" "rgb even" [0.32 0.31 0.33] "rgb odd" [0.04 0.04 0.05] "float cellsize" 1.0 "float roughness" 0.06 "float ior" 1.5
+  Material "coateddiffuse" "rgb reflectance" [0.18 0.175 0.19] "float roughness" 1.296E-5 "float eta" 1.5
+  Translate 0.0 -1000.0 0.0
+  Shape "sphere" "float radius" 1000.0
+AttributeEnd
+AttributeBegin
+  #krt Name "Mandelbulb"
+  #krt Material "conductor" "rgb eta" [0.143 0.374 1.442] "rgb k" [3.983 2.385 1.603] "float roughness" 0.18 "float anisotropy" 0.0
+  Material "conductor" "spectrum eta" "metal-Au-eta" "spectrum k" "metal-Au-k" "float uroughness" 0.0010497599999999998 "float vroughness" 0.0010497599999999998
+  Translate 0.0 1.35 0.0
+  #krt Shape "fractal" "string kind" "mandelbulb" "float radius" 1.35 "integer iterations" 10 "float parameter" 8.0 "point3 seed" [-0.2 0.6 0.2]
+  Shape "sphere" "float radius" 0.675
+AttributeEnd
+AttributeBegin
+  #krt Name "Menger sponge"
+  #krt Material "plastic" "rgb albedo" [0.75 0.32 0.18] "float roughness" 0.15 "float ior" 1.5
+  Material "coateddiffuse" "rgb reflectance" [0.75 0.32 0.18] "float roughness" 5.0625E-4 "float eta" 1.5
+  Translate -1.3034453034275368 1.0 2.9831682584895858
+  #krt Shape "fractal" "string kind" "menger" "float radius" 1.0 "integer iterations" 4 "float parameter" 0.0 "point3 seed" [-0.2 0.6 0.2]
+  Shape "sphere" "float radius" 0.5
+AttributeEnd
+AttributeBegin
+  #krt Name "Mandelbox"
+  #krt Material "plastic" "rgb albedo" [0.15 0.35 0.85] "float roughness" 0.08 "float ior" 1.5
+  Material "coateddiffuse" "rgb reflectance" [0.15 0.35 0.85] "float roughness" 4.096E-5 "float eta" 1.5
+  Translate 0.3066409322217473 1.05 -3.110802703934967
+  #krt Shape "fractal" "string kind" "mandelbox" "float radius" 1.05 "integer iterations" 12 "float parameter" 2.0 "point3 seed" [-0.2 0.6 0.2]
+  Shape "sphere" "float radius" 0.525
+AttributeEnd
+AttributeBegin
+  #krt Name "Julia set"
+  Material "dielectric" "spectrum eta" [380.0 1.6611582091585093 422.5 1.6082316887624983 465.0 1.5691423835895117 507.5 1.5394557786927443 550.0 1.5163813038678795 592.5 1.498091752956808 635.0 1.4833500973095985 677.5 1.471294681796145 720.0 1.4613103927363622]
+  Translate 2.705416834596913 0.75 -0.6066341027779406
+  #krt Shape "fractal" "string kind" "julia" "float radius" 0.75 "integer iterations" 11 "float parameter" 0.0 "point3 seed" [-0.2 0.6 0.2]
+  Shape "sphere" "float radius" 0.375
+AttributeEnd
+AttributeBegin
+  #krt Name "Small bulb"
+  #krt Material "conductor" "rgb eta" [0.2 0.924 1.102] "rgb k" [3.912 2.452 2.142] "float roughness" 0.25 "float anisotropy" 0.0
+  Material "conductor" "spectrum eta" "metal-Cu-eta" "spectrum k" "metal-Cu-k" "float uroughness" 0.00390625 "float vroughness" 0.00390625
+  Translate 2.1738650638262764 0.55 2.144312297619033
+  #krt Shape "fractal" "string kind" "mandelbulb" "float radius" 0.55 "integer iterations" 10 "float parameter" 4.0 "point3 seed" [-0.2 0.6 0.2]
+  Shape "sphere" "float radius" 0.275
+AttributeEnd
+AttributeBegin
+  AreaLightSource "diffuse" "rgb L" [1.3476197731256934 0.9597851547684261 0.37476029838087666] "float scale" 4.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [-4.867263522577862 1.8 3.3785736657810337 -5.714062053923526 1.8 1.5666872876350904 -5.714062053923526 3.4000000000000004 1.5666872876350904 -4.867263522577862 1.8 3.3785736657810337 -5.714062053923526 3.4000000000000004 1.5666872876350904 -4.867263522577862 3.4000000000000004 3.3785736657810337]
+AttributeEnd
+AttributeBegin
+  AreaLightSource "diffuse" "rgb L" [0.8585138779452182 1.008993768317217 1.3275291751852234] "float scale" 4.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [-4.1347572388720035 1.9999999999999998 -4.197494300105631 -2.4923970366515467 1.9999999999999998 -5.338832534881974 -2.4923970366515467 3.5999999999999996 -5.338832534881974 -4.1347572388720035 1.9999999999999998 -4.197494300105631 -2.4923970366515467 3.5999999999999996 -5.338832534881974 -4.1347572388720035 3.5999999999999996 -4.197494300105631]
+AttributeEnd
+AttributeBegin
+  AreaLightSource "diffuse" "rgb L" [0.9870772729726067 1.0138138603673137 0.9012146652537536] "float scale" 3.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [0.30042720235782894 7.0 3.1484056778804526 1.6482539807732361 7.0 -2.6982483203809764 5.5456163470353665 7.0 -1.797933605382024 0.30042720235782894 7.0 3.1484056778804526 5.5456163470353665 7.0 -1.797933605382024 4.197789568619959 7.0 4.048720392879405]
+AttributeEnd
