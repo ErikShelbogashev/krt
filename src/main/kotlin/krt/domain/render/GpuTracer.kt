@@ -31,9 +31,20 @@ class GpuFrame(
 
 /**
  * The rows, from the top of the window, a GPU step samples, and the [previousSamples] per pixel that earlier steps
- * took in them; the other rows keep the frame of the earlier steps as it is.
+ * took in them; the other rows keep the frame of the earlier steps as it is. A [quick] look of a frame skips light
+ * sampling and media, which can cost a heavy scene many times the rest (ADR 0010).
  */
-data class GpuBand(val previousSamples: Int = 0, val rows: IntRange = 0 until Int.MAX_VALUE)
+data class GpuBand(
+    val previousSamples: Int = 0,
+    val rows: IntRange = 0 until Int.MAX_VALUE,
+    val quick: Boolean = false,
+) {
+    /** The lights a step of [scene] samples: none in a quick look. */
+    fun sampledLights(scene: GpuScene): Int = if (quick) 0 else scene.sampledLights
+
+    /** 1 for a quick look, which the shader draws without media, else 0. */
+    val quickLook: Float get() = if (quick) 1f else 0f
+}
 
 /**
  * Resource hiding the GPU behind Skia (ADR 0009): compiles the path tracing shader once and turns a [GpuFrame]
@@ -62,7 +73,8 @@ class GpuTracer : AutoCloseable {
         builder.uniform("primitiveStart", frame.scene.primitiveStart.toFloat())
         builder.uniform("materialStart", frame.scene.materialStart.toFloat())
         builder.uniform("lightStart", frame.scene.sections.lightStart.toFloat())
-        builder.uniform("lightCount", frame.scene.sampledLights.toFloat())
+        builder.uniform("lightCount", frame.band.sampledLights(frame.scene).toFloat())
+        builder.uniform("quickLook", frame.band.quickLook)
         builder.uniform("memberStart", frame.scene.sections.memberStart.toFloat())
         builder.uniform("normalStart", frame.scene.sections.normalStart.toFloat())
         builder.uniform("mediaStart", frame.scene.sections.mediaStart.toFloat())

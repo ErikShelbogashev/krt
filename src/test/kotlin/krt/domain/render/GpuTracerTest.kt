@@ -459,6 +459,29 @@ class GpuTracerTest {
     }
 
     @Test
+    fun `quick looks and full frames of each new scene are neither black nor magenta`() {
+        val library = krt.i9ns.scenefile.SceneLibrary()
+        listOf(DemoScene.FRACTALS, DemoScene.NOTIFICATIONS, DemoScene.LAPTOP_CREW, DemoScene.DEPLOY).forEach { demo ->
+            val description = library.load(demo)
+            val scene = World(description.objects, description.look)
+            val start = requireNotNull(description.look.start)
+            val camera = Camera(
+                start.origin, start.target, Point3(0.0, 1.0, 0.0), description.look.fov, 0.0,
+                (start.target - start.origin).length(), SIZE, SIZE,
+            )
+            listOf(GpuBand(quick = true), GpuBand()).forEach { band ->
+                val pixels = GpuTracer().use { tracer ->
+                    pixels(tracer.shader(GpuFrame(scene.gpuScene, camera.view(), SIZE, SIZE, DEPTH, 2, 0.37f, band)))
+                }
+                val magenta = pixels.count { (it and 0xFFFFFF) == 0xFF00FF }
+                val mean = (0 until CHANNELS).sumOf { channelMean(pixels, it) } / CHANNELS
+                assertTrue(magenta == 0, "$demo ${band.quick}: $magenta magenta pixels")
+                assertTrue(mean > MIN_MEAN, "$demo quick ${band.quick}: frame black, mean $mean")
+            }
+        }
+    }
+
+    @Test
     fun `triangles are drawn`() {
         val wall = Triangle(
             Point3(-50.0, -50.0, -3.0),
@@ -565,6 +588,7 @@ class GpuTracerTest {
         const val REGION_TOLERANCE = 0.06
         const val QUADRANTS = 4
         const val CHANNELS = 3
+        const val MIN_MEAN = 0.02
         const val VOXEL_SAMPLES = 6
         const val PIXEL_TOLERANCE = 0.02
         const val BUDGET_SAMPLES = 32

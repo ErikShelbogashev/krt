@@ -3,6 +3,7 @@ package krt.domain.render
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 import javax.swing.SwingUtilities
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
@@ -19,6 +20,7 @@ import krt.domain.camera.Camera
 import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
 import krt.domain.scene.World
+import krt.domain.trace.GpuScene
 import krt.platform.awt.toAWTColor
 import krt.platform.math.Color
 import org.jetbrains.skia.Shader
@@ -58,7 +60,7 @@ class RenderController(
      */
     fun gpuFrameShown(shader: Shader, frameMs: Double) {
         synchronized(recentSteps) { recentSteps.firstOrNull { it.first === shader } }?.let { (_, drawn) ->
-            stepBudget = stepBudget.after(frameMs)
+            stepBudget.updateAndGet { it.after(frameMs) }
             drawn.complete(Unit)
         }
         if (synchronized(recentDrafts) { recentDrafts.none { it === shader } }) return
@@ -66,8 +68,11 @@ class RenderController(
     }
 
     /** Samples per pixel of a GPU step, adapted to how long steps take to show (see [gpuFrameShown]). */
+    private val stepBudget = AtomicReference(GpuSampling.StepBudget())
+
+    /** The GPU scene the step budget was learnt on: a new scene starts cautious. */
     @Volatile
-    private var stepBudget = GpuSampling.StepBudget()
+    private var budgetScene: GpuScene? = null
 
     /**
      * The GPU steps published lately and the signals that the window has drawn them; like quick looks, the window
@@ -132,7 +137,11 @@ class RenderController(
             val look = GpuFrame(
                 scene, view, GpuSampling.draftSize(width, scale), GpuSampling.draftSize(height, scale),
                 minOf(rayTracer.maxDepth, PREVIEW_DEPTH), samples = 1, seed = random.nextFloat(),
+                band = GpuBand(quick = true),
             )
+            val newScene = scene !== budgetScene
+            stepBudget.updateAndGet { GpuSampling.stepBudgetFor(newScene, it) }
+            budgetScene = scene
             val preview = gpuTracer.shader(look, previous = null, scale = scale)
             recentDrafts.keepRecent(preview, RECENT_DRAFTS)
             val previewProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true)
@@ -142,16 +151,19 @@ class RenderController(
             var frame: Shader? = preview
             var taken = 0
             while (taken < passes && isActive) {
-                val budget = stepBudget
-                val samples = GpuSampling.nextStep(taken, passes, budget.samples)
-                for (index in 0 until budget.bands) {
-                    if (!isActive) break
-                    val band = GpuBand(taken, GpuSampling.bandRows(height, index, budget.bands))
+                val samples = GpuSampling.nextStep(taken, passes, stepBudget.get().samples)
+                var row = 0
+                // Bands are taken one after another, each as high as the budget allows now: a budget that grows
+                // during the pass, as from a cautious start, widens the next band at once.
+                while (row < height && isActive) {
+                    val rows = GpuSampling.nextRows(row, height, GpuSampling.bandsOf(stepBudget.get(), height))
+                    row = rows.last + 1
+                    val band = GpuBand(taken, rows)
                     val seed = random.nextFloat()
                     val step = GpuFrame(scene, view, width, height, rayTracer.maxDepth, samples, seed, band)
                     val shader = gpuTracer.shader(step, frame)
                     frame = shader
-                    val done = GpuSampling.samplesDone(taken, samples, index, budget.bands)
+                    val done = GpuSampling.samplesDone(taken, samples, rows, height)
                     val progress = RenderProgress(passes, done, 0.0, clock() - startedAt)
                     // Registered before publishing, so a window that draws the step at once is not missed; a window
                     // that never says so, like a test, gets the next step after the repaint interval.

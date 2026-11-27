@@ -3,6 +3,7 @@ package krt.domain.render
 import java.util.Collections
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.SwingUtilities
 import kotlin.random.Random
 import kotlin.test.Test
@@ -12,6 +13,12 @@ import krt.domain.camera.Camera
 import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
 import krt.domain.scene.World
+import krt.domain.scene.model.DemoScene
+import krt.i9ns.scenefile.SceneLibrary
+import krt.platform.math.Point3
+import org.jetbrains.skia.ImageInfo
+import org.jetbrains.skia.Paint
+import org.jetbrains.skia.Surface
 
 class RenderControllerTest {
 
@@ -105,16 +112,20 @@ class RenderControllerTest {
     fun `GPU steps follow one another as soon as the window has drawn them`() {
         val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = 5 }
         val done = CountDownLatch(1)
+        val steps = AtomicInteger()
         // A repaint interval of a minute: without the window's word, the second step would come a minute later.
         RenderController(60_000L, 8, Random(1)).use { controller ->
             controller.mode = RenderMode.GPU
             val rayTracer = RayTracer(World.default(Random(2)), 3)
             controller.renderImage(Frame(16, 16), rayTracer, camera, onGpuFrame = { shader, progress ->
+                steps.incrementAndGet()
                 controller.gpuFrameShown(shader, 5.0)
                 if (progress.isDone) done.countDown()
             }) {}
             assertTrue(done.await(10, TimeUnit.SECONDS), "steps waited for the repaint interval")
         }
+        // Quick steps grow out of the cautious start: fewer than the 1 + 16 × 4 steps of a cautious frame.
+        assertTrue(steps.get() < 40, "${steps.get()} steps")
     }
 
     @Test
@@ -160,9 +171,47 @@ class RenderControllerTest {
             assertTrue(done.await(30, TimeUnit.SECONDS), "GPU frame did not finish")
         }
 
-        assertEquals(listOf(0, 1, 2, 4, 5), steps.map { it.completedPasses }) // a quick look first
+        // A quick look first; a new scene then starts cautious, a band of rows per step: 16 bands of each pass.
+        assertEquals(listOf(0, 1, 2, 4, 5), steps.map { it.completedPasses }.distinct())
+        assertEquals(1 + 16 * 4, steps.size)
         assertTrue(onUiThread.all { it })
         assertEquals(0, pixelUpdates)
         assertTrue(frame.pixels.all { it == 0 })
+    }
+
+    @Test
+    fun `a GPU frame of each new scene finishes in steps that each draw quickly`() {
+        val library = SceneLibrary()
+        listOf(DemoScene.FRACTALS, DemoScene.NOTIFICATIONS, DemoScene.LAPTOP_CREW, DemoScene.DEPLOY).forEach { demo ->
+            val description = library.load(demo)
+            val start = requireNotNull(description.look.start)
+            val camera = Camera(
+                start.origin, start.target, Point3(0.0, 1.0, 0.0), description.look.fov, 0.0,
+                (start.target - start.origin).length(), 32, 24,
+            ).apply { samplesPerPixel = 3 }
+            val surface = Surface.makeRaster(ImageInfo.makeN32Premul(32, 24))
+            val drawMs = Collections.synchronizedList(mutableListOf<Double>())
+            val done = CountDownLatch(1)
+            RenderController(1_000L, 8, Random(1)).use { controller ->
+                controller.mode = RenderMode.GPU
+                val rayTracer = RayTracer(World(description.objects, description.look), 7)
+                controller.renderImage(Frame(32, 24), rayTracer, camera, onGpuFrame = { shader, progress ->
+                    // Drawn as the window draws it, and reported, so the step budget adapts as in the app.
+                    val started = System.nanoTime()
+                    surface.canvas.drawPaint(Paint().apply { this.shader = shader })
+                    surface.makeImageSnapshot().close()
+                    val ms = (System.nanoTime() - started) / 1e6
+                    drawMs += ms
+                    controller.gpuFrameShown(shader, ms)
+                    if (progress.isDone) done.countDown()
+                }) {}
+                assertTrue(done.await(60, TimeUnit.SECONDS), "$demo: the GPU frame did not finish")
+            }
+            assertTrue(drawMs.max() < MAX_STEP_DRAW_MS, "$demo: a step took ${drawMs.max()} ms to draw")
+        }
+    }
+
+    private companion object {
+        const val MAX_STEP_DRAW_MS = 2_000.0
     }
 }

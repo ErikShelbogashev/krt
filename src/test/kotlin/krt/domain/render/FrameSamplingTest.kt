@@ -79,19 +79,42 @@ class FrameSamplingTest {
         assertEquals(GpuSampling.StepBudget(1, 5), GpuSampling.StepBudget(1, 1, slow = true).after(180.0))
         assertEquals(full, full.after(70.0).after(10.0))
         var budget = GpuSampling.StepBudget(1, 5)
-        repeat(3) { budget = budget.after(10.0) }
+        repeat(3) { budget = budget.after(20.0) }
         assertEquals(5, budget.bands)
-        assertEquals(GpuSampling.StepBudget(1, 3), budget.after(10.0))
+        assertEquals(GpuSampling.StepBudget(1, 3), budget.after(20.0))
         assertEquals(GpuSampling.StepBudget(2, 1), GpuSampling.StepBudget(1, 1, fitStreak = 3).after(15.0))
         assertEquals(GpuSampling.StepBudget(1, 1, 0), GpuSampling.StepBudget(1, 1, fitStreak = 3).after(30.0))
         assertEquals(listOf(1, 1, 2, 3), listOf(0, 1, 2, 4).map { GpuSampling.nextStep(it, 7, 3) })
     }
 
     @Test
+    fun `a pass takes no more bands than its frame has rows`() {
+        assertEquals(16, GpuSampling.bandsOf(GpuSampling.StepBudget.CAUTIOUS, 16))
+        assertEquals(GpuSampling.StepBudget.CAUTIOUS.bands, GpuSampling.bandsOf(GpuSampling.StepBudget.CAUTIOUS, 600))
+        assertEquals(1, GpuSampling.bandsOf(GpuSampling.StepBudget(), 0))
+    }
+
+    @Test
     fun `bands of rows cover the frame once, top to bottom`() {
         val bands = (0 until 7).map { GpuSampling.bandRows(100, it, 7) }
         assertEquals((0 until 100).toList(), bands.flatten())
-        assertEquals(listOf(2, 2, 5), (0 until 3).map { GpuSampling.samplesDone(2, 3, it, 3) })
+        assertEquals(listOf(2, 2, 5), listOf(0..32, 33..65, 66..99).map { GpuSampling.samplesDone(2, 3, it, 100) })
+    }
+
+    @Test
+    fun `bands taken one after another cover the frame once, whatever height each is given`() {
+        val rows = mutableListOf<Int>()
+        var row = 0
+        var bands = 64
+        while (row < 100) {
+            val band = GpuSampling.nextRows(row, 100, bands)
+            rows += band
+            row = band.last + 1
+            bands = maxOf(1, bands / 2)
+        }
+        assertEquals((0 until 100).toList(), rows)
+        assertEquals(0..33, GpuSampling.nextRows(0, 100, 3))
+        assertEquals(99..99, GpuSampling.nextRows(99, 100, 1))
     }
 
     @Test

@@ -59,16 +59,20 @@ object FreeFlight {
         return if (density > 0) -ln(1 - u) / density else Double.POSITIVE_INFINITY
     }
 
-    /** Weight of a scattering at [distance]: scattering density × transmittance / pdf of the distance. */
+    /**
+     * Weight of a scattering at [distance]: scattering density × transmittance / pdf of the distance; none where
+     * the pdf underflows, so a long flight through a dense medium cannot divide by zero.
+     */
     fun scatterWeight(medium: Medium, distance: Double): Color {
         val transmittance = medium.transmittance(distance)
         val pdf = (medium.density * transmittance).let { (it.x + it.y + it.z) / CHANNELS }
-        return medium.albedo * medium.density * transmittance / pdf
+        return if (pdf > 0) medium.albedo * medium.density * transmittance / pdf else Point3.ZERO
     }
 
-    /** Weight of passing [distance] through the medium untouched: transmittance / the chance of it. */
+    /** Weight of passing [distance] through the medium untouched: transmittance / the chance of it; none at 0. */
     fun passWeight(medium: Medium, distance: Double): Color {
         val transmittance = medium.transmittance(distance)
-        return transmittance / ((transmittance.x + transmittance.y + transmittance.z) / CHANNELS)
+        val chance = (transmittance.x + transmittance.y + transmittance.z) / CHANNELS
+        return if (chance > 0) transmittance / chance else Point3.ZERO
     }
 }
