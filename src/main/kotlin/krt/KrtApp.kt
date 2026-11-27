@@ -31,6 +31,7 @@ import krt.domain.camera.CameraMove
 import krt.domain.render.Frame
 import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
+import krt.domain.scene.model.SceneCatalog
 import krt.domain.scene.model.Traceable
 import krt.infra.AppContext
 import krt.platform.skia.ArgbBitmapConverter
@@ -89,6 +90,8 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
 
 @Composable
 private fun AppInspector(app: AppContext, objects: List<Traceable>) {
+    val catalog = remember(objects) { SceneCatalog.of(objects) }
+    var selectedId by remember { mutableStateOf<String?>(null) }
     Inspector(
         renderTab = {
             RenderTab(
@@ -102,7 +105,13 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>) {
         },
         cameraTab = { CameraTab(app.camera, onChange = { app.changeCameraSettings(it) }) },
         sceneTab = {
-            SceneTab(objects, app.camera.movementSpeed, onMove = { id, offset -> app.moveObject(id, offset) })
+            SceneTab(
+                catalog,
+                selectedId,
+                onSelect = { selectedId = it },
+                speed = app.camera.movementSpeed,
+                onMove = { id, offset -> app.moveObject(id, offset) },
+            )
         },
     )
 }

@@ -34,7 +34,6 @@ import krt.app.shell.SectionHeader
 import krt.domain.scene.model.ObjectGroup
 import krt.domain.scene.model.ObjectSummary
 import krt.domain.scene.model.SceneCatalog
-import krt.domain.scene.model.Traceable
 import krt.platform.compose.toComposeColor
 import krt.platform.math.Point3
 
@@ -43,21 +42,26 @@ import krt.platform.math.Point3
  * and step buttons that move the selected object (the first one until another is picked) by [speed] along an axis.
  */
 @Composable
-fun SceneTab(objects: List<Traceable>, speed: Double, onMove: (String, Point3) -> Unit, modifier: Modifier = Modifier) {
-    val catalog = remember(objects) { SceneCatalog.of(objects) }
-    var selectedId by remember { mutableStateOf<String?>(null) }
-    val selected = catalog.find(selectedId) ?: catalog.featured.firstOrNull()
+fun SceneTab(
+    catalog: SceneCatalog,
+    selectedId: String?,
+    onSelect: (String) -> Unit,
+    speed: Double,
+    onMove: (String, Point3) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val selected = catalog.selected(selectedId)
     var openGroups by remember { mutableStateOf(emptySet<String>()) }
     Column(modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader("Objects · ${catalog.size}")
         LazyColumn(Modifier.weight(1f).fillMaxWidth()) {
-            objectRows(catalog.featured, selected?.id, onSelect = { selectedId = it })
+            objectRows(catalog.featured, selected?.id, onSelect)
             catalog.groups.forEach { group ->
                 val open = group.title in openGroups
                 item(key = "group:${group.title}") {
                     GroupRow(group, open, onToggle = { openGroups = openGroups.toggled(group.title) })
                 }
-                if (open) objectRows(group.objects, selected?.id, onSelect = { selectedId = it })
+                if (open) objectRows(group.objects, selected?.id, onSelect)
             }
         }
         selected?.let { MoveCard(it, speed, onMove) }
