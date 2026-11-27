@@ -439,9 +439,9 @@ class GpuTracerTest {
     }
 
     @Test
-    fun `each scene of the voxel package looks the same on the GPU as on the CPU`() {
+    fun `each showcase scene looks the same on the GPU as on the CPU`() {
         val library = krt.i9ns.scenefile.SceneLibrary()
-        listOf(DemoScene.NOTIFICATIONS, DemoScene.LAPTOP_CREW, DemoScene.DEPLOY).forEach { demo ->
+        SHOWCASE_SCENES.forEach { demo ->
             val description = library.load(demo)
             val scene = World(description.objects, description.look)
             val start = requireNotNull(description.look.start)
@@ -461,7 +461,7 @@ class GpuTracerTest {
     @Test
     fun `quick looks and full frames of each new scene are neither black nor magenta`() {
         val library = krt.i9ns.scenefile.SceneLibrary()
-        listOf(DemoScene.FRACTALS, DemoScene.NOTIFICATIONS, DemoScene.LAPTOP_CREW, DemoScene.DEPLOY).forEach { demo ->
+        (SHOWCASE_SCENES + DemoScene.FRACTALS).forEach { demo ->
             val description = library.load(demo)
             val scene = World(description.objects, description.look)
             val start = requireNotNull(description.look.start)
@@ -590,6 +590,9 @@ class GpuTracerTest {
         const val CHANNELS = 3
         const val MIN_MEAN = 0.02
         const val VOXEL_SAMPLES = 6
+
+        /** The showcase scenes made for the switcher, each checked against the CPU as a whole. */
+        val SHOWCASE_SCENES = listOf(DemoScene.MATERIALS)
         const val PIXEL_TOLERANCE = 0.02
         const val BUDGET_SAMPLES = 32
         const val SLOW_STEP_MS = 400.0

@@ -182,7 +182,7 @@ class RenderControllerTest {
     @Test
     fun `a GPU frame of each new scene finishes in steps that each draw quickly`() {
         val library = SceneLibrary()
-        listOf(DemoScene.FRACTALS, DemoScene.NOTIFICATIONS, DemoScene.LAPTOP_CREW, DemoScene.DEPLOY).forEach { demo ->
+        listOf(DemoScene.FRACTALS, DemoScene.MATERIALS).forEach { demo ->
             val description = library.load(demo)
             val start = requireNotNull(description.look.start)
             val camera = Camera(

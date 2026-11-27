@@ -2,7 +2,7 @@
 
 Трассировщик лучей на Kotlin + Compose Desktop. Каждый пиксель считается на CPU кодом на Kotlin; отдельный GPU-режим считает тот же кадр SkSL-шейдером через Skia. Сцены — файлы [pbrt-v4](https://pbrt.org/fileformat-v4) или OBJ + MTL с JSON-описанием материалов.
 
-<img width="480" alt="Laptop crew, CPU" src="docs/images/laptop-crew.png"> <img width="480" alt="Fractals, CPU" src="docs/images/fractals.png">
+<img width="480" alt="Fractals, CPU" src="docs/images/fractals.png">
 
 ## Запуск
 
@@ -14,7 +14,7 @@
 ./gradlew jmh      # бенчмарки ядра (в check не входят)
 ```
 
-Сцены выбираются на вкладке Scene (Showcase, Materials, Fractals, Notifications, Laptop crew, Deploy, Classic), свои открываются кнопкой «Open scene…». Камера: `W/A/S/D` или стрелки, `R`/`F` — вверх/вниз, перетаскивание по кадру поворачивает. Секундомер в верхней панели запускает бенчмарк-пролёт камеры.
+Сцены выбираются на вкладке Scene (Showcase, Materials, Fractals, Classic), свои открываются кнопкой «Open scene…». Камера: `W/A/S/D` или стрелки, `R`/`F` — вверх/вниз, перетаскивание по кадру поворачивает. Секундомер в верхней панели запускает бенчмарк-пролёт камеры.
 
 Правила кода: [AGENTS.md](AGENTS.md), решения: [docs/adr](docs/adr/README.md).
 
@@ -137,4 +137,4 @@ flowchart LR
 
 - Ядро на CPU: модульные тесты трансформаций и golden-кадр Classic с фиксированным seed (`TracedFrameGoldenTest`).
 - GPU-шейдер: `GpuTracerTest` рисует ту же сцену шейдером и ядром и сравнивает среднюю яркость каналов и четвертей кадра, по одному тесту на эффект. Шейдер исполняет растровый конвейер Skia на CPU в float32, без видеокарты, поэтому тесты идут в CI. Шейдер разложен по частям рядом с Kotlin, который он повторяет, общие константы генерируются из Kotlin (`GpuShaderSource`, ADR 0009).
-- Настоящая видеокарта: `./gradlew gpuSmoke` рисует каждую встроенную сцену во всех размерах бенчмарка на Metal без окна, шагами, как `RenderController`, и падает на шаге дольше 1 с, на кадре, который не успел за 60 с, и на чёрном или пурпурном кадре. В `check` не входит: в CI нет видеокарты. Одна сцена: `./gradlew gpuSmoke -Pscene=deploy`. Отчёт — `build/reports/gpu-smoke.md`.
+- Настоящая видеокарта: `./gradlew gpuSmoke` рисует каждую встроенную сцену во всех размерах бенчмарка на Metal без окна, шагами, как `RenderController`, и падает на шаге дольше 1 с, на кадре, который не успел за 60 с, и на чёрном или пурпурном кадре. В `check` не входит: в CI нет видеокарты. Одна сцена: `./gradlew gpuSmoke -Pscene=fractals`; тяжёлая сцена с дымкой и тысячей ламп, на которой окно зависало, — только отдельно: `-Pscene=stress`. Отчёт — `build/reports/gpu-smoke.md`.

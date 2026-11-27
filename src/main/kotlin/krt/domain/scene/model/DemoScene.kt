@@ -32,8 +32,5 @@ enum class DemoScene(val title: String, val path: String) {
     SHOWCASE("Showcase", "showcase.pbrt"),
     MATERIALS("Materials", "materials.pbrt"),
     FRACTALS("Fractals", "fractals.pbrt"),
-    NOTIFICATIONS("Notifications", "github-voxel-scenes/01-notification-avalanche/01-notification-avalanche.obj"),
-    LAPTOP_CREW("Laptop crew", "github-voxel-scenes/02-laptop-construction/02-laptop-construction.obj"),
-    DEPLOY("Deploy", "github-voxel-scenes/03-deploy-button/03-deploy-button.obj"),
     CLASSIC("Classic spheres", "classic.pbrt"),
 }

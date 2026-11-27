@@ -15,6 +15,7 @@ import krt.domain.render.GpuSampling
 import krt.domain.render.GpuTracer
 import krt.domain.scene.World
 import krt.domain.scene.model.DemoScene
+import krt.domain.scene.model.SceneDescription
 import krt.i9ns.scenefile.SceneLibrary
 import krt.platform.math.Point3
 import org.jetbrains.skia.Bitmap
@@ -36,9 +37,12 @@ fun main(args: Array<String>) {
     val device = Metal.defaultDevice()
     val context = DirectContext.makeMetal(device, Metal.commandQueue(device))
     val scenes = SceneLibrary()
-    val only = args.firstOrNull()?.let { name -> DemoScene.entries.filter { it.name.equals(name, ignoreCase = true) } }
-    val results = (only ?: DemoScene.entries).flatMap { demo ->
-        SIZES.map { (width, height) -> Smoke.run(context, scenes, demo, width, height) }
+    val cases = DemoScene.entries.map { it.name to { scenes.load(it) } } +
+        (STRESS to { scenes.load(File(STRESS_SCENE)).getOrThrow() })
+    val only = args.firstOrNull()?.let { name -> cases.filter { it.first.equals(name, ignoreCase = true) } }
+    val results = (only ?: cases.filter { it.first != STRESS }).flatMap { (name, load) ->
+        val description = load()
+        SIZES.map { (width, height) -> Smoke.run(context, name, description, width, height) }
     }
     context.close()
     val report = Smoke.report(results)
@@ -48,6 +52,13 @@ fun main(args: Array<String>) {
 }
 
 private val SIZES = listOf(400 to 400, 800 to 600, 1024 to 1024)
+
+/**
+ * A heavy scene kept only for this check: haze through the whole room and over a thousand small lights, the scene
+ * that froze the window on Metal (ADR 0010). Not in the default run; select it alone with `-Pscene=stress`.
+ */
+private const val STRESS = "STRESS"
+private const val STRESS_SCENE = "src/gpuSmoke/scenes/deploy-stress/03-deploy-button.obj"
 private const val STEP_CAP_MS = 1_000.0
 private const val FRAME_CAP_MS = 60_000.0
 private const val SAMPLES = 5
@@ -60,7 +71,7 @@ private const val NS_PER_MS = 1e6
 
 /** One scene at one size: its slowest step, its frame time, and what failed, if anything. */
 private class SmokeResult(
-    val scene: DemoScene,
+    val scene: String,
     val width: Int,
     val height: Int,
     val steps: Int,
@@ -71,8 +82,7 @@ private class SmokeResult(
 
 private object Smoke {
 
-    fun run(context: DirectContext, scenes: SceneLibrary, demo: DemoScene, width: Int, height: Int): SmokeResult {
-        val description = scenes.load(demo)
+    fun run(context: DirectContext, name: String, description: SceneDescription, width: Int, height: Int): SmokeResult {
         val scene = World(description.objects, description.look).gpuScene
         val start = requireNotNull(description.look.start)
         val view = Camera(
@@ -122,7 +132,7 @@ private object Smoke {
         val frameMs = (System.nanoTime() - began) / NS_PER_MS
         failure = failure ?: picture(surface)
         surface.close()
-        return SmokeResult(demo, width, height, stepMs.size, stepMs.max(), frameMs, failure)
+        return SmokeResult(name, width, height, stepMs.size, stepMs.max(), frameMs, failure)
     }
 
     /** What is wrong with the frame on [surface]: magenta pixels or black, or nothing. */
@@ -148,7 +158,7 @@ private object Smoke {
         appendLine("| --- | --- | --- | --- | --- | --- |")
         results.forEach {
             appendLine(
-                "| ${it.scene.title} | ${it.width}×${it.height} | ${it.steps} | %.1f | %.0f | %s |"
+                "| ${it.scene} | ${it.width}×${it.height} | ${it.steps} | %.1f | %.0f | %s |"
                     .format(it.slowestStepMs, it.frameMs, it.failure ?: "ok"),
             )
         }

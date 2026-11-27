@@ -12,7 +12,7 @@ class BenchmarkStateTest {
     fun `the badge names the renderer of the benchmark run in progress, else the one chosen`() {
         val state = BenchmarkState()
         assertEquals(RenderMode.CPU, state.shownMode(RenderMode.CPU))
-        state.running = BenchmarkConfig(DemoScene.DEPLOY, RenderMode.GPU, 800, 600)
+        state.running = BenchmarkConfig(DemoScene.FRACTALS, RenderMode.GPU, 800, 600)
         assertEquals(RenderMode.GPU, state.shownMode(RenderMode.CPU))
         state.running = null
         assertEquals(RenderMode.CPU, state.shownMode(RenderMode.CPU))
