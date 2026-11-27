@@ -79,7 +79,9 @@ class RenderController(
                     lastRepaintTime = currentTime
                 }
             }
-            onUpdate.invoke()
+            SwingUtilities.invokeLater {
+                onUpdate.invoke()
+            }
         }
     }
 
