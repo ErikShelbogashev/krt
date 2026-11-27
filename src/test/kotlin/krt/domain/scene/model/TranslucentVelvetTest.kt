@@ -22,31 +22,18 @@ class TranslucentVelvetTest {
     }
 
     @Test
-    fun `inside a dense ball light scatters off particles before it reaches the surface`() {
-        val inside = (0 until 100).mapNotNull { i ->
-            jade.hit(Ray(Point3(0.0, i * 1e-4, -0.999), Point3(0.0, 0.0, 1.0)), 0.001, 100.0)
-        }
-        assertTrue(inside.count { it.material is Isotropic } > 90)
-        assertTrue(inside.all { it.t < 2.0 })
-        assertEquals(listOf(jade.surface, jade.inside), jade.parts)
-    }
-
-    @Test
-    fun `particles inside a translucent ball do not sample the lights, open fog does`() {
-        val ray = Ray(Point3(0.0, 0.0, -0.5), Point3(0.0, 0.0, 1.0))
-        val inside = assertNotNull(jade.inside.hit(ray, 0.001, 100.0))
-        assertEquals(Lobe.ENCLOSED_VOLUME, inside.material.scatter(ray, inside, Random(1))?.lobe)
-        assertTrue(!Lobe.ENCLOSED_VOLUME.samplesLights)
-        val fog = Fog(Point3.ZERO, 1.0, 50.0, Color.ONE)
-        val open = assertNotNull(fog.hit(ray, 0.001, 100.0))
-        assertEquals(Lobe.VOLUME, open.material.scatter(ray, open, Random(1))?.lobe)
+    fun `a translucent ball bounds its medium with glass`() {
+        val hit = assertNotNull(jade.hit(Ray(Point3(0.0, 0.0, -5.0), Point3(0.0, 0.0, 1.0)), 0.001, 100.0))
+        assertEquals(Medium.grey(50.0, Color(0.4, 0.9, 0.6)), hit.media?.inside)
+        assertEquals(null, hit.media?.outside)
+        assertTrue(!Lobe.ENCLOSED_VOLUME.samplesLights && Lobe.VOLUME.samplesLights)
     }
 
     @Test
     fun `a translucent ball moves as one`() {
         val moved = jade.translate(Point3(1.0, 0.0, 0.0))
         assertEquals(Point3(1.0, 0.0, 0.0), moved.surface.center)
-        assertEquals(Point3(1.0, 0.0, 0.0), moved.inside.center)
+        assertEquals(jade.medium, moved.medium)
         assertEquals(jade.id, moved.id)
     }
 

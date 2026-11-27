@@ -32,6 +32,32 @@ object Meshes {
         )
     }
 
+    /**
+     * A closed box [half] its size each way along the pose's axes, its faces wound outwards; with [media] it bounds
+     * them, like a block of wax (ADR 0014).
+     */
+    fun box(pose: Pose, half: Point3, material: Material, media: MediumInterface? = null): List<Triangle> {
+        fun side(bit: Int, extent: Double) = if (bit == 0) -extent else extent
+        fun corner(i: Int) =
+            pose.place(Point3(side(i and X_BIT, half.x), side(i and Y_BIT, half.y), side(i and Z_BIT, half.z)))
+        return BOX_FACES.flatMap { face ->
+            val (a, b, c) = face.take(FACE_TRIANGLE).map(::corner)
+            val d = corner(face.last())
+            listOf(Triangle(a, b, c, material, media = media), Triangle(a, c, d, material, media = media))
+        }
+    }
+
+    private const val X_BIT = 1
+    private const val Y_BIT = 2
+    private const val Z_BIT = 4
+    private const val FACE_TRIANGLE = 3
+
+    /** Corners of each face of a box, counter-clockwise seen from outside; bit 0 is x, bit 1 y, bit 2 z. */
+    private val BOX_FACES = listOf(
+        listOf(0, 2, 3, 1), listOf(4, 5, 7, 6), listOf(0, 1, 5, 4),
+        listOf(2, 6, 7, 3), listOf(0, 4, 6, 2), listOf(1, 3, 7, 5),
+    )
+
     /** A sphere of 20 × 4^[subdivisions] flat faces: a cut gem when coarse. */
     fun icosphere(pose: Pose, radius: Double, subdivisions: Int, material: Material): List<Triangle> {
         var faces = icosahedron()

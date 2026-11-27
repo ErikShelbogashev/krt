@@ -6,7 +6,7 @@ import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.GlowingPattern
 import krt.domain.scene.model.Iridescent
-import krt.domain.scene.model.Isotropic
+import krt.domain.scene.model.Interface
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Material
 import krt.domain.scene.model.Metal
@@ -22,7 +22,7 @@ import krt.domain.trace.GpuScenePacking.DIELECTRIC
 import krt.domain.trace.GpuScenePacking.EMISSIVE
 import krt.domain.trace.GpuScenePacking.GLOWING
 import krt.domain.trace.GpuScenePacking.IRIDESCENT
-import krt.domain.trace.GpuScenePacking.ISOTROPIC
+import krt.domain.trace.GpuScenePacking.INTERFACE
 import krt.domain.trace.GpuScenePacking.LAMBERT
 import krt.domain.trace.GpuScenePacking.METAL
 import krt.domain.trace.GpuScenePacking.PATTERNED
@@ -42,7 +42,7 @@ object GpuMaterials {
      * - Emissive: emitted light;
      * - Plastic: albedo, coat roughness, coat refraction index;
      * - Checker: even cells, coat roughness, coat refraction index, odd cells, cell size;
-     * - Isotropic (the particles of fog): albedo, 1 when enclosed in glass;
+     * - Interface (the edge of a medium, which light crosses unchanged): nothing;
      * - Soap bubble: none, film thickness in nm, film refraction index;
      * - Iridescent: base, film thickness in nm, film refraction index, none, roughness;
      * - Conductor: η, GGX α along and across the tangent, k;
@@ -72,7 +72,7 @@ object GpuMaterials {
     }
 
     private fun physical(material: Material): DoubleArray? = when (material) {
-        is Isotropic -> values(ISOTROPIC, material.albedo, if (material.enclosed) 1.0 else 0.0)
+        is Interface -> values(INTERFACE, Point3.ZERO)
         is Velvet -> values(VELVET, material.base, material.roughness, material.diffuseChance, odd = material.sheen)
         is Patterned -> patterned(PATTERNED, material.pattern, material.roughness, material.bump)
         is GlowingPattern -> patterned(GLOWING, material.pattern, material.intensity, 0.0)

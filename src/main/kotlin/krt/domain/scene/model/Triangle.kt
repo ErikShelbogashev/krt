@@ -14,6 +14,7 @@ data class VertexNormals(val n0: Point3, val n1: Point3, val n2: Point3) {
 /**
  * A flat triangle. With [normals] it shades as if curved (ADR 0013): hits keep the side of the flat face, but their
  * normal is blended from the corners, turned to the face's side when the corners give it the other way.
+ * Triangles of a closed mesh with [media] bound them (ADR 0014); the outward side is the side of the winding.
  */
 class Triangle(
     val v0: Point3,
@@ -22,6 +23,7 @@ class Triangle(
     val material: Material,
     override val id: String = "Triangle[${UUID.randomUUID()}]",
     val normals: VertexNormals? = null,
+    val media: MediumInterface? = null,
 ) : Traceable {
 
     private val edge1 = v1 - v0
@@ -57,12 +59,12 @@ class Triangle(
         }
 
         val hitPoint = ray.at(t)
-        val smooth = normals ?: return Hit.create(hitPoint, t, ray, outwardNormal, material)
+        val smooth = normals ?: return Hit.create(hitPoint, t, ray, outwardNormal, material, media)
         val isFrontFace = ray.direction.dot(outwardNormal) < 0
         val blended = smooth.at(u, v)
         // Vertex normals given against the winding still shade the face's own side.
         val shading = if (blended.dot(outwardNormal) < 0) -blended else blended
-        return Hit(hitPoint, t, if (isFrontFace) shading else -shading, isFrontFace, material)
+        return Hit(hitPoint, t, if (isFrontFace) shading else -shading, isFrontFace, material, media)
     }
 
     override fun bounds(): Aabb = Aabb(
@@ -71,7 +73,7 @@ class Triangle(
     )
 
     override fun translate(offset: Point3): Triangle =
-        Triangle(v0 + offset, v1 + offset, v2 + offset, material, id, normals)
+        Triangle(v0 + offset, v1 + offset, v2 + offset, material, id, normals, media)
 
     override fun linearize(coefficient: Double): List<LineSegment> {
         return listOf(

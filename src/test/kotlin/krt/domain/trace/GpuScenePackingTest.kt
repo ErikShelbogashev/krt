@@ -83,7 +83,7 @@ class GpuScenePackingTest {
         val smooth = Triangle(flat.v0, flat.v1, flat.v2, flat.material, normals = normals)
         val scene = GpuScenePacking.pack(listOf(flat, smooth))
         assertEquals(1f, scene.smoothNormals)
-        assertEquals(1, scene.lights.normalCount)
+        assertEquals(1, scene.sections.normalCount)
     }
 
     @Test
@@ -124,7 +124,7 @@ class GpuScenePackingTest {
     }
 
     @Test
-    fun `fog packs as a medium and emissive primitives as lights`() {
+    fun `fog packs as a sphere bounding a medium and emissive primitives as lights`() {
         val objects = listOf(
             Sphere(Point3(1.0, 0.0, 0.0), 0.5, Lambert(Color(0.1, 0.2, 0.3))),
             Fog(Point3(0.0, 2.0, 0.0), 1.5, 0.25, Color(0.9, 0.8, 0.7)),
@@ -134,13 +134,22 @@ class GpuScenePackingTest {
 
         val scene = Packed(GpuScenePacking.pack(objects, SceneLook.CLASSIC.copy(sampleLights = true)))
 
-        val fog = (0 until 4).single { scene.code(scene.primitive(it)) == GpuScenePacking.MEDIUM }
+        val fog = (0 until 4).single {
+            scene.code(scene.scene.materialStart + it * GpuScenePacking.MATERIAL_VALUES) == GpuScenePacking.INTERFACE
+        }
+        assertEquals(GpuScenePacking.SPHERE, scene.code(scene.primitive(fog)))
         assertEquals(Point3(0.0, 2.0, 0.0), scene.vector(scene.primitive(fog) + 1))
-        assertEquals(0.25, scene.number(scene.primitive(fog) + 5), 1e-3)
-        scene.assertMaterial(fog, GpuScenePacking.ISOTROPIC, 0.9, 0.8, 0.7, 0.0)
-        val lights = scene.scene.lights
+        assertEquals(1, scene.code(scene.primitive(fog) + 11), "the inside medium is the first")
+        assertEquals(0, scene.code(scene.primitive(fog) + 12), "clear air outside")
+        val medium = scene.scene.sections.mediaStart
+        listOf(0.25, 0.25, 0.25, 0.9, 0.8, 0.7).forEachIndexed { i, value ->
+            assertEquals(value, scene.number(medium + i), 1e-3)
+        }
+        assertEquals(0, scene.scene.mediumAt(Point3(0.0, 2.5, 0.0)))
+        assertEquals(-1, scene.scene.mediumAt(Point3(0.0, -2.5, 0.0)))
+        val lights = scene.scene.sections
         assertEquals(2, scene.scene.sampledLights)
-        val emissive = (0 until lights.count).map { scene.code(lights.start + it) }
+        val emissive = (0 until lights.lightCount).map { scene.code(lights.lightStart + it) }
         emissive.forEach { slot -> scene.assertMaterialKind(slot, GpuScenePacking.EMISSIVE) }
         assertEquals(0, GpuScenePacking.pack(objects).sampledLights)
     }

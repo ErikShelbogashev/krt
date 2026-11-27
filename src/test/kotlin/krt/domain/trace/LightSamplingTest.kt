@@ -5,13 +5,16 @@ import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
 import krt.domain.scene.model.GlowingPattern
+import krt.domain.scene.model.Interface
 import krt.domain.scene.model.Iridescent
 import krt.domain.scene.model.Lambert
+import krt.domain.scene.model.Medium
 import krt.domain.scene.model.Pattern
 import krt.domain.scene.model.PatternKind
 import krt.domain.scene.model.Patterned
@@ -114,22 +117,40 @@ class LightSamplingTest {
     } / FLOOR_RAYS
 
     @Test
-    fun `fog lets through the share of rays its density allows`() {
-        val density = 0.5
-        val fog = Fog(Point3.ZERO, 1.0, density, WHITE)
-        val passed = (0 until SAMPLES).count { i ->
-            fog.hit(Ray(Point3(i * 1e-7, 0.0, -5.0), Point3(0.0, 0.0, 1.0)), 0.001, Double.POSITIVE_INFINITY) == null
-        }
-        assertEquals(kotlin.math.exp(-density * 2), passed.toDouble() / SAMPLES, 0.02)
+    fun `fog lets through the share of light its density allows, per channel`() {
+        val density = Color(0.2, 0.5, 1.0)
+        val fog = Fog(Point3.ZERO, 1.0, Medium(density, Color.ZERO))
+        val scene = TraceScene(listOf(fog), SceneLook(Sky(WHITE, WHITE), fov = 60.0, aperture = 0.0))
+        val random = Random(9)
+        val mean = (0 until SAMPLES).fold(Point3.ZERO) { sum, i ->
+            sum + PathTracing.color(scene, Ray(Point3(i * 1e-7, 0.0, -5.0), Point3(0.0, 0.0, 1.0)), DEPTH, random)
+        } / SAMPLES.toDouble()
+        assertEquals(kotlin.math.exp(-0.4), mean.x, 0.015)
+        assertEquals(kotlin.math.exp(-1.0), mean.y, 0.015)
+        assertEquals(kotlin.math.exp(-2.0), mean.z, 0.015)
     }
 
     @Test
-    fun `fog scatters inside its sphere and only before what the ray hits`() {
-        val fog = Fog(Point3.ZERO, 1.0, 50.0, WHITE)
-        val ray = Ray(Point3(0.0, 0.0, -5.0), Point3(0.0, 0.0, 1.0))
-        val hit = fog.hit(ray, 0.001, Double.POSITIVE_INFINITY)
-        assertTrue(hit != null && hit.t in 4.0..6.0)
-        assertNull(fog.hit(ray, 0.001, 4.0))
+    fun `the edge of fog is an interface, and a camera inside fog starts in its medium`() {
+        val fog = Fog(Point3.ZERO, 2.0, 0.3, WHITE)
+        val hit = assertNotNull(fog.hit(Ray(Point3(0.0, 0.0, -5.0), Point3(0.0, 0.0, 1.0)), 0.001, 100.0))
+        assertEquals(Interface, hit.material)
+        assertEquals(fog.medium, hit.media?.inside)
+        val scene = TraceScene(listOf(fog))
+        assertEquals(fog.medium, scene.mediumAt(Point3(0.5, 0.0, 0.0)))
+        assertNull(scene.mediumAt(Point3(5.0, 0.0, 0.0)))
+    }
+
+    @Test
+    fun `light sampling through fog keeps the brightness of the floor beneath it`() {
+        val objects = listOf(
+            Sphere(Point3(0.0, -100.0, 0.0), 100.0, Lambert(Color(0.7, 0.7, 0.7))),
+            Sphere(Point3(0.0, 3.0, 0.0), 0.5, Emissive(Color.ONE, 10.0)),
+            Fog(Point3(0.0, 1.0, 0.0), 2.5, Medium(Color(0.1, 0.25, 0.4), Color(0.9, 0.9, 0.9))),
+        )
+        val plain = floorBrightness(TraceScene(objects, NIGHT), Random(21))
+        val sampled = floorBrightness(TraceScene(objects, NIGHT.copy(sampleLights = true)), Random(22))
+        assertTrue(abs(plain - sampled) < plain * 0.04, "plain $plain vs sampled $sampled")
     }
 
     /** Mean brightness of rays from above, down at the floor, through the fog and past the light. */
