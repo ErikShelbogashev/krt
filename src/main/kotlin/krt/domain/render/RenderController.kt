@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import krt.domain.camera.Camera
 import krt.domain.scene.World
 import krt.platform.awt.toAWTColor
+import krt.platform.math.Color
 
 class RenderController(
     var repaintIntervalMs: Long,
@@ -47,10 +48,14 @@ class RenderController(
     }
 
     /**
-     * Workers, one per core, take batches of [batchSize] pixels in turn, so no core waits for the others.
-     * Pixels go straight into the frame's pixel array. After each batch the worker that finished it
-     * asks the clock whether to publish an intermediate frame; the final frame is published once all
-     * workers are done.
+     * Progressive frame: [Camera.samplesPerPixel] passes of one sample per pixel each, so a noisy but complete
+     * frame appears after the first pass and sharpens with every next one. Every pixel shows the average
+     * of the samples taken so far; after the last pass the frame has the full sample count.
+     *
+     * Within a pass, workers, one per core, take batches of [batchSize] pixels in turn, so no core waits for
+     * the others. Pixels go straight into the frame's pixel array. After each batch the worker that finished it
+     * asks the clock whether to publish an intermediate frame; the final frame is published once all passes
+     * are done.
      */
     private fun renderRayTracedImage(
         frame: Frame,
@@ -61,35 +66,60 @@ class RenderController(
         val pixels = FrameSampling.pixelOrder(camera.imageWidth, camera.imageHeight, random)
         val frameSeed = random.nextLong()
         val batches = pixels.chunked(batchSize)
-        val nextBatch = AtomicInteger(0)
-        val raster = frame.pixels
+        val accumulated = Accumulator(camera.imageWidth * camera.imageHeight)
         renderJob = CoroutineScope(renderDispatcher).launch {
-            List(workers) {
-                launch {
-                    while (isActive) {
-                        val batch = batches.getOrNull(nextBatch.getAndIncrement()) ?: break
-                        renderBatch(batch, raster, frameSeed, rayTracer, camera)
-                        publishIfDue(onUpdate)
+            for (pass in 0 until camera.samplesPerPixel) {
+                if (!isActive) break
+                val nextBatch = AtomicInteger(0)
+                List(workers) {
+                    launch {
+                        while (isActive) {
+                            val batch = batches.getOrNull(nextBatch.getAndIncrement()) ?: break
+                            renderBatch(batch, Pass(pass, frameSeed), frame, accumulated, rayTracer, camera)
+                            publishIfDue(onUpdate)
+                        }
                     }
-                }
-            }.joinAll()
+                }.joinAll()
+            }
             if (isActive) SwingUtilities.invokeLater { onUpdate.invoke() }
         }
     }
 
+    private class Pass(val index: Int, val frameSeed: Long)
+
+    /** Sum of the samples taken so far, three doubles (r, g, b) per pixel. */
+    private class Accumulator(pixelCount: Int) {
+        private val sums = DoubleArray(pixelCount * CHANNELS)
+
+        fun add(index: Int, color: Color): Color {
+            val at = index * CHANNELS
+            sums[at] += color.x
+            sums[at + 1] += color.y
+            sums[at + 2] += color.z
+            return Color(sums[at], sums[at + 1], sums[at + 2])
+        }
+
+        private companion object {
+            const val CHANNELS = 3
+        }
+    }
+
+    @Suppress("LongParameterList")
     private fun CoroutineScope.renderBatch(
         batch: List<FrameSampling.Pixel>,
-        raster: IntArray,
-        frameSeed: Long,
+        pass: Pass,
+        frame: Frame,
+        accumulated: Accumulator,
         rayTracer: RayTracer,
         camera: Camera,
     ) {
         for (pixel in batch) {
-            val pixelRandom = FrameSampling.pixelRandom(frameSeed, pixel, camera.imageWidth)
-            val color = FrameSampling.samplePixel(pixel, camera, rayTracer, pixelRandom)
+            val random =
+                FrameSampling.passRandom(pass.frameSeed, pixel, camera.imageWidth, camera.imageHeight, pass.index)
+            val color = FrameSampling.sampleOnce(pixel, camera, rayTracer, random)
             if (!isActive) return
-            val y = FrameSampling.imageY(pixel, camera.imageHeight)
-            raster[y * camera.imageWidth + pixel.i] = color.toAWTColor(camera.samplesPerPixel)
+            val index = FrameSampling.imageY(pixel, camera.imageHeight) * camera.imageWidth + pixel.i
+            frame.pixels[index] = accumulated.add(index, color).toAWTColor(pass.index + 1)
         }
     }
 

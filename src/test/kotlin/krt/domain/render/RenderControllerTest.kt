@@ -34,4 +34,26 @@ class RenderControllerTest {
 
         assertEquals(List(pixels / batch + 1) { true }, onUiThread.toList())
     }
+
+    @Test
+    fun `a progressive frame publishes after every batch of every pass`() {
+        val passes = 3
+        val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = passes }
+        val frame = Frame(16, 16)
+        val batch = 32
+        val expected = passes * (16 * 16 / batch) + 1
+        val updates = Collections.synchronizedList(mutableListOf<Unit>())
+        val done = CountDownLatch(1)
+        var lastTick = 0L
+
+        RenderController(0L, batch, Random(1), clock = { ++lastTick }).use { controller ->
+            controller.renderImage(frame, RayTracer(World.default(Random(2)), 3), camera) {
+                updates += Unit
+                if (updates.size == expected) done.countDown()
+            }
+            assertTrue(done.await(30, TimeUnit.SECONDS), "render did not finish")
+        }
+
+        assertEquals(expected, updates.size)
+    }
 }
