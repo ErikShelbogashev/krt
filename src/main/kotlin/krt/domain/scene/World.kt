@@ -3,6 +3,7 @@ package krt.domain.scene
 import kotlin.random.Random
 import krt.domain.scene.model.DemoScenes
 import krt.domain.scene.model.Hit
+import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Traceable
 import krt.domain.trace.GpuScene
@@ -16,9 +17,11 @@ import krt.platform.math.Ray
  * and the scene compiled from it for tracing (ADR 0008).
  * Writers replace both at once, readers (the render pool) always see a consistent snapshot.
  */
-class World(objects: List<Traceable> = emptyList(), sky: Sky = Sky.DAYLIGHT) {
+class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.CLASSIC) {
 
-    private class Snapshot(val objects: List<Traceable>, val sky: Sky) {
+    private class Snapshot(val objects: List<Traceable>, val look: SceneLook) {
+        val sky: Sky get() = look.sky
+
         /** Compiled on first use, so a burst of edits compiles the scene once. */
         val traceScene by lazy { TraceScene(objects, sky) }
 
@@ -27,11 +30,19 @@ class World(objects: List<Traceable> = emptyList(), sky: Sky = Sky.DAYLIGHT) {
     }
 
     @Volatile
-    private var snapshot = Snapshot(objects, sky)
+    private var snapshot = Snapshot(objects, look)
 
     val objects: List<Traceable> get() = snapshot.objects
 
     val sky: Sky get() = snapshot.sky
+
+    /** How the scene is shown: sky and the lens the camera starts with. */
+    val look: SceneLook get() = snapshot.look
+
+    /** Replaces the whole scene, for instance with another demo scene. */
+    fun load(objects: List<Traceable>, look: SceneLook) {
+        snapshot = Snapshot(objects, look)
+    }
 
     /** The scene to trace; consistent with [objects] read at the same moment. */
     val traceScene: TraceScene get() = snapshot.traceScene
@@ -40,7 +51,7 @@ class World(objects: List<Traceable> = emptyList(), sky: Sky = Sky.DAYLIGHT) {
     val gpuScene: GpuScene get() = snapshot.gpuScene
 
     fun translateObjectById(objectId: String, offset: Point3) {
-        snapshot = Snapshot(objects.translateFirst(objectId, offset), sky)
+        snapshot = Snapshot(objects.translateFirst(objectId, offset), look)
     }
 
     fun getObjectIds(): List<String> = objects.map { it.id }
@@ -49,11 +60,11 @@ class World(objects: List<Traceable> = emptyList(), sky: Sky = Sky.DAYLIGHT) {
     fun centerOf(objectId: String): Point3? = objects.find { it.id == objectId }?.bounds()?.center
 
     fun add(obj: Traceable) {
-        snapshot = Snapshot(objects + obj, sky)
+        snapshot = Snapshot(objects + obj, look)
     }
 
     fun addAll(objs: List<Traceable>) {
-        snapshot = Snapshot(objects + objs, sky)
+        snapshot = Snapshot(objects + objs, look)
     }
 
     fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? = traceScene.hit(ray, tMin, tMax)

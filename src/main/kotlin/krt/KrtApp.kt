@@ -32,6 +32,7 @@ import krt.domain.camera.model.CameraSnapshot
 import krt.domain.render.Frame
 import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
+import krt.domain.scene.model.DemoScene
 import krt.domain.scene.model.SceneCatalog
 import krt.domain.scene.model.Traceable
 import krt.infra.AppContext
@@ -117,8 +118,10 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>, camera: Came
         },
         sceneTab = {
             SceneTab(
-                catalog,
-                selectedId,
+                scene = DemoScene.entries.find { it.look == app.world.look },
+                onScene = { app.loadScene(it) },
+                catalog = catalog,
+                selectedId = selectedId,
                 onSelect = { selectedId = it },
                 speed = app.camera.movementSpeed,
                 onMove = { id, offset -> app.moveObject(id, offset) },

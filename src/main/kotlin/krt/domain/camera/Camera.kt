@@ -115,10 +115,13 @@ class Camera(
         lookFrom(preset.origin, preset.target)
     }
 
-    /** To the start view ([ViewPreset.START]) and the default lens; resolution, samples and speed stay. */
-    fun resetView() {
-        fov = DEFAULT_FOV
-        aperture = DEFAULT_APERTURE
+    /**
+     * To the start view ([ViewPreset.START]) with the lens a scene starts with, by default the classic one;
+     * resolution, samples and speed stay.
+     */
+    fun resetView(fov: Double = DEFAULT_FOV, aperture: Double = DEFAULT_APERTURE) {
+        this.fov = fov
+        this.aperture = aperture
         standAt(ViewPreset.START)
     }
 

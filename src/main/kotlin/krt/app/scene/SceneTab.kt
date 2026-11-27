@@ -19,6 +19,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import krt.app.shell.KrtIcons
 import krt.app.shell.SectionHeader
+import krt.domain.scene.model.DemoScene
 import krt.domain.scene.model.ObjectGroup
 import krt.domain.scene.model.ObjectSummary
 import krt.domain.scene.model.SceneCatalog
@@ -43,6 +47,8 @@ import krt.platform.math.Point3
  */
 @Composable
 fun SceneTab(
+    scene: DemoScene?,
+    onScene: (DemoScene) -> Unit,
     catalog: SceneCatalog,
     selectedId: String?,
     onSelect: (String) -> Unit,
@@ -53,6 +59,8 @@ fun SceneTab(
     val selected = catalog.selected(selectedId)
     var openGroups by remember { mutableStateOf(emptySet<String>()) }
     Column(modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader("Scene")
+        SceneSwitcher(scene, onScene)
         SectionHeader("Objects · ${catalog.size}")
         LazyColumn(Modifier.weight(1f).fillMaxWidth()) {
             objectRows(catalog.featured, selected?.id, onSelect)
@@ -65,6 +73,20 @@ fun SceneTab(
             }
         }
         selected?.let { MoveCard(it, speed, onMove) }
+    }
+}
+
+@Composable
+private fun SceneSwitcher(scene: DemoScene?, onScene: (DemoScene) -> Unit) {
+    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+        DemoScene.entries.forEach { entry ->
+            SegmentedButton(
+                selected = entry == scene,
+                onClick = { onScene(entry) },
+                shape = SegmentedButtonDefaults.itemShape(entry.ordinal, DemoScene.entries.size),
+                icon = {},
+            ) { Text(entry.title, maxLines = 1) }
+        }
     }
 }
 

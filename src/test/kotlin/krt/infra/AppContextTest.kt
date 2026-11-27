@@ -1,7 +1,6 @@
 package krt.infra
 
 import javax.swing.SwingUtilities
-import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -9,7 +8,7 @@ class AppContextTest {
 
     @Test
     fun `closing stops the frame being rendered`() {
-        val app = AppContext.create(Random(1))
+        val app = AppContext.create()
         var published = 0
         app.frameBuffer.onUpdate { published++ }
         app.changeCameraSettings { samplesPerPixel = 50 }
@@ -26,7 +25,7 @@ class AppContextTest {
 
     @Test
     fun `closed context renders nothing`() {
-        val app = AppContext.create(Random(1))
+        val app = AppContext.create()
         var published = 0
         app.frameBuffer.onUpdate { published++ }
 
