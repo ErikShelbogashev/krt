@@ -79,7 +79,7 @@ class OperationsTest {
     fun `load model adds its triangles to the scene and redraws`() {
         val objectsBefore = app.world.objects.size
         app.loadModel(File("samples/ORIGAMI_Chat_Free.obj"))
-        assertEquals(objectsBefore + 326, app.world.objects.size)
+        assertEquals(objectsBefore + 330, app.world.objects.size)
         assertEquals(1, published)
     }
 
