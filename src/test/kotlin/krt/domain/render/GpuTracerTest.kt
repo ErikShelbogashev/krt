@@ -16,6 +16,9 @@ import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Meshes
 import krt.domain.scene.model.Metals
 import krt.domain.scene.model.Metal
+import krt.domain.scene.model.Pattern
+import krt.domain.scene.model.PatternKind
+import krt.domain.scene.model.Patterned
 import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.Pose
 import krt.domain.scene.model.SceneLook
@@ -100,6 +103,22 @@ class GpuTracerTest {
             Sphere(Point3(0.0, 5.0, 3.0), 0.8, Emissive(Color(1.0, 0.95, 0.9), 8.0)),
         ),
         SceneLook(Sky(Color(0.6, 0.65, 0.8), Color(0.2, 0.3, 0.6)), fov = 60.0, aperture = 0.0, sampleLights = true),
+    )
+
+    /** Bumped marble, wood, a cloudy ball and a noisy floor. */
+    private val patterns = World(
+        listOf(
+            Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Patterned(Pattern(PatternKind.NOISE, GREY, WALL, 0.8), 0.3)),
+            Sphere(
+                Point3(-2.3, 1.0, 0.0), 1.0,
+                Patterned(Pattern(PatternKind.MARBLE, Color(0.9, 0.9, 0.85), Color(0.2, 0.25, 0.3), 1.5), 0.05, 0.4),
+            ),
+            Sphere(
+                Point3(0.0, 1.0, 0.5), 1.0,
+                Patterned(Pattern(PatternKind.WOOD, Color(0.7, 0.45, 0.2), RED, 3.0), 0.2, 0.2),
+            ),
+            Sphere(Point3(2.3, 1.0, 0.0), 1.0, Patterned(Pattern(PatternKind.CLOUDS, WALL, Color.ONE, 2.0), 0.5)),
+        ),
     )
 
     private fun camera() = Camera(
@@ -190,6 +209,20 @@ class GpuTracerTest {
     }
 
     @Test
+    fun `procedural patterns and bumps look the same on the GPU as on the CPU`() {
+        val camera = camera()
+        val gpu = gpuFrame(camera, patterns)
+        val cpu = cpuFrame(camera, patterns)
+
+        (0 until CHANNELS).forEach { channel ->
+            val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+            assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
+        }
+        val regions = (0 until QUADRANTS).map { q -> abs(brightness(gpu, q) - brightness(cpu, q)) }
+        assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
+    }
+
+    @Test
     fun `triangles are drawn`() {
         val wall = Triangle(
             Point3(-50.0, -50.0, -3.0),
@@ -254,6 +287,7 @@ class GpuTracerTest {
     private companion object {
         val WALL = Color(0.2, 0.4, 0.8)
         val RED = Color(0.8, 0.2, 0.1)
+        val GREY = Color(0.5, 0.5, 0.5)
         const val SIZE = 48
         const val SAMPLES = 16
         const val DEPTH = 7

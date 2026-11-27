@@ -1,26 +1,15 @@
 package krt.domain.trace
 
 import kotlin.math.roundToLong
-import krt.domain.scene.model.Checker
-import krt.domain.scene.model.Conductor
-import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
-import krt.domain.scene.model.Iridescent
-import krt.domain.scene.model.Isotropic
-import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Material
-import krt.domain.scene.model.Metal
-import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.Sky
-import krt.domain.scene.model.SoapBubble
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
 import krt.domain.scene.model.Translucent
 import krt.domain.scene.model.Triangle
-import krt.domain.scene.model.Velvet
 import krt.domain.scene.model.VertexNormals
-import krt.platform.math.Point3
 
 /**
  * Scene packed for the GPU shader (ADR 0009): one RGBA_8888 texture [width] texels wide, one number per texel.
@@ -35,7 +24,7 @@ import krt.platform.math.Point3
  *   or the centre, radius and density of a sphere of fog; last, for a triangle with vertex normals, 1 + the number
  *   of its record in the normals section, 0 for a flat one;
  * - their materials from [materialStart], [GpuScenePacking.MATERIAL_VALUES] each: material code, then a colour,
- *   two parameters, a second colour and a third parameter, as [GpuScenePacking.material] lays them out;
+ *   two parameters, a second colour and a third parameter, as [GpuMaterials.values] lays them out;
  * - [GpuLights.count] lights from [GpuLights.start]: the primitive slots of the emissive spheres and triangles,
  *   which next event estimation samples when [GpuLights.sampleLights] is on (ADR 0012);
  * - from [GpuLights.normalStart], the vertex normals of smooth triangles, [GpuScenePacking.NORMAL_VALUES] per record:
@@ -71,7 +60,7 @@ object GpuScenePacking {
     const val NODE_VALUES = 9
     const val PRIMITIVE_VALUES = 11
     const val NORMAL_VALUES = 9
-    const val MATERIAL_VALUES = 10
+    const val MATERIAL_VALUES = 12
     const val TEXTURE_WIDTH = 1024
 
     /** Packed coordinates lie in [-RANGE, RANGE). */
@@ -92,6 +81,7 @@ object GpuScenePacking {
     const val IRIDESCENT = 8
     const val CONDUCTOR = 9
     const val VELVET = 10
+    const val PATTERNED = 11
 
     private const val FIXED_BITS = 24
     private const val FIXED_ONE = 1 shl FIXED_BITS
@@ -173,59 +163,9 @@ object GpuScenePacking {
     }
 
     private fun materialCodes(primitive: Traceable): IntArray {
-        val values = material(materialOf(primitive))
+        val values = GpuMaterials.values(materialOf(primitive))
         return IntArray(MATERIAL_VALUES) { if (it == 0) values[0].toInt() else encode(values[it]) }
     }
-
-    /**
-     * The values of [material]: code; colour r, g, b; parameters 1 and 2; second colour r, g, b; parameter 3.
-     * - Lambert: albedo;
-     * - Metal: albedo, fuzz;
-     * - Dielectric: absorption per unit of distance (Beer–Lambert), refraction index, dispersion, none, GGX α of
-     *   frosted glass (0 for clear glass);
-     * - Emissive: emitted light;
-     * - Plastic: albedo, coat roughness, coat refraction index;
-     * - Checker: even cells, coat roughness, coat refraction index, odd cells, cell size;
-     * - Isotropic (the particles of fog): albedo;
-     * - Soap bubble: none, film thickness in nm, film refraction index;
-     * - Iridescent: base, film thickness in nm, film refraction index, none, roughness;
-     * - Conductor: η, GGX α along and across the tangent, k;
-     * - Velvet: base, roughness, chance of the diffuse bounce, sheen.
-     */
-    fun material(material: Material): DoubleArray = when (material) {
-        is Lambert -> values(LAMBERT, material.albedo)
-        is Metal -> values(METAL, material.albedo, material.fuzz)
-        is Dielectric -> values(
-            DIELECTRIC, material.absorption, material.indexOfReflection, material.dispersion,
-            third = if (material.roughness > 0) material.facets.alphaX else 0.0,
-        )
-        is Conductor -> values(
-            CONDUCTOR, material.eta, material.facets.alphaX, material.facets.alphaY, odd = material.k,
-        )
-        is Emissive -> values(EMISSIVE, material.emitColor * material.intensity)
-        is Plastic -> values(PLASTIC, material.albedo, material.roughness, material.ior)
-        is Checker -> values(
-            CHECKER, material.even, material.roughness, material.ior, odd = material.odd, third = material.cellSize,
-        )
-        is Isotropic -> values(ISOTROPIC, material.albedo)
-        is Velvet -> values(VELVET, material.base, material.roughness, material.diffuseChance, odd = material.sheen)
-        is SoapBubble -> values(BUBBLE, Point3.ZERO, material.thickness, material.filmIor)
-        is Iridescent -> values(
-            IRIDESCENT, material.base, material.thickness, material.filmIor, third = material.roughness,
-        )
-        else -> values(LAMBERT, Point3(UNKNOWN_GREY, UNKNOWN_GREY, UNKNOWN_GREY))
-    }
-
-    @Suppress("LongParameterList")
-    private fun values(
-        code: Int,
-        color: Point3,
-        first: Double = 0.0,
-        second: Double = 0.0,
-        odd: Point3 = Point3.ZERO,
-        third: Double = 0.0,
-    ): DoubleArray =
-        doubleArrayOf(code.toDouble(), color.x, color.y, color.z, first, second, odd.x, odd.y, odd.z, third)
 
     private fun texture(codes: IntArray, height: Int): ByteArray {
         val bytes = ByteArray(TEXTURE_WIDTH * height * BYTES_PER_TEXEL)
@@ -239,8 +179,6 @@ object GpuScenePacking {
         return bytes
     }
 
-    /** Colour of a material the shader does not know. */
-    private const val UNKNOWN_GREY = 0.5
 }
 
 private fun materialOf(primitive: Traceable): Material = when (primitive) {
