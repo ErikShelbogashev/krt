@@ -1,14 +1,17 @@
 package krt.domain.trace
 
 import kotlin.math.roundToLong
+import krt.domain.scene.model.Checker
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Material
 import krt.domain.scene.model.Metal
+import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
 import krt.domain.scene.model.Triangle
+import krt.platform.math.Point3
 
 /**
  * Scene packed for the GPU shader (ADR 0009): one RGBA_8888 texture [width] texels wide, one number per texel.
@@ -20,8 +23,8 @@ import krt.domain.scene.model.Triangle
  *   skip link, first primitive, primitive count (0 for an inner node); see [FlatBvh];
  * - [primitiveCount] primitives from [primitiveStart] in the order of the leaves, [GpuScenePacking.PRIMITIVE_VALUES]
  *   each: kind, then the centre and radius of a sphere or the first vertex and the two edges from it of a triangle;
- * - their materials from [materialStart], [GpuScenePacking.MATERIAL_VALUES] each: material code, colour r, g, b
- *   and one parameter (fuzz of a metal, refraction index of a dielectric).
+ * - their materials from [materialStart], [GpuScenePacking.MATERIAL_VALUES] each: material code, then a colour,
+ *   two parameters, a second colour and a third parameter, as [GpuScenePacking.material] lays them out.
  */
 class GpuScene(
     val data: ByteArray,
@@ -38,7 +41,7 @@ object GpuScenePacking {
 
     const val NODE_VALUES = 9
     const val PRIMITIVE_VALUES = 10
-    const val MATERIAL_VALUES = 5
+    const val MATERIAL_VALUES = 10
     const val TEXTURE_WIDTH = 1024
 
     /** Packed coordinates lie in [-RANGE, RANGE). */
@@ -51,6 +54,8 @@ object GpuScenePacking {
     const val METAL = 1
     const val DIELECTRIC = 2
     const val EMISSIVE = 3
+    const val PLASTIC = 4
+    const val CHECKER = 5
 
     private const val FIXED_BITS = 24
     private const val FIXED_ONE = 1 shl FIXED_BITS
@@ -129,18 +134,37 @@ object GpuScenePacking {
         return IntArray(MATERIAL_VALUES) { if (it == 0) values[0].toInt() else encode(values[it]) }
     }
 
-    private fun material(material: Material): DoubleArray = when (material) {
-        is Lambert -> doubleArrayOf(LAMBERT.toDouble(), material.albedo.x, material.albedo.y, material.albedo.z, 0.0)
-        is Metal -> doubleArrayOf(
-            METAL.toDouble(), material.albedo.x, material.albedo.y, material.albedo.z, material.fuzz,
+    /**
+     * The values of [material]: code; colour r, g, b; parameters 1 and 2; second colour r, g, b; parameter 3.
+     * - Lambert: albedo;
+     * - Metal: albedo, fuzz;
+     * - Dielectric: absorption per unit of distance (Beer–Lambert), refraction index;
+     * - Emissive: emitted light;
+     * - Plastic: albedo, coat roughness, coat refraction index;
+     * - Checker: even cells, coat roughness, coat refraction index, odd cells, cell size.
+     */
+    fun material(material: Material): DoubleArray = when (material) {
+        is Lambert -> values(LAMBERT, material.albedo)
+        is Metal -> values(METAL, material.albedo, material.fuzz)
+        is Dielectric -> values(DIELECTRIC, material.absorption, material.indexOfReflection)
+        is Emissive -> values(EMISSIVE, material.emitColor * material.intensity)
+        is Plastic -> values(PLASTIC, material.albedo, material.roughness, material.ior)
+        is Checker -> values(
+            CHECKER, material.even, material.roughness, material.ior, odd = material.odd, third = material.cellSize,
         )
-        is Dielectric -> doubleArrayOf(DIELECTRIC.toDouble(), 1.0, 1.0, 1.0, material.indexOfReflection)
-        is Emissive -> {
-            val light = material.emitColor * material.intensity
-            doubleArrayOf(EMISSIVE.toDouble(), light.x, light.y, light.z, 0.0)
-        }
-        else -> doubleArrayOf(LAMBERT.toDouble(), UNKNOWN_GREY, UNKNOWN_GREY, UNKNOWN_GREY, 0.0)
+        else -> values(LAMBERT, Point3(UNKNOWN_GREY, UNKNOWN_GREY, UNKNOWN_GREY))
     }
+
+    @Suppress("LongParameterList")
+    private fun values(
+        code: Int,
+        color: Point3,
+        first: Double = 0.0,
+        second: Double = 0.0,
+        odd: Point3 = Point3.ZERO,
+        third: Double = 0.0,
+    ): DoubleArray =
+        doubleArrayOf(code.toDouble(), color.x, color.y, color.z, first, second, odd.x, odd.y, odd.z, third)
 
     private fun texture(codes: IntArray, height: Int): ByteArray {
         val bytes = ByteArray(TEXTURE_WIDTH * height * BYTES_PER_TEXEL)

@@ -6,10 +6,12 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 import krt.domain.camera.Camera
 import krt.domain.scene.World
+import krt.domain.scene.model.Checker
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
+import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Triangle
 import krt.domain.trace.GpuScenePacking
@@ -29,12 +31,14 @@ class GpuTracerTest {
 
     private val world = World(
         listOf(
-            Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.5, 0.5, 0.5))),
+            Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Checker(Color(0.8, 0.8, 0.8), Color(0.2, 0.2, 0.2), 1.0, 0.1)),
             Sphere(Point3(0.0, 1.0, 0.0), 1.0, Dielectric(1.5)),
             Sphere(Point3(-2.5, 1.0, 0.0), 1.0, Lambert(Color(0.4, 0.2, 0.1))),
             Sphere(Point3(2.5, 1.0, 0.0), 1.0, Metal(Color(0.7, 0.6, 0.5), 0.05)),
             Sphere(Point3(0.0, 1.0, 2.5), 0.6, Emissive(Color(0.1, 0.7, 0.4), 2.0)),
             Triangle(Point3(-6.0, 0.0, -3.0), Point3(6.0, 0.0, -3.0), Point3(0.0, 5.0, -3.0), Lambert(WALL)),
+            Sphere(Point3(-1.5, 0.5, 1.5), 0.5, Plastic(Color(0.8, 0.1, 0.1), 0.05)),
+            Sphere(Point3(1.5, 0.5, 1.5), 0.5, Dielectric(1.5, Color(0.2, 0.6, 1.0), 1.5)),
         ),
     )
 
