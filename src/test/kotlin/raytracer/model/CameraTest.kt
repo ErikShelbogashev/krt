@@ -53,7 +53,7 @@ class CameraTest {
     @Test
     fun `ray without aperture starts at origin and goes through image plane`() {
         val camera = camera()
-        val center = camera.ray(0.5, 0.5)
+        val center = camera.ray(0.5, 0.5, kotlin.random.Random(0))
         assertEquals(Point3(0.0, 0.0, 0.0), center.origin)
         assertEquals(1.0, center.direction.unit().x, 1e-9)
     }

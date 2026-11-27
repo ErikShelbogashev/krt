@@ -2,6 +2,7 @@ package raytracer.model
 
 import kotlin.math.abs
 import kotlin.math.sqrt
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -101,12 +102,12 @@ class GeometryTest {
     @Test
     fun `ray tracer returns sky gradient on miss`() {
         val tracer = RayTracer(World(), 5)
-        assertPoint(Color(0.5, 0.7, 1.0), tracer.color(Ray(Point3.ZERO, Point3(0.0, 1.0, 0.0))))
-        assertPoint(Color(1.0, 1.0, 1.0), tracer.color(Ray(Point3.ZERO, Point3(0.0, -1.0, 0.0))))
+        assertPoint(Color(0.5, 0.7, 1.0), tracer.color(Ray(Point3.ZERO, Point3(0.0, 1.0, 0.0)), Random(0)))
+        assertPoint(Color(1.0, 1.0, 1.0), tracer.color(Ray(Point3.ZERO, Point3(0.0, -1.0, 0.0)), Random(0)))
         val mid = 0.5 * (1 / sqrt(2.0) + 1.0)
         assertPoint(
             Color(1.0, 1.0, 1.0) * (1.0 - mid) + Color(0.5, 0.7, 1.0) * mid,
-            tracer.color(Ray(Point3.ZERO, Point3(1.0, 1.0, 0.0)))
+            tracer.color(Ray(Point3.ZERO, Point3(1.0, 1.0, 0.0)), Random(0))
         )
     }
 
@@ -115,8 +116,8 @@ class GeometryTest {
         val world = World()
         world.add(Sphere(Point3(0.0, 0.0, -3.0), 1.0, Emissive(Color(0.1, 0.7, 0.4), 2.0)))
         val tracer = RayTracer(world, 5)
-        assertPoint(Color(0.2, 1.4, 0.8), tracer.color(Ray(Point3.ZERO, Point3(0.0, 0.0, -1.0))))
-        assertPoint(Point3.ZERO, RayTracer(world, 0).color(Ray(Point3.ZERO, Point3(0.0, 0.0, -1.0))))
+        assertPoint(Color(0.2, 1.4, 0.8), tracer.color(Ray(Point3.ZERO, Point3(0.0, 0.0, -1.0)), Random(0)))
+        assertPoint(Point3.ZERO, RayTracer(world, 0).color(Ray(Point3.ZERO, Point3(0.0, 0.0, -1.0)), Random(0)))
     }
 
     @Test
