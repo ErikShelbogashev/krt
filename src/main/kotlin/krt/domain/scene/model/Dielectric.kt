@@ -13,20 +13,29 @@ import krt.platform.math.Ray
 /**
  * Glass with refraction index [indexOfReflection]. Tinted glass absorbs light inside it by Beer–Lambert: after a
  * unit of distance a [tint] channel keeps its own share to the power of [density]; clear glass has a white tint.
+ *
+ * Glass with [dispersion] bends short waves more than long ones (Cauchy: the index grows by [dispersion] µm² per
+ * µm⁻² of wavelength, from [indexOfReflection] at the yellow d line), so it splits white light into a rainbow:
+ * white light that meets it goes on as light of one random wavelength (ADR 0013).
  */
 class Dielectric(
     val indexOfReflection: Double,
     val tint: Color = CLEAR,
     val density: Double = 0.0,
+    val dispersion: Double = 0.0,
 ) : Material {
 
     /** Absorption per unit of distance, per channel. */
     val absorption: Color = Color(absorb(tint.x), absorb(tint.y), absorb(tint.z))
 
     override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered {
+        val split = dispersion != 0.0 && ray.wavelength == 0.0
+        val wavelength = if (split) Spectrum.sample(random.nextDouble()) else ray.wavelength
         val clear = hit.isFrontFace || density == 0.0
-        val attenuation = if (clear) Point3.ONE else transmittance(hit.t * ray.direction.length())
-        val refractionRatio = if (hit.isFrontFace) 1.0 / indexOfReflection else indexOfReflection
+        val absorbed = if (clear) Point3.ONE else transmittance(hit.t * ray.direction.length())
+        val attenuation = if (split) absorbed * Spectrum.weight(wavelength) else absorbed
+        val index = indexAt(wavelength)
+        val refractionRatio = if (hit.isFrontFace) 1.0 / index else index
 
         val unitDirection = ray.direction.unit()
         val cosTheta = min(-unitDirection.dot(hit.normal), 1.0)
@@ -40,7 +49,14 @@ class Dielectric(
             unitDirection.refract(hit.normal, refractionRatio)
         }
 
-        return Scattered(ray.next(hit.p, direction), attenuation)
+        return Scattered(Ray(hit.p, direction, ray.time, wavelength), attenuation)
+    }
+
+    /** Refraction index for light of [wavelength] nm; white light (0) and glass without dispersion get the base one. */
+    fun indexAt(wavelength: Double): Double {
+        if (dispersion == 0.0 || wavelength == 0.0) return indexOfReflection
+        val micrometres = wavelength / NM_PER_UM
+        return indexOfReflection + dispersion * (1 / (micrometres * micrometres) - 1 / (D_LINE_UM * D_LINE_UM))
     }
 
     /** Share of light left after [distance] inside the glass. */
@@ -57,5 +73,7 @@ class Dielectric(
     private companion object {
         val CLEAR = Color(1.0, 1.0, 1.0)
         const val MIN_TINT = 1e-3
+        const val NM_PER_UM = 1000.0
+        const val D_LINE_UM = 0.5876
     }
 }
