@@ -1,5 +1,6 @@
 package krt
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,37 +56,42 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
     val shown = rememberShownFrame(app)
     var dark by remember { mutableStateOf(true) }
     var mode by remember { mutableStateOf(app.renderController.mode) }
+    val benchmark = rememberBenchmarkState()
     KrtTheme(dark) {
         Surface(modifier, color = MaterialTheme.colorScheme.background) {
-            Column(Modifier.fillMaxSize()) {
-                TopBar(
-                    onRestart = { app.redraw() },
-                    dark = dark,
-                    onToggleTheme = { dark = !dark },
-                    modeSelector = {
-                        RenderModeSelector(mode, onSelect = {
-                            mode = it
-                            app.setRenderMode(it)
-                        })
-                    },
-                    actions = {
-                        LoadModelButton(onOpen = { app.loadModel(it) })
-                        SaveImageButton(onSave = { app.saveImage(it) })
-                    },
-                )
-                Row(Modifier.weight(1f)) {
-                    Viewport(
-                        image = shown.image,
-                        gpuFrame = shown.gpuFrame,
-                        frameSize = shown.size,
-                        modeTitle = mode.title,
-                        onRotate = { dx, dy -> app.rotateCamera(dx, dy) },
-                        onKey = { app.moveCamera(cameraMoveFor(it)) },
-                        modifier = Modifier.weight(1f),
+            Box(Modifier.fillMaxSize()) {
+                Column(Modifier.fillMaxSize()) {
+                    TopBar(
+                        onRestart = { app.redraw() },
+                        dark = dark,
+                        onToggleTheme = { dark = !dark },
+                        modeSelector = {
+                            RenderModeSelector(mode, onSelect = {
+                                mode = it
+                                app.setRenderMode(it)
+                            })
+                        },
+                        actions = {
+                            LoadModelButton(onOpen = { app.loadModel(it) })
+                            SaveImageButton(onSave = { app.saveImage(it) })
+                            BenchmarkButton(benchmark)
+                        },
                     )
-                    AppInspector(app, shown.objects, shown.camera)
+                    Row(Modifier.weight(1f)) {
+                        Viewport(
+                            image = shown.image,
+                            gpuFrame = shown.gpuFrame,
+                            frameSize = shown.size,
+                            modeTitle = mode.title,
+                            onRotate = { dx, dy -> app.rotateCamera(dx, dy) },
+                            onKey = { app.moveCamera(cameraMoveFor(it)) },
+                            modifier = Modifier.weight(1f),
+                        )
+                        AppInspector(app, shown.objects, shown.camera)
+                    }
+                    StatusBar(mode, shown.progress, app.renderController.threads, app.rayTracer.maxDepth)
                 }
-                StatusBar(mode, shown.progress, app.renderController.threads, app.rayTracer.maxDepth)
+                BenchmarkHost(app, benchmark, progress = { shown.progress })
             }
         }
     }

@@ -12,6 +12,7 @@ import krt.app.render.CaptureSettingsOp
 import krt.app.render.FlyCameraOp
 import krt.app.render.RedrawOp
 import krt.app.render.RestoreSettingsOp
+import krt.app.render.SaveBenchmarkReportOp
 import krt.app.render.StartBenchmarkRunOp
 import krt.app.render.SaveImageOp
 import krt.app.render.SetRenderModeOp
@@ -25,6 +26,7 @@ import krt.domain.render.RenderController
 import krt.domain.scene.World
 import krt.domain.scene.model.DemoScene
 import krt.i9ns.png.PngFiles
+import krt.i9ns.textfile.TextFiles
 
 /**
  * Composition root (ADR 0006): creates resources and operations once and wires them together.
@@ -37,6 +39,7 @@ class AppContext(
     val renderController: RenderController,
     val frameBuffer: FrameBuffer,
     pngFiles: PngFiles = PngFiles(),
+    textFiles: TextFiles = TextFiles(),
 ) : AutoCloseable {
     val redraw = RedrawOp(renderController, rayTracer, camera, frameBuffer)
     val rotateCamera = RotateCameraOp(camera, renderController, rayTracer, frameBuffer)
@@ -49,6 +52,7 @@ class AppContext(
     val startBenchmarkRun = StartBenchmarkRunOp(world, camera, renderController, rayTracer, frameBuffer)
     val flyCamera = FlyCameraOp(camera, renderController, rayTracer, frameBuffer)
     val restoreSettings = RestoreSettingsOp(world, camera, renderController, rayTracer, frameBuffer)
+    val saveBenchmarkReport = SaveBenchmarkReportOp(textFiles)
     val focusOnObject = FocusOnObjectOp(world, camera, renderController, rayTracer, frameBuffer)
     val loadModel = LoadModelOp(world, renderController, rayTracer, camera, frameBuffer)
     val moveObject = MoveObjectOp(world, renderController, rayTracer, camera, frameBuffer)
