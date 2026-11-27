@@ -23,7 +23,7 @@ class Translucent(
 ) : Traceable {
 
     val surface = Sphere(center, radius, Dielectric(ior, roughness = roughness))
-    val inside = Fog(center, radius, density, albedo)
+    val inside = Fog(center, radius, density, albedo, enclosed = true)
 
     /** The objects it is made of, for the GPU, which has spheres and fog but no translucent balls. */
     val parts: List<Traceable> get() = listOf(surface, inside)

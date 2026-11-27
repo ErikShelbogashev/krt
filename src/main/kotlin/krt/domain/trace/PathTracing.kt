@@ -42,7 +42,7 @@ object PathTracing {
             val emitted = if (countEmission) hitRecord.material.emitted(0.0, 0.0, hitRecord.p) else Point3.ZERO
             when {
                 scattered == null -> emitted
-                scene.sampleLights && scattered.lobe != Lobe.SPECULAR ->
+                scene.sampleLights && scattered.lobe.samplesLights ->
                     emitted + direct(scene, ray, hitRecord, scattered, random) +
                         scattered.attenuation * color(scene, scattered.ray, depth - 1, random, false)
                 else -> emitted + scattered.attenuation * color(scene, scattered.ray, depth - 1, random, true)

@@ -5,19 +5,28 @@ import krt.platform.math.Color
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
-/** How a scattered ray left the surface, so light sampling knows what the surface does with direct light. */
-enum class Lobe {
+/**
+ * How a scattered ray left the surface, so light sampling knows what the surface does with direct light and
+ * whether it samples the lights there at all ([samplesLights]).
+ */
+enum class Lobe(val samplesLights: Boolean) {
     /** A mirror-like or refracted ray: direct light reaches it only along the ray itself. */
-    SPECULAR,
+    SPECULAR(samplesLights = false),
 
     /**
      * Diffuse: the ray goes from the normal to a random point in the unit ball around its tip, as [Lambert] does;
      * the surface is lit by [Scattered.attenuation] times the density of such directions, 2 cos³ / π.
      */
-    DIFFUSE,
+    DIFFUSE(samplesLights = true),
 
     /** Isotropic scattering inside a medium: lit by [Scattered.attenuation] / 4π in every direction. */
-    VOLUME,
+    VOLUME(samplesLights = true),
+
+    /**
+     * Isotropic scattering inside a medium closed in glass, as in a [Translucent] ball: every shadow ray would end
+     * on the glass, so the lights are not sampled there and the path goes on as after a specular bounce.
+     */
+    ENCLOSED_VOLUME(samplesLights = false),
 }
 
 /**
