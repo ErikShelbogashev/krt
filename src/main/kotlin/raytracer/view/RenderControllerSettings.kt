@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import raytracer.model.RenderController
 
 @Composable
-fun RenderControllerSettings(renderController: RenderController, onUpdateSettings: () -> Unit) {
+fun RenderControllerSettings(renderController: RenderController, onChange: (RenderController.() -> Unit) -> Unit) {
     Column(
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -24,8 +24,7 @@ fun RenderControllerSettings(renderController: RenderController, onUpdateSetting
             value = repaintIntervalMs,
             onValueChange = { newValue ->
                 repaintIntervalMs = newValue
-                renderController.repaintIntervalMs = newValue.toLong()
-                onUpdateSettings()
+                onChange { this.repaintIntervalMs = newValue.toLong() }
             },
             valueRange = 10f..200f,
             steps = 19, // Adjust step count for suitable granularity,
@@ -40,8 +39,7 @@ fun RenderControllerSettings(renderController: RenderController, onUpdateSetting
             value = batchSize,
             onValueChange = { newValue ->
                 batchSize = newValue
-                renderController.batchSize = newValue.toInt()
-                onUpdateSettings()
+                onChange { this.batchSize = newValue.toInt() }
             },
             valueRange = 1f..100f,
             steps = 99, // Adjust step count for suitable granularity

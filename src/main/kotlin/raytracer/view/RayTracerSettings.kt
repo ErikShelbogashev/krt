@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import raytracer.model.RayTracer
 
 @Composable
-fun RayTracerSettings(rayTracer: RayTracer, onUpdateSettings: (() -> Unit)) {
+fun RayTracerSettings(rayTracer: RayTracer, onChange: (RayTracer.() -> Unit) -> Unit) {
     Column(
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -25,8 +25,7 @@ fun RayTracerSettings(rayTracer: RayTracer, onUpdateSettings: (() -> Unit)) {
             value = maxDepth,
             onValueChange = { newValue ->
                 maxDepth = newValue
-                rayTracer.maxDepth = newValue.toInt()
-                onUpdateSettings()
+                onChange { this.maxDepth = newValue.toInt() }
             },
             valueRange = 1f..20f,
             steps = 19,
