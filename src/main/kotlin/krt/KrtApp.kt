@@ -125,7 +125,7 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>, camera: Came
         },
         sceneTab = {
             SceneTab(
-                scene = DemoScene.entries.find { it.look == app.world.look },
+                scene = DemoScene.showing(app.world.look),
                 onScene = { app.loadScene(it) },
                 catalog = catalog,
                 selectedId = selectedId,

@@ -36,4 +36,10 @@ class DemoSceneTest {
         assertEquals(Sky.DAYLIGHT, DemoScene.CLASSIC.look.sky)
         assertTrue(DemoScene.SHOWCASE.look.fov < DemoScene.CLASSIC.look.fov)
     }
+
+    @Test
+    fun `a look tells which demo scene is shown`() {
+        assertEquals(DemoScene.SHOWCASE, DemoScene.showing(DemoScene.SHOWCASE.look))
+        assertEquals(null, DemoScene.showing(SceneLook(Sky.DAYLIGHT, fov = 12.0, aperture = 0.0)))
+    }
 }
