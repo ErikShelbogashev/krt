@@ -140,7 +140,8 @@ class RenderController(
     }
 
     /**
-     * Progressive frame: [Camera.samplesPerPixel] passes of one sample per pixel each, so a noisy but complete
+     * Progressive frame: first a quick look ([CpuDraft]), shown at once; then, once the camera has rested for
+     * [REFINE_DELAY_MS], [Camera.samplesPerPixel] passes of one sample per pixel each, so a noisy but complete
      * frame appears after the first pass and sharpens with every next one. Every pixel shows the average
      * of the samples taken so far; after the last pass the frame has the full sample count.
      *
@@ -167,6 +168,10 @@ class RenderController(
             // asks for a new frame every repaint.
             FrameSampling.fillPixelOrder(scratch.order, random)
             val work = FrameWork(frame, rayTracer, camera, scratch, width, batchPixels, random.nextLong())
+            CpuDraft.trace(frame, camera, rayTracer, work.frameSeed, workers)
+            val draftProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt)
+            if (isActive) SwingUtilities.invokeLater { onUpdate(draftProgress) }
+            delay(REFINE_DELAY_MS)
             for (pass in 0 until passes) {
                 if (!isActive) break
                 val nextBatch = AtomicInteger(0)

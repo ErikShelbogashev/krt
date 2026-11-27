@@ -29,12 +29,12 @@ class RenderControllerTest {
         RenderController(0L, batch, Random(1), clock = { ++lastTick }).use { controller ->
             controller.renderImage(frame, RayTracer(World.default(Random(2)), 3), camera) {
                 onUiThread += SwingUtilities.isEventDispatchThread()
-                if (onUiThread.size == pixels / batch + 1) done.countDown()
+                if (onUiThread.size == pixels / batch + 2) done.countDown() // the quick look, batches, the end
             }
             assertTrue(done.await(30, TimeUnit.SECONDS), "render did not finish")
         }
 
-        assertEquals(List(pixels / batch + 1) { true }, onUiThread.toList())
+        assertEquals(List(pixels / batch + 2) { true }, onUiThread.toList())
     }
 
     @Test
@@ -43,7 +43,7 @@ class RenderControllerTest {
         val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = passes }
         val frame = Frame(16, 16)
         val batch = 32
-        val expected = passes * (16 * 16 / batch) + 1
+        val expected = passes * (16 * 16 / batch) + 2 // the quick look, batches, the end
         val updates = Collections.synchronizedList(mutableListOf<Unit>())
         val done = CountDownLatch(1)
         var lastTick = 0L
@@ -64,7 +64,7 @@ class RenderControllerTest {
         val passes = 3
         val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = passes }
         val batch = 64
-        val expected = passes * (16 * 16 / batch) + 1
+        val expected = passes * (16 * 16 / batch) + 2 // the quick look, batches, the end
         val progress = Collections.synchronizedList(mutableListOf<RenderProgress>())
         val done = CountDownLatch(1)
         var lastTick = 0L
@@ -81,6 +81,24 @@ class RenderControllerTest {
         assertTrue(updates.dropLast(1).none { it.isDone })
         assertEquals((0 until passes).toSet(), updates.dropLast(1).map { it.completedPasses }.toSet())
         assertEquals(RenderProgress.finished(passes, updates.last().elapsedMs), updates.last())
+    }
+
+    @Test
+    fun `a CPU frame starts with a quick look that covers the whole frame`() {
+        val camera = Camera.default().apply { imageWidth = 64; imageHeight = 48; samplesPerPixel = 2 }
+        val frame = Frame(64, 48)
+        val quickLook = CountDownLatch(1)
+        var covered = 0
+        RenderController(Long.MAX_VALUE, 64, Random(1)).use { controller ->
+            controller.renderImage(frame, RayTracer(World.default(Random(2)), 3), camera) { progress ->
+                if (progress.completedPasses == 0 && progress.passFraction == 0.0) {
+                    covered = frame.pixels.count { it != 0 }
+                    quickLook.countDown()
+                }
+            }
+            assertTrue(quickLook.await(30, TimeUnit.SECONDS), "no quick look")
+        }
+        assertEquals(64 * 48, covered)
     }
 
     @Test

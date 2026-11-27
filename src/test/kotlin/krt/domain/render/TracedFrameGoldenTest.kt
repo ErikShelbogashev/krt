@@ -26,9 +26,9 @@ class TracedFrameGoldenTest {
         val frame = Frame(camera.imageWidth, camera.imageHeight)
         val done = CountDownLatch(1)
 
-        // A huge repaint interval leaves only the final update, which signals completion.
+        // A huge repaint interval leaves only the quick look and the final update, which signals completion.
         RenderController(Long.MAX_VALUE, 64, Random(7)).use { controller ->
-            controller.renderImage(frame, RayTracer(world, 5), camera) { done.countDown() }
+            controller.renderImage(frame, RayTracer(world, 5), camera) { if (it.isDone) done.countDown() }
             assertTrue(done.await(30, TimeUnit.SECONDS), "render did not finish")
         }
 
@@ -43,7 +43,9 @@ class TracedFrameGoldenTest {
             val frame = Frame(16, 16)
             val done = CountDownLatch(1)
             RenderController(Long.MAX_VALUE, 8, Random(1)).use { controller ->
-                controller.renderImage(frame, RayTracer(World.default(Random(2)), 3), camera) { done.countDown() }
+                controller.renderImage(frame, RayTracer(World.default(Random(2)), 3), camera) {
+                    if (it.isDone) done.countDown()
+                }
                 assertTrue(done.await(30, TimeUnit.SECONDS))
             }
             return frame.pixels
