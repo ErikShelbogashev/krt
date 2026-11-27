@@ -55,7 +55,7 @@ class SetCameraViewOp(
     private val frameBuffer: FrameBuffer,
 ) {
     operator fun invoke(preset: ViewPreset) {
-        camera.lookFrom(preset.origin, preset.target)
+        camera.standAt(preset)
         renderFrame(renderController, rayTracer, camera, frameBuffer)
     }
 }

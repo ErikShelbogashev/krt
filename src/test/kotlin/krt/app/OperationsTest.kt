@@ -139,14 +139,17 @@ class OperationsTest {
 
     @Test
     fun `camera view presets, reset and focus on an object change the camera and redraw`() {
-        app.setCameraView(ViewPreset.OVERVIEW)
-        assertEquals(ViewPreset.OVERVIEW, app.camera.snapshot().preset)
+        assertEquals(ViewPreset.START, app.camera.snapshot().preset)
+        app.setCameraView(ViewPreset.FRONT)
+        assertEquals(ViewPreset.FRONT, app.camera.snapshot().preset)
+        assertEquals(ViewPreset.FRONT.focusDistance, app.camera.focusDist)
 
         app.changeCameraSettings { fov = 30.0; aperture = 2.0 }
         app.resetCameraView()
         val reset = app.camera.snapshot()
-        assertEquals(ViewPreset.DEFAULT, reset.preset)
-        assertEquals(Triple(90.0, 0.1, 10.0), Triple(reset.fov, reset.aperture, reset.focusDistance))
+        assertEquals(ViewPreset.START, reset.preset)
+        val lens = Triple(reset.fov, reset.aperture, reset.focusDistance)
+        assertEquals(Triple(90.0, 0.1, ViewPreset.START.focusDistance), lens)
 
         app.focusOnObject("TEST")
         assertEquals((Point3(-4.0, 1.0, 0.0) - app.camera.origin).length(), app.camera.focusDist, 1e-9)

@@ -56,7 +56,7 @@ class AppContext(
 
         fun create(random: Random = Random.Default): AppContext {
             val world = World.default(random)
-            val camera = Camera.default()
+            val camera = Camera.default().apply { resetView() }
             return AppContext(
                 world = world,
                 rayTracer = RayTracer(world, DEFAULT_MAX_DEPTH),

@@ -1,5 +1,6 @@
 package krt.domain.camera.model
 
+import kotlin.math.sqrt
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -17,8 +18,16 @@ class ViewPresetTest {
     }
 
     @Test
-    fun `the default preset is the view the camera starts with`() {
-        assertEquals(ViewPreset.DEFAULT, Camera.default().snapshot().preset)
+    fun `the default camera stands at the close-up, a reset one at the start view`() {
+        assertEquals(ViewPreset.CLOSE_UP, Camera.default().snapshot().preset)
+        assertEquals(ViewPreset.START, Camera.default().apply { resetView() }.snapshot().preset)
+    }
+
+    @Test
+    fun `a preset focuses on the point it looks at`() {
+        val camera = Camera.default().apply { standAt(ViewPreset.OVERVIEW) }
+        assertEquals(sqrt(13.0 * 13 + 2 * 2 + 3 * 3), camera.focusDist, 1e-9)
+        assertEquals(10.0, ViewPreset.FRONT.focusDistance, 1e-9)
     }
 
     @Test
