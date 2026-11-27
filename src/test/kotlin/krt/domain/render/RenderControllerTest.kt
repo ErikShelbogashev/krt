@@ -103,7 +103,7 @@ class RenderControllerTest {
             assertTrue(done.await(30, TimeUnit.SECONDS), "GPU frame did not finish")
         }
 
-        assertEquals(listOf(1, 2, 4, 5), steps.map { it.completedPasses })
+        assertEquals(listOf(0, 1, 2, 4, 5), steps.map { it.completedPasses }) // a quick look first
         assertTrue(onUiThread.all { it })
         assertEquals(0, pixelUpdates)
         assertTrue(frame.pixels.all { it == 0 })
