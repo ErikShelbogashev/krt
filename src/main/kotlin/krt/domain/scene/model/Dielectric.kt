@@ -7,7 +7,7 @@ import kotlin.random.Random
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
-class Dielectric(private val indexOfReflection: Double) : Material {
+class Dielectric(val indexOfReflection: Double) : Material {
     override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered {
         val attenuation = Point3.ONE
         val refractionRatio = if (hit.isFrontFace) 1.0 / indexOfReflection else indexOfReflection

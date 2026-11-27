@@ -148,6 +148,9 @@ class Camera(
         )
     }
 
+    /** The projection that [ray] uses, as plain values, for renderers that build rays elsewhere. */
+    fun view(): CameraView = CameraView(_origin, lowerLeftCorner, horizontal, vertical, u, v, lensRadius)
+
     fun project(point: Point3): Point? {
         val cameraSpacePoint = point - _origin
         val x = cameraSpacePoint.dot(u)
@@ -186,5 +189,19 @@ class Camera(
         )
     }
 }
+
+/**
+ * Camera projection as values: a ray through (s, t) in [0, 1]² starts at [origin] shifted on the lens
+ * by [u] and [v] within [lensRadius] and points at `lowerLeftCorner + horizontal * s + vertical * t`.
+ */
+data class CameraView(
+    val origin: Point3,
+    val lowerLeftCorner: Point3,
+    val horizontal: Point3,
+    val vertical: Point3,
+    val u: Point3,
+    val v: Point3,
+    val lensRadius: Double,
+)
 
 enum class CameraMove { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN, NONE }

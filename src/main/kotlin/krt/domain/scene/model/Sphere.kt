@@ -9,9 +9,9 @@ import krt.platform.math.Point3
 import krt.platform.math.Ray
 
 class Sphere(
-    private val center: Point3,
-    private val radius: Double,
-    private val material: Material,
+    val center: Point3,
+    val radius: Double,
+    val material: Material,
     override val id: String = "Sphere[${UUID.randomUUID()}]",
 ) : Traceable {
 
