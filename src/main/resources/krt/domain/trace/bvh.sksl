@@ -1,0 +1,35 @@
+float hitT;
+
+// The primitive the ray hits first before tMax, or -1; its distance goes to hitT. Walks the BVH along skip links.
+float closestHit(float3 origin, float3 direction, float tMax) {
+    hitT = tMax;
+    float hitSlot = -1.0;
+    float3 inverse = 1.0 / direction;
+    float node = 0.0;
+    for (int step = 0; step < MAX_STEPS; step++) {
+        if (node >= nodeCount) { break; }
+        float base = node * NODE_VALUES;
+        float3 t1 = (vector(base) - origin) * inverse;
+        float3 t2 = (vector(base + 3.0) - origin) * inverse;
+        float3 lo = min(t1, t2);
+        float3 hi = max(t1, t2);
+        float near = max(max(lo.x, lo.y), max(lo.z, T_MIN));
+        float far = min(min(hi.x, hi.y), min(hi.z, hitT));
+        if (far < near) {
+            node = code(base + 6.0);
+        } else {
+            float count = code(base + 8.0);
+            float first = code(base + 7.0);
+            for (int k = 0; k < LEAF_SIZE; k++) {
+                if (float(k) >= count) { break; }
+                float t = intersect(first + float(k), origin, direction, hitT);
+                if (t > 0.0) {
+                    hitT = t;
+                    hitSlot = first + float(k);
+                }
+            }
+            node += 1.0;
+        }
+    }
+    return hitSlot;
+}

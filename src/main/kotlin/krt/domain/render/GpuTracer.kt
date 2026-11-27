@@ -2,6 +2,7 @@ package krt.domain.render
 
 import krt.domain.camera.CameraView
 import krt.domain.trace.GpuScene
+import krt.domain.trace.GpuShaderSource
 import krt.platform.math.Point3
 import krt.platform.skia.DrawnOnceShader
 import org.jetbrains.skia.ColorAlphaType
@@ -53,9 +54,7 @@ data class GpuBand(
  */
 class GpuTracer : AutoCloseable {
 
-    private val effect: RuntimeEffect = RuntimeEffect.makeForShader(
-        requireNotNull(GpuTracer::class.java.getResource(SHADER)) { "missing $SHADER" }.readText(),
-    )
+    private val effect: RuntimeEffect = RuntimeEffect.makeForShader(GpuShaderSource.assemble(::part))
 
     /**
      * The frame after one more step: [previous] (the frame of the earlier steps, null before the first) with
@@ -123,11 +122,13 @@ class GpuTracer : AutoCloseable {
             scene.width * BYTES_PER_TEXEL,
         ).makeShader(FilterTileMode.CLAMP, FilterTileMode.CLAMP, SamplingMode.DEFAULT, null)
 
+    private fun part(path: String): String =
+        requireNotNull(GpuTracer::class.java.getResource(path)) { "missing $path" }.readText()
+
     private fun RuntimeShaderBuilder.vector(name: String, value: Point3) =
         uniform(name, value.x.toFloat(), value.y.toFloat(), value.z.toFloat())
 
     private companion object {
-        const val SHADER = "path_tracer.sksl"
         const val BYTES_PER_TEXEL = 4
         const val BLACK = 0xFF000000.toInt()
     }

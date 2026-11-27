@@ -1,0 +1,44 @@
+// Pattern.valueAt: the blend of the two colours at [p], in [0, 1].
+float patternValue(float kind, float3 p, float scale, float turbulence, float frequency, float octaves) {
+    float3 q = p * scale;
+    float value;
+    if (kind == MARBLE) {
+        float veins = q.x * 2.0 * PI * frequency + turbulence * 4.0 * fractal(q, true, octaves);
+        value = 1.0 - sqrt(0.5 + 0.5 * sin(veins));
+    } else if (kind == WOOD) {
+        // The trunk along x: long stripes of thin dark latewood, wavy along the grain, over fine fibres.
+        float rings = sqrt(q.y * q.y + q.z * q.z) * frequency + turbulence * perlin(q * float3(0.25, 2.0, 2.0));
+        float ring = rings - floor(rings);
+        float latewood = smoothstep(0.72, 0.9, ring) * (1.0 - smoothstep(0.9, 1.0, ring));
+        float fibres = 0.5 + 0.5 * perlin(q * float3(0.5, 24.0, 24.0));
+        value = 0.75 * latewood + 0.25 * fibres;
+    } else if (kind == CLOUDS) {
+        value = smoothstep(0.45, 0.75, 0.5 + 0.5 * fractal(q, false, octaves));
+    } else if (kind == GRID) {
+        float3 cell = q - floor(q);
+        value = (cell.x < frequency || cell.y < frequency || cell.z < frequency) ? 1.0 : 0.0;
+    } else if (kind == STRIPES) {
+        value = smoothstep(0.35, 0.65, 0.5 + 0.5 * sin(2.0 * PI * frequency * q.y));
+    } else {
+        value = 0.5 + 0.5 * fractal(q, false, octaves);
+    }
+    return clamp(value, 0.0, 1.0);
+}
+
+// The pattern of the material at [base]: its blend at [p].
+float materialPattern(float base, float3 p) {
+    return patternValue(number(base + 10.0), p, number(base + 5.0), number(base + 11.0), number(base + 12.0),
+        number(base + 13.0));
+}
+
+// Bump.normal: [normal] tilted against the slope of the pattern times [strength].
+float3 bumpNormal(float base, float3 p, float3 normal, float strength) {
+    float scale = number(base + 5.0);
+    float step = 1.0e-3 / scale;
+    float here = materialPattern(base, p);
+    float3 slope = float3(materialPattern(base, p + float3(step, 0.0, 0.0)) - here,
+        materialPattern(base, p + float3(0.0, step, 0.0)) - here,
+        materialPattern(base, p + float3(0.0, 0.0, step)) - here) / step;
+    float3 along = slope - normal * dot(slope, normal);
+    return normalize(normal - along * (strength / scale));
+}

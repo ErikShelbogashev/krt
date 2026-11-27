@@ -1,0 +1,47 @@
+// GPU path tracer of krt (ADR 0009), in parts that sit beside the Kotlin they mirror; GpuShaderSource joins them
+// in a fixed order after the constants it generates from the Kotlin packing. This part: the uniforms of a GpuFrame.
+// SkSL is GLSL ES 2.0: no recursion, loops have constant bounds and stop early with break, and local arrays take
+// constant indices only, so the BVH is walked without a stack along skip links (see krt.domain.trace.FlatBvh).
+
+uniform shader scene;               // RGBA_8888, one 24-bit number per texel, see GpuScene
+uniform shader previous;            // the frame of the earlier steps, with previousSamples samples per pixel
+uniform float previousSamples;
+uniform float bandStart;            // the rows this step samples, from the top; the others keep the earlier frame
+uniform float bandEnd;
+uniform float nodeCount;
+uniform float primitiveStart;
+uniform float materialStart;
+uniform float lightStart;           // the primitive slots of the lights, see GpuScene
+uniform float lightCount;           // lights to sample (next event estimation, ADR 0012); 0 when it is off
+uniform float memberStart;          // the members of the lights: primitive slots and cumulative areas
+uniform float normalStart;          // the vertex normals of smooth triangles
+uniform float smoothNormals;        // 1 when the scene has smooth triangles, so hits read their vertex normals
+uniform float mediaStart;           // the media: density and albedo each (ADR 0014)
+uniform float cameraMedium;         // the medium the camera stands in, -1 for clear air
+uniform float quickLook;            // 1 for the quick look of a frame: no media and no light sampling (ADR 0010)
+uniform float motionBlur;           // 1 when rays go at random moments of the shutter and balls move (ADR 0013)
+uniform float3 skyHorizon;          // Sky: the gradient from the horizon to the zenith
+uniform float3 skyZenith;
+uniform float2 frameSize;
+uniform float3 camOrigin;
+uniform float3 camLowerLeft;
+uniform float3 camHorizontal;
+uniform float3 camVertical;
+uniform float3 camU;
+uniform float3 camV;
+uniform float lensRadius;
+uniform float maxDepth;
+uniform float samples;
+uniform float seed;
+
+const int MAX_STEPS_PER_PATH = 48;  // bounces up to MAX_DEPTH and crossings of interfaces between media
+const int MAX_SAMPLES = 64;
+const int MAX_STEPS = 65536;        // nodes one ray may visit
+const float T_MIN = 0.001;
+const float FAR = 1.0e30;
+const float PI = 3.14159265358979;
+
+const float SPECULAR = 0.0;         // Lobe: how a ray left a surface, for light sampling
+const float DIFFUSE = 1.0;
+const float VOLUME = 2.0;
+const float SHADOW_MARGIN = 1.0e-4;

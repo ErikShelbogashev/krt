@@ -1,0 +1,12 @@
+float reflectance(float cosine, float refIdx) {
+    float r0 = (1.0 - refIdx) / (1.0 + refIdx);
+    r0 = r0 * r0;
+    return r0 + (1.0 - r0) * pow(1.0 - cosine, 5.0);
+}
+
+float3 refractDir(float3 uv, float3 n, float etaiOverEtat) {
+    float cosTheta = min(dot(-uv, n), 1.0);
+    float3 rOutPerp = (uv + n * cosTheta) * etaiOverEtat;
+    float3 rOutParallel = n * (-sqrt(abs(1.0 - dot(rOutPerp, rOutPerp))));
+    return rOutPerp + rOutParallel;
+}

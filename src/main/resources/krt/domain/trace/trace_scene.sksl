@@ -1,0 +1,52 @@
+// Distance along the ray to primitive [slot] within [T_MIN, tMax], or -1 when the ray misses it.
+float intersect(float slot, float3 origin, float3 direction, float tMax) {
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    float kind = code(base);
+    if (kind == TRIANGLE) { return intersectTriangle(base, origin, direction, tMax); }
+    if (kind == FRACTAL) { return intersectFractal(base, origin, direction, tMax); }
+    float3 center = centerOf(base);
+    float radius = number(base + 4.0);
+    float3 oc = origin - center;
+    float a = dot(direction, direction);
+    float halfB = dot(oc, direction);
+    float c = dot(oc, oc) - radius * radius;
+    float discriminant = halfB * halfB - a * c;
+    if (discriminant < 0.0) { return -1.0; }
+    float sqrtD = sqrt(discriminant);
+    float root = (-halfB - sqrtD) / a;
+    if (root < T_MIN || root > tMax) { root = (-halfB + sqrtD) / a; }
+    if (root < T_MIN || root > tMax) { return -1.0; }
+    return root;
+}
+
+// Normal of primitive [slot] at [p], pointing out of it.
+float3 outwardNormal(float slot, float3 p) {
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    float kind = code(base);
+    if (kind == TRIANGLE) { return normalize(cross(vector(base + 4.0), vector(base + 7.0))); }
+    if (kind == FRACTAL) { return fractalNormal(base, p); }
+    return (p - centerOf(base)) / number(base + 4.0);
+}
+
+// The normal to shade with at [p] on primitive [slot], whose flat normal is [outward]: blended from the vertex
+// normals of a smooth triangle, as VertexNormals.at, or [outward] itself.
+float3 shadingNormal(float slot, float3 p, float3 outward) {
+    if (smoothNormals < 0.5) { return outward; }
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    float record = code(base + 11.0);
+    if (record < 1.0) { return outward; }
+    float3 edge1 = vector(base + 4.0);
+    float3 edge2 = vector(base + 7.0);
+    float3 w = p - vector(base + 1.0);
+    float d00 = dot(edge1, edge1);
+    float d01 = dot(edge1, edge2);
+    float d11 = dot(edge2, edge2);
+    float d20 = dot(w, edge1);
+    float d21 = dot(w, edge2);
+    float denominator = d00 * d11 - d01 * d01;
+    float u = (d11 * d20 - d01 * d21) / denominator;
+    float v = (d00 * d21 - d01 * d20) / denominator;
+    float at = normalStart + (record - 1.0) * NORMAL_VALUES;
+    float3 blended = normalize(vector(at) * (1.0 - u - v) + vector(at + 3.0) * u + vector(at + 6.0) * v);
+    return dot(blended, outward) < 0.0 ? -blended : blended;
+}

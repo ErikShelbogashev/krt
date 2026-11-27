@@ -1,0 +1,28 @@
+// Hash without sine (Dave Hoskins): a pseudo-random number in [0, 1) from three floats.
+float hash13(float3 p3) {
+    p3 = fract(p3 * 0.1031);
+    p3 += dot(p3, p3.zyx + 31.32);
+    return fract((p3.x + p3.y) * p3.z);
+}
+
+float2 pixelId;
+float counter;
+float rayTime;                      // the moment of the shutter of the path being traced, as Ray.time
+
+float rnd() {
+    counter += 1.0;
+    return hash13(float3(pixelId.x + seed * 17.0, pixelId.y + seed * 31.0, counter));
+}
+
+float3 randomInUnitSphere() {
+    float z = 2.0 * rnd() - 1.0;
+    float phi = 2.0 * PI * rnd();
+    float r = sqrt(max(0.0, 1.0 - z * z));
+    float scale = pow(rnd(), 1.0 / 3.0);
+    return float3(r * cos(phi), r * sin(phi), z) * scale;
+}
+
+float2 randomInUnitDisk() {
+    float phi = 2.0 * PI * rnd();
+    return float2(cos(phi), sin(phi)) * sqrt(rnd());
+}

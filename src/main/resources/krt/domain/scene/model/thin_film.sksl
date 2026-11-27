@@ -1,0 +1,29 @@
+// ThinFilm.at: reflectance of a film between air and a substrate, unpolarised, by Airy's sum.
+float airy(float r12, float r23, float phase) {
+    float cross = 2.0 * r12 * r23 * cos(phase);
+    return (r12 * r12 + r23 * r23 + cross) / (1.0 + r12 * r12 * r23 * r23 + cross);
+}
+
+float filmAt(float cosine, float thickness, float filmIor, float substrateIor, float wavelength) {
+    float sinSquared = 1.0 - cosine * cosine;
+    float inFilm = sqrt(max(0.0, 1.0 - sinSquared / (filmIor * filmIor)));
+    float inSubstrate = sqrt(max(0.0, 1.0 - sinSquared / (substrateIor * substrateIor)));
+    float phase = 4.0 * PI * filmIor * thickness * inFilm / wavelength;
+    float s = airy((cosine - filmIor * inFilm) / (cosine + filmIor * inFilm),
+        (filmIor * inFilm - substrateIor * inSubstrate) / (filmIor * inFilm + substrateIor * inSubstrate), phase);
+    float p = airy((inFilm - filmIor * cosine) / (inFilm + filmIor * cosine),
+        (filmIor * inSubstrate - substrateIor * inFilm) / (filmIor * inSubstrate + substrateIor * inFilm), phase);
+    return 0.5 * (s + p);
+}
+
+// ThinFilm.reflectance: at the wavelength the ray carries, or at those of the red, green and blue channels.
+float3 filmReflectance(float cosine, float thickness, float filmIor, float substrateIor, float wavelength) {
+    if (wavelength > 0.0) { return float3(filmAt(cosine, thickness, filmIor, substrateIor, wavelength)); }
+    return float3(filmAt(cosine, thickness, filmIor, substrateIor, 650.0),
+        filmAt(cosine, thickness, filmIor, substrateIor, 532.0),
+        filmAt(cosine, thickness, filmIor, substrateIor, 450.0));
+}
+
+float filmChance(float3 reflectance) {
+    return clamp((reflectance.x + reflectance.y + reflectance.z) / 3.0, 0.02, 0.98);
+}

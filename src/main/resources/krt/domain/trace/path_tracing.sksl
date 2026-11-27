@@ -1,0 +1,202 @@
+float3 trace(float3 origin, float3 direction) {
+    rayTime = motionBlur > 0.5 ? rnd() : 0.0;
+    float3 radiance = float3(0.0);
+    float3 throughput = float3(1.0);
+    bool countEmission = true;
+    float wavelength = 0.0;         // 0 for white light, the wavelength in nm once dispersion split it
+    float medium = quickLook > 0.5 ? -1.0 : cameraMedium; // the medium of the path, -1 for clear air (ADR 0014)
+    bool enclosed = false;          // whether a solid surface closes that medium, so its particles sample no lights
+    float bounces = 0.0;            // crossings of interfaces between media do not count
+    for (int step = 0; step < MAX_STEPS_PER_PATH; step++) {
+        if (bounces >= maxDepth) { break; }
+
+        float slot = closestHit(origin, direction, FAR);
+        if (medium >= 0.0) {
+            // PathTracing.color in a medium: a particle before the surface, or the surface, weighed by FreeFlight.
+            float3 density = mediumDensity(medium);
+            float speed = length(direction);
+            float flight = freeDistance(density);
+            float surfaceDistance = slot < 0.0 ? FAR : hitT * speed;
+            if (flight < surfaceDistance) {
+                float3 passed = exp(-density * flight);
+                float pdf = dot(density * passed, float3(1.0 / 3.0));
+                if (pdf <= 0.0) { return radiance; }
+                throughput *= mediumAlbedo(medium) * density * passed / pdf;
+                float3 at = origin + direction * (flight / speed);
+                float particleLobe = enclosed ? SPECULAR : VOLUME;
+                countEmission = lightCount < 1.0 || particleLobe == SPECULAR;
+                if (!countEmission) { radiance += throughput * directLight(at, float3(0.0), VOLUME, medium); }
+                origin = at;
+                direction = normalize(randomInUnitSphere());
+                bounces += 1.0;
+                continue;
+            }
+            if (slot < 0.0) { return radiance; }
+            float3 through = exp(-density * surfaceDistance);
+            float chance = dot(through, float3(1.0 / 3.0));
+            if (chance <= 0.0) { return radiance; }
+            throughput *= through / chance;
+        }
+        if (slot < 0.0) { return radiance + throughput * sky(direction); }
+
+        float3 p = origin + direction * hitT;
+        float3 outward = outwardNormal(slot, p);
+        bool frontFace = dot(direction, outward) < 0.0;
+        float3 shading = shadingNormal(slot, p, outward);
+        float3 normal = frontFace ? shading : -shading;
+
+        float base = materialStart + slot * MATERIAL_VALUES;
+        float kind = code(base);
+        float3 color = vector(base + 1.0);
+        float param = number(base + 4.0);
+
+        if (kind == EMISSIVE || kind == GLOWING) {
+            // A glowing fractal is no sampled light (Emitters): its glow counts on every bounce.
+            bool unsampled = code(primitiveStart + slot * PRIMITIVE_VALUES) == FRACTAL;
+            return countEmission || unsampled ? radiance + throughput * emission(base, kind, p) : radiance;
+        }
+
+        float3 scattered;
+        float3 attenuation = color;
+        float lobe = SPECULAR;
+        if (kind == PATTERNED) {
+            // A pattern under a clear coat, as Patterned: the colour, and the bump of the normal.
+            float t = materialPattern(base, p);
+            color = mix(color, vector(base + 6.0), t);
+            attenuation = color;
+            float bump = number(base + 9.0);
+            if (bump > 0.0) { normal = bumpNormal(base, p, normal, bump); }
+        }
+        if (kind == PLASTIC || kind == CHECKER || kind == PATTERNED) {
+            // Clear coat over a diffuse base, as ClearCoat.scatter.
+            float3 unitDirection = normalize(direction);
+            float cosine = min(dot(-unitDirection, normal), 1.0);
+            float coatIor = kind == PATTERNED ? 1.5 : number(base + 5.0);
+            if (rnd() < reflectance(cosine, coatIor)) {
+                scattered = reflect(unitDirection, normal) + randomInUnitSphere() * param;
+                if (dot(scattered, normal) <= 0.0) { return radiance; }
+                attenuation = float3(1.0);
+            } else {
+                scattered = normal + randomInUnitSphere();
+                if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+                lobe = DIFFUSE;
+                if (kind == CHECKER) {
+                    float cell = number(base + 9.0);
+                    float cells = floor(p.x / cell) + floor(p.y / cell) + floor(p.z / cell);
+                    attenuation = mod(cells, 2.0) == 0.0 ? color : vector(base + 6.0);
+                }
+            }
+        } else if (kind == METAL) {
+            float3 reflected = reflect(normalize(direction), normalize(normal));
+            scattered = reflected + randomInUnitSphere() * param;
+            if (dot(scattered, normal) <= 0.0) { return radiance; }
+        } else if (kind == DIELECTRIC) {
+            // Beer–Lambert: light inside tinted glass fades with the distance it travelled.
+            attenuation = frontFace ? float3(1.0) : exp(-color * hitT * length(direction));
+            // Dispersion, as Dielectric.indexAt: white light goes on as light of one random wavelength.
+            float dispersion = number(base + 5.0);
+            float index = param;
+            if (dispersion != 0.0) {
+                if (wavelength == 0.0) {
+                    wavelength = 380.0 + 340.0 * rnd();
+                    attenuation *= spectrumWeight(wavelength);
+                }
+                float micrometres = wavelength / 1000.0;
+                index = param + dispersion * (1.0 / (micrometres * micrometres) - 1.0 / (0.5876 * 0.5876));
+            }
+            float ratio = frontFace ? 1.0 / index : index;
+            float3 unitDirection = normalize(direction);
+            // Frosted glass, as Dielectric with roughness: the light meets a GGX microfacet, not the surface.
+            float alpha = number(base + 9.0);
+            float3 tangent = float3(0.0);
+            float3 bitangent = float3(0.0);
+            float3 o = float3(0.0);
+            float3 facet = normal;
+            if (alpha > 0.0) {
+                tangent = tangentOf(normal);
+                bitangent = cross(normal, tangent);
+                o = float3(dot(-unitDirection, tangent), dot(-unitDirection, bitangent), dot(-unitDirection, normal));
+                float3 m = visibleNormal(o, alpha, alpha);
+                facet = tangent * m.x + bitangent * m.y + normal * m.z;
+            }
+            float cosTheta = min(dot(-unitDirection, facet), 1.0);
+            float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+            bool shouldReflect = ratio * sinTheta > 1.0 || reflectance(cosTheta, ratio) > rnd();
+            scattered = shouldReflect ? reflect(unitDirection, facet) : refractDir(unitDirection, facet, ratio);
+            if (alpha > 0.0) {
+                float3 i = float3(dot(scattered, tangent), dot(scattered, bitangent), dot(scattered, normal));
+                if (shouldReflect ? i.z <= 0.0 : i.z >= 0.0) { return radiance; }
+                attenuation *= shadowing(o, i, alpha, alpha);
+            }
+        } else if (kind == VELVET) {
+            // Velvet: the diffuse bounce, lit by light sampling, or the sheen one, as Velvet.scatter.
+            float diffuseChance = number(base + 5.0);
+            bool diffuse = rnd() < diffuseChance;
+            float3 offset = randomInUnitSphere();
+            scattered = normal + (diffuse ? offset : normalize(offset));
+            if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+            if (diffuse) {
+                attenuation = color / diffuseChance;
+                lobe = DIFFUSE;
+            } else {
+                float weight = sheenWeight(-normalize(direction), normalize(scattered), normal, param);
+                attenuation = vector(base + 6.0) * (weight / (1.0 - diffuseChance));
+            }
+        } else if (kind == CONDUCTOR) {
+            // Metal with GGX microfacets, as Conductor.scatter, brushed along the direction it gives, if any.
+            float3 tangent = tangentAlong(normal, vector(base + 9.0));
+            float3 bitangent = cross(normal, tangent);
+            float3 toViewer = -normalize(direction);
+            float3 o = float3(dot(toViewer, tangent), dot(toViewer, bitangent), dot(toViewer, normal));
+            float alphaY = number(base + 5.0);
+            float3 m = visibleNormal(o, param, alphaY);
+            float3 i = m * (2.0 * dot(o, m)) - o;
+            if (o.z <= 0.0 || i.z <= 0.0) { return radiance; }
+            attenuation = conductorFresnel(dot(o, m), color, vector(base + 6.0)) * shadowing(o, i, param, alphaY);
+            scattered = tangent * i.x + bitangent * i.y + normal * i.z;
+        } else if (kind == BUBBLE || kind == IRIDESCENT) {
+            // Thin film, as SoapBubble and Iridescent: interference colours the reflection.
+            float3 unitDirection = normalize(direction);
+            float cosine = min(dot(-unitDirection, normal), 1.0);
+            float3 reflectance = filmReflectance(cosine, param, number(base + 5.0), kind == BUBBLE ? 1.0 : 1.5,
+                wavelength);
+            float chance = filmChance(reflectance);
+            if (rnd() < chance) {
+                scattered = reflect(unitDirection, normal);
+                if (kind == IRIDESCENT) { scattered += randomInUnitSphere() * number(base + 9.0); }
+                if (dot(scattered, normal) <= 0.0) { return radiance; }
+                attenuation = reflectance / chance;
+            } else if (kind == BUBBLE) {
+                scattered = unitDirection;
+                attenuation = (float3(1.0) - reflectance) / (1.0 - chance);
+            } else {
+                scattered = normal + randomInUnitSphere();
+                if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+                attenuation = color * (float3(1.0) - reflectance) / (1.0 - chance);
+                lobe = DIFFUSE;
+            }
+        } else if (kind == INTERFACE) {
+            // The edge of a medium: light passes unchanged and only the medium changes; no bounce, no new lobe.
+            medium = quickLook > 0.5 ? -1.0 : mediumBeyond(slot, frontFace);
+            enclosed = false;
+            origin = p;
+            continue;
+        } else {
+            scattered = normal + randomInUnitSphere();
+            if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+            lobe = DIFFUSE;
+        }
+        throughput *= attenuation;
+        countEmission = lightCount < 1.0 || lobe == SPECULAR;
+        if (!countEmission) { radiance += throughput * directLight(p, normal, lobe, medium); }
+        if (quickLook < 0.5 && boundsMedia(slot) && dot(scattered, normal) < 0.0) {
+            // Through a surface that bounds media, as PathTracing.after: into the medium beyond, closed by it.
+            medium = mediumBeyond(slot, frontFace);
+            enclosed = frontFace;
+        }
+        origin = p;
+        direction = scattered;
+        bounces += 1.0;
+    }
+    return radiance;
+}

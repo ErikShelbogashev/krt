@@ -179,15 +179,17 @@ internal class Bvh(private val objects: Array<Traceable>) {
         private fun minOrSame(current: Double, candidate: Double) = if (candidate < current) candidate else current
     }
 
-    private companion object {
-        const val AXES = 3
-        const val BOX_SIZE = 2 * AXES
-        const val ROOT = 0
-        const val LEAF = -1
+    companion object {
+        private const val AXES = 3
+        private const val BOX_SIZE = 2 * AXES
+        private const val ROOT = 0
+        private const val LEAF = -1
+
+        /** Primitives in a leaf at most; the shader walks leaves of the same size. */
         const val LEAF_SIZE = 4
 
         /** Median splits keep the tree balanced: 64 levels cover any scene that fits in memory. */
-        const val STACK_DEPTH = 64
+        private const val STACK_DEPTH = 64
     }
 }
 

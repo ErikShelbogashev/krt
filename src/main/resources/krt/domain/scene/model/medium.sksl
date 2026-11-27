@@ -1,0 +1,43 @@
+float3 mediumDensity(float medium) { return vector(mediaStart + medium * MEDIUM_VALUES); }
+
+float3 mediumAlbedo(float medium) { return vector(mediaStart + medium * MEDIUM_VALUES + 3.0); }
+
+// The medium beyond the surface of primitive [slot] for a ray that passes it [frontFace] first, as PathTracing.after:
+// 1 + its number in the primitive's record, the inside one through the front, the outside one through the back.
+float mediumBeyond(float slot, bool frontFace) {
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    return code(base + (frontFace ? 12.0 : 13.0)) - 1.0;
+}
+
+bool boundsMedia(float slot) {
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    return code(base + 12.0) + code(base + 13.0) > 0.0;
+}
+
+// FreeFlight.distance: the distance to the next particle, with the density of one channel picked at random.
+float freeDistance(float3 density) {
+    float pick = rnd();
+    float channel = pick < 1.0 / 3.0 ? density.x : (pick < 2.0 / 3.0 ? density.y : density.z);
+    float u = rnd();
+    return channel > 0.0 ? -log(1.0 - u) / channel : FAR;
+}
+
+// PathTracing.transmittance: the share of light along a unit [direction] over [distance] from [origin] in [medium]:
+// none past a solid surface; through media and their interfaces, what the media let through.
+float3 transmittance(float3 origin, float3 direction, float distance, float medium) {
+    float3 share = float3(1.0);
+    float remaining = distance;
+    for (int crossing = 0; crossing < 8; crossing++) {
+        float slot = closestHit(origin, direction, remaining);
+        if (slot < 0.0) {
+            return medium >= 0.0 ? share * exp(-mediumDensity(medium) * remaining) : share;
+        }
+        if (code(materialStart + slot * MATERIAL_VALUES) != INTERFACE) { return float3(0.0); }
+        if (medium >= 0.0) { share *= exp(-mediumDensity(medium) * hitT); }
+        float3 p = origin + direction * hitT;
+        medium = mediumBeyond(slot, dot(direction, outwardNormal(slot, p)) < 0.0);
+        remaining -= hitT;
+        origin = p;
+    }
+    return float3(0.0);
+}

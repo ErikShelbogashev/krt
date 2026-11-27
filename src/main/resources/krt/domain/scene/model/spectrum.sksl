@@ -1,0 +1,12 @@
+// Spectrum.weight: the colour of light of one wavelength in nm, the weights of all wavelengths averaging to white.
+float bump(float x, float peak, float width) {
+    float u = (x - peak) / width;
+    return exp(-u * u);
+}
+
+float3 spectrumWeight(float wavelength) {
+    return float3(
+        3.5733 * (bump(wavelength, 610.0, 50.0) + 0.15 * bump(wavelength, 425.0, 25.0)),
+        4.2628 * bump(wavelength, 545.0, 45.0),
+        5.4935 * bump(wavelength, 450.0, 35.0));
+}

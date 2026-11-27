@@ -1,0 +1,63 @@
+// Light reaching [p] straight from one light picked at random, as Lights.sample and PathTracing.direct take it:
+// a uniform point on the light, shadowed or not, weighed by the response of the lobe and the pdf of the sample.
+float3 directLight(float3 p, float3 normal, float lobe, float medium) {
+    // Lights.sample: a light by its share of the weights, a member by its share of the light's area, both by binary
+    // search over whole numbers of 2^24.
+    float target = rnd() * 16777215.0;
+    float low = 0.0;
+    float high = lightCount - 1.0;
+    for (int i = 0; i < 16; i++) {
+        if (low >= high) { break; }
+        float middle = floor((low + high) * 0.5);
+        if (code(lightStart + middle * LIGHT_VALUES) > target) { high = middle; } else { low = middle + 1.0; }
+    }
+    float record = lightStart + low * LIGHT_VALUES;
+    float first = code(record + 1.0);
+    float chance = exp2(code(record + 3.0) / 131072.0 - 64.0);
+    target = rnd() * 16777215.0;
+    low = first;
+    high = first + code(record + 2.0) - 1.0;
+    for (int i = 0; i < 16; i++) {
+        if (low >= high) { break; }
+        float middle = floor((low + high) * 0.5);
+        if (code(memberStart + middle * MEMBER_VALUES + 1.0) > target) { high = middle; } else { low = middle + 1.0; }
+    }
+    float slot = code(memberStart + low * MEMBER_VALUES);
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    float3 point;
+    float3 lightNormal;
+    bool twoSided = code(base) == TRIANGLE;
+    if (twoSided) {
+        float3 edge1 = vector(base + 4.0);
+        float3 edge2 = vector(base + 7.0);
+        float u = rnd();
+        float v = rnd();
+        if (u + v > 1.0) { u = 1.0 - u; v = 1.0 - v; }
+        float3 c = cross(edge1, edge2);
+        float doubleArea = length(c);
+        point = vector(base + 1.0) + edge1 * u + edge2 * v;
+        lightNormal = c / doubleArea;
+    } else {
+        float radius = number(base + 4.0);
+        float z = 1.0 - 2.0 * rnd();
+        float phi = 2.0 * PI * rnd();
+        float ring = sqrt(max(0.0, 1.0 - z * z));
+        lightNormal = float3(ring * cos(phi), ring * sin(phi), z);
+        point = centerOf(base) + lightNormal * radius;
+    }
+    float3 toLight = point - p;
+    float distanceSquared = dot(toLight, toLight);
+    float distance = sqrt(distanceSquared);
+    float3 direction = toLight / distance;
+    float facing = -dot(direction, lightNormal);
+    float cosine = twoSided ? abs(facing) : facing;
+    if (cosine <= 1.0e-6) { return float3(0.0); }
+    float pdf = distanceSquared / cosine * chance;
+    // PathTracing.diffuse: diffuse bounces go to a random point in the unit ball at the tip of the normal, 2 cos³ / π.
+    float lit = max(0.0, dot(normal, direction));
+    float response = lobe == VOLUME ? 1.0 / (4.0 * PI) : 2.0 * lit * lit * lit / PI;
+    if (response == 0.0) { return float3(0.0); }
+    float lightBase = materialStart + slot * MATERIAL_VALUES;
+    float3 light = emission(lightBase, code(lightBase), point);
+    return light * transmittance(p, direction, distance * (1.0 - SHADOW_MARGIN), medium) * (response / pdf);
+}

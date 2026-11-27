@@ -1,0 +1,41 @@
+// Noise: Perlin's improved noise over the lattice hash (34x² + x) mod 289, exact in floats, so it matches the CPU.
+float permute(float x) { return mod((34.0 * x + 1.0) * x, 289.0); }
+
+float fade(float t) { return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
+
+float gradient(float hash, float3 d) {
+    float h = mod(hash, 16.0);
+    float u = h < 8.0 ? d.x : d.y;
+    float v = h < 4.0 ? d.y : (h == 12.0 || h == 14.0 ? d.x : d.z);
+    return (mod(h, 2.0) == 0.0 ? u : -u) + (mod(floor(h * 0.5), 2.0) == 0.0 ? v : -v);
+}
+
+float corner(float3 i, float3 f, float3 d) {
+    return gradient(permute(permute(permute(i.x + d.x) + i.y + d.y) + i.z + d.z), f - d);
+}
+
+float perlin(float3 p) {
+    float3 cell = floor(p);
+    float3 f = p - cell;
+    float3 i = mod(cell, 289.0);
+    float3 u = float3(fade(f.x), fade(f.y), fade(f.z));
+    float x00 = mix(corner(i, f, float3(0.0, 0.0, 0.0)), corner(i, f, float3(1.0, 0.0, 0.0)), u.x);
+    float x10 = mix(corner(i, f, float3(0.0, 1.0, 0.0)), corner(i, f, float3(1.0, 1.0, 0.0)), u.x);
+    float x01 = mix(corner(i, f, float3(0.0, 0.0, 1.0)), corner(i, f, float3(1.0, 0.0, 1.0)), u.x);
+    float x11 = mix(corner(i, f, float3(0.0, 1.0, 1.0)), corner(i, f, float3(1.0, 1.0, 1.0)), u.x);
+    return mix(mix(x00, x10, u.y), mix(x01, x11, u.y), u.z);
+}
+
+// Noise.fbm, or Noise.turbulence with [absolute], of [octaves] octaves.
+float fractal(float3 p, bool absolute, float octaves) {
+    float sum = 0.0;
+    float amplitude = 1.0;
+    for (int octave = 0; octave < 8; octave++) {
+        if (float(octave) >= octaves) { break; }
+        float n = perlin(p);
+        sum += amplitude * (absolute ? abs(n) : n);
+        amplitude *= 0.5;
+        p *= 2.0;
+    }
+    return sum;
+}

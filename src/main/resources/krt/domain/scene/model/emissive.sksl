@@ -1,0 +1,6 @@
+// Light given off at [p] by the material at [base] of [kind]: its colour, or a glowing pattern's at the point.
+float3 emission(float base, float kind, float3 p) {
+    float3 color = vector(base + 1.0);
+    if (kind != GLOWING) { return color; }
+    return mix(color, vector(base + 6.0), materialPattern(base, p)) * number(base + 4.0);
+}

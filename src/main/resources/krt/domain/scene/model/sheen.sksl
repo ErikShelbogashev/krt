@@ -1,0 +1,10 @@
+// Sheen.weight: the Charlie sheen BRDF with Neubelt's visibility, times the cosine over the pdf of Lambert's sampling.
+float sheenWeight(float3 toViewer, float3 toLight, float3 normal, float roughness) {
+    float cosViewer = max(dot(toViewer, normal), 0.0);
+    float cosLight = max(dot(toLight, normal), 0.0);
+    float cosHalf = dot(normalize(toViewer + toLight), normal);
+    float inverseAlpha = 1.0 / max(roughness * roughness, 1.0e-3);
+    float distribution = (2.0 + inverseAlpha) * pow(max(1.0 - cosHalf * cosHalf, 0.0), inverseAlpha * 0.5) / (2.0 * PI);
+    float visibility = 1.0 / max(4.0 * (cosLight + cosViewer - cosLight * cosViewer), 1.0e-3);
+    return distribution * visibility * PI;
+}

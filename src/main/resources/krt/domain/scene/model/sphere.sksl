@@ -1,0 +1,6 @@
+// Sphere.centerAt: the centre of the ball at [base] at the moment of the path; moving balls only with motion blur.
+float3 centerOf(float base) {
+    float3 center = vector(base + 1.0);
+    if (motionBlur > 0.5) { center += vector(base + 5.0) * rayTime; }
+    return center;
+}

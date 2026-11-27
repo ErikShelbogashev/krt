@@ -1,0 +1,40 @@
+// Microfacets.frame: the tangent around the vertical axis; the bitangent is cross(normal, tangent).
+float3 tangentOf(float3 normal) {
+    float3 axis = abs(normal.y) < 0.999 ? float3(0.0, 1.0, 0.0) : float3(1.0, 0.0, 0.0);
+    return normalize(cross(axis, normal));
+}
+
+// Microfacets.frame with a direction of brushing laid on the surface; around the vertical axis without one.
+float3 tangentAlong(float3 normal, float3 direction) {
+    float3 along = direction - normal * dot(direction, normal);
+    return length(along) < 1.0e-6 ? tangentOf(normal) : normalize(along);
+}
+
+// Microfacets.visibleNormal: Heitz's sampling of the GGX normals the direction [o] sees, in the local frame.
+float3 visibleNormal(float3 o, float alphaX, float alphaY) {
+    float3 stretched = normalize(float3(alphaX * o.x, alphaY * o.y, o.z));
+    float lengthSquared = stretched.x * stretched.x + stretched.y * stretched.y;
+    float3 t1 = lengthSquared > 0.0 ? float3(-stretched.y, stretched.x, 0.0) / sqrt(lengthSquared)
+        : float3(1.0, 0.0, 0.0);
+    float3 t2 = cross(stretched, t1);
+    float radius = sqrt(rnd());
+    float phi = 2.0 * PI * rnd();
+    float p1 = radius * cos(phi);
+    float blend = (1.0 + stretched.z) * 0.5;
+    float p2 = (1.0 - blend) * sqrt(1.0 - p1 * p1) + blend * radius * sin(phi);
+    float3 h = t1 * p1 + t2 * p2 + stretched * sqrt(max(0.0, 1.0 - p1 * p1 - p2 * p2));
+    return normalize(float3(alphaX * h.x, alphaY * h.y, max(0.0, h.z)));
+}
+
+// Microfacets.lambda: Smith's Λ of a local direction.
+float ggxLambda(float3 w, float alphaX, float alphaY) {
+    float cosSquared = w.z * w.z;
+    float slopes = (alphaX * alphaX * w.x * w.x + alphaY * alphaY * w.y * w.y) / max(cosSquared, 1.0e-12);
+    return (sqrt(1.0 + slopes) - 1.0) * 0.5;
+}
+
+// Microfacets.shadowing: G2 / G1.
+float shadowing(float3 o, float3 i, float alphaX, float alphaY) {
+    float viewer = ggxLambda(float3(o.xy, abs(o.z)), alphaX, alphaY);
+    return (1.0 + viewer) / (1.0 + viewer + ggxLambda(float3(i.xy, abs(i.z)), alphaX, alphaY));
+}

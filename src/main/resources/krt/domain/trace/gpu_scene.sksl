@@ -1,0 +1,19 @@
+// The 24-bit number at texel [index], as is: an index, a count or a code.
+float code(float index) {
+    float y = floor(index / TEXTURE_WIDTH);
+    float x = index - y * TEXTURE_WIDTH;
+    half4 c = scene.eval(float2(x + 0.5, y + 0.5));
+    float r = floor(float(c.r) * 255.0 + 0.5);
+    float g = floor(float(c.g) * 255.0 + 0.5);
+    float b = floor(float(c.b) * 255.0 + 0.5);
+    return r * 65536.0 + g * 256.0 + b;
+}
+
+// The fixed-point coordinate at texel [index].
+float number(float index) {
+    return code(index) / 16777216.0 * (2.0 * RANGE) - RANGE;
+}
+
+float3 vector(float index) {
+    return float3(number(index), number(index + 1.0), number(index + 2.0));
+}
