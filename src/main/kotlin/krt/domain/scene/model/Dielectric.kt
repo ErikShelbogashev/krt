@@ -40,7 +40,7 @@ class Dielectric(
             unitDirection.refract(hit.normal, refractionRatio)
         }
 
-        return Scattered(Ray(hit.p, direction), attenuation)
+        return Scattered(ray.next(hit.p, direction), attenuation)
     }
 
     /** Share of light left after [distance] inside the glass. */

@@ -11,7 +11,7 @@ class Metal(val albedo: Color, f: Double) : Material {
     override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered? {
         val reflected = ray.direction.unit().reflect(hit.normal.unit())
         val scatterDirection = reflected + Point3.randomInUnitSphere(random) * fuzz
-        val scatteredRay = Ray(hit.p, scatterDirection)
+        val scatteredRay = ray.next(hit.p, scatterDirection)
         val attenuation = albedo
         return if (scatterDirection.dot(hit.normal) > 0) {
             Scattered(scatteredRay, attenuation)
