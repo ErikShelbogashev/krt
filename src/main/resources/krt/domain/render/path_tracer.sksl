@@ -28,7 +28,7 @@ const float TEXTURE_WIDTH = 1024.0;
 const float RANGE = 4096.0;
 const float NODE_VALUES = 9.0;
 const float PRIMITIVE_VALUES = 10.0;
-const float MATERIAL_VALUES = 5.0;
+const float MATERIAL_VALUES = 10.0;
 const float T_MIN = 0.001;
 const float FAR = 1.0e30;
 const float PI = 3.14159265358979;
@@ -40,6 +40,8 @@ const float LAMBERT = 0.0;
 const float METAL = 1.0;
 const float DIELECTRIC = 2.0;
 const float EMISSIVE = 3.0;
+const float PLASTIC = 4.0;
+const float CHECKER = 5.0;
 
 // The 24-bit number at texel [index], as is: an index, a count or a code.
 float code(float index) {
@@ -210,11 +212,31 @@ float3 trace(float3 origin, float3 direction) {
         if (kind == EMISSIVE) { return throughput * color; }
 
         float3 scattered;
-        if (kind == METAL) {
+        float3 attenuation = color;
+        if (kind == PLASTIC || kind == CHECKER) {
+            // Clear coat over a diffuse base, as ClearCoat.scatter.
+            float3 unitDirection = normalize(direction);
+            float cosine = min(dot(-unitDirection, normal), 1.0);
+            if (rnd() < reflectance(cosine, number(base + 5.0))) {
+                scattered = reflect(unitDirection, normal) + randomInUnitSphere() * param;
+                if (dot(scattered, normal) <= 0.0) { return float3(0.0); }
+                attenuation = float3(1.0);
+            } else {
+                scattered = normal + randomInUnitSphere();
+                if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+                if (kind == CHECKER) {
+                    float cell = number(base + 9.0);
+                    float cells = floor(p.x / cell) + floor(p.y / cell) + floor(p.z / cell);
+                    attenuation = mod(cells, 2.0) == 0.0 ? color : vector(base + 6.0);
+                }
+            }
+        } else if (kind == METAL) {
             float3 reflected = reflect(normalize(direction), normalize(normal));
             scattered = reflected + randomInUnitSphere() * param;
             if (dot(scattered, normal) <= 0.0) { return float3(0.0); }
         } else if (kind == DIELECTRIC) {
+            // Beer–Lambert: light inside tinted glass fades with the distance it travelled.
+            attenuation = frontFace ? float3(1.0) : exp(-color * hitT * length(direction));
             float ratio = frontFace ? 1.0 / param : param;
             float3 unitDirection = normalize(direction);
             float cosTheta = min(dot(-unitDirection, normal), 1.0);
@@ -225,7 +247,7 @@ float3 trace(float3 origin, float3 direction) {
             scattered = normal + randomInUnitSphere();
             if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
         }
-        throughput *= color;
+        throughput *= attenuation;
         origin = p;
         direction = scattered;
     }

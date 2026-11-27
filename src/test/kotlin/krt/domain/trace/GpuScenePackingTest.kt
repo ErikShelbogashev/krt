@@ -1,5 +1,6 @@
 package krt.domain.trace
 
+import kotlin.math.ln
 import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.test.Test
@@ -7,10 +8,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import krt.domain.scene.World
+import krt.domain.scene.model.Checker
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
+import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
 import krt.domain.scene.model.Triangle
@@ -52,8 +55,26 @@ class GpuScenePackingTest {
         assertEquals(0.5, scene.number(scene.primitive(bySphere.getValue(Point3(1.0, 2.0, 3.0))) + 4), 1e-3)
         scene.assertMaterial(bySphere.getValue(Point3(1.0, 2.0, 3.0)), GpuScenePacking.LAMBERT, 0.1, 0.2, 0.3, 0.0)
         scene.assertMaterial(bySphere.getValue(Point3(-1.0, 0.0, 0.0)), GpuScenePacking.METAL, 0.7, 0.6, 0.5, 0.3)
-        scene.assertMaterial(bySphere.getValue(Point3.ZERO), GpuScenePacking.DIELECTRIC, 1.0, 1.0, 1.0, 1.5)
+        scene.assertMaterial(bySphere.getValue(Point3.ZERO), GpuScenePacking.DIELECTRIC, 0.0, 0.0, 0.0, 1.5)
         scene.assertMaterial(bySphere.getValue(Point3(5.0, 0.0, 0.0)), GpuScenePacking.EMISSIVE, 0.2, 1.4, 0.8, 0.0)
+    }
+
+    @Test
+    fun `new materials pack their colours and parameters`() {
+        val glass = Dielectric(1.5, tint = Color(0.5, 1.0, 1.0), density = 2.0)
+        assertValues(listOf(2.0, 2 * ln(2.0), 0.0, 0.0, 1.5), GpuScenePacking.material(glass).take(5))
+        val plastic = Plastic(Color(0.8, 0.1, 0.1), roughness = 0.05)
+        assertValues(listOf(4.0, 0.8, 0.1, 0.1, 0.05, 1.5), GpuScenePacking.material(plastic).take(6))
+        val checker = Checker(Color(0.9, 0.9, 0.9), Color(0.1, 0.1, 0.1), cellSize = 0.5, roughness = 0.1)
+        assertValues(
+            listOf(5.0, 0.9, 0.9, 0.9, 0.1, 1.5, 0.1, 0.1, 0.1, 0.5),
+            GpuScenePacking.material(checker).toList(),
+        )
+    }
+
+    private fun assertValues(expected: List<Double>, actual: List<Double>) {
+        expected.zip(actual).forEach { (e, a) -> assertEquals(e, a, 1e-9) }
+        assertEquals(expected.size, actual.size)
     }
 
     @Test
