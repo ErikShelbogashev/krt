@@ -10,6 +10,7 @@ object RenderStatus {
     fun progressText(mode: RenderMode, progress: RenderProgress): String = when {
         mode == RenderMode.WIREFRAME -> "Wireframe · ready"
         progress.isDone -> "Done · ${progress.passes}/${progress.passes} passes"
+        progress.isDraft -> "Quick look · ${progress.passes} passes to go"
         else -> "Pass ${progress.currentPass} / ${progress.passes}"
     }
 

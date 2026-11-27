@@ -53,9 +53,10 @@ data class FrameTimes(
 
 /**
  * How complete the frame on screen was each time the camera moved on: passes on average (with the share of the
- * pass in work) and the share of frames past their first, quick look.
+ * pass in work; a quick look counts as none), the share of frames past their quick look, and the share of the
+ * frame that showed the current view on average (a quick look counts as all of it).
  */
-data class ShownQuality(val meanPasses: Double, val fullShare: Double)
+data class ShownQuality(val meanPasses: Double, val fullShare: Double, val coverage: Double)
 
 /** Pure arithmetic of the flight benchmark: percentiles, stalls and reports. */
 object Benchmark {
@@ -88,6 +89,7 @@ object Benchmark {
             shown = ShownQuality(
                 meanPasses = progress.map { it.completedPasses + it.passFraction }.average().orZero(),
                 fullShare = progress.count { it.completedPasses > 0 }.toDouble() / progress.size.coerceAtLeast(1),
+                coverage = progress.map { it.coverage }.average().orZero(),
             ),
             settleMs = sample.settleMs,
             stopped = sample.stopped,
@@ -103,7 +105,7 @@ object Benchmark {
 
     private val COLUMNS = listOf(
         "Scene", "Mode", "Size", "FPS", "p50 ms", "p95 ms", "p99 ms", "max ms",
-        ">50 ms", ">100 ms", "Passes shown", "Full frames", "Done after",
+        ">50 ms", ">100 ms", "Coverage", "Passes shown", "Full frames", "Done after",
     )
 
     fun markdown(results: List<BenchmarkResult>): String =
@@ -118,7 +120,7 @@ object Benchmark {
         listOf(
             config.scene.title, config.mode.title, "${config.width}×${config.height}",
             f(fps, 1), f(frames.p50, 1), f(frames.p95, 1), f(frames.p99, 1), f(frames.max, 1),
-            "${frames.stalls50}", "${frames.stalls100}",
+            "${frames.stalls50}", "${frames.stalls100}", "${(shown.coverage * PERCENT).toInt()} %",
             f(shown.meanPasses, 2), "${(shown.fullShare * PERCENT).toInt()} %",
             settleMs?.let { "${f(it / MS_PER_S, 2)} s" } ?: if (stopped) "stopped" else "—",
         )

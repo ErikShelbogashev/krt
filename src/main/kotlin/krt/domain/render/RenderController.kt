@@ -118,7 +118,7 @@ class RenderController(
                 recentDrafts.addLast(preview)
                 if (recentDrafts.size > RECENT_DRAFTS) recentDrafts.removeFirst()
             }
-            val previewProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt)
+            val previewProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true)
             SwingUtilities.invokeLater { onGpuFrame(preview, previewProgress) }
             delay(REFINE_DELAY_MS)
             var frame: Shader? = null
@@ -169,7 +169,7 @@ class RenderController(
             FrameSampling.fillPixelOrder(scratch.order, random)
             val work = FrameWork(frame, rayTracer, camera, scratch, width, batchPixels, random.nextLong())
             CpuDraft.trace(frame, camera, rayTracer, work.frameSeed, workers)
-            val draftProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt)
+            val draftProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true)
             if (isActive) SwingUtilities.invokeLater { onUpdate(draftProgress) }
             delay(REFINE_DELAY_MS)
             for (pass in 0 until passes) {
