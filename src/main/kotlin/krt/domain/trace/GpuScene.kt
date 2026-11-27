@@ -44,6 +44,9 @@ class GpuScene(
     /** The lights the shader samples: all of them, or none when light sampling is off. */
     val sampledLights: Int get() = if (look.sampleLights) lights.count else 0
 
+    /** 1 when the scene has smooth triangles, whose vertex normals the shader reads, else 0. */
+    val smoothNormals: Float get() = if (lights.normalCount > 0) 1f else 0f
+
     /** 1 when the shader sends rays at random moments of the shutter and moves the balls, else 0. */
     val motionBlur: Float get() = if (look.motionBlur) 1f else 0f
 
@@ -53,8 +56,11 @@ class GpuScene(
     val height: Int get() = data.size / (width * GpuScenePacking.BYTES_PER_TEXEL)
 }
 
-/** Where the light slots of a [GpuScene] lie and how many there are; and where the vertex normals after them start. */
-data class GpuLights(val start: Int, val count: Int, val normalStart: Int)
+/**
+ * Where the light slots of a [GpuScene] lie and how many there are; and where the records of vertex normals after
+ * them start and how many there are.
+ */
+data class GpuLights(val start: Int, val count: Int, val normalStart: Int, val normalCount: Int = 0)
 
 /** Packing of the scene model for the GPU shader: a pure transformation, mirrored by the shader's decoding. */
 object GpuScenePacking {
@@ -125,7 +131,7 @@ object GpuScenePacking {
             primitiveStart = primitiveStart,
             materialStart = materialStart,
             look = look,
-            lights = GpuLights(lightStart, lightSlots.size, normalStart),
+            lights = GpuLights(lightStart, lightSlots.size, normalStart, records.last()),
         )
     }
 

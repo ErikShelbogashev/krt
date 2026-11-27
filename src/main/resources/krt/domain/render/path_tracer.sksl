@@ -13,6 +13,7 @@ uniform float materialStart;
 uniform float lightStart;           // the primitive slots of the lights, see GpuScene
 uniform float lightCount;           // lights to sample (next event estimation, ADR 0012); 0 when it is off
 uniform float normalStart;          // the vertex normals of smooth triangles
+uniform float smoothNormals;        // 1 when the scene has smooth triangles, so hits read their vertex normals
 uniform float motionBlur;           // 1 when rays go at random moments of the shutter and balls move (ADR 0013)
 uniform float3 skyHorizon;          // Sky: the gradient from the horizon to the zenith
 uniform float3 skyZenith;
@@ -258,6 +259,7 @@ float3 outwardNormal(float slot, float3 p) {
 // The normal to shade with at [p] on primitive [slot], whose flat normal is [outward]: blended from the vertex
 // normals of a smooth triangle, as VertexNormals.at, or [outward] itself.
 float3 shadingNormal(float slot, float3 p, float3 outward) {
+    if (smoothNormals < 0.5) { return outward; }
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
     float record = code(base + 10.0);
     if (record < 1.0) { return outward; }
