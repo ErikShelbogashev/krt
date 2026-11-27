@@ -1,5 +1,6 @@
 package krt
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -27,12 +29,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Shader
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.asComposeShader
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -51,8 +58,13 @@ fun main() {
     application {
         val converter = remember { ArgbBitmapConverter() }
         var imageBitmap by remember { mutableStateOf(converter.toImageBitmap(app.frameBuffer.frame)) }
+        var gpuFrame by remember { mutableStateOf<Shader?>(null) }
         LaunchedEffect(Unit) {
-            app.frameBuffer.onUpdate { imageBitmap = converter.toImageBitmap(it) }
+            app.frameBuffer.onUpdate {
+                imageBitmap = converter.toImageBitmap(it)
+                gpuFrame = null
+            }
+            app.frameBuffer.onGpuUpdate { gpuFrame = it.asComposeShader() }
             app.redraw()
         }
 
@@ -85,7 +97,7 @@ fun main() {
                 } else false
             }) {
                 Row {
-                    Image(bitmap = imageBitmap, contentDescription = null)
+                    FrameView(imageBitmap, gpuFrame, app.camera.imageWidth, app.camera.imageHeight)
                     Box(Modifier.verticalScroll(scrollState)) {
                         SettingsPanel(app)
                     }
@@ -126,6 +138,9 @@ private fun SettingsPanel(app: AppContext, modifier: Modifier = Modifier) {
                     Text("Toggle Wireframe mode")
                 }
             }
+            Button(onClick = { app.toggleGpuMode() }) {
+                Text("Toggle GPU mode")
+            }
         }
 
         HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
@@ -148,6 +163,23 @@ private fun SettingsPanel(app: AppContext, modifier: Modifier = Modifier) {
             onMove = { id, offset -> app.moveObject(id, offset) },
         )
     }
+}
+
+/** The CPU frame as pixels, or the GPU frame drawn by its shader at the frame's size in pixels (ADR 0009). */
+@Composable
+private fun FrameView(
+    imageBitmap: ImageBitmap,
+    gpuFrame: Shader?,
+    width: Int,
+    height: Int,
+    modifier: Modifier = Modifier,
+) {
+    if (gpuFrame == null) {
+        Image(bitmap = imageBitmap, contentDescription = null, modifier = modifier)
+        return
+    }
+    val size = with(LocalDensity.current) { DpSize(width.toDp(), height.toDp()) }
+    Canvas(modifier.size(size)) { drawRect(ShaderBrush(gpuFrame)) }
 }
 
 private fun cameraMoveFor(key: Key): CameraMove = when (key) {

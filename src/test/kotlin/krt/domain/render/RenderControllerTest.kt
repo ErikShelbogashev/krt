@@ -56,4 +56,22 @@ class RenderControllerTest {
 
         assertEquals(expected, updates.size)
     }
+
+    @Test
+    fun `in GPU mode the frame is handed over as a shader and the pixel buffer is left alone`() {
+        val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = 1 }
+        val frame = Frame(16, 16)
+        val shaders = mutableListOf<org.jetbrains.skia.Shader>()
+        var pixelUpdates = 0
+
+        RenderController(0L, 8, Random(1)).use { controller ->
+            controller.toggleGpuMode()
+            val rayTracer = RayTracer(World.default(Random(2)), 3)
+            controller.renderImage(frame, rayTracer, camera, onGpuFrame = { shaders += it }) { pixelUpdates++ }
+        }
+
+        assertEquals(1, shaders.size)
+        assertEquals(0, pixelUpdates)
+        assertTrue(frame.pixels.all { it == 0 })
+    }
 }

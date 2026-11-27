@@ -27,6 +27,18 @@ class ToggleWireframeOp(
     }
 }
 
+class ToggleGpuModeOp(
+    private val renderController: RenderController,
+    private val rayTracer: RayTracer,
+    private val camera: Camera,
+    private val frameBuffer: FrameBuffer,
+) {
+    operator fun invoke() {
+        renderController.toggleGpuMode()
+        renderFrame(renderController, rayTracer, camera, frameBuffer)
+    }
+}
+
 class ChangeRayTracerSettingsOp(
     private val renderController: RenderController,
     private val rayTracer: RayTracer,
