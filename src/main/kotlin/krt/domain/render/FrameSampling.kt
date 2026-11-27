@@ -23,6 +23,15 @@ object FrameSampling {
     fun pixelOrder(width: Int, height: Int, random: Random): List<Pixel> =
         (0 until height).flatMap { j -> (0 until width).map { i -> Pixel(i, j) } }.shuffled(random)
 
+    /**
+     * The order of [pixelOrder] in place, without a pixel object per pixel: [order] gets the indices `j * width + i`
+     * of the pixels, shuffled with the same draws from [random] as [pixelOrder], so frames stay the same.
+     */
+    fun fillPixelOrder(order: IntArray, random: Random) {
+        for (index in order.indices) order[index] = index
+        order.shuffle(random)
+    }
+
     /** A random generator for one pixel, derived from the frame seed so the frame does not depend on scheduling. */
     fun pixelRandom(frameSeed: Long, pixel: Pixel, width: Int): Random =
         Random(frameSeed + pixel.j.toLong() * width + pixel.i)
