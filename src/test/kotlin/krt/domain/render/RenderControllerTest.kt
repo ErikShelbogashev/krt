@@ -124,8 +124,8 @@ class RenderControllerTest {
             }) {}
             assertTrue(done.await(10, TimeUnit.SECONDS), "steps waited for the repaint interval")
         }
-        // Quick steps grow out of the cautious start within the first pass: far fewer than 16 bands a pass.
-        assertTrue(steps.get() < 16, "${steps.get()} steps")
+        // Quick steps grow out of the cautious start: fewer than the 1 + 16 × 4 steps of a cautious frame.
+        assertTrue(steps.get() < 40, "${steps.get()} steps")
     }
 
     @Test

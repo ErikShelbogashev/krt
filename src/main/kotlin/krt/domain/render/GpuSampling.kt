@@ -52,7 +52,7 @@ object GpuSampling {
                 load > 1 && bands < MAX_BANDS -> StepBudget(samples, ceil(bands * load).toInt().coerceAtMost(MAX_BANDS))
                 load > 1 -> StepBudget((samples / load).toInt().coerceAtLeast(1), bands)
                 !fitsMore(load) -> copy(fitStreak = 0, slow = false)
-                fitStreak + 1 < STEPS_TO_GROW && load > QUICK_LOAD -> copy(fitStreak = fitStreak + 1, slow = false)
+                fitStreak + 1 < STEPS_TO_GROW -> copy(fitStreak = fitStreak + 1, slow = false)
                 bands > 1 -> StepBudget(samples, (bands + 1) / 2)
                 else -> StepBudget(samples + 1, 1)
             }
@@ -63,10 +63,12 @@ object GpuSampling {
 
         companion object {
             /**
-             * The budget a scene starts with: the thinnest bands of the full samples. The first steps of a scene
-             * whose cost nobody knows yet must not freeze the window; a light scene grows out of it in a few steps.
+             * The budget a scene starts with: the full samples over thin bands. The first steps of a scene whose
+             * cost nobody knows yet must not freeze the window. It grows no faster than any budget: the window's
+             * frame times trail the GPU's work by a few frames, and a budget that outgrows them queues steps the
+             * GPU stalls on, up to Metal dropping the window's commands.
              */
-            val CAUTIOUS = StepBudget(GPU_STEP_SAMPLES, MAX_BANDS)
+            val CAUTIOUS = StepBudget(GPU_STEP_SAMPLES, CAUTIOUS_BANDS)
         }
     }
 
@@ -87,8 +89,11 @@ object GpuSampling {
     /** Rows of band [band] of [bands] of a frame [height] rows high, from the top of the window. */
     fun bandRows(height: Int, band: Int, bands: Int): IntRange = height * band / bands until height * (band + 1) / bands
 
-    /** Bands a pass of a GPU frame splits into at most: a 1024-row frame still gets 8 rows per step. */
-    private const val MAX_BANDS = 128
+    /** Bands a pass of a GPU frame splits into at most: a 1024-row frame still gets 16 rows per step. */
+    private const val MAX_BANDS = 64
+
+    /** Bands of a pass of a scene not drawn before. */
+    private const val CAUTIOUS_BANDS = 16
 
     /** Window frame a GPU step should fit in: under the repaint interval that paces the steps. */
     private const val STEP_FRAME_TARGET_MS = 40.0
@@ -98,9 +103,6 @@ object GpuSampling {
 
     /** Step frames in a row that must fit before the step budget grows. */
     private const val STEPS_TO_GROW = 4
-
-    /** A step frame under this share of its target grows the budget at once. */
-    private const val QUICK_LOAD = 0.25
 
     /**
      * How many times smaller each way the quick first look of a GPU frame is, so it has at most [budget] pixels:

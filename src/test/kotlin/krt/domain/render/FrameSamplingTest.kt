@@ -75,7 +75,7 @@ class FrameSamplingTest {
         assertEquals(full.copy(slow = true), full.after(70.0), "one step a little slow is a hiccup")
         assertEquals(GpuSampling.StepBudget(4, 2), full.after(70.0).after(80.0))
         assertEquals(GpuSampling.StepBudget(4, 10), full.after(400.0), "a step far too slow cuts at once")
-        assertEquals(GpuSampling.StepBudget(2, 128), GpuSampling.StepBudget(4, 128).after(80.0), "samples go last")
+        assertEquals(GpuSampling.StepBudget(2, 64), GpuSampling.StepBudget(4, 64).after(80.0), "samples go last")
         assertEquals(GpuSampling.StepBudget(1, 5), GpuSampling.StepBudget(1, 1, slow = true).after(180.0))
         assertEquals(full, full.after(70.0).after(10.0))
         var budget = GpuSampling.StepBudget(1, 5)
@@ -105,7 +105,7 @@ class FrameSamplingTest {
     fun `bands taken one after another cover the frame once, whatever height each is given`() {
         val rows = mutableListOf<Int>()
         var row = 0
-        var bands = 128
+        var bands = 64
         while (row < 100) {
             val band = GpuSampling.nextRows(row, 100, bands)
             rows += band

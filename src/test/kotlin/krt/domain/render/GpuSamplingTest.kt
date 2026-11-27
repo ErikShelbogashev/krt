@@ -23,7 +23,7 @@ class GpuSamplingTest {
     }
 
     @Test
-    fun `a new scene starts with cautious steps that a light scene grows out of quickly`() {
+    fun `a new scene starts with cautious steps that grow back no faster than any budget`() {
         assertEquals(GpuSampling.StepBudget.CAUTIOUS, GpuSampling.stepBudgetFor(true, GpuSampling.StepBudget()))
         assertEquals(GpuSampling.StepBudget(), GpuSampling.stepBudgetFor(false, GpuSampling.StepBudget()))
         var budget = GpuSampling.StepBudget.CAUTIOUS
@@ -33,7 +33,7 @@ class GpuSamplingTest {
             frames++
         }
         assertEquals(1, budget.bands)
-        assertEquals(7, frames, "a step frame under a quarter of its target halves the bands at once")
+        assertEquals(16, frames, "four quick step frames halve the bands: 16, 8, 4, 2, 1")
     }
 
     @Test
