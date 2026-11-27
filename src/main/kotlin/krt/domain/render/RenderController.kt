@@ -1,5 +1,6 @@
 package krt.domain.render
 
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.SwingUtilities
@@ -135,13 +136,12 @@ class RenderController(
         val passes = camera.samplesPerPixel
         val batchPixels = batchSize
         val startedAt = clock()
-        return CoroutineScope(renderDispatcher).launch {
+        val scratch = scratchFor(width * height)
+        val job = CoroutineScope(renderDispatcher).launch {
             // Setting up a frame of a million pixels takes a while: off the UI thread, which a dragged camera
             // asks for a new frame every repaint.
-            val pixels = FrameSampling.pixelOrder(width, height, random)
-            val frameSeed = random.nextLong()
-            val batches = pixels.chunked(batchPixels)
-            val accumulated = Accumulator(width * height)
+            FrameSampling.fillPixelOrder(scratch.order, random)
+            val work = FrameWork(frame, rayTracer, camera, scratch, width, batchPixels, random.nextLong())
             for (pass in 0 until passes) {
                 if (!isActive) break
                 val nextBatch = AtomicInteger(0)
@@ -149,9 +149,9 @@ class RenderController(
                 List(workers) {
                     launch {
                         while (isActive) {
-                            val batch = batches.getOrNull(nextBatch.getAndIncrement()) ?: break
-                            renderBatch(batch, Pass(pass, frameSeed), frame, accumulated, rayTracer, camera)
-                            val passFraction = doneBatches.incrementAndGet().toDouble() / batches.size
+                            val batch = work.batch(nextBatch.getAndIncrement()) ?: break
+                            renderBatch(batch, Pass(pass, work.frameSeed), work)
+                            val passFraction = doneBatches.incrementAndGet().toDouble() / work.batchCount
                             publishIfDue(onUpdate) { now ->
                                 RenderProgress(passes, pass, passFraction, now - startedAt)
                             }
@@ -163,13 +163,60 @@ class RenderController(
             val progress = RenderProgress.finished(passes, clock() - startedAt)
             SwingUtilities.invokeLater { onUpdate(progress) }
         }
+        // Back to the pool only once the job and all its workers are done with it, cancelled or not.
+        job.invokeOnCompletion { releaseScratch(scratch) }
+        return job
+    }
+
+    /**
+     * Pixel order and sample sums of one frame, about 28 bytes per pixel. A dragged camera starts a frame every
+     * repaint; taking them from a pool instead of allocating them spares the collector tens of megabytes a frame.
+     */
+    private class Scratch(val pixelCount: Int) {
+        val order = IntArray(pixelCount)
+        val sums = DoubleArray(pixelCount * CHANNELS)
+    }
+
+    private val scratchPool = ConcurrentLinkedQueue<Scratch>()
+
+    private fun scratchFor(pixelCount: Int): Scratch =
+        generateSequence { scratchPool.poll() }.firstOrNull { it.pixelCount == pixelCount } ?: Scratch(pixelCount)
+
+    private fun releaseScratch(scratch: Scratch) {
+        scratch.sums.fill(0.0)
+        scratchPool.offer(scratch)
+    }
+
+    /** Pixels `order[from until to]`, each an index `j * width + i` of pixel (i, j). */
+    private class Pixels(val order: IntArray, val from: Int, val to: Int, val width: Int)
+
+    /** What the workers of one CPU frame share: where they write, what they trace, and its batches. */
+    @Suppress("LongParameterList")
+    private class FrameWork(
+        val frame: Frame,
+        val rayTracer: RayTracer,
+        val camera: Camera,
+        scratch: Scratch,
+        private val width: Int,
+        private val batchPixels: Int,
+        val frameSeed: Long,
+    ) {
+        private val order = scratch.order
+        val accumulated = Accumulator(scratch.sums)
+        val batchCount = (order.size + batchPixels - 1) / batchPixels
+
+        /** Batch number [index], or null past the last one. */
+        fun batch(index: Int): Pixels? {
+            if (index >= batchCount) return null
+            val from = index * batchPixels
+            return Pixels(order, from, minOf(from + batchPixels, order.size), width)
+        }
     }
 
     private class Pass(val index: Int, val frameSeed: Long)
 
-    /** Sum of the samples taken so far, three doubles (r, g, b) per pixel. */
-    private class Accumulator(pixelCount: Int) {
-        private val sums = DoubleArray(pixelCount * CHANNELS)
+    /** Sum of the samples taken so far, three doubles (r, g, b) per pixel, in [sums]. */
+    private class Accumulator(private val sums: DoubleArray) {
 
         fun add(index: Int, color: Color): Color {
             val at = index * CHANNELS
@@ -179,27 +226,18 @@ class RenderController(
             return Color(sums[at], sums[at + 1], sums[at + 2])
         }
 
-        private companion object {
-            const val CHANNELS = 3
-        }
     }
 
-    @Suppress("LongParameterList")
-    private fun CoroutineScope.renderBatch(
-        batch: List<FrameSampling.Pixel>,
-        pass: Pass,
-        frame: Frame,
-        accumulated: Accumulator,
-        rayTracer: RayTracer,
-        camera: Camera,
-    ) {
-        for (pixel in batch) {
+    private fun CoroutineScope.renderBatch(batch: Pixels, pass: Pass, work: FrameWork) {
+        val camera = work.camera
+        for (k in batch.from until batch.to) {
+            val pixel = FrameSampling.Pixel(batch.order[k] % batch.width, batch.order[k] / batch.width)
             val random =
                 FrameSampling.passRandom(pass.frameSeed, pixel, camera.imageWidth, camera.imageHeight, pass.index)
-            val color = FrameSampling.sampleOnce(pixel, camera, rayTracer, random)
+            val color = FrameSampling.sampleOnce(pixel, camera, work.rayTracer, random)
             if (!isActive) return
             val index = FrameSampling.imageY(pixel, camera.imageHeight) * camera.imageWidth + pixel.i
-            frame.pixels[index] = accumulated.add(index, color).toAWTColor(pass.index + 1)
+            work.frame.pixels[index] = work.accumulated.add(index, color).toAWTColor(pass.index + 1)
         }
     }
 
@@ -242,6 +280,9 @@ class RenderController(
 
         /** How long the camera rests before a GPU frame is refined at full resolution. */
         private const val REFINE_DELAY_MS = 120L
+
+        /** Sums per pixel: r, g and b. */
+        private const val CHANNELS = 3
 
         fun default(): RenderController = RenderController(50L, 50)
     }

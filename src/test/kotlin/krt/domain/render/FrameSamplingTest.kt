@@ -22,6 +22,13 @@ class FrameSamplingTest {
     }
 
     @Test
+    fun `the pixel order in place matches the list of pixels`() {
+        val order = IntArray(35)
+        FrameSampling.fillPixelOrder(order, Random(1))
+        assertEquals(FrameSampling.pixelOrder(7, 5, Random(1)), order.map { FrameSampling.Pixel(it % 7, it / 7) })
+    }
+
+    @Test
     fun `image row is flipped`() {
         assertEquals(9, FrameSampling.imageY(FrameSampling.Pixel(0, 0), 10))
         assertEquals(0, FrameSampling.imageY(FrameSampling.Pixel(0, 9), 10))
