@@ -1,51 +1,139 @@
 # krt
 
-Трассировщик лучей на Kotlin + Compose Desktop: wireframe-режим, трассировка с материалами (Lambert, Metal, Dielectric, Emissive), фокус и глубина резкости, загрузка моделей `.obj`.
+Трассировщик лучей на Kotlin + Compose Desktop. Каждый пиксель считается на CPU кодом на Kotlin; отдельный GPU-режим считает тот же кадр SkSL-шейдером через Skia. Сцены — файлы [pbrt-v4](https://pbrt.org/fileformat-v4) или OBJ + MTL с JSON-описанием материалов.
+
+<img width="480" alt="Laptop crew, CPU" src="docs/images/laptop-crew.png"> <img width="480" alt="Fractals, CPU" src="docs/images/fractals.png">
 
 ## Запуск
 
 Нужен JDK 17+.
 
 ```bash
-./gradlew run      # запустить приложение
-./gradlew check    # тесты и проверки
+./gradlew run      # приложение
+./gradlew check    # тесты, detekt, Konsist
+./gradlew jmh      # бенчмарки ядра (в check не входят)
 ```
 
-Пример модели для кнопки «Load File»: [`samples/ORIGAMI_Chat_Free.obj`](samples/ORIGAMI_Chat_Free.obj).
-Управление камерой: `W/A/S/D` или стрелки, `R`/`F` вверх/вниз, перетаскивание мышью по кадру поворачивает камеру.
+Сцены выбираются на вкладке Scene (Showcase, Materials, Fractals, Notifications, Laptop crew, Deploy, Classic), свои открываются кнопкой «Open scene…». Камера: `W/A/S/D` или стрелки, `R`/`F` — вверх/вниз, перетаскивание по кадру поворачивает. Секундомер в верхней панели запускает бенчмарк-пролёт камеры.
 
-Правила кода: [AGENTS.md](AGENTS.md).
+Правила кода: [AGENTS.md](AGENTS.md), решения: [docs/adr](docs/adr/README.md).
 
-## Скриншоты
+## Как считается каждый эффект
 
-### Wireframe
+Кадр — оценка Монте-Карло уравнения рендеринга: из пикселя выпускаются лучи, на каждом попадании материал выбирает направление следующего луча и вес пути (`Material.scatter`), излучение источников, встреченное по пути, суммируется с этим весом. Пиксель — среднее по сэмплам. Каждая формула ниже есть дважды: в Kotlin (`krt.domain`) и построчно в шейдере (`path_tracer.sksl`).
 
-<img width="500" alt="image" src="https://github.com/EricShelbogashev/krt/assets/96541869/71e00b51-8b96-4765-a66e-010b2234cc9c">
+| Эффект | Где | Математика |
+| --- | --- | --- |
+| Камера, глубина резкости | `Camera`, `Lens` | Тонкая линза: начало луча — случайная точка диска радиуса `aperture/2`, луч проходит через точку на плоскости фокуса на расстоянии `focusDist`. Смещение внутри пикселя случайно — сглаживание. |
+| Поиск попадания | `Bvh`, `TraceScene` | Дерево ограничивающих коробок: узел делится по медиане центров вдоль самой длинной оси. Обход без стека, на GPU — по ссылкам «следующий узел» в текстуре сцены. Шар: квадратное уравнение; треугольник: Мёллер — Трумбор. |
+| Диффузная поверхность | `Lambert` | Направление — нормаль плюс случайная точка в единичном шаре; плотность таких направлений 2cos³θ/π, её же использует выборка источников (ADR 0012). |
+| Зеркальный металл | `Metal` | Отражение r = d − 2(d·n)n плюс случайный сдвиг в шаре радиуса `fuzz`. |
+| Стекло | `Dielectric` | Закон Снеллиуса для преломления, полное внутреннее отражение при η·sinθ > 1, доля отражения — приближение Шлика R = R₀ + (1 − R₀)(1 − cosθ)⁵; луч выбирает ветвь с этой вероятностью. Окраска — поглощение по закону Бугера — Ламберта на пройденном пути. |
+| Дисперсия | `Dielectric.dispersion`, `Spectrum` | Формула Коши n(λ) = A + B/λ². Белый луч при первом входе в стекло выбирает длину волны равномерно в 380–720 нм, вес пути — цвет этой волны, нормированный так, что среднее по спектру белое. Оценка несмещённая. |
+| Тонкая плёнка | `ThinFilm`, `SoapBubble`, `Iridescent` | Формула Эйри для одной плёнки толщины d и показателя n: интерференция отражений от двух границ с разностью хода 2nd·cosθₜ, среднее двух поляризаций, на длинах волн каналов RGB. |
+| Микрограни, анизотропия | `Microfacets`, `Conductor` | Распределение GGX с шириной αₓ, α_y; выборка видимых нормалей (Heitz 2018), затенение Смита G2/G1. Касательная задаёт направление шлифовки. Шероховатость pbrt переводится в α. |
+| Металлы по η и k | `ConductorFresnel`, `Metals` | Точная формула Френеля для проводника с комплексным показателем η + ik; для золота, меди, хрома, серебра, алюминия — измеренные значения на линиях RGB. |
+| Матовое стекло | `Dielectric.roughness` | Отражение и преломление на нормали микрограни GGX; лучи, ушедшие не на ту сторону поверхности, гаснут. |
+| Пластик, лак | `Plastic`, `Patterned` | Прозрачный лак по Шлику над диффузной основой: с вероятностью Френеля зеркальное отражение, иначе Ламберт. |
+| Бархат | `Velvet`, `Sheen` | Блеск ворса — распределение Charlie с видимостью Нойбельта; ветвь (диффузная или блеск) выбирается случайно, вес делится на её вероятность. |
+| Среды: туман, дым, воск | `Medium`, `FreeFlight`, `Fog` | Однородная среда с коэффициентом ослабления σₜ и альбедо по каналам RGB. Длина свободного пробега выбирается по экспоненциальному закону для случайного канала, вес — по спектральному MIS (среднее плотностей каналов). Пропускание — закон Бугера — Ламберта T = exp(−σₜ·s). Частица рассеивает изотропно. Путь помнит, в какой среде он идёт; границы сред — поверхности с `MediumInterface` (ADR 0014). |
+| Подповерхностное рассеяние | `Translucent` | Стеклянная поверхность и среда внутри той же сферы: случайное блуждание между частицами, пока луч не выйдет через поверхность. |
+| Выборка источников (NEE) | `Lights`, `Emitters`, `PathTracing.direct` | На каждом диффузном отскоке — теневой луч к случайной точке на источнике. Источник выбирается с вероятностью ∝ площадь × яркость (треугольники одного объекта — один источник, бинарный поиск по накопленным долям). Вклад: Le · f · cosθ · cosθₗ / (r² · p). Излучение, встреченное после такого отскока, не считается дважды. Теневой луч проходит сквозь границы сред и умножается на их пропускание (ADR 0012). |
+| Свечение по температуре | `Emissive.kelvin`, `Blackbody` | Спектр Планка B(λ, T), свёрнутый с весами каналов и нормированный к яркости 1, как в pbrt-v4. |
+| Процедурные узоры | `Noise`, `Pattern` | Улучшенный шум Перлина; fBm — сумма октав с удвоением частоты и уменьшением амплитуды вдвое; турбулентность — сумма модулей. Мрамор: sin(f·x + k·turbulence). Дерево: кольца — дробная часть f·√(y² + z²) с шумом, ствол вдоль x. Сетка — дробная часть координат, полосы — синус по y. Хеш решётки (34x² + x) mod 289 точен во float32, поэтому шейдер рисует тот же узор. |
+| Рельеф (bump) | `Bump` | Нормаль наклоняется против градиента значения узора; градиент — конечными разностями. |
+| Размытие движения | `SceneLook.motionBlur`, `Sphere.velocity` | Луч камеры получает случайный момент t ∈ [0, 1); центр шара в этот момент c + v·t. Коробка шара охватывает весь его путь. |
+| Гладкие нормали | `VertexNormals`, `Meshes.smooth` | Нормаль в точке — смесь нормалей вершин по барицентрическим координатам; сторона попадания — по плоской грани. |
+| Фракталы | `Fractal`, `FractalDistance` | Трассировка сферами по оценке расстояния d(p): шаг вдоль луча на d, пока d < 10⁻⁴·радиус, не больше 160 шагов; нормаль — градиент d по четырём точкам тетраэдра. Mandelbulb: d = ½·ln r·r/dr, dr ← p·rᵖ⁻¹·dr + 1. Губка Менгера: пересечение куба с крестами дыр на каждом уровне (масштаб 3). Mandelbox: складка коробки, складка сферы, масштаб; d = \|z\|/\|dr\|. Кватернионная Жюлиа z ← z² + c: d = ¼·√(\|z\|²/\|z′\|²)·ln \|z\|² (ADR 0015). |
+| Прогрессивный кадр | `RenderController`, `FrameSampling` | Пиксель — среднее сэмплов всех проходов. На GPU шаги идут полосами строк, кадр хранит √(среднего) в 8 битах (гамма 2) и смешивается со следующим шагом; бюджет шага подстраивается под время кадра окна (ADR 0010). |
+| Wireframe | `Wireframe` | Рёбра объектов проецируются камерой и растеризуются алгоритмом Брезенхэма в Kotlin. |
 
-### Render process
+## Диаграмма эффектов
 
-<img width="500" alt="image" src="https://github.com/EricShelbogashev/krt/assets/96541869/975ecc4f-10a7-403f-b1c4-7df84a0b7f50">
+Диаграмма по [Эргономичной архитектуре](https://github.com/ergonomic-code/ergo-wiki/blob/2b77b9c/kb/production-code/models/ergo-arch.adoc): порты (обработчики событий Compose) вызывают операции, операции читают (r) и пишут (w) ресурсы. Почти каждая операция заканчивается доменной операцией `renderFrame`: она читает камеру и сцену и запускает кадр в `RenderController`. Трансформации (материалы, ядро трассировки, разбор файлов сцен) на диаграмме не показаны: они чистые и эффектов не имеют.
 
-### Ray Traced
+```mermaid
+flowchart LR
+  subgraph Ports["Порты (krt.app)"]
+    Drag["Перетаскивание кадра"]
+    Keys["Клавиши W/A/S/D/R/F"]
+    CameraTab["Вкладка Camera"]
+    SceneTab["Вкладка Scene"]
+    OpenBtn["Open scene…"]
+    RenderTab["Вкладка Render, режим"]
+    SaveBtn["Save image…"]
+    Bench["Бенчмарк"]
+    FrameClock["Кадр окна нарисован"]
+  end
 
-<img width="500" alt="image" src="https://github.com/EricShelbogashev/krt/assets/96541869/c1fa62f0-9157-4856-8ef3-027317c6fcf4">
+  subgraph Ops["Операции"]
+    Rotate[RotateCameraOp]
+    Move[MoveCameraOp]
+    CamOps["ChangeCameraSettingsOp<br/>SetCameraViewOp<br/>ResetCameraViewOp<br/>FocusOnObjectOp"]
+    LoadScene[LoadSceneOp]
+    MoveObject[MoveObjectOp]
+    OpenScene[OpenSceneOp]
+    RenderOps["SetRenderModeOp<br/>ChangeRayTracerSettingsOp<br/>ChangeRenderSettingsOp<br/>RedrawOp"]
+    SaveImage[SaveImageOp]
+    BenchOps["StartBenchmarkRunOp<br/>FlyCameraOp<br/>Capture/RestoreSettingsOp<br/>SaveBenchmarkReportOp"]
+    Report[ReportGpuFrameOp]
+    RenderFrame(("renderFrame"))
+  end
 
-### OBJ support wireframe
+  subgraph Resources["Ресурсы"]
+    Camera[(Camera)]
+    World[(World)]
+    RayTracer[(RayTracer)]
+    Controller[("RenderController<br/>пул потоков, GPU")]
+    FrameBuffer[(FrameBuffer)]
+    Library[("SceneLibrary<br/>ресурсы и диск")]
+    Png[("PngFiles")]
+    Text[("TextFiles")]
+  end
 
-<img width="500" alt="image" src="https://github.com/EricShelbogashev/krt/assets/96541869/0e7bfb16-4306-440b-a334-ef2d23973755">
+  Drag --> Rotate
+  Keys --> Move
+  CameraTab --> CamOps
+  SceneTab --> LoadScene
+  SceneTab --> MoveObject
+  OpenBtn --> OpenScene
+  RenderTab --> RenderOps
+  SaveBtn --> SaveImage
+  Bench --> BenchOps
+  FrameClock --> Report
 
-### Render process
+  Rotate -- w --> Camera
+  Move -- w --> Camera
+  CamOps -- w --> Camera
+  CamOps -- r --> World
+  CamOps -- w --> FrameBuffer
+  LoadScene -- r --> Library
+  LoadScene -- w --> World
+  LoadScene -- w --> Camera
+  OpenScene -- r --> Library
+  OpenScene -- w --> World
+  OpenScene -- w --> Camera
+  MoveObject -- w --> World
+  RenderOps -- w --> Controller
+  RenderOps -- w --> RayTracer
+  SaveImage -- r --> Controller
+  SaveImage -- w --> Png
+  BenchOps -- r --> Library
+  BenchOps -- w --> World
+  BenchOps -- w --> Camera
+  BenchOps -- w --> Controller
+  BenchOps -- w --> Text
+  Report -- w --> Controller
 
-<img width="500" alt="image" src="https://github.com/EricShelbogashev/krt/assets/96541869/5720d6ae-3807-4667-aebe-f846a1a454e3">
+  Rotate & Move & CamOps & LoadScene & OpenScene & MoveObject & RenderOps & BenchOps --> RenderFrame
+  RenderFrame -- r --> Camera
+  RenderFrame -- r --> RayTracer
+  RenderFrame -- w --> FrameBuffer
+  RenderFrame -- w --> Controller
+  RayTracer -- r --> World
+```
 
-### Low reflections (не хватает для отрисовки отражений в стекле)
+## Тесты CPU и GPU
 
-<img width="500" alt="image" src="https://github.com/EricShelbogashev/krt/assets/96541869/08862f6a-4ccd-402e-91e0-f0016c9ee85c">
-
-### Focus correction
-
-<img width="500" alt="image" src="https://github.com/EricShelbogashev/krt/assets/96541869/b9272800-0682-4ecb-a12d-0d920f4e36af">
-
-### Without focus
-
-<img width="1046" alt="image" src="https://github.com/EricShelbogashev/krt/assets/96541869/cca2571b-4e03-495b-97a0-e2fea7f4aec4">
+- Ядро на CPU: модульные тесты трансформаций и golden-кадр Classic с фиксированным seed (`TracedFrameGoldenTest`).
+- GPU-шейдер: `GpuTracerTest` рисует ту же сцену шейдером и ядром и сравнивает среднюю яркость каналов и четвертей кадра, по одному тесту на эффект. Шейдер исполняет растровый конвейер Skia на CPU в float32, без видеокарты, поэтому тесты идут в CI. Ошибки, которые видны только на настоящей видеокарте (время шага, сторожевой таймер Metal), ловит бенчмарк-пролёт в окне.
