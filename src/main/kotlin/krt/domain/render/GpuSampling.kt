@@ -52,7 +52,7 @@ object GpuSampling {
                 load > 1 && bands < MAX_BANDS -> StepBudget(samples, ceil(bands * load).toInt().coerceAtMost(MAX_BANDS))
                 load > 1 -> StepBudget((samples / load).toInt().coerceAtLeast(1), bands)
                 !fitsMore(load) -> copy(fitStreak = 0, slow = false)
-                fitStreak + 1 < STEPS_TO_GROW -> copy(fitStreak = fitStreak + 1, slow = false)
+                fitStreak + 1 < STEPS_TO_GROW && load > QUICK_LOAD -> copy(fitStreak = fitStreak + 1, slow = false)
                 bands > 1 -> StepBudget(samples, (bands + 1) / 2)
                 else -> StepBudget(samples + 1, 1)
             }
@@ -60,17 +60,31 @@ object GpuSampling {
 
         private fun fitsMore(load: Double): Boolean =
             if (bands > 1) load * 2 <= 1 else samples < GPU_STEP_SAMPLES && load * (samples + 1) / samples <= 1
+
+        companion object {
+            /**
+             * The budget a scene starts with: the thinnest bands of the full samples. The first steps of a scene
+             * whose cost nobody knows yet must not freeze the window; a light scene grows out of it in a few steps.
+             */
+            val CAUTIOUS = StepBudget(GPU_STEP_SAMPLES, MAX_BANDS)
+        }
     }
+
+    /** The step budget for a frame of a scene: [CAUTIOUS][StepBudget.CAUTIOUS] for a scene not drawn before. */
+    fun stepBudgetFor(newScene: Boolean, budget: StepBudget): StepBudget = if (newScene) StepBudget.CAUTIOUS else budget
 
     /** Samples per pixel the whole frame has after band [band] of [bands] of a step of [samples] after [taken]. */
     fun samplesDone(taken: Int, samples: Int, band: Int, bands: Int): Int =
         if (band == bands - 1) taken + samples else taken
 
+    /** Bands a pass of a frame [height] rows high takes under [budget]: no more than it has rows. */
+    fun bandsOf(budget: StepBudget, height: Int): Int = budget.bands.coerceIn(1, maxOf(1, height))
+
     /** Rows of band [band] of [bands] of a frame [height] rows high, from the top of the window. */
     fun bandRows(height: Int, band: Int, bands: Int): IntRange = height * band / bands until height * (band + 1) / bands
 
-    /** Bands a pass of a GPU frame splits into at most: a 1024-row frame still gets 16 rows per step. */
-    private const val MAX_BANDS = 64
+    /** Bands a pass of a GPU frame splits into at most: a 1024-row frame still gets 8 rows per step. */
+    private const val MAX_BANDS = 128
 
     /** Window frame a GPU step should fit in: under the repaint interval that paces the steps. */
     private const val STEP_FRAME_TARGET_MS = 40.0
@@ -80,6 +94,9 @@ object GpuSampling {
 
     /** Step frames in a row that must fit before the step budget grows. */
     private const val STEPS_TO_GROW = 4
+
+    /** A step frame under this share of its target grows the budget at once. */
+    private const val QUICK_LOAD = 0.25
 
     /**
      * How many times smaller each way the quick first look of a GPU frame is, so it has at most [budget] pixels:
@@ -96,10 +113,12 @@ object GpuSampling {
 
         /**
          * The budget after a quick look took a window frame of [frameMs]. A slow one, over [DRAFT_FRAME_TARGET_MS],
-         * shrinks it at once in proportion, by at most a quarter; it grows by a quarter only after [STREAK_TO_GROW]
-         * quick ones in a row. Switching the size of quick looks every frame stalls Skia, so it must not swing.
+         * shrinks it at once in proportion, by at most a quarter, or all the way when it is [FAR_OVER] times over,
+         * as in a scene far heavier than the last; it grows by a quarter only after [STREAK_TO_GROW] quick ones in a
+         * row. Switching the size of quick looks every frame stalls Skia, so it must not swing.
          */
         fun after(frameMs: Double): DraftBudget = when {
+            frameMs > DRAFT_FRAME_TARGET_MS * FAR_OVER -> DraftBudget(scaled(DRAFT_FRAME_TARGET_MS / frameMs), 0)
             frameMs > DRAFT_FRAME_TARGET_MS ->
                 DraftBudget(scaled((DRAFT_FRAME_TARGET_MS / frameMs).coerceAtLeast(MAX_SHRINK)), 0)
             quickStreak + 1 >= STREAK_TO_GROW -> DraftBudget(scaled(GROWTH), 0)
@@ -115,8 +134,11 @@ object GpuSampling {
     /** Pixels of the quick first look of a GPU frame at most; the window frame it takes sets how many it gets. */
     const val MAX_DRAFT_PIXELS = 160_000
 
-    /** Pixels of the quick first look at least: about a 200×200 frame. */
-    private const val MIN_DRAFT_PIXELS = 40_000
+    /** Pixels of the quick first look at least: about a 64×64 frame, for the heaviest scenes. */
+    private const val MIN_DRAFT_PIXELS = 4_096
+
+    /** A quick look this many times over its target shrinks the next one all the way in proportion. */
+    private const val FAR_OVER = 4.0
 
     /**
      * Window frame a quick look should fit in: about 6 ms of GPU time over the rest of a 120 Hz frame,

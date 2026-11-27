@@ -15,6 +15,7 @@ import krt.app.shell.KrtIcons
 import krt.domain.camera.model.Flights
 import krt.domain.render.model.BenchmarkConfig
 import krt.domain.render.model.BenchmarkResult
+import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
 import krt.domain.render.model.SettingsSnapshot
 import krt.infra.AppContext
@@ -24,7 +25,13 @@ class BenchmarkState {
     var setupOpen by mutableStateOf(false)
     var plan by mutableStateOf<List<BenchmarkConfig>?>(null)
     var results by mutableStateOf<List<BenchmarkResult>?>(null)
+
+    /** The run in progress, whose renderer the window shows while it runs. */
+    var running by mutableStateOf<BenchmarkConfig?>(null)
     var settings: SettingsSnapshot? = null
+
+    /** The renderer the window's badge names: that of the run in progress, else the one [chosen] in the panel. */
+    fun shownMode(chosen: RenderMode): RenderMode = running?.mode ?: chosen
 }
 
 @Composable
@@ -61,10 +68,14 @@ fun BenchmarkHost(
             plan = plan,
             flightOf = Flights::of,
             progress = progress,
-            onStart = { app.startBenchmarkRun(it) },
+            onStart = { config ->
+                state.running = config
+                app.startBenchmarkRun(config)
+            },
             onPose = { app.flyCamera(it) },
             onFinish = { results ->
                 state.settings?.let { app.restoreSettings(it) }
+                state.running = null
                 state.plan = null
                 state.results = results
             },

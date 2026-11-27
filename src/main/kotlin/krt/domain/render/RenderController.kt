@@ -19,6 +19,7 @@ import krt.domain.camera.Camera
 import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
 import krt.domain.scene.World
+import krt.domain.trace.GpuScene
 import krt.platform.awt.toAWTColor
 import krt.platform.math.Color
 import org.jetbrains.skia.Shader
@@ -68,6 +69,10 @@ class RenderController(
     /** Samples per pixel of a GPU step, adapted to how long steps take to show (see [gpuFrameShown]). */
     @Volatile
     private var stepBudget = GpuSampling.StepBudget()
+
+    /** The GPU scene the step budget was learnt on: a new scene starts cautious. */
+    @Volatile
+    private var budgetScene: GpuScene? = null
 
     /**
      * The GPU steps published lately and the signals that the window has drawn them; like quick looks, the window
@@ -132,7 +137,10 @@ class RenderController(
             val look = GpuFrame(
                 scene, view, GpuSampling.draftSize(width, scale), GpuSampling.draftSize(height, scale),
                 minOf(rayTracer.maxDepth, PREVIEW_DEPTH), samples = 1, seed = random.nextFloat(),
+                band = GpuBand(quick = true),
             )
+            stepBudget = GpuSampling.stepBudgetFor(scene !== budgetScene, stepBudget)
+            budgetScene = scene
             val preview = gpuTracer.shader(look, previous = null, scale = scale)
             recentDrafts.keepRecent(preview, RECENT_DRAFTS)
             val previewProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true)
@@ -144,14 +152,15 @@ class RenderController(
             while (taken < passes && isActive) {
                 val budget = stepBudget
                 val samples = GpuSampling.nextStep(taken, passes, budget.samples)
-                for (index in 0 until budget.bands) {
+                val bands = GpuSampling.bandsOf(budget, height)
+                for (index in 0 until bands) {
                     if (!isActive) break
-                    val band = GpuBand(taken, GpuSampling.bandRows(height, index, budget.bands))
+                    val band = GpuBand(taken, GpuSampling.bandRows(height, index, bands))
                     val seed = random.nextFloat()
                     val step = GpuFrame(scene, view, width, height, rayTracer.maxDepth, samples, seed, band)
                     val shader = gpuTracer.shader(step, frame)
                     frame = shader
-                    val done = GpuSampling.samplesDone(taken, samples, index, budget.bands)
+                    val done = GpuSampling.samplesDone(taken, samples, index, bands)
                     val progress = RenderProgress(passes, done, 0.0, clock() - startedAt)
                     // Registered before publishing, so a window that draws the step at once is not missed; a window
                     // that never says so, like a test, gets the next step after the repaint interval.

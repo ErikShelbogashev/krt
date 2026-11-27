@@ -75,16 +75,23 @@ class FrameSamplingTest {
         assertEquals(full.copy(slow = true), full.after(70.0), "one step a little slow is a hiccup")
         assertEquals(GpuSampling.StepBudget(4, 2), full.after(70.0).after(80.0))
         assertEquals(GpuSampling.StepBudget(4, 10), full.after(400.0), "a step far too slow cuts at once")
-        assertEquals(GpuSampling.StepBudget(2, 64), GpuSampling.StepBudget(4, 64).after(80.0), "samples go last")
+        assertEquals(GpuSampling.StepBudget(2, 128), GpuSampling.StepBudget(4, 128).after(80.0), "samples go last")
         assertEquals(GpuSampling.StepBudget(1, 5), GpuSampling.StepBudget(1, 1, slow = true).after(180.0))
         assertEquals(full, full.after(70.0).after(10.0))
         var budget = GpuSampling.StepBudget(1, 5)
-        repeat(3) { budget = budget.after(10.0) }
+        repeat(3) { budget = budget.after(20.0) }
         assertEquals(5, budget.bands)
-        assertEquals(GpuSampling.StepBudget(1, 3), budget.after(10.0))
+        assertEquals(GpuSampling.StepBudget(1, 3), budget.after(20.0))
         assertEquals(GpuSampling.StepBudget(2, 1), GpuSampling.StepBudget(1, 1, fitStreak = 3).after(15.0))
         assertEquals(GpuSampling.StepBudget(1, 1, 0), GpuSampling.StepBudget(1, 1, fitStreak = 3).after(30.0))
         assertEquals(listOf(1, 1, 2, 3), listOf(0, 1, 2, 4).map { GpuSampling.nextStep(it, 7, 3) })
+    }
+
+    @Test
+    fun `a pass takes no more bands than its frame has rows`() {
+        assertEquals(16, GpuSampling.bandsOf(GpuSampling.StepBudget.CAUTIOUS, 16))
+        assertEquals(GpuSampling.StepBudget.CAUTIOUS.bands, GpuSampling.bandsOf(GpuSampling.StepBudget.CAUTIOUS, 600))
+        assertEquals(1, GpuSampling.bandsOf(GpuSampling.StepBudget(), 0))
     }
 
     @Test
