@@ -11,6 +11,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import krt.domain.camera.Camera
+import krt.domain.render.model.RenderMode
 import krt.domain.scene.World
 import krt.platform.awt.toAWTColor
 import krt.platform.math.Color
@@ -28,19 +29,10 @@ class RenderController(
     private val renderDispatcher = Executors.newFixedThreadPool(workers).asCoroutineDispatcher()
     private val repaintLock = Any()
     private var lastRepaintTime = 0L
-    private var useWireframe: Boolean = false
 
-    /** GPU mode (ADR 0009): the frame is drawn by a Skia shader instead of the CPU workers. */
-    var useGpu: Boolean = false
-        private set
-
-    fun toggleWireframeMode() {
-        useWireframe = !useWireframe
-    }
-
-    fun toggleGpuMode() {
-        useGpu = !useGpu
-    }
+    /** Which renderer draws the next frame; in GPU mode (ADR 0009) a Skia shader draws it instead of the workers. */
+    @Volatile
+    var mode: RenderMode = RenderMode.CPU
 
     /**
      * Draws the frame: the wireframe or the CPU path tracer into [frame], reporting progress to [onUpdate],
@@ -54,10 +46,10 @@ class RenderController(
         onUpdate: (() -> Unit),
     ) {
         renderJob?.cancel()
-        when {
-            useWireframe -> renderWireframe(frame, rayTracer.world, camera, onUpdate)
-            useGpu -> renderGpuImage(rayTracer, camera, onGpuFrame)
-            else -> renderRayTracedImage(frame, rayTracer, camera, onUpdate)
+        when (mode) {
+            RenderMode.WIREFRAME -> renderWireframe(frame, rayTracer.world, camera, onUpdate)
+            RenderMode.GPU -> renderGpuImage(rayTracer, camera, onGpuFrame)
+            RenderMode.CPU -> renderRayTracedImage(frame, rayTracer, camera, onUpdate)
         }
     }
 

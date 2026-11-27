@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +52,7 @@ import krt.app.scene.LoadObject
 import krt.app.scene.ObjectController
 import krt.domain.camera.CameraMove
 import krt.domain.render.Frame
+import krt.domain.render.model.RenderMode
 import krt.infra.AppContext
 import krt.platform.skia.ArgbBitmapConverter
 
@@ -132,14 +135,19 @@ private fun SettingsPanel(app: AppContext, modifier: Modifier = Modifier) {
         ) {
             Text("Toggles", style = MaterialTheme.typography.titleLarge)
 
-            Row {
-                LoadObject(onFilePicked = { app.loadModel(it) })
-                Button(onClick = { app.toggleWireframe() }) {
-                    Text("Toggle Wireframe mode")
+            LoadObject(onFilePicked = { app.loadModel(it) })
+            var mode by remember { mutableStateOf(app.renderController.mode) }
+            SingleChoiceSegmentedButtonRow {
+                RenderMode.entries.forEach { entry ->
+                    SegmentedButton(
+                        selected = entry == mode,
+                        onClick = {
+                            mode = entry
+                            app.setRenderMode(entry)
+                        },
+                        shape = SegmentedButtonDefaults.itemShape(entry.ordinal, RenderMode.entries.size),
+                    ) { Text(entry.title) }
                 }
-            }
-            Button(onClick = { app.toggleGpuMode() }) {
-                Text("Toggle GPU mode")
             }
         }
 
