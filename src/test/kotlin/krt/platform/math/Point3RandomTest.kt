@@ -3,6 +3,7 @@ package krt.platform.math
 import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class Point3RandomTest {
@@ -14,7 +15,7 @@ class Point3RandomTest {
 
         assertTrue(points.all { it.length() < 1.0 })
         val octants = points.map { Triple(it.x < 0, it.y < 0, it.z < 0) }.toSet()
-        assertTrue(octants.size == OCTANTS, "octants hit: ${octants.size}")
+        assertEquals(OCTANTS, octants.size, "octants hit")
         assertCentredAtOrigin(points)
     }
 
@@ -25,7 +26,7 @@ class Point3RandomTest {
 
         assertTrue(points.all { it.length() < 1.0 && it.z == 0.0 })
         val quadrants = points.map { (it.x < 0) to (it.y < 0) }.toSet()
-        assertTrue(quadrants.size == QUADRANTS, "quadrants hit: ${quadrants.size}")
+        assertEquals(QUADRANTS, quadrants.size, "quadrants hit")
         assertCentredAtOrigin(points)
     }
 

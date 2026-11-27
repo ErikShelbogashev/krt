@@ -1,5 +1,6 @@
 package krt.platform.skia
 
+import kotlin.math.roundToInt
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import org.jetbrains.skia.Bitmap
@@ -46,5 +47,5 @@ class DrawnOnceShaderTest {
 
     private fun Bitmap.red(x: Int, y: Int): Int = getColor(x, y) shr 16 and 0xFF
 
-    private fun red(value: Double): Int = Math.round(value * 255).toInt()
+    private fun red(value: Double): Int = (value * 255).roundToInt()
 }

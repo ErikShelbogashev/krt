@@ -1,6 +1,7 @@
 package krt.domain.trace
 
 import kotlin.math.ln
+import kotlin.math.roundToLong
 import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.test.Test
@@ -15,7 +16,6 @@ import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.Sphere
-import krt.domain.scene.model.Traceable
 import krt.domain.scene.model.Triangle
 import krt.platform.math.Color
 import krt.platform.math.Point3
@@ -104,7 +104,7 @@ class GpuScenePackingTest {
 
     @Test
     fun `an empty scene packs no nodes`() {
-        val scene = GpuScenePacking.pack(emptyList<Traceable>())
+        val scene = GpuScenePacking.pack(emptyList())
         assertEquals(0, scene.nodeCount)
         assertEquals(0, scene.primitiveCount)
     }
@@ -187,7 +187,7 @@ class GpuScenePackingTest {
 
         private fun Point3.rounded() = Point3(round(x), round(y), round(z))
 
-        private fun round(value: Double) = Math.round(value * PRECISION) / PRECISION
+        private fun round(value: Double) = (value * PRECISION).roundToLong() / PRECISION
     }
 
     private fun randomTriangle(random: Random): Triangle {
