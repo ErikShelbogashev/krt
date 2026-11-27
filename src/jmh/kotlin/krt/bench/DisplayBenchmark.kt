@@ -16,6 +16,7 @@ import org.openjdk.jmh.annotations.Setup
 import org.openjdk.jmh.annotations.State
 
 /** Cost of handing a finished frame to Compose, paid on the UI thread at every repaint. */
+@Suppress("unused") // JMH finds and runs the benchmarks by reflection
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
