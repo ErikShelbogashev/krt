@@ -26,8 +26,8 @@ class Camera(
     fov: Double,
     var aperture: Double,
     focusDist: Double,
-    var imageWidth: Int,
-    var imageHeight: Int,
+    imageWidth: Int,
+    imageHeight: Int,
 ) {
     private var _origin = origin
     private var _target = target
@@ -44,6 +44,17 @@ class Camera(
             updateProjection()
         }
     var focusDist: Double = focusDist
+        set(value) {
+            field = value
+            updateProjection()
+        }
+
+    var imageWidth: Int = imageWidth
+        set(value) {
+            field = value
+            updateProjection()
+        }
+    var imageHeight: Int = imageHeight
         set(value) {
             field = value
             updateProjection()
