@@ -37,6 +37,27 @@ class RenderController(
     private val repaintLock = Any()
     private var lastRepaintTime = 0L
 
+    /** Pixel budget of the GPU quick look, adapted to how long quick looks take to show (see [gpuFrameShown]). */
+    @Volatile
+    private var draftBudget = GpuSampling.DraftBudget()
+
+    val draftPixels: Int get() = draftBudget.pixels
+
+    /**
+     * The quick looks published lately, so only their timings adapt [draftPixels]: the window measures a frame a
+     * couple of repaints after it got it, when a camera moved every repaint has published newer ones.
+     */
+    private val recentDrafts = ArrayDeque<Shader>()
+
+    /**
+     * The window showed GPU frame [shader] in a window frame of [frameMs]. A quick look that took too long makes
+     * the next ones smaller, a quick one lets them grow again.
+     */
+    fun gpuFrameShown(shader: Shader, frameMs: Double) {
+        if (synchronized(recentDrafts) { recentDrafts.none { it === shader } }) return
+        draftBudget = draftBudget.after(frameMs)
+    }
+
     /** Which renderer draws the next frame; in GPU mode (ADR 0009) a Skia shader draws it instead of the workers. */
     @Volatile
     var mode: RenderMode = RenderMode.CPU
@@ -87,12 +108,16 @@ class RenderController(
         val width = camera.imageWidth
         val height = camera.imageHeight
         renderJob = CoroutineScope(renderDispatcher).launch {
-            val scale = GpuSampling.draftScale(width, height)
+            val scale = GpuSampling.draftScale(width, height, draftPixels)
             val look = GpuFrame(
                 scene, view, GpuSampling.draftSize(width, scale), GpuSampling.draftSize(height, scale),
                 minOf(rayTracer.maxDepth, PREVIEW_DEPTH), samples = 1, seed = random.nextFloat(),
             )
             val preview = gpuTracer.shader(look, previous = null, scale = scale)
+            synchronized(recentDrafts) {
+                recentDrafts.addLast(preview)
+                if (recentDrafts.size > RECENT_DRAFTS) recentDrafts.removeFirst()
+            }
             val previewProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt)
             SwingUtilities.invokeLater { onGpuFrame(preview, previewProgress) }
             delay(REFINE_DELAY_MS)
@@ -273,6 +298,9 @@ class RenderController(
     }
 
     companion object {
+        /** Quick looks remembered for their timings. */
+        private const val RECENT_DRAFTS = 8
+
         /** Bounces of the quick first look of a GPU frame. */
         private const val PREVIEW_DEPTH = 3
 

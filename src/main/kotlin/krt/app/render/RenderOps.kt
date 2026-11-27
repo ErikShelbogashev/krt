@@ -8,6 +8,7 @@ import krt.domain.render.RenderController
 import krt.domain.render.model.RenderMode
 import krt.domain.render.renderFrame
 import krt.i9ns.png.PngFiles
+import org.jetbrains.skia.Shader
 
 class RedrawOp(
     private val renderController: RenderController,
@@ -70,4 +71,9 @@ class SaveImageOp(
             pngFiles.write(file, frame.pixels, frame.width, frame.height)
         }
     }
+}
+
+class ReportGpuFrameOp(private val renderController: RenderController) {
+    /** The window showed GPU frame [shader] in a window frame of [frameMs]. */
+    operator fun invoke(shader: Shader, frameMs: Double) = renderController.gpuFrameShown(shader, frameMs)
 }
