@@ -13,8 +13,6 @@
     <ID>MagicNumber:ObjParser.kt:ObjParser$5</ID>
     <ID>MagicNumber:ObjectController.kt:0.02</ID>
     <ID>MagicNumber:Point3.kt:Point3$1e-8</ID>
-    <ID>MagicNumber:RayTracer.kt:RayTracer$0.5</ID>
-    <ID>MagicNumber:RayTracer.kt:RayTracer$0.7</ID>
     <ID>MagicNumber:RenderController.kt:RenderController.Companion$50</ID>
     <ID>MagicNumber:RenderController.kt:RenderController.Companion$50L</ID>
     <ID>MagicNumber:Triangle.kt:Triangle$1e-10</ID>
@@ -36,7 +34,6 @@
     <ID>NewLineAtEndOfFile:Hit.kt:krt.domain.scene.model.Hit.kt</ID>
     <ID>NewLineAtEndOfFile:LineSegment.kt:krt.domain.scene.model.LineSegment.kt</ID>
     <ID>NewLineAtEndOfFile:Material.kt:krt.domain.scene.model.Material.kt</ID>
-    <ID>NewLineAtEndOfFile:RayTracer.kt:krt.domain.render.RayTracer.kt</ID>
     <ID>NewLineAtEndOfFile:RenderController.kt:krt.domain.render.RenderController.kt</ID>
     <ID>NewLineAtEndOfFile:Traceable.kt:krt.domain.scene.model.Traceable.kt</ID>
     <ID>NewLineAtEndOfFile:Triangle.kt:krt.domain.scene.model.Triangle.kt</ID>
