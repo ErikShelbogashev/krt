@@ -22,6 +22,9 @@ object Noise {
 
     /** Octaves of the fractal sums. */
     const val OCTAVES = 5
+
+    /** Octaves of a fractal sum at most, as many as the shader's loop runs. */
+    const val MAX_OCTAVES = 8
     private const val LACUNARITY = 2.0
     private const val GAIN = 0.5
 
@@ -40,12 +43,12 @@ object Noise {
         return lerp(lerp(x00, x10, u.y), lerp(x01, x11, u.y), u.z)
     }
 
-    /** Fractal Brownian motion: [OCTAVES] octaves of noise, each twice as fine and half as strong. */
-    fun fbm(p: Point3): Double {
+    /** Fractal Brownian motion: [octaves] octaves of noise, each twice as fine and half as strong. */
+    fun fbm(p: Point3, octaves: Int = OCTAVES): Double {
         var sum = 0.0
         var amplitude = 1.0
         var point = p
-        repeat(OCTAVES) {
+        repeat(octaves.coerceIn(1, MAX_OCTAVES)) {
             sum += amplitude * perlin(point)
             amplitude *= GAIN
             point = point * LACUNARITY
@@ -54,11 +57,11 @@ object Noise {
     }
 
     /** Turbulence: the fractal sum of the noise's absolute value, creased where the noise crosses 0. */
-    fun turbulence(p: Point3): Double {
+    fun turbulence(p: Point3, octaves: Int = OCTAVES): Double {
         var sum = 0.0
         var amplitude = 1.0
         var point = p
-        repeat(OCTAVES) {
+        repeat(octaves.coerceIn(1, MAX_OCTAVES)) {
             sum += amplitude * abs(perlin(point))
             amplitude *= GAIN
             point = point * LACUNARITY

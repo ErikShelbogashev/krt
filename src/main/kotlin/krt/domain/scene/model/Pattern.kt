@@ -25,11 +25,19 @@ enum class PatternKind {
 
     /** Puffs of [Pattern.second] over [Pattern.first] with clear gaps, like clouds. */
     CLOUDS,
+
+    /** Lines of [Pattern.second] [Pattern.frequency] of a cell wide on a grid of unit cells, like a screen. */
+    GRID,
+
+    /** Soft horizontal stripes of [Pattern.second], [Pattern.frequency] to a unit, like pulsing lights. */
+    STRIPES,
 }
 
 /**
  * A procedural pattern in space: [kind] blends [first] and [second] by a value from noise at the point times
- * [scale]; [turbulence] says how strongly noise bends the veins of marble and the rings of wood.
+ * [scale]; [turbulence] says how strongly noise bends the veins of marble and the rings of wood; [frequency] is
+ * the veins of marble and the rings of wood to a unit, the width of grid lines and the stripes to a unit;
+ * [octaves], those of the noise in noise, marble and clouds.
  */
 data class Pattern(
     val kind: PatternKind,
@@ -37,6 +45,8 @@ data class Pattern(
     val second: Color,
     val scale: Double = 1.0,
     val turbulence: Double = DEFAULT_TURBULENCE,
+    val frequency: Double = 1.0,
+    val octaves: Int = Noise.OCTAVES,
 ) {
     fun colorAt(p: Point3): Color {
         val t = valueAt(p)
@@ -47,26 +57,35 @@ data class Pattern(
     fun valueAt(p: Point3): Double {
         val q = p * scale
         val value = when (kind) {
-            PatternKind.NOISE -> HALF + HALF * Noise.fbm(q)
+            PatternKind.NOISE -> HALF + HALF * Noise.fbm(q, octaves)
             PatternKind.MARBLE -> marble(q)
             PatternKind.WOOD -> wood(q)
-            PatternKind.CLOUDS -> smoothstep(CLOUD_LOW, CLOUD_HIGH, HALF + HALF * Noise.fbm(q))
+            PatternKind.CLOUDS -> smoothstep(CLOUD_LOW, CLOUD_HIGH, HALF + HALF * Noise.fbm(q, octaves))
+            PatternKind.GRID -> grid(q)
+            PatternKind.STRIPES -> smoothstep(STRIPE_LOW, STRIPE_HIGH, HALF + HALF * sin(2 * PI * frequency * q.y))
         }
         return value.coerceIn(0.0, 1.0)
     }
 
     private fun marble(q: Point3): Double {
-        val wave = HALF + HALF * sin(q.x * MARBLE_FREQUENCY + turbulence * MARBLE_SPREAD * Noise.turbulence(q))
+        val veins = q.x * MARBLE_FREQUENCY * frequency + turbulence * MARBLE_SPREAD * Noise.turbulence(q, octaves)
+        val wave = HALF + HALF * sin(veins)
         return 1 - sqrt(wave)
     }
 
     private fun wood(q: Point3): Double {
         val along = Point3(q.x * GRAIN_STRETCH, q.y * GRAIN_WAVE, q.z * GRAIN_WAVE)
-        val rings = sqrt(q.y * q.y + q.z * q.z) + turbulence * Noise.perlin(along)
+        val rings = sqrt(q.y * q.y + q.z * q.z) * frequency + turbulence * Noise.perlin(along)
         val ring = rings - floor(rings)
         val latewood = smoothstep(LATEWOOD_START, LATEWOOD_PEAK, ring) * (1 - smoothstep(LATEWOOD_PEAK, 1.0, ring))
         val fibres = HALF + HALF * Noise.perlin(Point3(q.x * FIBRE_STRETCH, q.y * FIBRES, q.z * FIBRES))
         return LATEWOOD_SHARE * latewood + (1 - LATEWOOD_SHARE) * fibres
+    }
+
+    /** 1 on the lines between unit cells, [frequency] of a cell wide, along any of the three axes. */
+    private fun grid(q: Point3): Double {
+        val onLine = listOf(q.x, q.y, q.z).any { it - floor(it) < frequency }
+        return if (onLine) 1.0 else 0.0
     }
 
     private fun smoothstep(low: Double, high: Double, x: Double): Double {
@@ -81,6 +100,8 @@ data class Pattern(
         private const val SMOOTH_B = 2.0
         private const val CLOUD_LOW = 0.45
         private const val CLOUD_HIGH = 0.75
+        private const val STRIPE_LOW = 0.35
+        private const val STRIPE_HIGH = 0.65
         private const val MARBLE_FREQUENCY = 2 * PI
         private const val MARBLE_SPREAD = 4.0
         private const val GRAIN_STRETCH = 0.25

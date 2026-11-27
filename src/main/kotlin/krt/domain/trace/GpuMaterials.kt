@@ -34,7 +34,7 @@ import krt.platform.math.Point3
 object GpuMaterials {
 
     /**
-     * The values of [material]: code; colour r, g, b; parameters 1 and 2; second colour r, g, b; parameters 3 to 5.
+     * The values of [material]: code; colour r, g, b; parameters 1 and 2; second colour r, g, b; parameters 3 to 7.
      * - Lambert: albedo;
      * - Metal: albedo, fuzz;
      * - Dielectric: absorption per unit of distance (Beer–Lambert), refraction index, dispersion, none, GGX α of
@@ -45,10 +45,12 @@ object GpuMaterials {
      * - Interface (the edge of a medium, which light crosses unchanged): nothing;
      * - Soap bubble: none, film thickness in nm, film refraction index;
      * - Iridescent: base, film thickness in nm, film refraction index, none, roughness;
-     * - Conductor: η, GGX α along and across the tangent, k;
+     * - Conductor: η, GGX α along and across the tangent, k, the direction of brushing (0 for circles);
      * - Velvet: base, roughness, chance of the diffuse bounce, sheen;
-     * - Patterned: first colour, coat roughness, pattern scale, second colour, bump, pattern kind, turbulence;
-     * - Glowing pattern: first colour, intensity, pattern scale, second colour, none, pattern kind, turbulence.
+     * - Patterned: first colour, coat roughness, pattern scale, second colour, bump, pattern kind, turbulence,
+     *   frequency, octaves;
+     * - Glowing pattern: first colour, intensity, pattern scale, second colour, none, pattern kind, turbulence,
+     *   frequency, octaves.
      */
     fun values(material: Material): DoubleArray = surface(material) ?: physical(material)
         ?: values(LAMBERT, Point3(UNKNOWN_GREY, UNKNOWN_GREY, UNKNOWN_GREY))
@@ -62,6 +64,8 @@ object GpuMaterials {
         )
         is Conductor -> values(
             CONDUCTOR, material.eta, material.facets.alphaX, material.facets.alphaY, odd = material.k,
+            third = material.brushing?.x ?: 0.0, fourth = material.brushing?.y ?: 0.0,
+            fifth = material.brushing?.z ?: 0.0,
         )
         is Emissive -> values(EMISSIVE, material.emitColor * material.intensity)
         is Plastic -> values(PLASTIC, material.albedo, material.roughness, material.ior)
@@ -93,14 +97,19 @@ object GpuMaterials {
         third: Double = 0.0,
         fourth: Double = 0.0,
         fifth: Double = 0.0,
+        rest: DoubleArray = DoubleArray(2),
     ): DoubleArray = doubleArrayOf(
         code.toDouble(), color.x, color.y, color.z, first, second, odd.x, odd.y, odd.z, third, fourth, fifth,
-    )
+    ) + rest
 
-    /** A material coloured by [pattern]: its two colours, scale, kind and turbulence around [first] and [third]. */
+    /**
+     * A material coloured by [pattern]: its two colours, scale, kind, turbulence, frequency and octaves around
+     * [first] and [third].
+     */
     private fun patterned(code: Int, pattern: Pattern, first: Double, third: Double): DoubleArray = values(
         code, pattern.first, first, pattern.scale, pattern.second, third,
         pattern.kind.ordinal.toDouble(), pattern.turbulence,
+        doubleArrayOf(pattern.frequency, pattern.octaves.toDouble()),
     )
 
 

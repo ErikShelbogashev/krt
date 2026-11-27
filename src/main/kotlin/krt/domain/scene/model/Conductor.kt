@@ -2,6 +2,7 @@ package krt.domain.scene.model
 
 import kotlin.random.Random
 import krt.platform.math.Color
+import krt.platform.math.Point3
 import krt.platform.math.Ray
 
 /** Measured complex refraction indices of metals, at the wavelengths of the red, green and blue channels. */
@@ -16,18 +17,24 @@ enum class Metals(val eta: Color, val k: Color) {
 
 /**
  * A metal whose colour comes from its complex refraction index [eta] + i[k] (Fresnel for conductors) and whose
- * gloss comes from GGX microfacets of [roughness]; [anisotropy] stretches the highlight into brushed circles
- * around the vertical axis (ADR 0013).
+ * gloss comes from GGX microfacets of [roughness]; [anisotropy] stretches the highlight along the brushing: in
+ * circles around the vertical axis, or along [brushing] laid on the surface, like a brushed laptop shell (ADR 0013).
  */
-class Conductor(val eta: Color, val k: Color, val roughness: Double, val anisotropy: Double = 0.0) : Material {
+class Conductor(
+    val eta: Color,
+    val k: Color,
+    val roughness: Double,
+    val anisotropy: Double = 0.0,
+    val brushing: Point3? = null,
+) : Material {
 
-    constructor(metal: Metals, roughness: Double, anisotropy: Double = 0.0) :
-        this(metal.eta, metal.k, roughness, anisotropy)
+    constructor(metal: Metals, roughness: Double, anisotropy: Double = 0.0, brushing: Point3? = null) :
+        this(metal.eta, metal.k, roughness, anisotropy, brushing)
 
     val facets = Microfacets.of(roughness, anisotropy)
 
     override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered? {
-        val frame = Microfacets.frame(hit.normal)
+        val frame = brushing?.let { Microfacets.frame(hit.normal, it) } ?: Microfacets.frame(hit.normal)
         val outgoing = frame.local(-ray.direction.unit())
         val facet = facets.visibleNormal(outgoing, random)
         val incoming = facet * (2 * outgoing.dot(facet)) - outgoing

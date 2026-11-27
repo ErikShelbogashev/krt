@@ -86,6 +86,18 @@ class MicrofacetMaterialTest {
     }
 
     @Test
+    fun `a metal brushed along a direction stretches its highlight along it`() {
+        val brushed = Conductor(Metals.ALUMINIUM, roughness = 0.5, anisotropy = 0.9, brushing = Point3(0.0, 1.0, 0.0))
+        val straightDown = Ray(Point3(0.0, 0.0, 1.0), Point3(0.0, 0.0, -1.0))
+        val facing = Hit.create(Point3.ZERO, 1.0, straightDown, Point3(0.0, 0.0, 1.0), brushed)
+        val directions = (0 until 2000).mapNotNull { brushed.scatter(straightDown, facing, Random(it))?.ray?.direction }
+        val along = directions.sumOf { abs(it.unit().y) }
+        val across = directions.sumOf { abs(it.unit().x) }
+        assertTrue(along > 1.5 * across, "along $along, across $across")
+        assertEquals(Point3(0.0, 1.0, 0.0), Microfacets.frame(Point3(0.0, 0.0, 1.0), Point3(0.0, 2.0, 0.5)).tangent)
+    }
+
+    @Test
     fun `visible normals face the viewer and shadowing never adds light`() {
         val facets = Microfacets.of(0.7, 0.5)
         val random = Random(2)

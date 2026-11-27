@@ -75,6 +75,19 @@ class Microfacets(val alphaX: Double, val alphaY: Double) {
             return Frame(tangent, normal.cross(tangent), normal)
         }
 
+        /**
+         * The frame around [normal] with its tangent along [direction] laid on the surface, like the brushing of a
+         * flat metal part; around the vertical axis where [direction] stands straight out of the surface.
+         */
+        fun frame(normal: Point3, direction: Point3): Frame {
+            val along = direction - normal * direction.dot(normal)
+            if (along.length() < MIN_TANGENT) return frame(normal)
+            val tangent = along.unit()
+            return Frame(tangent, normal.cross(tangent), normal)
+        }
+
+        private const val MIN_TANGENT = 1e-6
+
         private const val MIN_ALPHA = 1e-4
         private const val ANISOTROPY_SPREAD = 0.9
     }
