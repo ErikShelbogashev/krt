@@ -5,8 +5,8 @@ import krt.platform.math.Point3
 /** A ready camera position: where it stands and the point it looks at. */
 @Suppress("MagicNumber") // the coordinates are the presets
 enum class ViewPreset(val title: String, val origin: Point3, val target: Point3) {
-    /** The view the window starts with: the default camera looks along +X (see Camera). */
-    DEFAULT("Default", Point3(1.0, 1.0, 1.0), Point3(2.0, 1.0, 1.0)),
+    /** The view of Camera.default, the one the window starts with. */
+    DEFAULT("Default", Point3(1.0, 1.0, 1.0), Point3(0.0, 0.0, 0.0)),
     FRONT("Front", Point3(0.0, 1.0, 10.0), Point3(0.0, 1.0, 0.0)),
     TOP("Top", Point3(0.0, 12.0, 0.01), Point3(0.0, 0.0, 0.0)),
     OVERVIEW("Overview", Point3(13.0, 2.0, 3.0), Point3(0.0, 0.0, 0.0)),

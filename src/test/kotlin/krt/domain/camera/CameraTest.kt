@@ -10,7 +10,7 @@ class CameraTest {
 
     private fun camera() = Camera(
         origin = Point3(0.0, 0.0, 0.0),
-        target = Point3(0.0, 0.0, -1.0),
+        target = Point3(1.0, 0.0, 0.0),
         vup = Point3(0.0, 1.0, 0.0),
         fov = 90.0,
         aperture = 0.0,
@@ -20,10 +20,23 @@ class CameraTest {
     )
 
     @Test
-    fun `initial camera looks along positive x because yaw is zero`() {
+    fun `a new camera looks at its target`() {
         val camera = camera()
         assertEquals(java.awt.Point(50, 50), camera.project(Point3(5.0, 0.0, 0.0)))
         assertNull(camera.project(Point3(-5.0, 0.0, 0.0)))
+    }
+
+    @Test
+    fun `the default camera looks from (1, 1, 1) at the centre of the scene`() {
+        val camera = Camera.default()
+        assertEquals(java.awt.Point(200, 200), camera.project(Point3(-1.0, -1.0, -1.0)))
+        assertEquals(Point3(1.0, 1.0, 1.0), camera.origin)
+    }
+
+    @Test
+    fun `a camera whose target is its origin looks along positive x`() {
+        val camera = Camera(Point3.ZERO, Point3.ZERO, Point3(0.0, 1.0, 0.0), 90.0, 0.0, 1.0, 100, 100)
+        assertEquals(java.awt.Point(50, 50), camera.project(Point3(5.0, 0.0, 0.0)))
     }
 
     @Test
@@ -65,7 +78,7 @@ class CameraTest {
         val resized = camera().apply { imageWidth = 200 }
         val fresh = Camera(
             origin = Point3(0.0, 0.0, 0.0),
-            target = Point3(0.0, 0.0, -1.0),
+            target = Point3(1.0, 0.0, 0.0),
             vup = Point3(0.0, 1.0, 0.0),
             fov = 90.0,
             aperture = 0.0,
