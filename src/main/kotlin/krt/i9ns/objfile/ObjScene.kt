@@ -41,6 +41,12 @@ object ObjScene {
     private const val HEX = 16
     private const val DEFAULT_FOV = 40.0
 
+    /** The MTL file OBJ text [obj] named [name] uses: its `mtllib`, or else the file of its own name. */
+    fun materialLibrary(obj: String, name: String): String =
+        MTLLIB.find(obj)?.groupValues?.get(1)?.trim() ?: (name.substringBeforeLast('.') + ".mtl")
+
+    private val MTLLIB = Regex("(?m)^mtllib\\s+(.+)$")
+
     fun read(files: ObjFiles): SceneDescription {
         val model = ObjText.obj(files.obj)
         val mtl = files.mtl?.let(ObjText::mtl).orEmpty()

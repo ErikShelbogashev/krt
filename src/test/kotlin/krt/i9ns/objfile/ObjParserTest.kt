@@ -14,6 +14,14 @@ import krt.platform.math.Point3
 class ObjParserTest {
 
     @Test
+    fun `an OBJ uses the MTL its mtllib names, or else the one of its own name`() {
+        assertEquals("parts.mtl", ObjScene.materialLibrary("# scene\nmtllib parts.mtl \nv 0 0 0\n", "scene.obj"))
+        assertEquals("SCENE.mtl", ObjScene.materialLibrary("v 0 0 0\n", "SCENE.OBJ"))
+        assertEquals("a.object.mtl", ObjScene.materialLibrary("v 0 0 0\n", "a.object.obj"))
+    }
+
+
+    @Test
     fun `faces keep their object names, corners and normals, quads cut into fans`() {
         val obj = ObjText.obj(
             "v 0 0 0\nv 1 0 0\nv 1 1 0\nv 0 1 0\nvn 0 0 1\nvn 0 0.6 0.8\n" +

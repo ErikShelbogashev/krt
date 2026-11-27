@@ -26,7 +26,7 @@ class SceneLibrary {
         if (path.endsWith(".obj", ignoreCase = true)) obj(source, path) else pbrt(source, path)
 
     private fun pbrt(source: Source, path: String): SceneDescription {
-        val base = path.substringBeforeLast('/', "").let { if (it.isEmpty()) "" else "$it/" }
+        val base = directoryOf(path)
         val text = source.text(path) ?: error("no scene file $path")
         val files = mutableMapOf<String, ByteArray>()
         var pending = PbrtReader.references(text)
@@ -43,12 +43,11 @@ class SceneLibrary {
 
     private fun obj(source: Source, path: String): SceneDescription {
         val text = source.text(path) ?: error("no scene file $path")
-        val directory = path.substringBeforeLast('/', "").let { if (it.isEmpty()) "" else "$it/" }
-        val library = Regex("(?m)^mtllib\\s+(.+)$").find(text)?.groupValues?.get(1)?.trim()
+        val directory = directoryOf(path)
         return ObjScene.read(
             ObjFiles(
                 obj = text,
-                mtl = source.text(directory + (library ?: path.substringAfterLast('/').replace(".obj", ".mtl"))),
+                mtl = source.text(directory + ObjScene.materialLibrary(text, path.substringAfterLast('/'))),
                 showcase = source.text(directory + SHOWCASE),
                 layout = source.text(directory + LAYOUT),
             ),
@@ -70,6 +69,10 @@ class SceneLibrary {
     private class Directory(val root: File) : Source {
         override fun bytes(path: String): ByteArray? = File(root, path).takeIf { it.isFile }?.readBytes()
     }
+
+    /** The directory of [path] with its slash, or nothing for a bare name. */
+    private fun directoryOf(path: String): String =
+        path.substringBeforeLast('/', "").let { if (it.isEmpty()) "" else "$it/" }
 
     private companion object {
         const val ROOT = "/krt/scenes/"
