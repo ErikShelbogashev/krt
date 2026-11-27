@@ -2,6 +2,7 @@ package krt.domain.trace
 
 import kotlin.math.roundToLong
 import krt.domain.scene.model.Fog
+import krt.domain.scene.model.Fractal
 import krt.domain.scene.model.Material
 import krt.domain.scene.model.Medium
 import krt.domain.scene.model.MediumInterface
@@ -22,10 +23,12 @@ import krt.platform.math.Point3
  * Six sections follow each other:
  * - [nodeCount] BVH nodes from texel 0, [GpuScenePacking.NODE_VALUES] each: box min x, y, z, max x, y, z,
  *   skip link, first primitive, primitive count (0 for an inner node); see [FlatBvh];
- * - [primitiveCount] primitives from [primitiveStart] in the order of the leaves, [GpuScenePacking.PRIMITIVE_VALUES]
- *   each: kind, then the centre, radius and velocity of a sphere or the first vertex and the two edges from it of
- *   a triangle; then, for a triangle with vertex normals, 1 + the number of its record in the normals section,
- *   0 for a flat one; last 1 + the numbers of the media inside and outside the surface, 0 for none (ADR 0014);
+ * - [primitiveCount] primitives from [primitiveStart] in the order of the leaves,
+ *   [GpuScenePacking.PRIMITIVE_VALUES] each: kind, then the centre, radius and velocity of a sphere, the first
+ *   vertex and the two edges from it of a triangle or the centre, radius, kind, iterations, parameter and seed of
+ *   a fractal (ADR 0015); then, for a triangle with vertex normals, 1 + the number of its record in the normals
+ *   section, 0 for a flat one; last 1 + the numbers of the media inside and outside the surface, 0 for none
+ *   (ADR 0014);
  * - their materials from [materialStart], [GpuScenePacking.MATERIAL_VALUES] each: material code, then a colour,
  *   two parameters, a second colour and a third parameter, as [GpuMaterials.values] lays them out;
  * - [GpuSections.lightCount] lights from [GpuSections.lightStart], [GpuScenePacking.LIGHT_VALUES] each: the
@@ -87,7 +90,7 @@ data class GpuFog(val center: Point3, val radius: Double, val medium: Int)
 object GpuScenePacking {
 
     const val NODE_VALUES = 9
-    const val PRIMITIVE_VALUES = 13
+    const val PRIMITIVE_VALUES = 14
     const val MEDIUM_VALUES = 6
     const val LIGHT_VALUES = 4
     const val MEMBER_VALUES = 2
@@ -100,6 +103,7 @@ object GpuScenePacking {
 
     const val SPHERE = 0
     const val TRIANGLE = 1
+    const val FRACTAL = 2
 
     const val LAMBERT = 0
     const val METAL = 1
@@ -183,9 +187,14 @@ object GpuScenePacking {
         val (kind, geometry) = when (primitive) {
             is Sphere -> SPHERE to sphereGeometry(primitive)
             is Triangle -> TRIANGLE to triangleGeometry(primitive)
+            is Fractal -> FRACTAL to fractalGeometry(primitive)
             else -> error("not a GPU primitive: $primitive")
         }
         val values = IntArray(PRIMITIVE_VALUES - 1 - tail.size) { geometry.getOrNull(it)?.let(::encode) ?: 0 }
+        if (primitive is Fractal) {
+            values[FRACTAL_KIND] = primitive.kind.ordinal
+            values[FRACTAL_ITERATIONS] = primitive.iterations
+        }
         return intArrayOf(kind) + values + tail
     }
 
@@ -198,6 +207,15 @@ object GpuScenePacking {
         sphere.center.x, sphere.center.y, sphere.center.z, sphere.radius,
         sphere.velocity.x, sphere.velocity.y, sphere.velocity.z,
     )
+
+    /** Centre, radius, kind and iterations (both stored as whole numbers), parameter and seed of a fractal. */
+    private fun fractalGeometry(fractal: Fractal): DoubleArray = doubleArrayOf(
+        fractal.center.x, fractal.center.y, fractal.center.z, fractal.radius, 0.0, 0.0, fractal.parameter,
+        fractal.seed.x, fractal.seed.y, fractal.seed.z,
+    )
+
+    private const val FRACTAL_KIND = 4
+    private const val FRACTAL_ITERATIONS = 5
 
     /** First vertex and the edges from it to the other two, as the intersection test of the shader takes them. */
     private fun triangleGeometry(triangle: Triangle): DoubleArray {
@@ -229,7 +247,7 @@ object GpuScenePacking {
 
 /** The sphere or triangle the shader draws for [obj]: fog and translucent balls are spheres bounding media. */
 private fun primitiveOf(obj: Traceable): Traceable? = when (obj) {
-    is Sphere, is Triangle -> obj
+    is Sphere, is Triangle, is Fractal -> obj
     is Fog -> obj.boundary
     is Translucent -> obj.surface
     else -> null
@@ -244,6 +262,7 @@ private fun slotsOf(bvh: FlatBvh, primitives: Array<Traceable>): Map<Traceable, 
 private fun materialOf(primitive: Traceable): Material = when (primitive) {
     is Sphere -> primitive.material
     is Triangle -> primitive.material
+    is Fractal -> primitive.material
     else -> error("not a GPU primitive: $primitive")
 }
 
