@@ -28,4 +28,11 @@ class RenderProgressTest {
         assertFalse(RenderProgress.NONE.isDone)
         assertEquals(0.0, RenderProgress.NONE.fraction)
     }
+
+    @Test
+    fun `a quick look covers the whole frame, a pass in work only its share`() {
+        assertEquals(1.0, RenderProgress(5, 0, 0.0, 0, isDraft = true).coverage)
+        assertEquals(0.3, RenderProgress(5, 0, 0.3, 0).coverage)
+        assertEquals(1.0, RenderProgress(5, 2, 0.1, 0).coverage)
+    }
 }

@@ -25,4 +25,10 @@ class RenderStatusTest {
         assertEquals("CPU · 8 threads · depth 7", RenderStatus.engineText(RenderMode.CPU, 8, 7))
         assertEquals("GPU · Skia SkSL · depth 7", RenderStatus.engineText(RenderMode.GPU, 8, 7))
     }
+
+    @Test
+    fun `a quick look says so`() {
+        val quickLook = RenderProgress(5, 0, 0.0, 0, isDraft = true)
+        assertEquals("Quick look · 5 passes to go", RenderStatus.progressText(RenderMode.CPU, quickLook))
+    }
 }

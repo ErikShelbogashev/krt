@@ -31,6 +31,7 @@ class BenchmarkTest {
         assertEquals(times, result.frames)
         assertEquals((0.5 + 2 + 0 + 5) / 4, result.shown.meanPasses, 1e-9)
         assertEquals(0.5, result.shown.fullShare)
+        assertEquals((0.5 + 1 + 0 + 1) / 4, result.shown.coverage, 1e-9)
     }
 
     @Test

@@ -25,9 +25,9 @@ import krt.domain.render.model.Benchmark
 import krt.domain.render.model.BenchmarkResult
 
 private val HEADER = listOf(
-    "Scene", "Mode", "Size", "FPS", "p50", "p95", "p99", "max", ">50", ">100", "Passes", "Full", "Done",
+    "Scene", "Mode", "Size", "FPS", "p50", "p95", "p99", "max", ">50", ">100", "Coverage", "Passes", "Full", "Done",
 )
-private val WIDTHS = listOf(84, 120, 84, 52, 48, 48, 48, 56, 40, 44, 56, 48, 64)
+private val WIDTHS = listOf(84, 120, 84, 52, 48, 48, 48, 56, 40, 44, 64, 56, 48, 64)
 
 /**
  * The results of the flight benchmark, a row per run: window frames per second, frame times in ms, stalls,
@@ -54,8 +54,10 @@ fun BenchmarkResultsDialog(
                 TableRow(HEADER, header = true)
                 results.forEach { TableRow(Benchmark.cells(it), header = false) }
                 Text(
-                    "Frame times of the window in ms. Passes: how complete the frame on screen was when the camera " +
-                        "moved on. Full: share of frames past their quick look. Done: time to the finished frame.",
+                    "Frame times of the window in ms. Coverage: share of the frame that showed the current " +
+                        "view when the camera moved on, a quick look counting as all of it. Passes: passes done " +
+                        "by then, a quick look counting as none. Full: share of frames past their quick look. " +
+                        "Done: time to the finished frame.",
                     modifier = Modifier.padding(top = 8.dp).width(WIDTHS.sum().dp),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
