@@ -4,6 +4,7 @@ import java.awt.Point
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.tan
+import kotlin.random.Random
 
 /**
  * Класс, представляющий камеру в трёхмерном пространстве.
@@ -106,8 +107,8 @@ class Camera(
         vertical = v * 2.0 * halfHeight * focusDist
     }
 
-    fun ray(s: Double, t: Double): Ray {
-        val rd = Point3.randomInUnitDisk() * lensRadius
+    fun ray(s: Double, t: Double, random: Random): Ray {
+        val rd = Point3.randomInUnitDisk(random) * lensRadius
         val offset = u * rd.x + v * rd.y
         return Ray(
             _origin + offset,

@@ -22,9 +22,10 @@ import androidx.compose.ui.window.application
 import raytracer.model.*
 import raytracer.view.*
 import java.awt.image.BufferedImage
+import kotlin.random.Random
 
 fun main() = application {
-    val world = World.default()
+    val world = World.default(Random.Default)
     val rayTracer = RayTracer(world, 7)
     val camera = Camera.default()
     val renderController = RenderController.default()
