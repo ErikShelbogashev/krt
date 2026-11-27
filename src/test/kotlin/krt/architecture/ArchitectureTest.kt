@@ -162,8 +162,9 @@ class ArchitectureTest {
     @Test
     fun `Skia stays with the GPU renderer, the views that draw frames and the platform`() {
         // ADR 0009, 0010: the GPU resource and the frame buffer in krt.domain.render, the viewport and its
-        // operations in krt.app.render, conversions in krt.platform, and the window's wiring in the root package.
-        val allowed = listOf("krt.domain.render", "krt.app.render", "krt.platform.skia", "krt")
+        // operations in krt.app.render, conversions in krt.platform, the window's wiring in the root package, and the
+        // smoke check that draws frames on the real GPU.
+        val allowed = listOf("krt.domain.render", "krt.app.render", "krt.platform.skia", "krt", "krt.smoke")
         production.files
             .filter { file -> file.imports.any { it.name.startsWith("org.jetbrains.skia") } }
             .assertTrue { it.packagee?.name in allowed }

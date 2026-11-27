@@ -40,7 +40,7 @@ tasks.test {
 }
 
 // The GPU smoke check on the real GPU (Metal), off screen; not in `check`, CI has no GPU (ADR 0010).
-val gpuSmoke: SourceSet by sourceSets.creating {
+val gpuSmoke: SourceSet = sourceSets.create("gpuSmoke") {
     compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
     runtimeClasspath += output + compileClasspath + sourceSets.main.get().runtimeClasspath
 }
