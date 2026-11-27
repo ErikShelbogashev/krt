@@ -1,15 +1,21 @@
 package krt.domain.trace
 
+import kotlin.math.sqrt
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import krt.domain.scene.World
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Sphere
-import krt.domain.scene.model.Triangle
+import krt.domain.scene.model.Traceable
 import krt.platform.math.Color
 import krt.platform.math.Point3
+import krt.platform.math.Ray
 
 class GpuScenePackingTest {
 
@@ -29,40 +35,122 @@ class GpuScenePackingTest {
     }
 
     @Test
-    fun `spheres keep geometry and material, other objects are skipped`() {
+    fun `spheres keep geometry and material`() {
         val objects = listOf(
             Sphere(Point3(1.0, 2.0, 3.0), 0.5, Lambert(Color(0.1, 0.2, 0.3))),
-            Triangle(Point3.ZERO, Point3(1.0, 0.0, 0.0), Point3(0.0, 1.0, 0.0), Lambert(Color(1.0, 1.0, 1.0))),
             Sphere(Point3(-1.0, 0.0, 0.0), 2.0, Metal(Color(0.7, 0.6, 0.5), 0.3)),
             Sphere(Point3.ZERO, 1.0, Dielectric(1.5)),
-            Sphere(Point3.ZERO, 1.0, Emissive(Color(0.1, 0.7, 0.4), 2.0)),
+            Sphere(Point3(5.0, 0.0, 0.0), 1.0, Emissive(Color(0.1, 0.7, 0.4), 2.0)),
         )
 
-        val scene = GpuScenePacking.pack(objects)
+        val scene = Packed(GpuScenePacking.pack(objects))
 
-        assertEquals(4, scene.sphereCount)
-        assertEquals(listOf(1f, 2f, 3f, 0.5f, -1f, 0f, 0f, 2f), scene.spheres.take(8))
-        assertMaterial(scene, 0, GpuScenePacking.LAMBERT, 0.1, 0.2, 0.3, 0.0)
-        assertMaterial(scene, 1, GpuScenePacking.METAL, 0.7, 0.6, 0.5, 0.3)
-        assertMaterial(scene, 2, GpuScenePacking.DIELECTRIC, 1.0, 1.0, 1.0, 1.5)
-        assertMaterial(scene, 3, GpuScenePacking.EMISSIVE, 0.2, 1.4, 0.8, 0.0)
+        assertEquals(4, scene.scene.primitiveCount)
+        val bySphere = (0 until 4).associateBy { slot -> scene.vector(scene.primitive(slot) + 1) }
+        assertEquals(GpuScenePacking.SPHERE, scene.code(scene.primitive(bySphere.getValue(Point3(1.0, 2.0, 3.0)))))
+        assertEquals(0.5, scene.number(scene.primitive(bySphere.getValue(Point3(1.0, 2.0, 3.0))) + 4), 1e-3)
+        scene.assertMaterial(bySphere.getValue(Point3(1.0, 2.0, 3.0)), GpuScenePacking.LAMBERT, 0.1, 0.2, 0.3, 0.0)
+        scene.assertMaterial(bySphere.getValue(Point3(-1.0, 0.0, 0.0)), GpuScenePacking.METAL, 0.7, 0.6, 0.5, 0.3)
+        scene.assertMaterial(bySphere.getValue(Point3.ZERO), GpuScenePacking.DIELECTRIC, 1.0, 1.0, 1.0, 1.5)
+        scene.assertMaterial(bySphere.getValue(Point3(5.0, 0.0, 0.0)), GpuScenePacking.EMISSIVE, 0.2, 1.4, 0.8, 0.0)
     }
 
-    @Suppress("LongParameterList")
-    private fun assertMaterial(scene: GpuScene, sphere: Int, kind: Int, r: Double, g: Double, b: Double, p: Double) {
-        val first = sphere * GpuScenePacking.MATERIAL_VALUES
-        val values = (0 until GpuScenePacking.MATERIAL_VALUES).map { texel(scene, first + it) }
-        listOf(kind.toDouble(), r, g, b, p).zip(values).forEach { (expected, actual) ->
-            assertEquals(expected, actual, 1e-3)
+    @Test
+    fun `the walk of the shader over the packed BVH finds the hits of the CPU`() {
+        val objects = World.default(Random(42)).objects
+        val scene = Packed(GpuScenePacking.pack(objects))
+        val cpu = TraceScene(objects)
+        val random = Random(9)
+        repeat(RAYS) {
+            val ray = Ray(Point3.random(random, -RANGE, RANGE), Point3.random(random, -1.0, 1.0))
+            val expected = cpu.hit(ray, T_MIN, Double.POSITIVE_INFINITY)?.t
+            val actual = scene.walk(ray)
+            if (expected == null) assertNull(actual) else assertEquals(expected, assertNotNull(actual), TOLERANCE)
         }
     }
 
-    private fun texel(scene: GpuScene, index: Int): Double {
-        val at = index * 4
-        val code = (scene.materials[at].toInt() and 255 shl 16) or
-            (scene.materials[at + 1].toInt() and 255 shl 8) or
-            (scene.materials[at + 2].toInt() and 255)
-        assertEquals(-1, scene.materials[at + 3].toInt())
-        return GpuScenePacking.decode(code)
+    @Test
+    fun `an empty scene packs no nodes`() {
+        val scene = GpuScenePacking.pack(emptyList<Traceable>())
+        assertEquals(0, scene.nodeCount)
+        assertEquals(0, scene.primitiveCount)
+    }
+
+    /** Reads the packed texture as the shader does. */
+    private class Packed(val scene: GpuScene) {
+
+        fun code(index: Int): Int {
+            val at = index * 4
+            assertEquals(-1, scene.data[at + 3].toInt())
+            return (scene.data[at].toInt() and 255 shl 16) or
+                (scene.data[at + 1].toInt() and 255 shl 8) or
+                (scene.data[at + 2].toInt() and 255)
+        }
+
+        fun number(index: Int): Double = GpuScenePacking.decode(code(index))
+
+        fun vector(index: Int): Point3 =
+            Point3(round(number(index)), round(number(index + 1)), round(number(index + 2)))
+
+        fun primitive(slot: Int): Int = scene.primitiveStart + slot * GpuScenePacking.PRIMITIVE_VALUES
+
+        @Suppress("LongParameterList")
+        fun assertMaterial(slot: Int, kind: Int, r: Double, g: Double, b: Double, p: Double) {
+            val at = scene.materialStart + slot * GpuScenePacking.MATERIAL_VALUES
+            assertEquals(kind, code(at))
+            listOf(r, g, b, p).forEachIndexed { i, expected -> assertEquals(expected, number(at + 1 + i), 1e-3) }
+        }
+
+        /** The stackless walk of path_tracer.sksl, over spheres. */
+        fun walk(ray: Ray): Double? {
+            var closest = Double.POSITIVE_INFINITY
+            var node = 0
+            while (node < scene.nodeCount) {
+                val base = node * GpuScenePacking.NODE_VALUES
+                if (!entersBox(base, ray, closest)) {
+                    node = code(base + 6)
+                    continue
+                }
+                val first = code(base + 7)
+                for (slot in first until first + code(base + 8)) {
+                    sphereHit(primitive(slot), ray, closest)?.let { closest = it }
+                }
+                node++
+            }
+            return closest.takeIf { it.isFinite() }
+        }
+
+        private fun entersBox(base: Int, ray: Ray, far: Double): Boolean {
+            var near = T_MIN
+            var exit = far
+            for (axis in 0 until 3) {
+                val t1 = (number(base + axis) - ray.origin[axis]) / ray.direction[axis]
+                val t2 = (number(base + 3 + axis) - ray.origin[axis]) / ray.direction[axis]
+                near = maxOf(near, minOf(t1, t2))
+                exit = minOf(exit, maxOf(t1, t2))
+            }
+            return exit >= near
+        }
+
+        private fun sphereHit(base: Int, ray: Ray, tMax: Double): Double? {
+            val oc = ray.origin - Point3(number(base + 1), number(base + 2), number(base + 3))
+            val radius = number(base + 4)
+            val a = ray.direction.dot(ray.direction)
+            val halfB = oc.dot(ray.direction)
+            val discriminant = halfB * halfB - a * (oc.dot(oc) - radius * radius)
+            if (discriminant < 0) return null
+            val near = (-halfB - sqrt(discriminant)) / a
+            val far = (-halfB + sqrt(discriminant)) / a
+            return listOf(near, far).firstOrNull { it in T_MIN..tMax }
+        }
+
+        private fun round(value: Double) = Math.round(value * 1000) / 1000.0
+    }
+
+    private companion object {
+        const val RAYS = 500
+        const val RANGE = 12.0
+        const val T_MIN = 0.001
+        const val TOLERANCE = 1e-2
     }
 }
