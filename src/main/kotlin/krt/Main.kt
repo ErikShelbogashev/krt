@@ -54,7 +54,10 @@ fun main() {
         }
 
         Window(
-            onCloseRequest = ::exitApplication,
+            onCloseRequest = {
+                app.close()
+                exitApplication()
+            },
             title = "Ray Tracing"
         ) {
             val focusRequester = remember { FocusRequester() }

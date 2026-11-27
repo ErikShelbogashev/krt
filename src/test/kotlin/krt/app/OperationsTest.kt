@@ -25,7 +25,7 @@ class OperationsTest {
     }
 
     @AfterTest
-    fun close() = app.renderController.close()
+    fun close() = app.close()
 
     @Test
     fun `toggle wireframe switches mode and redraws`() {
