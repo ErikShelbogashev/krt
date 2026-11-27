@@ -9,6 +9,8 @@ import krt.domain.scene.model.Material
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
+import krt.domain.trace.GpuScene
+import krt.domain.trace.GpuScenePacking
 import krt.domain.trace.TraceScene
 import krt.platform.math.Color
 import krt.platform.math.Point3
@@ -24,6 +26,9 @@ class World(objects: List<Traceable> = emptyList()) {
     private class Snapshot(val objects: List<Traceable>) {
         /** Compiled on first use, so a burst of edits compiles the scene once. */
         val traceScene by lazy { TraceScene(objects) }
+
+        /** Packed for the GPU shader on first use (ADR 0009). */
+        val gpuScene by lazy { GpuScenePacking.pack(objects) }
     }
 
     @Volatile
@@ -33,6 +38,9 @@ class World(objects: List<Traceable> = emptyList()) {
 
     /** The scene to trace; consistent with [objects] read at the same moment. */
     val traceScene: TraceScene get() = snapshot.traceScene
+
+    /** The scene for the GPU shader; consistent with [objects] read at the same moment. */
+    val gpuScene: GpuScene get() = snapshot.gpuScene
 
     fun translateObjectById(objectId: String, offset: Point3) {
         snapshot = Snapshot(objects.translateFirst(objectId, offset))

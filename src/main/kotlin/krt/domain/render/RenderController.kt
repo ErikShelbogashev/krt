@@ -14,12 +14,14 @@ import krt.domain.camera.Camera
 import krt.domain.scene.World
 import krt.platform.awt.toAWTColor
 import krt.platform.math.Color
+import org.jetbrains.skia.Shader
 
 class RenderController(
     var repaintIntervalMs: Long,
     var batchSize: Int,
     private val random: Random = Random.Default,
     private val clock: () -> Long = System::currentTimeMillis,
+    private val gpuTracer: GpuTracer = GpuTracer(),
 ) : AutoCloseable {
     private var renderJob: Job? = null
     private val workers = Runtime.getRuntime().availableProcessors()
@@ -28,23 +30,48 @@ class RenderController(
     private var lastRepaintTime = 0L
     private var useWireframe: Boolean = false
 
+    /** GPU mode (ADR 0009): the frame is drawn by a Skia shader instead of the CPU workers. */
+    var useGpu: Boolean = false
+        private set
+
     fun toggleWireframeMode() {
         useWireframe = !useWireframe
     }
 
+    fun toggleGpuMode() {
+        useGpu = !useGpu
+    }
+
+    /**
+     * Draws the frame: the wireframe or the CPU path tracer into [frame], reporting progress to [onUpdate],
+     * or, in GPU mode, hands a shader that draws the frame to [onGpuFrame].
+     */
     fun renderImage(
         frame: Frame,
         rayTracer: RayTracer,
         camera: Camera,
+        onGpuFrame: ((Shader) -> Unit) = {},
         onUpdate: (() -> Unit),
     ) {
         renderJob?.cancel()
-        if (useWireframe) {
-            renderWireframe(frame, rayTracer.world, camera, onUpdate)
-        } else {
-            renderRayTracedImage(frame, rayTracer, camera, onUpdate)
+        when {
+            useWireframe -> renderWireframe(frame, rayTracer.world, camera, onUpdate)
+            useGpu -> renderGpuImage(rayTracer, camera, onGpuFrame)
+            else -> renderRayTracedImage(frame, rayTracer, camera, onUpdate)
         }
+    }
 
+    private fun renderGpuImage(rayTracer: RayTracer, camera: Camera, onGpuFrame: (Shader) -> Unit) {
+        val gpuFrame = GpuFrame(
+            scene = rayTracer.world.gpuScene,
+            view = camera.view(),
+            width = camera.imageWidth,
+            height = camera.imageHeight,
+            maxDepth = rayTracer.maxDepth,
+            samples = camera.samplesPerPixel,
+            seed = random.nextFloat(),
+        )
+        onGpuFrame(gpuTracer.shader(gpuFrame))
     }
 
     /**
@@ -147,6 +174,7 @@ class RenderController(
     override fun close() {
         renderJob?.cancel()
         renderDispatcher.close()
+        gpuTracer.close()
     }
 
     companion object {

@@ -1,0 +1,174 @@
+// GPU path tracer of krt (ADR 0009). Mirrors krt.domain.trace.PathTracing and the materials of the scene model.
+// SkSL is GLSL ES 2.0: no recursion, loops have constant bounds and stop early with break.
+
+uniform shader materials;           // RGBA_8888, one 24-bit fixed-point number per texel, see GpuScenePacking
+uniform float4 spheres[512];        // centre x, y, z, radius; GpuScenePacking.MAX_SPHERES
+uniform float sphereCount;
+uniform float2 frameSize;
+uniform float3 camOrigin;
+uniform float3 camLowerLeft;
+uniform float3 camHorizontal;
+uniform float3 camVertical;
+uniform float3 camU;
+uniform float3 camV;
+uniform float lensRadius;
+uniform float maxDepth;
+uniform float samples;
+uniform float seed;
+
+const int MAX_SPHERES = 512;
+const int MAX_DEPTH = 32;
+const int MAX_SAMPLES = 64;
+const float TEXTURE_WIDTH = 1024.0;
+const float RANGE = 4096.0;
+const float MATERIAL_VALUES = 5.0;
+const float T_MIN = 0.001;
+const float FAR = 1.0e30;
+const float PI = 3.14159265358979;
+
+const float LAMBERT = 0.0;
+const float METAL = 1.0;
+const float DIELECTRIC = 2.0;
+const float EMISSIVE = 3.0;
+
+float fetch(float index) {
+    float y = floor(index / TEXTURE_WIDTH);
+    float x = index - y * TEXTURE_WIDTH;
+    half4 c = materials.eval(float2(x + 0.5, y + 0.5));
+    float r = floor(float(c.r) * 255.0 + 0.5);
+    float g = floor(float(c.g) * 255.0 + 0.5);
+    float b = floor(float(c.b) * 255.0 + 0.5);
+    return (r * 65536.0 + g * 256.0 + b) / 16777216.0 * (2.0 * RANGE) - RANGE;
+}
+
+// Hash without sine (Dave Hoskins): a pseudo-random number in [0, 1) from three floats.
+float hash13(float3 p3) {
+    p3 = fract(p3 * 0.1031);
+    p3 += dot(p3, p3.zyx + 31.32);
+    return fract((p3.x + p3.y) * p3.z);
+}
+
+float2 pixelId;
+float counter;
+
+float rnd() {
+    counter += 1.0;
+    return hash13(float3(pixelId.x + seed * 17.0, pixelId.y + seed * 31.0, counter));
+}
+
+float3 randomInUnitSphere() {
+    float z = 2.0 * rnd() - 1.0;
+    float phi = 2.0 * PI * rnd();
+    float r = sqrt(max(0.0, 1.0 - z * z));
+    float scale = pow(rnd(), 1.0 / 3.0);
+    return float3(r * cos(phi), r * sin(phi), z) * scale;
+}
+
+float2 randomInUnitDisk() {
+    float phi = 2.0 * PI * rnd();
+    return float2(cos(phi), sin(phi)) * sqrt(rnd());
+}
+
+float reflectance(float cosine, float refIdx) {
+    float r0 = (1.0 - refIdx) / (1.0 + refIdx);
+    r0 = r0 * r0;
+    return r0 + (1.0 - r0) * pow(1.0 - cosine, 5.0);
+}
+
+float3 refractDir(float3 uv, float3 n, float etaiOverEtat) {
+    float cosTheta = min(dot(-uv, n), 1.0);
+    float3 rOutPerp = (uv + n * cosTheta) * etaiOverEtat;
+    float3 rOutParallel = n * (-sqrt(abs(1.0 - dot(rOutPerp, rOutPerp))));
+    return rOutPerp + rOutParallel;
+}
+
+float3 sky(float3 direction) {
+    float t = 0.5 * (normalize(direction).y + 1.0);
+    return float3(1.0) * (1.0 - t) + float3(0.5, 0.7, 1.0) * t;
+}
+
+float3 trace(float3 origin, float3 direction) {
+    float3 throughput = float3(1.0);
+    for (int depth = 0; depth < MAX_DEPTH; depth++) {
+        if (float(depth) >= maxDepth) { break; }
+
+        float closest = FAR;
+        int hitIndex = -1;
+        float4 hitSphere = float4(0.0);
+        for (int i = 0; i < MAX_SPHERES; i++) {
+            if (float(i) >= sphereCount) { break; }
+            float4 s = spheres[i];
+            float3 oc = origin - s.xyz;
+            float a = dot(direction, direction);
+            float halfB = dot(oc, direction);
+            float c = dot(oc, oc) - s.w * s.w;
+            float discriminant = halfB * halfB - a * c;
+            if (discriminant >= 0.0) {
+                float sqrtD = sqrt(discriminant);
+                float root = (-halfB - sqrtD) / a;
+                if (root < T_MIN || root > closest) { root = (-halfB + sqrtD) / a; }
+                if (root >= T_MIN && root <= closest) {
+                    closest = root;
+                    hitIndex = i;
+                    hitSphere = s;
+                }
+            }
+        }
+        if (hitIndex < 0) { return throughput * sky(direction); }
+
+        float3 p = origin + direction * closest;
+        float3 outward = (p - hitSphere.xyz) / hitSphere.w;
+        bool frontFace = dot(direction, outward) < 0.0;
+        float3 normal = frontFace ? outward : -outward;
+
+        float base = float(hitIndex) * MATERIAL_VALUES;
+        float kind = floor(fetch(base) + 0.5);
+        float3 color = float3(fetch(base + 1.0), fetch(base + 2.0), fetch(base + 3.0));
+        float param = fetch(base + 4.0);
+
+        if (kind == EMISSIVE) { return throughput * color; }
+
+        float3 scattered;
+        if (kind == METAL) {
+            float3 reflected = reflect(normalize(direction), normalize(normal));
+            scattered = reflected + randomInUnitSphere() * param;
+            if (dot(scattered, normal) <= 0.0) { return float3(0.0); }
+        } else if (kind == DIELECTRIC) {
+            float ratio = frontFace ? 1.0 / param : param;
+            float3 unitDirection = normalize(direction);
+            float cosTheta = min(dot(-unitDirection, normal), 1.0);
+            float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+            bool shouldReflect = ratio * sinTheta > 1.0 || reflectance(cosTheta, ratio) > rnd();
+            scattered = shouldReflect ? reflect(unitDirection, normal) : refractDir(unitDirection, normal, ratio);
+        } else {
+            scattered = normal + randomInUnitSphere();
+            if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+        }
+        throughput *= color;
+        origin = p;
+        direction = scattered;
+    }
+    return float3(0.0);
+}
+
+half4 main(float2 position) {
+    float i = floor(position.x);
+    float j = frameSize.y - 1.0 - floor(position.y);
+    pixelId = float2(i, j);
+    counter = 0.0;
+
+    float3 sum = float3(0.0);
+    for (int n = 0; n < MAX_SAMPLES; n++) {
+        if (float(n) >= samples) { break; }
+        float s = (i + rnd()) / (frameSize.x - 1.0);
+        float t = (j + rnd()) / (frameSize.y - 1.0);
+        float2 rd = randomInUnitDisk() * lensRadius;
+        float3 offset = camU * rd.x + camV * rd.y;
+        float3 origin = camOrigin + offset;
+        float3 direction = camLowerLeft + camHorizontal * s + camVertical * t - camOrigin - offset;
+        sum += trace(origin, direction);
+    }
+    float taken = clamp(samples, 1.0, float(MAX_SAMPLES));
+    float3 color = sqrt(clamp(sum / taken, 0.0, 1.0));
+    return half4(half3(min(color, float3(0.999))), 1.0);
+}

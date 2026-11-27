@@ -7,6 +7,7 @@ import krt.app.camera.RotateCameraOp
 import krt.app.render.ChangeRayTracerSettingsOp
 import krt.app.render.ChangeRenderSettingsOp
 import krt.app.render.RedrawOp
+import krt.app.render.ToggleGpuModeOp
 import krt.app.render.ToggleWireframeOp
 import krt.app.scene.LoadModelOp
 import krt.app.scene.MoveObjectOp
@@ -34,6 +35,7 @@ class AppContext(
     val loadModel = LoadModelOp(world, renderController, rayTracer, camera, frameBuffer)
     val moveObject = MoveObjectOp(world, renderController, rayTracer, camera, frameBuffer)
     val toggleWireframe = ToggleWireframeOp(renderController, rayTracer, camera, frameBuffer)
+    val toggleGpuMode = ToggleGpuModeOp(renderController, rayTracer, camera, frameBuffer)
     val changeRayTracerSettings = ChangeRayTracerSettingsOp(renderController, rayTracer, camera, frameBuffer)
     val changeRenderSettings = ChangeRenderSettingsOp(renderController, rayTracer, camera, frameBuffer)
 

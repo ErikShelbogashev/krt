@@ -8,5 +8,11 @@ import krt.domain.camera.Camera
  */
 fun renderFrame(renderController: RenderController, rayTracer: RayTracer, camera: Camera, frameBuffer: FrameBuffer) {
     val frame = frameBuffer.frame
-    renderController.renderImage(frame, rayTracer, camera) { frameBuffer.publish(frame) }
+    renderController.renderImage(
+        frame,
+        rayTracer,
+        camera,
+        onGpuFrame = { frameBuffer.publishGpu(it) },
+        onUpdate = { frameBuffer.publish(frame) },
+    )
 }

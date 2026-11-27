@@ -35,6 +35,16 @@ class OperationsTest {
     }
 
     @Test
+    fun `toggle GPU mode hands the frame over as a shader`() {
+        var gpuFrames = 0
+        app.frameBuffer.onGpuUpdate { gpuFrames++ }
+        app.renderController.toggleWireframeMode() // wireframe off: GPU mode draws synchronously
+        app.toggleGpuMode()
+        assertEquals(1, gpuFrames)
+        assertEquals(0, published)
+    }
+
+    @Test
     fun `camera settings resize the frame and redraw`() {
         app.changeCameraSettings { imageWidth = 120; imageHeight = 80 }
         assertEquals(120 to 80, app.frameBuffer.frame.width to app.frameBuffer.frame.height)
