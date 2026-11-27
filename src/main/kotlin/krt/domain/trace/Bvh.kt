@@ -60,6 +60,30 @@ internal class Bvh(private val objects: Array<Traceable>) {
         return search.closest
     }
 
+    /**
+     * The tree for a walk without a stack (ADR 0009). Nodes are numbered depth-first, so the walk goes from a node
+     * whose box the ray enters to the next number, its left child or, after a leaf, the next subtree; from a node it
+     * misses, to its skip link, the first node after its subtree.
+     */
+    fun flatten(): FlatBvh {
+        val skip = IntArray(nodeCount)
+        if (nodeCount > 0) link(skip, ROOT, nodeCount)
+        return FlatBvh(
+            order = order.copyOf(),
+            boxes = boxes.copyOf(nodeCount * BOX_SIZE),
+            skip = skip,
+            first = first.copyOf(nodeCount),
+            count = IntArray(nodeCount) { if (left[it] == LEAF) count[it] else 0 },
+        )
+    }
+
+    private fun link(skip: IntArray, node: Int, next: Int) {
+        skip[node] = next
+        if (left[node] == LEAF) return
+        link(skip, left[node], right[node])
+        link(skip, right[node], next)
+    }
+
     private fun build(start: Int, end: Int): Int {
         val node = nodeCount++
         enclose(node, start, end)
@@ -165,4 +189,19 @@ internal class Bvh(private val objects: Array<Traceable>) {
         /** Median splits keep the tree balanced: 64 levels cover any scene that fits in memory. */
         const val STACK_DEPTH = 64
     }
+}
+
+/**
+ * A [Bvh] numbered depth-first for a walk without a stack: node `n` has its box at `boxes[n * 6 until n * 6 + 6]`,
+ * the first node after its subtree at `skip[n]`, and, for a leaf, objects `order[first[n] until first[n] + count[n]]`;
+ * an inner node has `count[n] == 0` and its left child at `n + 1`.
+ */
+internal class FlatBvh(
+    val order: IntArray,
+    val boxes: DoubleArray,
+    val skip: IntArray,
+    val first: IntArray,
+    val count: IntArray,
+) {
+    val nodeCount: Int get() = skip.size
 }
