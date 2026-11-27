@@ -1,23 +1,35 @@
 package krt.app.render
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import krt.domain.render.RenderController
 
 @Composable
-fun RenderControllerSettings(renderController: RenderController, onChange: (RenderController.() -> Unit) -> Unit) {
+fun RenderControllerSettings(
+    renderController: RenderController,
+    onChange: (RenderController.() -> Unit) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+        modifier = modifier.padding(16.dp).fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text("Render Controller Settings", style = MaterialTheme.typography.h6)
 
-        var repaintIntervalMs by remember { mutableStateOf(renderController.repaintIntervalMs.toFloat()) }
+        var repaintIntervalMs by remember { mutableFloatStateOf(renderController.repaintIntervalMs.toFloat()) }
         Text("Repaint Interval (ms): ${repaintIntervalMs.toInt()}")
 
         Slider(
@@ -27,12 +39,11 @@ fun RenderControllerSettings(renderController: RenderController, onChange: (Rend
                 onChange { this.repaintIntervalMs = newValue.toLong() }
             },
             valueRange = 10f..200f,
-            steps = 19, // Adjust step count for suitable granularity,
+            steps = 19,
             modifier = Modifier.width(200.dp)
         )
 
-        // Batch Size Slider
-        var batchSize by remember { mutableStateOf(renderController.batchSize.toFloat()) }
+        var batchSize by remember { mutableFloatStateOf(renderController.batchSize.toFloat()) }
         Text("Batch Size: ${batchSize.toInt()}")
 
         Slider(
@@ -42,7 +53,7 @@ fun RenderControllerSettings(renderController: RenderController, onChange: (Rend
                 onChange { this.batchSize = newValue.toInt() }
             },
             valueRange = 1f..100f,
-            steps = 99, // Adjust step count for suitable granularity
+            steps = 99,
             modifier = Modifier.width(200.dp)
         )
     }

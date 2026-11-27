@@ -154,7 +154,7 @@ class Camera(
         val screenX = (x / (-z * halfWidth)) * (imageWidth / 2) + (imageWidth / 2)
         val screenY = (y / (-z * halfHeight)) * (imageHeight / 2) + (imageHeight / 2)
 
-        return Point(screenX.toInt(), (imageHeight - screenY.toInt()).toInt())
+        return Point(screenX.toInt(), imageHeight - screenY.toInt())
     }
 
     companion object {

@@ -1,25 +1,37 @@
 package krt.app.camera
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import krt.domain.camera.Camera
 
 @Composable
-fun CameraSettings(camera: Camera, onChange: (Camera.() -> Unit) -> Unit) {
+fun CameraSettings(
+    camera: Camera,
+    onChange: (Camera.() -> Unit) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+        modifier = modifier.padding(16.dp).fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text("Camera Settings", style = MaterialTheme.typography.h6)
 
-        // Field of View Slider
-        var fov by remember { mutableStateOf(camera.fov) }
+        var fov by remember { mutableDoubleStateOf(camera.fov) }
         Text("Field of View: ${fov.toInt()}°")
         Slider(
             value = fov.toFloat(),
@@ -29,11 +41,10 @@ fun CameraSettings(camera: Camera, onChange: (Camera.() -> Unit) -> Unit) {
             },
             valueRange = 1f..180f,
             steps = 179,
-            modifier = Modifier.width(200.dp)  // Applying width here
+            modifier = Modifier.width(200.dp)
         )
 
-        // Aperture Slider
-        var aperture by remember { mutableStateOf(camera.aperture) }
+        var aperture by remember { mutableDoubleStateOf(camera.aperture) }
         Text("Aperture: $aperture")
         Slider(
             value = aperture.toFloat(),
@@ -43,11 +54,10 @@ fun CameraSettings(camera: Camera, onChange: (Camera.() -> Unit) -> Unit) {
             },
             valueRange = 0.0f..10f,
             steps = 199,
-            modifier = Modifier.width(200.dp)  // Applying width here
+            modifier = Modifier.width(200.dp)
         )
 
-        // Focus Distance Slider
-        var focusDist by remember { mutableStateOf(camera.focusDist) }
+        var focusDist by remember { mutableDoubleStateOf(camera.focusDist) }
         Text("Focus Distance: $focusDist")
         Slider(
             value = focusDist.toFloat(),
@@ -57,13 +67,12 @@ fun CameraSettings(camera: Camera, onChange: (Camera.() -> Unit) -> Unit) {
             },
             valueRange = 0.0f..10.0f,
             steps = 999,
-            modifier = Modifier.width(200.dp)  // Applying width here
+            modifier = Modifier.width(200.dp)
         )
 
-        var samplesPerPixel by remember { mutableStateOf(camera.samplesPerPixel) }
+        var samplesPerPixel by remember { mutableIntStateOf(camera.samplesPerPixel) }
         Text("Samples per pixel: $samplesPerPixel")
         Slider(
-
             value = samplesPerPixel.toFloat(),
             onValueChange = { newValue ->
                 samplesPerPixel = newValue.toInt()
@@ -71,10 +80,10 @@ fun CameraSettings(camera: Camera, onChange: (Camera.() -> Unit) -> Unit) {
             },
             valueRange = 1.0f..50.0f,
             steps = 49,
-            modifier = Modifier.width(200.dp)  // Applying width here
+            modifier = Modifier.width(200.dp)
         )
 
-        var movementSpeed by remember { mutableStateOf(camera.movementSpeed) }
+        var movementSpeed by remember { mutableDoubleStateOf(camera.movementSpeed) }
         Text("Movement speed: $movementSpeed")
         Slider(
             value = movementSpeed.toFloat(),
@@ -84,11 +93,10 @@ fun CameraSettings(camera: Camera, onChange: (Camera.() -> Unit) -> Unit) {
             },
             valueRange = 0.1f..3.0f,
             steps = 100,
-            modifier = Modifier.width(200.dp)  // Applying width here
+            modifier = Modifier.width(200.dp)
         )
 
-        // Image Width Integer Field
-        var imageWidth by remember { mutableStateOf(camera.imageWidth) }
+        var imageWidth by remember { mutableIntStateOf(camera.imageWidth) }
         OutlinedTextField(
             value = imageWidth.toString(),
             onValueChange = { newValue ->
@@ -101,7 +109,7 @@ fun CameraSettings(camera: Camera, onChange: (Camera.() -> Unit) -> Unit) {
             label = { Text("Image Width") }
         )
 
-        var imageHeight by remember { mutableStateOf(camera.imageHeight) }
+        var imageHeight by remember { mutableIntStateOf(camera.imageHeight) }
         OutlinedTextField(
             value = imageHeight.toString(),
             onValueChange = { newValue ->
