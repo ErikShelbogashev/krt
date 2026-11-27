@@ -5,7 +5,7 @@ import kotlin.math.min
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-data class Point3(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0) {
+data class Point3(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0) {
     constructor(x: Number, y: Number, z: Number) : this(x.toDouble(), y.toDouble(), z.toDouble())
 
     companion object {
@@ -46,12 +46,6 @@ data class Point3(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0)
     operator fun times(scalar: Double): Point3 = Point3(x * scalar, y * scalar, z * scalar)
     operator fun div(other: Point3): Point3 = Point3(x / other.x, y / other.y, z / other.z)
     operator fun div(scalar: Double): Point3 = Point3(x / scalar, y / scalar, z / scalar)
-    operator fun divAssign(scalar: Double) {
-        x /= scalar
-        y /= scalar
-        z /= scalar
-    }
-
     private fun l2norm(): Double = x * x + y * y + z * z
     fun length(): Double = sqrt(l2norm())
     fun unit(): Point3 = this / length()
@@ -69,11 +63,6 @@ data class Point3(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0)
     }
 
     fun isNearZero(): Boolean = (x * x + y * y + z * z) < 1e-8
-    fun translate(offset: Point3) {
-        x += offset.x
-        y += offset.y
-        z += offset.z
-    }
 }
 
 typealias Color = Point3
