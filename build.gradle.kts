@@ -30,7 +30,7 @@ tasks.test {
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "krt.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
