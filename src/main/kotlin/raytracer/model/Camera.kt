@@ -89,6 +89,25 @@ class Camera(
     fun moveUp() = run { _origin += _vup * movementSpeed; updateCamera() }
     fun moveDown() = run { _origin -= _vup * movementSpeed; updateCamera() }
 
+    fun move(move: CameraMove) = when (move) {
+        CameraMove.FORWARD -> moveForward()
+        CameraMove.BACKWARD -> moveBackward()
+        CameraMove.LEFT -> moveLeft()
+        CameraMove.RIGHT -> moveRight()
+        CameraMove.UP -> moveUp()
+        CameraMove.DOWN -> moveDown()
+        CameraMove.NONE -> Unit
+    }
+
+    /** Rotates the view by a mouse drag of [dxPixels]×[dyPixels] over the frame. */
+    fun rotateByDrag(dxPixels: Int, dyPixels: Int) {
+        adjustYaw(dxPixels * 2 * Math.PI / imageWidth * DRAG_SENSITIVITY)
+        adjustPitch(-(dyPixels * 2 * Math.PI / imageHeight * DRAG_SENSITIVITY))
+    }
+
+    /** Frames of 50 px or less are not rendered after a settings change. */
+    fun hasRenderableSize(): Boolean = imageWidth > MIN_RENDERED_SIZE && imageHeight > MIN_RENDERED_SIZE
+
     private fun updateCamera() {
         val forward = Point3(cos(pitch) * cos(yaw), sin(pitch), cos(pitch) * sin(yaw))
         _target = _origin + forward
@@ -137,6 +156,9 @@ class Camera(
     }
 
     companion object {
+        private const val DRAG_SENSITIVITY = 0.1
+        private const val MIN_RENDERED_SIZE = 50
+
         fun default() = Camera(
             origin = Point3.ONE,
             target = Point3.ZERO,
@@ -149,3 +171,5 @@ class Camera(
         )
     }
 }
+
+enum class CameraMove { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN, NONE }
