@@ -4,14 +4,18 @@ compose-multiplatform = "1.12.2"
 filekit = "0.17.1"
 compose-material-icons = "1.7.3"
 konsist = "0.18.1"
+detekt = "2.0.0-alpha.6"
+compose-rules = "0.6.8"
 
 [libraries]
 compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-multiplatform" }
 compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-material-icons" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
+compose-rules-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "compose-rules" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
