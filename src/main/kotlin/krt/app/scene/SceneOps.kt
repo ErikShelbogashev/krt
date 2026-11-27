@@ -8,6 +8,7 @@ import krt.domain.render.RenderController
 import krt.domain.render.renderFrame
 import krt.domain.scene.World
 import krt.domain.scene.model.DemoScene
+import krt.domain.scene.model.SceneOpening
 import krt.i9ns.scenefile.SceneLibrary
 import krt.platform.math.Point3
 
@@ -21,14 +22,14 @@ class OpenSceneOp(
 ) {
     /**
      * Replaces the scene with the one in [file] (pbrt-v4, or OBJ with MTL and showcase files beside it) and stands
-     * the camera at its view; what krt drew differently from the file is in the result's warnings.
+     * the camera at its view; the result says what krt drew differently from the file, or why it could not read it.
      */
-    operator fun invoke(file: File): List<String> {
-        val scene = scenes.load(file)
+    operator fun invoke(file: File): SceneOpening {
+        val scene = scenes.load(file).getOrElse { return SceneOpening(true, listOf(it.message ?: it.toString())) }
         world.load(scene.objects, scene.look)
         camera.resetView(scene.look)
         renderFrame(renderController, rayTracer, camera, frameBuffer)
-        return scene.warnings
+        return SceneOpening(false, scene.warnings)
     }
 }
 

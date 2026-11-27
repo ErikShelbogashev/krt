@@ -102,12 +102,34 @@ class OperationsTest {
             deleteOnExit()
             writeText("LookAt 0 1 9  0 1 0  0 1 0\nWorldBegin\n#krt Name \"Ball\"\nShape \"sphere\"\nShape \"curve\"\n")
         }
-        val warnings = app.openScene(file)
+        val opening = app.openScene(file)
         assertEquals(listOf("Ball"), app.world.objects.map { it.id })
-        assertEquals(1, warnings.size)
+        assertEquals(false, opening.failed)
+        assertEquals(1, opening.notes.size)
         assertEquals(Point3(0.0, 1.0, 9.0), app.camera.origin)
         assertEquals(null, app.world.source)
         assertEquals(1, published)
+    }
+
+    @Test
+    fun `a scene file that cannot be read leaves the scene as it was and says why`() {
+        val before = app.world.objects
+        val broken = File.createTempFile("krt", ".pbrt").apply {
+            deleteOnExit()
+            writeText("WorldBegin\nShape \"sphere\" \"float radius\" [ 1\n")
+        }
+        val missing = File(broken.parentFile, "no-such-scene.obj")
+        val plyless = File.createTempFile("krt", ".pbrt").apply {
+            deleteOnExit()
+            writeText("WorldBegin\nShape \"plymesh\" \"string filename\" \"gone.ply\"\n")
+        }
+        listOf(broken, missing, plyless).forEach { file ->
+            val opening = app.openScene(file)
+            assertEquals(true, opening.failed, file.name)
+            assertEquals(1, opening.notes.size)
+            assertEquals(before, app.world.objects)
+        }
+        assertEquals(0, published)
     }
 
     @Test

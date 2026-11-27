@@ -11,17 +11,18 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import krt.domain.scene.model.SceneOpening
 
-/** What krt drew differently from the scene file it opened, one line each (ADR 0016). */
+/** What krt drew differently from the scene file it opened, one line each, or why it could not open it (ADR 0016). */
 @Composable
-fun SceneWarningsDialog(warnings: List<String>, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+fun SceneWarningsDialog(opening: SceneOpening, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = modifier,
-        title = { Text("Scene opened with changes") },
+        title = { Text(if (opening.failed) "Scene could not be opened" else "Scene opened with changes") },
         text = {
             Column(Modifier.heightIn(max = 320.dp).verticalScroll(rememberScrollState())) {
-                warnings.forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
+                opening.notes.forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
             }
         },
         confirmButton = { TextButton(onClick = onDismiss) { Text("Close") } },

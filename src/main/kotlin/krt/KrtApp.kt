@@ -35,6 +35,7 @@ import krt.domain.render.Frame
 import krt.domain.render.model.RenderProgress
 import krt.domain.scene.model.DemoScene
 import krt.domain.scene.model.SceneCatalog
+import krt.domain.scene.model.SceneOpening
 import krt.domain.scene.model.Traceable
 import krt.infra.AppContext
 import krt.platform.skia.ArgbBitmapConverter
@@ -57,10 +58,12 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
     var dark by remember { mutableStateOf(true) }
     var mode by remember { mutableStateOf(app.renderController.mode) }
     val benchmark = rememberBenchmarkState()
-    var warnings by remember { mutableStateOf(emptyList<String>()) }
+    var opening by remember { mutableStateOf(SceneOpening(false, emptyList())) }
     KrtTheme(dark) {
         Surface(modifier, color = MaterialTheme.colorScheme.background) {
-            if (warnings.isNotEmpty()) SceneWarningsDialog(warnings, onDismiss = { warnings = emptyList() })
+            if (opening.notes.isNotEmpty()) {
+                SceneWarningsDialog(opening, onDismiss = { opening = SceneOpening(false, emptyList()) })
+            }
             Box(Modifier.fillMaxSize()) {
                 Column(Modifier.fillMaxSize()) {
                     TopBar(
@@ -74,7 +77,7 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
                             })
                         },
                         actions = {
-                            OpenSceneButton(onOpen = { warnings = app.openScene(it) })
+                            OpenSceneButton(onOpen = { opening = app.openScene(it) })
                             SaveImageButton(onSave = { app.saveImage(it) })
                             BenchmarkButton(benchmark)
                         },

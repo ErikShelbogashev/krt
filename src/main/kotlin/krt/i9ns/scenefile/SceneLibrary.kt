@@ -1,6 +1,7 @@
 package krt.i9ns.scenefile
 
 import java.io.File
+import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import krt.domain.scene.model.DemoScene
 import krt.domain.scene.model.SceneDescription
@@ -19,8 +20,18 @@ class SceneLibrary {
     /** The demo [scene], read on first use. */
     fun load(scene: DemoScene): SceneDescription = demos.getOrPut(scene) { read(Resources(ROOT), scene.path) }
 
-    /** The scene in [file]: a pbrt-v4 file, or an OBJ with its MTL and, beside it, its krt showcase files. */
-    fun load(file: File): SceneDescription = read(Directory(file.parentFile ?: File(".")), file.name)
+    /**
+     * The scene in [file]: a pbrt-v4 file, or an OBJ with its MTL and, beside it, its krt showcase files; or why
+     * it cannot be read, from a missing file to a line at fault. A file of one's own may be anything.
+     */
+    @Suppress("TooGenericExceptionCaught") // a broken file fails the readers in many ways, all of them one answer
+    fun load(file: File): Result<SceneDescription> = try {
+        Result.success(read(Directory(file.parentFile ?: File(".")), file.name))
+    } catch (e: RuntimeException) {
+        Result.failure(e)
+    } catch (e: IOException) {
+        Result.failure(e)
+    }
 
     private fun read(source: Source, path: String): SceneDescription =
         if (path.endsWith(".obj", ignoreCase = true)) obj(source, path) else pbrt(source, path)
