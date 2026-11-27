@@ -81,7 +81,7 @@ class Camera(
     private val maxPitch = Math.PI / 2 - 0.01
 
     init {
-        updateCamera()
+        orientTowards(target)
     }
 
     /** Where the camera stands. */
@@ -94,10 +94,18 @@ class Camera(
 
     /** Stands the camera at [origin] looking at [target]; the pitch keeps clear of the poles. */
     fun lookFrom(origin: Point3, target: Point3) {
-        val direction = (target - origin).unit()
         _origin = origin
-        pitch = asin(direction.y.coerceIn(-1.0, 1.0)).coerceIn(-maxPitch, maxPitch)
-        yaw = atan2(direction.z, direction.x)
+        orientTowards(target)
+    }
+
+    /** Turns the camera to look at [target]; a target at the camera itself leaves it looking along +X. */
+    private fun orientTowards(target: Point3) {
+        val offset = target - _origin
+        if (!offset.isNearZero()) {
+            val direction = offset.unit()
+            pitch = asin(direction.y.coerceIn(-1.0, 1.0)).coerceIn(-maxPitch, maxPitch)
+            yaw = atan2(direction.z, direction.x)
+        }
         updateCamera()
     }
 

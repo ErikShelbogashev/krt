@@ -47,7 +47,7 @@ class GpuTracerTest {
         focusDist = 7.0,
         imageWidth = SIZE,
         imageHeight = SIZE,
-    ).apply { samplesPerPixel = SAMPLES; adjustYaw(-Math.PI / 2); adjustPitch(-0.2) }
+    ).apply { samplesPerPixel = SAMPLES }
 
     @Test
     fun `GPU frame matches the CPU frame of the same scene in brightness`() {

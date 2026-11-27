@@ -77,11 +77,11 @@ class OperationsTest {
 
     @Test
     fun `camera moves and rotations redraw, unknown keys too`() {
-        val before = app.camera.project(Point3(5.0, 1.0, 1.0))
+        val before = app.camera.project(Point3(-1.0, 0.0, 0.0))
         app.moveCamera(CameraMove.FORWARD)
         app.rotateCamera(10, 5)
         app.moveCamera(CameraMove.NONE)
-        assertNotEquals(before, app.camera.project(Point3(5.0, 1.0, 1.0)))
+        assertNotEquals(before, app.camera.project(Point3(-1.0, 0.0, 0.0)))
         assertEquals(3, published)
     }
 
