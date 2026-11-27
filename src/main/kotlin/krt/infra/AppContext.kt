@@ -8,7 +8,11 @@ import krt.app.camera.RotateCameraOp
 import krt.app.camera.SetCameraViewOp
 import krt.app.render.ChangeRayTracerSettingsOp
 import krt.app.render.ChangeRenderSettingsOp
+import krt.app.render.CaptureSettingsOp
+import krt.app.render.FlyCameraOp
 import krt.app.render.RedrawOp
+import krt.app.render.RestoreSettingsOp
+import krt.app.render.StartBenchmarkRunOp
 import krt.app.render.SaveImageOp
 import krt.app.render.SetRenderModeOp
 import krt.app.scene.LoadModelOp
@@ -41,6 +45,10 @@ class AppContext(
     val setCameraView = SetCameraViewOp(camera, renderController, rayTracer, frameBuffer)
     val resetCameraView = ResetCameraViewOp(world, camera, renderController, rayTracer, frameBuffer)
     val loadScene = LoadSceneOp(world, camera, renderController, rayTracer, frameBuffer)
+    val captureSettings = CaptureSettingsOp(world, camera, renderController, rayTracer)
+    val startBenchmarkRun = StartBenchmarkRunOp(world, camera, renderController, rayTracer, frameBuffer)
+    val flyCamera = FlyCameraOp(camera, renderController, rayTracer, frameBuffer)
+    val restoreSettings = RestoreSettingsOp(world, camera, renderController, rayTracer, frameBuffer)
     val focusOnObject = FocusOnObjectOp(world, camera, renderController, rayTracer, frameBuffer)
     val loadModel = LoadModelOp(world, renderController, rayTracer, camera, frameBuffer)
     val moveObject = MoveObjectOp(world, renderController, rayTracer, camera, frameBuffer)
