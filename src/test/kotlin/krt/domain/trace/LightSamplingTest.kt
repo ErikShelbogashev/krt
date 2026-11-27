@@ -76,6 +76,13 @@ class LightSamplingTest {
     }
 
     @Test
+    fun `each glowing sphere is a light of its own, even two of the same id`() {
+        val glow = Emissive(Color.ONE, 2.0)
+        val spheres = List(50) { Sphere(Point3(it.toDouble(), 0.0, 0.0), 0.2, glow, id = "lamp") }
+        assertEquals(50, Emitters.of(spheres).size)
+    }
+
+    @Test
     fun `only emissive spheres and triangles are lights`() {
         val lights = Lights(listOf(Sphere(Point3.ZERO, 1.0, Lambert(WHITE)), Fog(Point3.ZERO, 1.0, 1.0, WHITE)))
         assertEquals(0, lights.count)
