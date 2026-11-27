@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Slider
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -27,7 +27,7 @@ fun RayTracerSettings(
         modifier = modifier.padding(16.dp).fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Text("Ray Tracer Settings", style = MaterialTheme.typography.h6)
+        Text("Ray Tracer Settings", style = MaterialTheme.typography.titleLarge)
 
         var maxDepth by remember { mutableFloatStateOf(rayTracer.maxDepth.toFloat()) }
         Text("Max Depth: ${maxDepth.toInt()}")
