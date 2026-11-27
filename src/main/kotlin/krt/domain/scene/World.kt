@@ -9,35 +9,46 @@ import krt.domain.scene.model.Material
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
+import krt.domain.trace.TraceScene
 import krt.platform.math.Color
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
 /**
- * Scene resource: a single mutable reference to an immutable list of objects (ADR 0005).
- * Writers replace the whole list, readers (the render pool) always see a consistent snapshot.
+ * Scene resource: a single mutable reference to an immutable list of objects (ADR 0005)
+ * and the scene compiled from it for tracing (ADR 0008).
+ * Writers replace both at once, readers (the render pool) always see a consistent snapshot.
  */
 class World(objects: List<Traceable> = emptyList()) {
 
+    private class Snapshot(val objects: List<Traceable>) {
+        /** Compiled on first use, so a burst of edits compiles the scene once. */
+        val traceScene by lazy { TraceScene(objects) }
+    }
+
     @Volatile
-    var objects: List<Traceable> = objects
-        private set
+    private var snapshot = Snapshot(objects)
+
+    val objects: List<Traceable> get() = snapshot.objects
+
+    /** The scene to trace; consistent with [objects] read at the same moment. */
+    val traceScene: TraceScene get() = snapshot.traceScene
 
     fun translateObjectById(objectId: String, offset: Point3) {
-        objects = objects.translateFirst(objectId, offset)
+        snapshot = Snapshot(objects.translateFirst(objectId, offset))
     }
 
     fun getObjectIds(): List<String> = objects.map { it.id }
 
     fun add(obj: Traceable) {
-        objects = objects + obj
+        snapshot = Snapshot(objects + obj)
     }
 
     fun addAll(objs: List<Traceable>) {
-        objects = objects + objs
+        snapshot = Snapshot(objects + objs)
     }
 
-    fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? = objects.closestHit(ray, tMin, tMax)
+    fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? = traceScene.hit(ray, tMin, tMax)
 
     companion object {
         fun default(random: Random): World {
@@ -67,19 +78,6 @@ class World(objects: List<Traceable> = emptyList()) {
             return world
         }
     }
-}
-
-/**
- * The hit with the smallest t. Each found hit narrows the search interval, so farther objects
- * are rejected early. On equal t the first object in the list wins, as before.
- */
-private fun List<Traceable>.closestHit(ray: Ray, tMin: Double, tMax: Double): Hit? {
-    var closest: Hit? = null
-    for (i in indices) {
-        val hit = this[i].hit(ray, tMin, closest?.t ?: tMax)
-        if (hit != null && (closest == null || hit.t < closest.t)) closest = hit
-    }
-    return closest
 }
 
 private fun List<Traceable>.translateFirst(objectId: String, offset: Point3): List<Traceable> {
