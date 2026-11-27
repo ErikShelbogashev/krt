@@ -12,6 +12,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import krt.domain.camera.CameraMove
+import krt.domain.camera.model.ViewPreset
 import krt.domain.render.model.RenderMode
 import krt.infra.AppContext
 import krt.platform.math.Point3
@@ -134,6 +135,23 @@ class OperationsTest {
         val saved = ImageIO.read(file)
         assertEquals(48 to 32, saved.width to saved.height)
         assertTrue(saved.getRGB(0, 0, 48, 32, null, 0, 48).any { it and RGB != 0 })
+    }
+
+    @Test
+    fun `camera view presets, reset and focus on an object change the camera and redraw`() {
+        app.setCameraView(ViewPreset.OVERVIEW)
+        assertEquals(ViewPreset.OVERVIEW, app.camera.snapshot().preset)
+
+        app.changeCameraSettings { fov = 30.0; aperture = 2.0 }
+        app.resetCameraView()
+        val reset = app.camera.snapshot()
+        assertEquals(ViewPreset.DEFAULT, reset.preset)
+        assertEquals(Triple(90.0, 0.1, 10.0), Triple(reset.fov, reset.aperture, reset.focusDistance))
+
+        app.focusOnObject("TEST")
+        assertEquals((Point3(-4.0, 1.0, 0.0) - app.camera.origin).length(), app.camera.focusDist, 1e-9)
+        app.focusOnObject("no such object")
+        assertEquals(4, published)
     }
 
     private companion object {

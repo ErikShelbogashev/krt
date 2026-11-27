@@ -2,8 +2,11 @@ package krt.infra
 
 import kotlin.random.Random
 import krt.app.camera.ChangeCameraSettingsOp
+import krt.app.camera.FocusOnObjectOp
 import krt.app.camera.MoveCameraOp
+import krt.app.camera.ResetCameraViewOp
 import krt.app.camera.RotateCameraOp
+import krt.app.camera.SetCameraViewOp
 import krt.app.render.ChangeRayTracerSettingsOp
 import krt.app.render.ChangeRenderSettingsOp
 import krt.app.render.RedrawOp
@@ -34,6 +37,9 @@ class AppContext(
     val rotateCamera = RotateCameraOp(camera, renderController, rayTracer, frameBuffer)
     val moveCamera = MoveCameraOp(camera, renderController, rayTracer, frameBuffer)
     val changeCameraSettings = ChangeCameraSettingsOp(camera, renderController, rayTracer, frameBuffer)
+    val setCameraView = SetCameraViewOp(camera, renderController, rayTracer, frameBuffer)
+    val resetCameraView = ResetCameraViewOp(camera, renderController, rayTracer, frameBuffer)
+    val focusOnObject = FocusOnObjectOp(world, camera, renderController, rayTracer, frameBuffer)
     val loadModel = LoadModelOp(world, renderController, rayTracer, camera, frameBuffer)
     val moveObject = MoveObjectOp(world, renderController, rayTracer, camera, frameBuffer)
     val setRenderMode = SetRenderModeOp(renderController, rayTracer, camera, frameBuffer)
