@@ -2,7 +2,6 @@ package krt.app.render
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,7 +27,6 @@ private val PRESETS = listOf(IntSize(400, 400), IntSize(640, 360), IntSize(800, 
  * Size of the rendered frame, independent from the window: presets and two fields. A field keeps a value
  * outside [Camera.IMAGE_SIZE_RANGE] on screen with an error, the frame keeps the last valid size.
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ResolutionSection(width: Int, height: Int, onResize: (Int, Int) -> Unit, modifier: Modifier = Modifier) {
     var size by remember { mutableStateOf(IntSize(width, height)) }

@@ -2,7 +2,6 @@ package krt.app.render
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
@@ -25,7 +24,6 @@ private val SIZES = listOf(400 to 400, 800 to 600, 1024 to 1024)
 private val MODES = listOf(RenderMode.CPU, RenderMode.GPU)
 
 /** Chooses what the flight benchmark runs: scenes, renderers and frame sizes, every combination. */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BenchmarkSetupDialog(onRun: (List<BenchmarkConfig>) -> Unit, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
     var scenes by remember { mutableStateOf(setOf(DemoScene.SHOWCASE)) }
@@ -64,7 +62,6 @@ fun BenchmarkSetupDialog(onRun: (List<BenchmarkConfig>) -> Unit, onDismiss: () -
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun <T> Choices(title: String, options: List<T>, chosen: Set<T>, label: (T) -> String, onToggle: (T) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

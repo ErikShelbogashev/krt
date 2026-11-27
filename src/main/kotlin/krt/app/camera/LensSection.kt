@@ -2,7 +2,6 @@ package krt.app.camera
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +27,6 @@ import krt.domain.camera.model.Lens
 private val FOV_RANGE = 1.0..180.0
 
 /** Lens diagram and the field of view: a number, a slider and ready lenses, kept in step. */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LensSection(camera: CameraSnapshot, onChange: (Camera.() -> Unit) -> Unit, modifier: Modifier = Modifier) {
     var fov by remember(camera.fov) { mutableDoubleStateOf(camera.fov) }

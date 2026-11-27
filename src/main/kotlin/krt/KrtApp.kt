@@ -31,7 +31,6 @@ import krt.app.shell.TopBar
 import krt.domain.camera.CameraMove
 import krt.domain.camera.model.CameraSnapshot
 import krt.domain.render.Frame
-import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
 import krt.domain.scene.model.DemoScene
 import krt.domain.scene.model.SceneCatalog
