@@ -172,6 +172,21 @@ class GpuTracerTest {
             )
         }
 
+    /** A row of six letters of four pixels each, of growing brightness, and a big dim panel, over a floor. */
+    private val sign = World(
+        listOf(Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.6, 0.6, 0.6)))) +
+            (0 until 6).flatMap { letter ->
+                (0 until 4).flatMap { pixel ->
+                    Meshes.panel(
+                        Pose(Point3(-2.5 + letter + (pixel % 2) * 0.3, 2.0 + (pixel / 2) * 0.3, -1.0)), 0.12, 0.12,
+                        Emissive(Color(1.0, 0.2, 0.1), 4.0 + 6.0 * letter),
+                    ).map { Triangle(it.v0, it.v1, it.v2, it.material, "letter_$letter") }
+                }
+            } +
+            Meshes.panel(Pose(Point3(0.0, 5.0, -3.0)), 4.0, 1.0, Emissive(Color(0.4, 0.5, 0.9), 0.3)),
+        SceneLook(Sky(Color(0.02, 0.02, 0.03), Color(0.0, 0.0, 0.01)), 60.0, 0.0, sampleLights = true),
+    )
+
     private fun camera() = Camera(
         origin = Point3(0.0, 2.0, 7.0),
         target = Point3.ZERO,
@@ -358,6 +373,20 @@ class GpuTracerTest {
         val camera = camera()
         val gpu = gpuFrame(camera, media)
         val cpu = cpuFrame(camera, media)
+
+        (0 until CHANNELS).forEach { channel ->
+            val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+            assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
+        }
+        val regions = (0 until QUADRANTS).map { q -> abs(brightness(gpu, q) - brightness(cpu, q)) }
+        assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
+    }
+
+    @Test
+    fun `a sign of many small lights of uneven brightness looks the same on the GPU as on the CPU`() {
+        val camera = camera()
+        val gpu = gpuFrame(camera, sign)
+        val cpu = cpuFrame(camera, sign)
 
         (0 until CHANNELS).forEach { channel ->
             val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)

@@ -15,6 +15,8 @@ import krt.domain.scene.model.Interface
 import krt.domain.scene.model.Iridescent
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Medium
+import krt.domain.scene.model.Meshes
+import krt.domain.scene.model.Pose
 import krt.domain.scene.model.Pattern
 import krt.domain.scene.model.PatternKind
 import krt.domain.scene.model.Patterned
@@ -50,6 +52,32 @@ class LightSamplingTest {
         val lights = Lights(listOf(light))
         assertTrue(lights.sample(Point3.ZERO, 0.0, Random(1)) != null)
         assertTrue(lights.sample(Point3(0.0, 4.0, 0.0), 0.0, Random(1)) != null)
+    }
+
+    @Test
+    fun `the triangles of one object are one light, picked by area times brightness`() {
+        val letter = Meshes.panel(Pose(Point3(0.0, 2.0, 0.0)), 0.1, 0.1, Emissive(Color.ONE, 10.0))
+            .map { Triangle(it.v0, it.v1, it.v2, it.material, "letter_D") }
+        val lamp = Sphere(Point3(3.0, 2.0, 0.0), 0.5, Emissive(Color.ONE, 1.0))
+        val emitters = Emitters.of(letter + lamp)
+        assertEquals(listOf(2, 1), emitters.map { it.members.size })
+        assertEquals(0.04 * 10.0, emitters[0].weight, 1e-9)
+        assertEquals(PI, emitters[1].weight, 1e-9)
+        assertEquals(2, Lights(letter + lamp).count)
+    }
+
+    @Test
+    fun `the log code of a positive number keeps it to a hundred-thousandth`() {
+        listOf(1e-6, 0.004, 1.0, 37.5, 1e9).forEach { value ->
+            assertEquals(value, GpuLightTable.decodeLog(GpuLightTable.encodeLog(value)), value * 1e-5)
+        }
+    }
+
+    @Test
+    fun `each glowing sphere is a light of its own, even two of the same id`() {
+        val glow = Emissive(Color.ONE, 2.0)
+        val spheres = List(50) { Sphere(Point3(it.toDouble(), 0.0, 0.0), 0.2, glow, id = "lamp") }
+        assertEquals(50, Emitters.of(spheres).size)
     }
 
     @Test

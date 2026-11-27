@@ -28,8 +28,11 @@ import krt.platform.math.Point3
  *   0 for a flat one; last 1 + the numbers of the media inside and outside the surface, 0 for none (ADR 0014);
  * - their materials from [materialStart], [GpuScenePacking.MATERIAL_VALUES] each: material code, then a colour,
  *   two parameters, a second colour and a third parameter, as [GpuMaterials.values] lays them out;
- * - [GpuSections.lightCount] lights from [GpuSections.lightStart]: the primitive slots of the emissive spheres and
- *   triangles, which next event estimation samples when [SceneLook.sampleLights] is on (ADR 0012);
+ * - [GpuSections.lightCount] lights from [GpuSections.lightStart], [GpuScenePacking.LIGHT_VALUES] each: the
+ *   cumulative share of their weights (see [Emitters]) as a whole number of 2^24, the first of their members and
+ *   how many, and the area density of a point on them with their pick, log-encoded ([GpuLightTable.encodeLog]);
+ *   then their members from [GpuSections.memberStart], [GpuScenePacking.MEMBER_VALUES] each: the primitive slot
+ *   and the cumulative share of the light's area; light sampling picks them when [SceneLook.sampleLights] is on;
  * - from [GpuSections.normalStart], the vertex normals of smooth triangles, [GpuScenePacking.NORMAL_VALUES] per
  *   record: the normals at the first, second and third vertex (ADR 0013);
  * - from [GpuSections.mediaStart], the media, [GpuScenePacking.MEDIUM_VALUES] each: density and albedo.
@@ -41,7 +44,7 @@ class GpuScene(
     val primitiveStart: Int,
     val materialStart: Int,
     val look: SceneLook = SceneLook.CLASSIC,
-    val sections: GpuSections = GpuSections(materialStart, 0, materialStart, 0, materialStart),
+    val sections: GpuSections = GpuSections(materialStart, 0, materialStart, materialStart, 0, materialStart),
     val fogs: List<GpuFog> = emptyList(),
 ) {
     val sky: Sky get() = look.sky
@@ -71,6 +74,7 @@ class GpuScene(
 data class GpuSections(
     val lightStart: Int,
     val lightCount: Int,
+    val memberStart: Int,
     val normalStart: Int,
     val normalCount: Int,
     val mediaStart: Int,
@@ -85,6 +89,8 @@ object GpuScenePacking {
     const val NODE_VALUES = 9
     const val PRIMITIVE_VALUES = 13
     const val MEDIUM_VALUES = 6
+    const val LIGHT_VALUES = 4
+    const val MEMBER_VALUES = 2
     const val NORMAL_VALUES = 9
     const val MATERIAL_VALUES = 12
     const val TEXTURE_WIDTH = 1024
@@ -127,8 +133,9 @@ object GpuScenePacking {
         val primitiveStart = bvh.nodeCount * NODE_VALUES
         val materialStart = primitiveStart + primitives.size * PRIMITIVE_VALUES
         val lightStart = materialStart + primitives.size * MATERIAL_VALUES
-        val lightSlots = bvh.order.indices.filter { slot -> materialOf(primitives[bvh.order[slot]]).emits }
-        val normalStart = lightStart + lightSlots.size
+        val emitters = Emitters.of(primitives.toList())
+        val memberStart = lightStart + emitters.size * LIGHT_VALUES
+        val normalStart = memberStart + emitters.sumOf { it.members.size } * MEMBER_VALUES
         val smooth = bvh.order.map { (primitives[it] as? Triangle)?.normals }
         val records = smooth.runningFold(0) { count, normals -> if (normals == null) count else count + 1 }
         val mediaStart = normalStart + records.last() * NORMAL_VALUES
@@ -143,7 +150,7 @@ object GpuScenePacking {
             materialCodes(primitives[index]).copyInto(codes, materialStart + slot * MATERIAL_VALUES)
             smooth[slot]?.let { normalCodes(it).copyInto(codes, normalStart + records[slot] * NORMAL_VALUES) }
         }
-        lightSlots.toIntArray().copyInto(codes, lightStart)
+        GpuLightTable.codes(emitters, slotsOf(bvh, primitives)).copyInto(codes, lightStart)
         media.forEachIndexed { number, medium ->
             mediumCodes(medium).copyInto(codes, mediaStart + number * MEDIUM_VALUES)
         }
@@ -155,7 +162,7 @@ object GpuScenePacking {
             primitiveStart = primitiveStart,
             materialStart = materialStart,
             look = look,
-            sections = GpuSections(lightStart, lightSlots.size, normalStart, records.last(), mediaStart),
+            sections = GpuSections(lightStart, emitters.size, memberStart, normalStart, records.last(), mediaStart),
             fogs = objects.filterIsInstance<Fog>().map { GpuFog(it.center, it.radius, media.indexOf(it.medium)) },
         )
     }
@@ -227,6 +234,12 @@ private fun primitiveOf(obj: Traceable): Traceable? = when (obj) {
     is Translucent -> obj.surface
     else -> null
 }
+
+/** Each primitive's slot in the leaves of [bvh], by identity: two equal triangles are two primitives. */
+private fun slotsOf(bvh: FlatBvh, primitives: Array<Traceable>): Map<Traceable, Int> =
+    java.util.IdentityHashMap<Traceable, Int>().apply {
+        bvh.order.forEachIndexed { slot, index -> put(primitives[index], slot) }
+    }
 
 private fun materialOf(primitive: Traceable): Material = when (primitive) {
     is Sphere -> primitive.material
