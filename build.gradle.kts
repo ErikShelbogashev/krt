@@ -39,6 +39,32 @@ tasks.test {
     useJUnitPlatform()
 }
 
+// The GPU smoke check on the real GPU (Metal), off screen; not in `check`, CI has no GPU (ADR 0010).
+val gpuSmoke: SourceSet by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += output + compileClasspath + sourceSets.main.get().runtimeClasspath
+}
+
+tasks.named<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>("compileGpuSmokeKotlin") {
+    // The Metal command queue is made through the foreign function API, final since Java 22.
+    compilerOptions.jvmTarget = JvmTarget.JVM_22
+}
+
+tasks.named<JavaCompile>("compileGpuSmokeJava") {
+    sourceCompatibility = "22"
+    targetCompatibility = "22"
+}
+
+tasks.register<JavaExec>("gpuSmoke") {
+    group = "verification"
+    description = "Draws every built-in scene on the real GPU and fails on slow steps, Metal errors or bad frames."
+    classpath = gpuSmoke.runtimeClasspath
+    mainClass = "krt.smoke.GpuSmokeKt"
+    workingDir = projectDir
+    jvmArgs("--enable-native-access=ALL-UNNAMED", "-Djava.awt.headless=true")
+    providers.gradleProperty("scene").orNull?.let { args(it) }
+}
+
 jmh {
     jmhVersion = libs.versions.jmh
     warmupIterations = 2
