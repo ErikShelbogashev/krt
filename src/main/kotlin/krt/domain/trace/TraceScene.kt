@@ -10,18 +10,8 @@ import krt.platform.math.Ray
  */
 class TraceScene(objects: List<Traceable>) {
 
-    private val objects: Array<Traceable> = objects.toTypedArray()
+    private val bvh = Bvh(objects.toTypedArray())
 
-    /**
-     * The hit with the smallest t. Each found hit narrows the search interval, so farther objects
-     * are rejected early. On equal t the object that comes first wins.
-     */
-    fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
-        var closest: Hit? = null
-        for (obj in objects) {
-            val hit = obj.hit(ray, tMin, closest?.t ?: tMax)
-            if (hit != null && (closest == null || hit.t < closest.t)) closest = hit
-        }
-        return closest
-    }
+    /** The hit with the smallest t; on equal t the object that comes first in the scene wins. */
+    fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? = bvh.hit(ray, tMin, tMax)
 }
