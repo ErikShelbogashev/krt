@@ -74,6 +74,13 @@ class GpuScenePackingTest {
         )
     }
 
+    @Test
+    fun `slightly frosted glass stays frosted on the GPU`() {
+        val alpha = GpuMaterials.values(Dielectric(1.5, roughness = 0.01))[9]
+        assert(GpuScenePacking.decode(GpuScenePacking.encode(alpha)) > 0.0)
+        assertEquals(0.0, GpuMaterials.values(Dielectric(1.5))[9])
+    }
+
     private fun assertValues(expected: List<Double>, actual: List<Double>) {
         expected.zip(actual).forEach { (e, a) -> assertEquals(e, a, 1e-9) }
         assertEquals(expected.size, actual.size)

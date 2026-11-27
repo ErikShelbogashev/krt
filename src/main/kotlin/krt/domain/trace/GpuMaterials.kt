@@ -58,7 +58,7 @@ object GpuMaterials {
         is Metal -> values(METAL, material.albedo, material.fuzz)
         is Dielectric -> values(
             DIELECTRIC, material.absorption, material.indexOfReflection, material.dispersion,
-            third = if (material.roughness > 0) material.facets.alphaX else 0.0,
+            third = if (material.roughness > 0) maxOf(material.facets.alphaX, MIN_FROSTED_ALPHA) else 0.0,
         )
         is Conductor -> values(
             CONDUCTOR, material.eta, material.facets.alphaX, material.facets.alphaY, odd = material.k,
@@ -103,6 +103,12 @@ object GpuMaterials {
         pattern.kind.ordinal.toDouble(), pattern.turbulence,
     )
 
+
+    /**
+     * GGX α of frosted glass at least: two steps of the fixed point (about 4.9e-4 each), so glass with a little
+     * roughness does not round to clear glass, which the shader tells by α = 0.
+     */
+    private const val MIN_FROSTED_ALPHA = 1e-3
 
     /** Colour of a material the shader does not know. */
     private const val UNKNOWN_GREY = 0.5
