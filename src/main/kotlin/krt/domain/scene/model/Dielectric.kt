@@ -17,18 +17,23 @@ import krt.platform.math.Ray
  * Glass with [dispersion] bends short waves more than long ones (Cauchy: the index grows by [dispersion] µm² per
  * µm⁻² of wavelength, from [indexOfReflection] at the yellow d line), so it splits white light into a rainbow:
  * white light that meets it goes on as light of one random wavelength (ADR 0013).
+ *
+ * Glass of [roughness] above 0 is frosted: GGX microfacets scatter the light it reflects and lets through.
  */
 class Dielectric(
     val indexOfReflection: Double,
     val tint: Color = CLEAR,
     val density: Double = 0.0,
     val dispersion: Double = 0.0,
+    val roughness: Double = 0.0,
 ) : Material {
+
+    val facets = Microfacets.of(roughness)
 
     /** Absorption per unit of distance, per channel. */
     val absorption: Color = Color(absorb(tint.x), absorb(tint.y), absorb(tint.z))
 
-    override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered {
+    override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered? {
         val split = dispersion != 0.0 && ray.wavelength == 0.0
         val wavelength = if (split) Spectrum.sample(random.nextDouble()) else ray.wavelength
         val clear = hit.isFrontFace || density == 0.0
@@ -38,18 +43,31 @@ class Dielectric(
         val refractionRatio = if (hit.isFrontFace) 1.0 / index else index
 
         val unitDirection = ray.direction.unit()
-        val cosTheta = min(-unitDirection.dot(hit.normal), 1.0)
-        val sinTheta = sqrt(1.0 - cosTheta * cosTheta)
-
-        val cannotRefract = refractionRatio * sinTheta > 1.0
-        val shouldReflect = cannotRefract || reflectance(cosTheta, refractionRatio) > random.nextDouble()
+        val frame = if (roughness > 0) Microfacets.frame(hit.normal) else null
+        val normal = frame?.let { it.world(facets.visibleNormal(it.local(-unitDirection), random)) } ?: hit.normal
+        val shouldReflect = reflects(unitDirection, normal, refractionRatio, random)
         val direction = if (shouldReflect) {
-            unitDirection.reflect(hit.normal)
+            unitDirection.reflect(normal)
         } else {
-            unitDirection.refract(hit.normal, refractionRatio)
+            unitDirection.refract(normal, refractionRatio)
         }
+        val shadowing = frame?.let { frosted(it, unitDirection, direction, shouldReflect) } ?: 1.0
+        if (shadowing <= 0) return null
+        return Scattered(Ray(hit.p, direction, ray.time, wavelength), attenuation * shadowing)
+    }
 
-        return Scattered(Ray(hit.p, direction, ray.time, wavelength), attenuation)
+    /** Whether light along [unit] reflects off [normal]: always past the critical angle, else by Fresnel. */
+    private fun reflects(unit: Point3, normal: Point3, refractionRatio: Double, random: Random): Boolean {
+        val cosTheta = min(-unit.dot(normal), 1.0)
+        val sinTheta = sqrt(1.0 - cosTheta * cosTheta)
+        return refractionRatio * sinTheta > 1.0 || reflectance(cosTheta, refractionRatio) > random.nextDouble()
+    }
+
+    /** The microfacet shadowing of frosted glass, or 0 when the facet sent the ray to the wrong side of the surface. */
+    private fun frosted(frame: Microfacets.Frame, unit: Point3, direction: Point3, reflected: Boolean): Double {
+        val incoming = frame.local(direction)
+        val wrongSide = if (reflected) incoming.z <= 0 else incoming.z >= 0
+        return if (wrongSide) 0.0 else facets.shadowing(frame.local(-unit), incoming)
     }
 
     /** Refraction index for light of [wavelength] nm; white light (0) and glass without dispersion get the base one. */

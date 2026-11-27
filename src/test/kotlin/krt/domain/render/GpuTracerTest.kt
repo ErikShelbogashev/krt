@@ -7,13 +7,17 @@ import kotlin.test.assertTrue
 import krt.domain.camera.Camera
 import krt.domain.scene.World
 import krt.domain.scene.model.Checker
+import krt.domain.scene.model.Conductor
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
 import krt.domain.scene.model.Iridescent
 import krt.domain.scene.model.Lambert
+import krt.domain.scene.model.Meshes
+import krt.domain.scene.model.Metals
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Plastic
+import krt.domain.scene.model.Pose
 import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
 import krt.domain.scene.model.SoapBubble
@@ -72,6 +76,18 @@ class GpuTracerTest {
         SceneLook(Sky(Color(0.5, 0.6, 0.8), Color(0.1, 0.2, 0.5)), fov = 60.0, aperture = 0.0, sampleLights = true),
     )
 
+    /** Rough gold, brushed aluminium, frosted glass and a smooth torus of copper. */
+    private val microfacets = World(
+        listOf(
+            Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Checker(Color(0.8, 0.8, 0.8), Color(0.2, 0.2, 0.2), 1.0, 0.1)),
+            Sphere(Point3(-2.4, 1.0, 0.0), 1.0, Conductor(Metals.GOLD, roughness = 0.35)),
+            Sphere(Point3(2.4, 1.0, 0.0), 1.0, Conductor(Metals.ALUMINIUM, roughness = 0.4, anisotropy = 0.8)),
+            Sphere(Point3(0.0, 1.0, 1.2), 0.9, Dielectric(1.5, roughness = 0.3)),
+        ) + Meshes.smooth(
+            Meshes.torus(Pose(Point3(0.0, 1.2, -1.5)), 1.2, 0.35, 32, 12, Conductor(Metals.COPPER, roughness = 0.2)),
+        ),
+    )
+
     private fun camera() = Camera(
         origin = Point3(0.0, 2.0, 7.0),
         target = Point3.ZERO,
@@ -122,6 +138,20 @@ class GpuTracerTest {
         val camera = camera()
         val gpu = gpuFrame(camera, spectral)
         val cpu = cpuFrame(camera, spectral)
+
+        (0 until CHANNELS).forEach { channel ->
+            val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+            assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
+        }
+        val regions = (0 until QUADRANTS).map { q -> abs(brightness(gpu, q) - brightness(cpu, q)) }
+        assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
+    }
+
+    @Test
+    fun `microfacet metals, frosted glass and smooth meshes look the same on the GPU as on the CPU`() {
+        val camera = camera()
+        val gpu = gpuFrame(camera, microfacets)
+        val cpu = cpuFrame(camera, microfacets)
 
         (0 until CHANNELS).forEach { channel ->
             val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
