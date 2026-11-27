@@ -72,16 +72,29 @@ class RenderController(
     }
 
     /**
-     * Progressive GPU frame (ADR 0009): steps of [FrameSampling.gpuSteps] samples, each blended into the frame of the
-     * steps before on the GPU. A step is published to [onGpuFrame] on the UI thread, the next one [repaintIntervalMs]
-     * later, so the GPU draws one short step per repaint instead of the whole frame at once.
+     * Progressive GPU frame (ADR 0009). First a quick look: one sample per pixel at a resolution of at most
+     * [FrameSampling.gpuPreviewScale]'s budget, with few bounces, shown at once. The GPU draws a step inside a window
+     * repaint, so while the camera moves every repaint, only quick looks keep the window fluid. When the camera has
+     * rested for [REFINE_DELAY_MS], steps of [FrameSampling.gpuSteps] samples at full resolution and depth follow,
+     * each blended into the frame of the steps before, one per [repaintIntervalMs]. A newer frame cancels them all.
      */
     private fun renderGpuImage(rayTracer: RayTracer, camera: Camera, onGpuFrame: (Shader, RenderProgress) -> Unit) {
         val scene = rayTracer.world.gpuScene
         val view = camera.view()
         val passes = camera.samplesPerPixel
         val startedAt = clock()
+        val width = camera.imageWidth
+        val height = camera.imageHeight
         renderJob = CoroutineScope(renderDispatcher).launch {
+            val scale = FrameSampling.gpuPreviewScale(width, height)
+            val look = GpuFrame(
+                scene, view, ceilDiv(width, scale), ceilDiv(height, scale),
+                minOf(rayTracer.maxDepth, PREVIEW_DEPTH), samples = 1, seed = random.nextFloat(),
+            )
+            val preview = gpuTracer.shader(look, previous = null, scale = scale)
+            val previewProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt)
+            SwingUtilities.invokeLater { onGpuFrame(preview, previewProgress) }
+            delay(REFINE_DELAY_MS)
             var frame: Shader? = null
             var taken = 0
             for (samples in FrameSampling.gpuSteps(passes)) {
@@ -215,7 +228,15 @@ class RenderController(
         gpuTracer.close()
     }
 
+    private fun ceilDiv(size: Int, divisor: Int) = (size + divisor - 1) / divisor
+
     companion object {
+        /** Bounces of the quick first look of a GPU frame. */
+        private const val PREVIEW_DEPTH = 3
+
+        /** How long the camera rests before a GPU frame is refined at full resolution. */
+        private const val REFINE_DELAY_MS = 120L
+
         fun default(): RenderController = RenderController(50L, 50)
     }
 }

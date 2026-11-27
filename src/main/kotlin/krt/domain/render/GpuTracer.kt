@@ -42,9 +42,10 @@ class GpuTracer : AutoCloseable {
 
     /**
      * The frame after one more step: [previous] (the frame of the earlier steps, null before the first) with
-     * [GpuFrame.samples] more samples per pixel. The step runs once on the GPU, at the frame's size, when first drawn.
+     * [GpuFrame.samples] more samples per pixel. The step runs once on the GPU, at the frame's size, when first drawn;
+     * a coarse frame, [scale] times smaller each way, is shown [scale] times larger.
      */
-    fun shader(frame: GpuFrame, previous: Shader? = null): Shader {
+    fun shader(frame: GpuFrame, previous: Shader? = null, scale: Int = 1): Shader {
         val builder = RuntimeShaderBuilder(effect)
         builder.child("previous", previous ?: noFrame)
         builder.uniform("previousSamples", frame.previousSamples.toFloat())
@@ -65,7 +66,7 @@ class GpuTracer : AutoCloseable {
         builder.uniform("maxDepth", frame.maxDepth.toFloat())
         builder.uniform("samples", frame.samples.toFloat())
         builder.uniform("seed", frame.seed)
-        return DrawnOnceShader.of(builder.makeShader(), frame.width, frame.height, scale = 1f)
+        return DrawnOnceShader.of(builder.makeShader(), frame.width, frame.height, scale.toFloat())
     }
 
     private val noFrame: Shader = Shader.makeColor(BLACK)

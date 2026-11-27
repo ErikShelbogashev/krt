@@ -61,4 +61,12 @@ class FrameSamplingTest {
         assertEquals(50, fifty.sum())
         assertEquals(4, fifty.max())
     }
+
+    @Test
+    fun `the quick look of a GPU frame keeps within its pixel budget`() {
+        assertEquals(1, FrameSampling.gpuPreviewScale(400, 400))
+        assertEquals(3, FrameSampling.gpuPreviewScale(1024, 1024))
+        assertEquals(2, FrameSampling.gpuPreviewScale(800, 600))
+        assertEquals(1, FrameSampling.gpuPreviewScale(32, 32))
+    }
 }
