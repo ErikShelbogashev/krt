@@ -1,8 +1,10 @@
 package raytracer.model
 
+import kotlin.random.Random
+
 class Emissive(private val emitColor: Color, private val intensity: Double) : Material {
 
-    override fun scatter(ray: Ray, hit: Hit): Scattered? {
+    override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered? {
         // Emissive material does not scatter light, it emits light
         return null
     }

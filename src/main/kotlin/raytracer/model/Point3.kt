@@ -12,19 +12,19 @@ data class Point3(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0)
         val ZERO = Point3()
         val ONE = Point3(1.0, 1.0, 1.0)
 
-        fun random(from: Double = 0.0, until: Double = 1.0): Point3 =
-            Point3(Random.nextDouble(from, until), Random.nextDouble(from, until), Random.nextDouble(from, until))
+        fun random(random: Random, from: Double = 0.0, until: Double = 1.0): Point3 =
+            Point3(random.nextDouble(from, until), random.nextDouble(from, until), random.nextDouble(from, until))
 
-        fun randomInUnitSphere(): Point3 {
+        fun randomInUnitSphere(random: Random): Point3 {
             while (true) {
-                val v = random(0.0, 1.0)
+                val v = random(random, 0.0, 1.0)
                 if (v.length() < 1) return v
             }
         }
 
-        fun randomInUnitDisk(): Point3 {
+        fun randomInUnitDisk(random: Random): Point3 {
             while (true) {
-                val p = Point3(Random.nextDouble(0.0, 1.0), Random.nextDouble(0.0, 1.0), 0.0)
+                val p = Point3(random.nextDouble(0.0, 1.0), random.nextDouble(0.0, 1.0), 0.0)
                 if (p.length() < 1) return p
             }
         }
