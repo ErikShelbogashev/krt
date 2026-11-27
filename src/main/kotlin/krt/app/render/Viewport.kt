@@ -30,8 +30,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.asComposeShader
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
@@ -49,6 +49,7 @@ import krt.app.shell.ViewportBackground
 import krt.platform.layout.FrameFit
 import krt.platform.layout.FramePlacement
 import krt.platform.layout.FrameScaling
+import org.jetbrains.skia.Shader
 
 /**
  * The frame on a dark background: the CPU frame as pixels, or the GPU frame drawn by its shader (ADR 0009),
@@ -136,7 +137,8 @@ private fun DrawScope.drawFrame(image: ImageBitmap?, gpuFrame: Shader?, frameSiz
     if (gpuFrame != null) {
         translate(placement.left, placement.top) {
             scale(placement.scale, pivot = Offset.Zero) {
-                drawRect(ShaderBrush(gpuFrame), size = Size(frameSize.width.toFloat(), frameSize.height.toFloat()))
+                val size = Size(frameSize.width.toFloat(), frameSize.height.toFloat())
+                drawRect(ShaderBrush(gpuFrame.asComposeShader()), size = size)
             }
         }
         return

@@ -14,8 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Shader
-import androidx.compose.ui.graphics.asComposeShader
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.unit.IntSize
 import krt.app.camera.CameraTab
@@ -36,6 +34,7 @@ import krt.domain.render.model.RenderProgress
 import krt.domain.scene.model.Traceable
 import krt.infra.AppContext
 import krt.platform.skia.ArgbBitmapConverter
+import org.jetbrains.skia.Shader
 
 /** What the window shows of the last published frame; listeners of the frame buffer write it. */
 private class ShownFrame(objects: List<Traceable>) {
@@ -122,7 +121,7 @@ private fun rememberShownFrame(app: AppContext): ShownFrame {
             shown.objects = app.world.objects
         }
         app.frameBuffer.onGpuUpdate {
-            shown.gpuFrame = it.asComposeShader()
+            shown.gpuFrame = it
             shown.size = IntSize(app.camera.imageWidth, app.camera.imageHeight)
             shown.progress = app.frameBuffer.progress
             shown.objects = app.world.objects
