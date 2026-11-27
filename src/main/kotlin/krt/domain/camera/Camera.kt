@@ -177,6 +177,9 @@ class Camera(
         /** Image sizes, in pixels, that the settings accept and the renderer draws. */
         val IMAGE_SIZE_RANGE = 32..1024
 
+        /** The image size typed as [text], or null when it is not a number within [IMAGE_SIZE_RANGE]. */
+        fun parseImageSize(text: String): Int? = text.trim().toIntOrNull()?.takeIf { it in IMAGE_SIZE_RANGE }
+
         fun default() = Camera(
             origin = Point3.ONE,
             target = Point3.ZERO,

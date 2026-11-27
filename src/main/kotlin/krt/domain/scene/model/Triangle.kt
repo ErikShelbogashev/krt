@@ -9,7 +9,7 @@ class Triangle(
     private val v0: Point3,
     private val v1: Point3,
     private val v2: Point3,
-    private val material: Material,
+    val material: Material,
     override val id: String = "Triangle[${UUID.randomUUID()}]",
 ) : Traceable {
 

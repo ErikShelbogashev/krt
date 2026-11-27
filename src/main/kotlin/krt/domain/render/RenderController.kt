@@ -27,6 +27,9 @@ class RenderController(
 ) : AutoCloseable {
     private var renderJob: Job? = null
     private val workers = Runtime.getRuntime().availableProcessors()
+
+    /** Number of CPU workers that trace a frame, one per core. */
+    val threads: Int get() = workers
     private val renderDispatcher = Executors.newFixedThreadPool(workers).asCoroutineDispatcher()
     private val repaintLock = Any()
     private var lastRepaintTime = 0L

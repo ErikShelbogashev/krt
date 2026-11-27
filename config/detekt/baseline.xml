@@ -2,16 +2,11 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>LambdaParameterInRestartableEffect:ObjectController.kt:loadObjectIds: () -&gt; List&lt;String&gt;</ID>
-    <ID>LongMethod:CameraSettings.kt:@Composable fun CameraSettings</ID>
     <ID>MagicNumber:AwtColor.kt:0.990</ID>
     <ID>MagicNumber:AwtColor.kt:256</ID>
-    <ID>MagicNumber:CameraSettings.kt:1024</ID>
-    <ID>MagicNumber:CameraSettings.kt:32</ID>
     <ID>MagicNumber:Dielectric.kt:Dielectric$5</ID>
     <ID>MagicNumber:ObjParser.kt:ObjParser$3</ID>
     <ID>MagicNumber:ObjParser.kt:ObjParser$5</ID>
-    <ID>MagicNumber:ObjectController.kt:0.02</ID>
     <ID>MagicNumber:Point3.kt:Point3$1e-8</ID>
     <ID>MagicNumber:RenderController.kt:RenderController.Companion$50</ID>
     <ID>MagicNumber:RenderController.kt:RenderController.Companion$50L</ID>
@@ -37,7 +32,6 @@
     <ID>NewLineAtEndOfFile:RenderController.kt:krt.domain.render.RenderController.kt</ID>
     <ID>NewLineAtEndOfFile:Traceable.kt:krt.domain.scene.model.Traceable.kt</ID>
     <ID>NewLineAtEndOfFile:Triangle.kt:krt.domain.scene.model.Triangle.kt</ID>
-    <ID>ParameterNaming:LoadModelUI.kt:onFilePicked: (File) -&gt; Unit</ID>
     <ID>ReturnCount:ObjParser.kt:ObjParser$private fun normalizeVertices: List&lt;Point3&gt;</ID>
     <ID>ReturnCount:Sphere.kt:Sphere$override fun hit: Hit?</ID>
     <ID>ReturnCount:Triangle.kt:Triangle$override fun hit: Hit?</ID>

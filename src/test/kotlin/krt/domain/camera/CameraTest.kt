@@ -75,4 +75,15 @@ class CameraTest {
         )
         assertEquals(fresh.ray(1.0, 0.5, Random(0)).direction, resized.ray(1.0, 0.5, Random(0)).direction)
     }
+
+    @Test
+    fun `image size is parsed only within the accepted range`() {
+        assertEquals(640, Camera.parseImageSize(" 640 "))
+        assertEquals(32, Camera.parseImageSize("32"))
+        assertEquals(1024, Camera.parseImageSize("1024"))
+        assertEquals(null, Camera.parseImageSize("31"))
+        assertEquals(null, Camera.parseImageSize("2000"))
+        assertEquals(null, Camera.parseImageSize("abc"))
+        assertEquals(null, Camera.parseImageSize(""))
+    }
 }
