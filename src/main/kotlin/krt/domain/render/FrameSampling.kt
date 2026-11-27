@@ -25,12 +25,24 @@ object FrameSampling {
     fun pixelRandom(frameSeed: Long, pixel: Pixel, width: Int): Random =
         Random(frameSeed + pixel.j.toLong() * width + pixel.i)
 
+    /**
+     * A random generator for one pixel in one pass of a progressive frame: every (pass, pixel) pair gets
+     * its own seed, so the frame does not depend on scheduling. Pass 0 matches [pixelRandom].
+     */
+    fun passRandom(frameSeed: Long, pixel: Pixel, width: Int, height: Int, pass: Int): Random =
+        Random(frameSeed + pass.toLong() * width * height + pixel.j.toLong() * width + pixel.i)
+
+    /** One jittered sample of [pixel]. */
+    fun sampleOnce(pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random): Color {
+        val u = (pixel.i.toDouble() + random.nextDouble()) / (camera.imageWidth - 1)
+        val v = (pixel.j.toDouble() + random.nextDouble()) / (camera.imageHeight - 1)
+        return rayTracer.color(camera.ray(u, v, random), random)
+    }
+
     /** Sum of [Camera.samplesPerPixel] jittered samples for [pixel]; divide by the sample count when converting. */
     fun samplePixel(pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random): Color =
         (0 until camera.samplesPerPixel).fold(Point3.ZERO) { acc, _ ->
-            val u = (pixel.i.toDouble() + random.nextDouble()) / (camera.imageWidth - 1)
-            val v = (pixel.j.toDouble() + random.nextDouble()) / (camera.imageHeight - 1)
-            acc + rayTracer.color(camera.ray(u, v, random), random)
+            acc + sampleOnce(pixel, camera, rayTracer, random)
         }
 
     /** Image row of a pixel: the image's y axis points down, the camera's v axis points up. */
