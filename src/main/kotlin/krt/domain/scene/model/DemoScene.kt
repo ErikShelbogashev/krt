@@ -22,12 +22,14 @@ data class SceneLook(
 /** The scenes the window offers. */
 enum class DemoScene(val title: String, val look: SceneLook) {
     SHOWCASE("Showcase", Showcase.LOOK),
+    MATERIALS("Materials", MaterialsShowcase.LOOK),
     CLASSIC("Classic spheres", SceneLook.CLASSIC),
     ;
 
     /** The scene's objects; the default randomness lays the scene out the same way every time. */
     fun objects(random: Random = Random(LAYOUT_SEED)): List<Traceable> = when (this) {
         SHOWCASE -> Showcase.objects(random)
+        MATERIALS -> MaterialsShowcase.objects()
         CLASSIC -> DemoScenes.classic(random)
     }
 

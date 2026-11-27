@@ -4,6 +4,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import krt.platform.math.Point3
 
 class DemoSceneTest {
 
@@ -29,6 +30,28 @@ class DemoSceneTest {
         val small = DemoScene.SHOWCASE.objects(Random(1)).filterIsInstance<Sphere>().filter { it.radius < 0.31 }
         assertTrue(small.isNotEmpty())
         small.forEach { assertEquals(it.radius, it.center.y, 1e-9) }
+    }
+
+    @Test
+    fun `the materials scene shows every physical material, lit by sampled lights and with motion blur`() {
+        val objects = DemoScene.MATERIALS.objects()
+        val materials = objects.mapNotNull {
+            when (it) {
+                is Sphere -> it.material
+                is Triangle -> it.material
+                else -> null
+            }
+        }.map { it::class }.toSet()
+        val expected = setOf(
+            Conductor::class, Dielectric::class, SoapBubble::class, Iridescent::class, Velvet::class,
+            Patterned::class, GlowingPattern::class, Emissive::class, Plastic::class,
+        )
+        assertTrue(materials.containsAll(expected), "missing ${expected - materials}")
+        assertTrue(objects.any { it is Translucent } && objects.any { it is Fog })
+        assertTrue(objects.filterIsInstance<Triangle>().any { it.normals != null })
+        assertTrue(objects.filterIsInstance<Sphere>().any { it.velocity != Point3.ZERO })
+        assertTrue(DemoScene.MATERIALS.look.sampleLights && DemoScene.MATERIALS.look.motionBlur)
+        assertEquals(DemoScene.MATERIALS, DemoScene.showing(DemoScene.MATERIALS.look))
     }
 
     @Test
