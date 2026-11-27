@@ -1,6 +1,5 @@
 package krt.infra
 
-import kotlin.random.Random
 import krt.app.camera.ChangeCameraSettingsOp
 import krt.app.camera.FocusOnObjectOp
 import krt.app.camera.MoveCameraOp
@@ -13,12 +12,14 @@ import krt.app.render.RedrawOp
 import krt.app.render.SaveImageOp
 import krt.app.render.SetRenderModeOp
 import krt.app.scene.LoadModelOp
+import krt.app.scene.LoadSceneOp
 import krt.app.scene.MoveObjectOp
 import krt.domain.camera.Camera
 import krt.domain.render.FrameBuffer
 import krt.domain.render.RayTracer
 import krt.domain.render.RenderController
 import krt.domain.scene.World
+import krt.domain.scene.model.DemoScene
 import krt.i9ns.png.PngFiles
 
 /**
@@ -38,7 +39,8 @@ class AppContext(
     val moveCamera = MoveCameraOp(camera, renderController, rayTracer, frameBuffer)
     val changeCameraSettings = ChangeCameraSettingsOp(camera, renderController, rayTracer, frameBuffer)
     val setCameraView = SetCameraViewOp(camera, renderController, rayTracer, frameBuffer)
-    val resetCameraView = ResetCameraViewOp(camera, renderController, rayTracer, frameBuffer)
+    val resetCameraView = ResetCameraViewOp(world, camera, renderController, rayTracer, frameBuffer)
+    val loadScene = LoadSceneOp(world, camera, renderController, rayTracer, frameBuffer)
     val focusOnObject = FocusOnObjectOp(world, camera, renderController, rayTracer, frameBuffer)
     val loadModel = LoadModelOp(world, renderController, rayTracer, camera, frameBuffer)
     val moveObject = MoveObjectOp(world, renderController, rayTracer, camera, frameBuffer)
@@ -54,9 +56,10 @@ class AppContext(
     companion object {
         private const val DEFAULT_MAX_DEPTH = 7
 
-        fun create(random: Random = Random.Default): AppContext {
-            val world = World.default(random)
-            val camera = Camera.default().apply { resetView() }
+        /** The window's context, starting with [scene], laid out the same way every time. */
+        fun create(scene: DemoScene = DemoScene.SHOWCASE): AppContext {
+            val world = World(scene.objects(), scene.look)
+            val camera = Camera.default().apply { resetView(scene.look.fov, scene.look.aperture) }
             return AppContext(
                 world = world,
                 rayTracer = RayTracer(world, DEFAULT_MAX_DEPTH),

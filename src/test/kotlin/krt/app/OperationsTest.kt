@@ -5,7 +5,6 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
 import javax.imageio.ImageIO
-import kotlin.random.Random
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,6 +12,7 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import krt.domain.camera.CameraMove
 import krt.domain.camera.model.ViewPreset
+import krt.domain.scene.model.DemoScene
 import krt.domain.render.model.RenderMode
 import krt.infra.AppContext
 import krt.platform.math.Point3
@@ -23,7 +23,7 @@ import krt.platform.math.Point3
  */
 class OperationsTest {
 
-    private val app = AppContext.create(Random(1))
+    private val app = AppContext.create(DemoScene.CLASSIC)
     private var published = 0
 
     init {
@@ -155,6 +155,19 @@ class OperationsTest {
         assertEquals((Point3(-4.0, 1.0, 0.0) - app.camera.origin).length(), app.camera.focusDist, 1e-9)
         app.focusOnObject("no such object")
         assertEquals(4, published)
+    }
+
+    @Test
+    fun `load scene replaces the scene, its look and the camera lens, and redraws`() {
+        app.loadScene(DemoScene.SHOWCASE)
+        assertEquals(DemoScene.SHOWCASE.look, app.world.look)
+        assertTrue(app.world.objects.any { it.id == "Mirror ball" })
+        assertEquals(ViewPreset.START, app.camera.snapshot().preset)
+        assertEquals(DemoScene.SHOWCASE.look.fov, app.camera.fov)
+        app.changeCameraSettings { fov = 70.0 }
+        app.resetCameraView()
+        assertEquals(DemoScene.SHOWCASE.look.fov, app.camera.fov)
+        assertEquals(3, published)
     }
 
     private companion object {
