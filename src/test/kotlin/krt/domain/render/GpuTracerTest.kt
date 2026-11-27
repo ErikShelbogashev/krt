@@ -597,6 +597,7 @@ class GpuTracerTest {
             DemoScene.PRISM,
             DemoScene.BUBBLES,
             DemoScene.CANDLE,
+            DemoScene.TEMPLE,
         )
         const val PIXEL_TOLERANCE = 0.02
         const val BUDGET_SAMPLES = 32
