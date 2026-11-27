@@ -1,3 +1,23 @@
+# krt
+
+Трассировщик лучей на Kotlin + Compose Desktop: wireframe-режим, трассировка с материалами (Lambert, Metal, Dielectric, Emissive), фокус и глубина резкости, загрузка моделей `.obj`.
+
+## Запуск
+
+Нужен JDK 17+.
+
+```bash
+./gradlew run      # запустить приложение
+./gradlew check    # тесты и проверки
+```
+
+Пример модели для кнопки «Load File»: [`samples/ORIGAMI_Chat_Free.obj`](samples/ORIGAMI_Chat_Free.obj).
+Управление камерой: `W/A/S/D` или стрелки, `R`/`F` вверх/вниз, перетаскивание мышью по кадру поворачивает камеру.
+
+Правила кода: [AGENTS.md](AGENTS.md).
+
+## Скриншоты
+
 ### Wireframe
 
 <img width="500" alt="image" src="https://github.com/EricShelbogashev/krt/assets/96541869/71e00b51-8b96-4765-a66e-010b2234cc9c">
