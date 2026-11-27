@@ -57,14 +57,23 @@ class RenderController(
      * the next ones smaller, a quick one lets them grow again.
      */
     fun gpuFrameShown(shader: Shader, frameMs: Double) {
-        stepShown?.takeIf { it.first === shader }?.second?.complete(Unit)
+        synchronized(recentSteps) { recentSteps.firstOrNull { it.first === shader } }?.let { (_, drawn) ->
+            stepBudget = stepBudget.after(frameMs)
+            drawn.complete(Unit)
+        }
         if (synchronized(recentDrafts) { recentDrafts.none { it === shader } }) return
         draftBudget = draftBudget.after(frameMs)
     }
 
-    /** The GPU step published last and the signal that the window has drawn it. */
+    /** Samples per pixel of a GPU step, adapted to how long steps take to show (see [gpuFrameShown]). */
     @Volatile
-    private var stepShown: Pair<Shader, CompletableDeferred<Unit>>? = null
+    private var stepBudget = GpuSampling.StepBudget()
+
+    /**
+     * The GPU steps published lately and the signals that the window has drawn them; like quick looks, the window
+     * reports a step a couple of repaints after it got it.
+     */
+    private val recentSteps = ArrayDeque<Pair<Shader, CompletableDeferred<Unit>>>()
 
 
     /** Which renderer draws the next frame; in GPU mode (ADR 0009) a Skia shader draws it instead of the workers. */
@@ -106,7 +115,8 @@ class RenderController(
      * Progressive GPU frame (ADR 0009). First a quick look: one sample per pixel at a resolution of at most
      * [GpuSampling.draftScale]'s budget, with few bounces, shown at once. The GPU draws a step inside a window
      * repaint, so while the camera moves every repaint, only quick looks keep the window fluid. When the camera has
-     * rested for [REFINE_DELAY], steps of [GpuSampling.steps] samples at full resolution and depth follow,
+     * rested for [REFINE_DELAY], steps of [GpuSampling.nextStep] samples at full resolution and depth follow, no
+     * larger than the step budget lets them ([GpuSampling.StepBudget]),
      * each blended into the frame of the steps before, the next as soon as the window has drawn the one before
      * (see [gpuFrameShown]), at most [repaintIntervalMs] later. A newer frame cancels them all.
      */
@@ -124,31 +134,33 @@ class RenderController(
                 minOf(rayTracer.maxDepth, PREVIEW_DEPTH), samples = 1, seed = random.nextFloat(),
             )
             val preview = gpuTracer.shader(look, previous = null, scale = scale)
-            synchronized(recentDrafts) {
-                recentDrafts.addLast(preview)
-                if (recentDrafts.size > RECENT_DRAFTS) recentDrafts.removeFirst()
-            }
+            recentDrafts.keepRecent(preview, RECENT_DRAFTS)
             val previewProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true)
             SwingUtilities.invokeLater { onGpuFrame(preview, previewProgress) }
             delay(REFINE_DELAY)
-            var frame: Shader? = null
+            // Rows a first pass has not reached yet show the quick look.
+            var frame: Shader? = preview
             var taken = 0
-            for (samples in GpuSampling.steps(passes)) {
-                if (!isActive) break
-                val step = GpuFrame(
-                    scene, view, camera.imageWidth, camera.imageHeight, rayTracer.maxDepth, samples, random.nextFloat(),
-                    previousSamples = taken,
-                )
-                val shader = gpuTracer.shader(step, frame)
-                frame = shader
+            while (taken < passes && isActive) {
+                val budget = stepBudget
+                val samples = GpuSampling.nextStep(taken, passes, budget.samples)
+                for (index in 0 until budget.bands) {
+                    if (!isActive) break
+                    val band = GpuBand(taken, GpuSampling.bandRows(height, index, budget.bands))
+                    val seed = random.nextFloat()
+                    val step = GpuFrame(scene, view, width, height, rayTracer.maxDepth, samples, seed, band)
+                    val shader = gpuTracer.shader(step, frame)
+                    frame = shader
+                    val done = GpuSampling.samplesDone(taken, samples, index, budget.bands)
+                    val progress = RenderProgress(passes, done, 0.0, clock() - startedAt)
+                    // Registered before publishing, so a window that draws the step at once is not missed; a window
+                    // that never says so, like a test, gets the next step after the repaint interval.
+                    val drawn = CompletableDeferred<Unit>()
+                    recentSteps.keepRecent(shader to drawn, RECENT_DRAFTS)
+                    SwingUtilities.invokeLater { onGpuFrame(shader, progress) }
+                    withTimeoutOrNull(repaintIntervalMs.milliseconds) { drawn.await() }
+                }
                 taken += samples
-                val progress = RenderProgress(passes, taken, 0.0, clock() - startedAt)
-                // Registered before publishing, so a window that draws the step at once is not missed; a window that
-                // never says so, like a test, gets the next step after the repaint interval.
-                val drawn = CompletableDeferred<Unit>()
-                stepShown = shader to drawn
-                SwingUtilities.invokeLater { onGpuFrame(shader, progress) }
-                withTimeoutOrNull(repaintIntervalMs.milliseconds) { drawn.await() }
             }
         }
     }
@@ -330,5 +342,13 @@ class RenderController(
         private const val CHANNELS = 3
 
         fun default(): RenderController = RenderController(50L, 50)
+    }
+}
+
+/** Adds [item] to the end, dropping the oldest beyond [limit]; under the deque's own lock. */
+private fun <T> ArrayDeque<T>.keepRecent(item: T, limit: Int) {
+    synchronized(this) {
+        addLast(item)
+        if (size > limit) removeFirst()
     }
 }

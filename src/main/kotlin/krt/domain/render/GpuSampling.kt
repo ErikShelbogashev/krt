@@ -15,12 +15,71 @@ object GpuSampling {
         val steps = mutableListOf<Int>()
         var taken = 0
         while (taken < samples) {
-            val step = minOf(maxOf(taken, 1), maxStep, samples - taken)
+            val step = nextStep(taken, samples, maxStep)
             steps += step
             taken += step
         }
         return steps
     }
+
+    /** Samples of the step after [taken] of [samples], as [steps] takes them; 0 when the frame is done. */
+    fun nextStep(taken: Int, samples: Int, maxStep: Int): Int = minOf(maxOf(taken, 1), maxStep, samples - taken)
+
+    /**
+     * How much of a pass a GPU step takes at most: [samples] per pixel over one of [bands] bands of rows, adapted to
+     * the window frames that drew steps. A step runs inside a window repaint, and steps that take longer than the
+     * repaint interval queue up on the GPU, so every window frame waits behind them, and a camera moved meanwhile
+     * gets its frames late. A step frame over [STEP_FRAME_TARGET_MS] cuts the work in proportion: the rows first,
+     * in more bands, and the samples only once the bands are as thin as they get; but a single one less than
+     * [HICCUP_LOAD] times over, a hiccup of the window, cuts nothing until a second one in a row follows. After
+     * [STEPS_TO_GROW] step frames in a row that would still fit with twice the rows or one more sample, it grows
+     * back by that.
+     *
+     * Rows before samples: a step clips its mean to 1 before the frame stores it in 8 bits, so steps of one sample
+     * clip every bright sample, and a frame made of them comes out dimmer than the CPU's, which clips only the
+     * mean of all samples.
+     */
+    data class StepBudget(
+        val samples: Int = GPU_STEP_SAMPLES,
+        val bands: Int = 1,
+        val fitStreak: Int = 0,
+        val slow: Boolean = false,
+    ) {
+        fun after(frameMs: Double): StepBudget {
+            val load = frameMs / STEP_FRAME_TARGET_MS
+            return when {
+                load > 1 && load < HICCUP_LOAD && !slow -> copy(fitStreak = 0, slow = true)
+                load > 1 && bands < MAX_BANDS -> StepBudget(samples, ceil(bands * load).toInt().coerceAtMost(MAX_BANDS))
+                load > 1 -> StepBudget((samples / load).toInt().coerceAtLeast(1), bands)
+                !fitsMore(load) -> copy(fitStreak = 0, slow = false)
+                fitStreak + 1 < STEPS_TO_GROW -> copy(fitStreak = fitStreak + 1, slow = false)
+                bands > 1 -> StepBudget(samples, (bands + 1) / 2)
+                else -> StepBudget(samples + 1, 1)
+            }
+        }
+
+        private fun fitsMore(load: Double): Boolean =
+            if (bands > 1) load * 2 <= 1 else samples < GPU_STEP_SAMPLES && load * (samples + 1) / samples <= 1
+    }
+
+    /** Samples per pixel the whole frame has after band [band] of [bands] of a step of [samples] after [taken]. */
+    fun samplesDone(taken: Int, samples: Int, band: Int, bands: Int): Int =
+        if (band == bands - 1) taken + samples else taken
+
+    /** Rows of band [band] of [bands] of a frame [height] rows high, from the top of the window. */
+    fun bandRows(height: Int, band: Int, bands: Int): IntRange = height * band / bands until height * (band + 1) / bands
+
+    /** Bands a pass of a GPU frame splits into at most: a 1024-row frame still gets 16 rows per step. */
+    private const val MAX_BANDS = 64
+
+    /** Window frame a GPU step should fit in: under the repaint interval that paces the steps. */
+    private const val STEP_FRAME_TARGET_MS = 40.0
+
+    /** A step frame up to this many times over its target may be a hiccup of the window, once. */
+    private const val HICCUP_LOAD = 2.0
+
+    /** Step frames in a row that must fit before the step budget grows. */
+    private const val STEPS_TO_GROW = 4
 
     /**
      * How many times smaller each way the quick first look of a GPU frame is, so it has at most [budget] pixels:

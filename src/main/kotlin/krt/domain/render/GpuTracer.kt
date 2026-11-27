@@ -16,7 +16,7 @@ import org.jetbrains.skia.Shader
 
 /**
  * What the GPU shader draws in one step of a frame: scene, projection, frame size, depth, the [samples] of this step
- * and the [previousSamples] per pixel that earlier steps of the same frame took.
+ * and which rows it takes them in, with the samples per pixel that earlier steps took there ([band]).
  */
 class GpuFrame(
     val scene: GpuScene,
@@ -26,8 +26,14 @@ class GpuFrame(
     val maxDepth: Int,
     val samples: Int,
     val seed: Float,
-    val previousSamples: Int = 0,
+    val band: GpuBand = GpuBand(),
 )
+
+/**
+ * The rows, from the top of the window, a GPU step samples, and the [previousSamples] per pixel that earlier steps
+ * took in them; the other rows keep the frame of the earlier steps as it is.
+ */
+data class GpuBand(val previousSamples: Int = 0, val rows: IntRange = 0 until Int.MAX_VALUE)
 
 /**
  * Resource hiding the GPU behind Skia (ADR 0009): compiles the path tracing shader once and turns a [GpuFrame]
@@ -48,7 +54,9 @@ class GpuTracer : AutoCloseable {
     fun shader(frame: GpuFrame, previous: Shader? = null, scale: Int = 1): Shader {
         val builder = RuntimeShaderBuilder(effect)
         builder.child("previous", previous ?: noFrame)
-        builder.uniform("previousSamples", frame.previousSamples.toFloat())
+        builder.uniform("previousSamples", frame.band.previousSamples.toFloat())
+        builder.uniform("bandStart", frame.band.rows.first.toFloat())
+        builder.uniform("bandEnd", frame.band.rows.last.toFloat() + 1)
         builder.child("scene", sceneTexture(frame.scene))
         builder.uniform("nodeCount", frame.scene.nodeCount.toFloat())
         builder.uniform("primitiveStart", frame.scene.primitiveStart.toFloat())

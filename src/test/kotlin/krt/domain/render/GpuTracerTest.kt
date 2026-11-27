@@ -291,6 +291,45 @@ class GpuTracerTest {
     }
 
     @Test
+    fun `a GPU frame made in bands of rows matches the one made whole`() {
+        val camera = camera()
+        val whole = progressiveGpuFrame(camera)
+        val banded = GpuTracer().use { tracer ->
+            val scene = GpuScenePacking.pack(world.objects)
+            var frame: org.jetbrains.skia.Shader? = null
+            var taken = 0
+            GpuSampling.steps(SAMPLES).forEachIndexed { index, samples ->
+                (0 until 3).forEach { band ->
+                    val rows = GpuSampling.bandRows(SIZE, band, 3)
+                    val seed = 0.1f * (index + 1) + band
+                    val step = GpuFrame(scene, camera.view(), SIZE, SIZE, DEPTH, samples, seed, GpuBand(taken, rows))
+                    frame = tracer.shader(step, frame)
+                }
+                taken += samples
+            }
+            pixels(requireNotNull(frame))
+        }
+        (0 until QUADRANTS).forEach { q ->
+            assertTrue(abs(brightness(whole, q) - brightness(banded, q)) < REGION_TOLERANCE, "quadrant $q")
+        }
+    }
+
+    @Test
+    fun `a GPU frame made in the steps a slow scene gets is as bright and as sharp as one made whole`() {
+        val camera = camera().apply { samplesPerPixel = BUDGET_SAMPLES }
+        val budget = GpuSampling.StepBudget().after(SLOW_STEP_MS)
+        val stepped = budgetedGpuFrame(camera, glowing, budget)
+        val whole = budgetedGpuFrame(camera, glowing, GpuSampling.StepBudget(BUDGET_SAMPLES, 1))
+        val cpu = cpuFrame(camera, glowing)
+
+        val (inSteps, inOne) = brightness(stepped) to brightness(whole)
+        assertTrue(abs(inSteps - inOne) < inOne * BRIGHTNESS_SHARE, "budget $budget: in steps $inSteps, whole $inOne")
+        assertTrue(abs(inSteps - brightness(cpu)) < brightness(cpu) * CPU_BRIGHTNESS_SHARE, "CPU ${brightness(cpu)}")
+        val sharpness = detail(stepped) / detail(whole)
+        assertTrue(sharpness in SHARPNESS_RANGE, "the frame in steps has ${sharpness}x the detail of the whole one")
+    }
+
+    @Test
     fun `triangles are drawn`() {
         val wall = Triangle(
             Point3(-50.0, -50.0, -3.0),
@@ -308,13 +347,41 @@ class GpuTracerTest {
         pixels(tracer.shader(frame))
     }
 
+    /** The frame as RenderController makes it under [budget]: steps of its samples, each over its bands of rows. */
+    private fun budgetedGpuFrame(camera: Camera, scene: World, budget: GpuSampling.StepBudget): IntArray =
+        GpuTracer().use { tracer ->
+            var frame: org.jetbrains.skia.Shader? = null
+            var taken = 0
+            var seed = 0.1f
+            while (taken < camera.samplesPerPixel) {
+                val samples = GpuSampling.nextStep(taken, camera.samplesPerPixel, budget.samples)
+                (0 until budget.bands).forEach { band ->
+                    val rows = GpuSampling.bandRows(SIZE, band, budget.bands)
+                    seed += 0.37f
+                    val band = GpuBand(taken, rows)
+                    val step = GpuFrame(scene.gpuScene, camera.view(), SIZE, SIZE, DEPTH, samples, seed, band)
+                    frame = tracer.shader(step, frame)
+                }
+                taken += samples
+            }
+            pixels(requireNotNull(frame))
+        }
+
+    /** Mean difference between neighbouring pixels: how much detail, noise included, a frame keeps. */
+    private fun detail(pixels: IntArray): Double = (0 until SIZE).sumOf { y ->
+        (1 until SIZE).sumOf { x ->
+            val (a, b) = pixels[y * SIZE + x] to pixels[y * SIZE + x - 1]
+            (0 until CHANNELS).sumOf { channelDifference(a, b, it) }
+        }
+    } / (SIZE * (SIZE - 1) * CHANNELS)
+
     /** The frame as RenderController makes it in GPU mode: steps, each blended into the frame of those before. */
     private fun progressiveGpuFrame(camera: Camera): IntArray = GpuTracer().use { tracer ->
         val scene = GpuScenePacking.pack(world.objects)
         var frame: org.jetbrains.skia.Shader? = null
         var taken = 0
         GpuSampling.steps(SAMPLES).forEachIndexed { index, samples ->
-            val step = GpuFrame(scene, camera.view(), SIZE, SIZE, DEPTH, samples, 0.1f * (index + 1), taken)
+            val step = GpuFrame(scene, camera.view(), SIZE, SIZE, DEPTH, samples, 0.1f * (index + 1), GpuBand(taken))
             frame = tracer.shader(step, frame)
             taken += samples
         }
@@ -334,7 +401,7 @@ class GpuTracerTest {
         return IntArray(SIZE * SIZE) { index ->
             val pixel = FrameSampling.Pixel(index % SIZE, SIZE - 1 - index / SIZE)
             val random = FrameSampling.pixelRandom(frameSeed, pixel, SIZE)
-            FrameSampling.samplePixel(pixel, camera, rayTracer, random).toAWTColor(SAMPLES)
+            FrameSampling.samplePixel(pixel, camera, rayTracer, random).toAWTColor(camera.samplesPerPixel)
         }
     }
 
@@ -369,5 +436,10 @@ class GpuTracerTest {
         const val QUADRANTS = 4
         const val CHANNELS = 3
         const val PIXEL_TOLERANCE = 0.02
+        const val BUDGET_SAMPLES = 32
+        const val SLOW_STEP_MS = 400.0
+        const val BRIGHTNESS_SHARE = 0.03
+        const val CPU_BRIGHTNESS_SHARE = 0.06
+        val SHARPNESS_RANGE = 0.8..1.25
     }
 }
