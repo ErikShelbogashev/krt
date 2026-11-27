@@ -37,7 +37,7 @@ class AppContext(
     val loadModel = LoadModelOp(world, renderController, rayTracer, camera, frameBuffer)
     val moveObject = MoveObjectOp(world, renderController, rayTracer, camera, frameBuffer)
     val setRenderMode = SetRenderModeOp(renderController, rayTracer, camera, frameBuffer)
-    val saveImage = SaveImageOp(frameBuffer, pngFiles)
+    val saveImage = SaveImageOp(renderController, rayTracer, camera, frameBuffer, pngFiles)
     val changeRayTracerSettings = ChangeRayTracerSettingsOp(renderController, rayTracer, camera, frameBuffer)
     val changeRenderSettings = ChangeRenderSettingsOp(renderController, rayTracer, camera, frameBuffer)
 

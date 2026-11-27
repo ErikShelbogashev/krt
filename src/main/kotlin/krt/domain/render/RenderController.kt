@@ -27,6 +27,7 @@ class RenderController(
     private val gpuTracer: GpuTracer = GpuTracer(),
 ) : AutoCloseable {
     private var renderJob: Job? = null
+    private var stillJob: Job? = null
     private val workers = Runtime.getRuntime().availableProcessors()
 
     /** Number of CPU workers that trace a frame, one per core. */
@@ -56,6 +57,18 @@ class RenderController(
             RenderMode.GPU -> renderGpuImage(rayTracer, camera, onGpuFrame)
             RenderMode.CPU -> renderJob = traceFrame(frame, rayTracer, camera, onUpdate)
         }
+    }
+
+    /**
+     * The frame to save, handed to [onReady] on the UI thread: the [shown] frame itself, or in GPU mode, whose frame
+     * stays on the GPU (ADR 0009), the same view traced on the CPU workers with the same samples, in a frame of its
+     * own, while the GPU frame stays on screen.
+     */
+    fun frameToSave(shown: Frame, rayTracer: RayTracer, camera: Camera, onReady: (Frame) -> Unit) {
+        if (mode != RenderMode.GPU) return onReady(shown)
+        val frame = Frame(camera.imageWidth, camera.imageHeight)
+        stillJob?.cancel()
+        stillJob = traceFrame(frame, rayTracer, camera) { progress -> if (progress.isDone) onReady(frame) }
     }
 
     /**
@@ -197,6 +210,7 @@ class RenderController(
 
     override fun close() {
         renderJob?.cancel()
+        stillJob?.cancel()
         renderDispatcher.close()
         gpuTracer.close()
     }
