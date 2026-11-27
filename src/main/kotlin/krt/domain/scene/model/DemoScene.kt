@@ -21,7 +21,10 @@ enum class DemoScene(val title: String, val look: SceneLook) {
         CLASSIC -> DemoScenes.classic(random)
     }
 
-    private companion object {
-        const val LAYOUT_SEED = 1
+    companion object {
+        private const val LAYOUT_SEED = 1
+
+        /** The demo scene shown with [look], or null for a scene of one's own. */
+        fun showing(look: SceneLook): DemoScene? = entries.find { it.look == look }
     }
 }
