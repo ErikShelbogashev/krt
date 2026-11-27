@@ -61,9 +61,9 @@ class FrameSamplingTest {
 
     @Test
     fun `GPU steps double the samples taken so far, up to the step limit`() {
-        assertEquals(listOf(1), FrameSampling.gpuSteps(1))
-        assertEquals(listOf(1, 1, 2, 1), FrameSampling.gpuSteps(5))
-        val fifty = FrameSampling.gpuSteps(50, maxStep = 4)
+        assertEquals(listOf(1), GpuSampling.steps(1))
+        assertEquals(listOf(1, 1, 2, 1), GpuSampling.steps(5))
+        val fifty = GpuSampling.steps(50, maxStep = 4)
         assertEquals(listOf(1, 1, 2, 4, 4), fifty.take(5))
         assertEquals(50, fifty.sum())
         assertEquals(4, fifty.max())
@@ -71,9 +71,9 @@ class FrameSamplingTest {
 
     @Test
     fun `the quick look of a GPU frame keeps within its pixel budget`() {
-        assertEquals(1, FrameSampling.gpuPreviewScale(400, 400))
-        assertEquals(3, FrameSampling.gpuPreviewScale(1024, 1024))
-        assertEquals(2, FrameSampling.gpuPreviewScale(800, 600))
-        assertEquals(1, FrameSampling.gpuPreviewScale(32, 32))
+        assertEquals(1, GpuSampling.draftScale(400, 400))
+        assertEquals(3, GpuSampling.draftScale(1024, 1024))
+        assertEquals(2, GpuSampling.draftScale(800, 600))
+        assertEquals(1, GpuSampling.draftScale(32, 32))
     }
 }

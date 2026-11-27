@@ -74,9 +74,9 @@ class RenderController(
 
     /**
      * Progressive GPU frame (ADR 0009). First a quick look: one sample per pixel at a resolution of at most
-     * [FrameSampling.gpuPreviewScale]'s budget, with few bounces, shown at once. The GPU draws a step inside a window
+     * [GpuSampling.draftScale]'s budget, with few bounces, shown at once. The GPU draws a step inside a window
      * repaint, so while the camera moves every repaint, only quick looks keep the window fluid. When the camera has
-     * rested for [REFINE_DELAY_MS], steps of [FrameSampling.gpuSteps] samples at full resolution and depth follow,
+     * rested for [REFINE_DELAY_MS], steps of [GpuSampling.steps] samples at full resolution and depth follow,
      * each blended into the frame of the steps before, one per [repaintIntervalMs]. A newer frame cancels them all.
      */
     private fun renderGpuImage(rayTracer: RayTracer, camera: Camera, onGpuFrame: (Shader, RenderProgress) -> Unit) {
@@ -87,9 +87,9 @@ class RenderController(
         val width = camera.imageWidth
         val height = camera.imageHeight
         renderJob = CoroutineScope(renderDispatcher).launch {
-            val scale = FrameSampling.gpuPreviewScale(width, height)
+            val scale = GpuSampling.draftScale(width, height)
             val look = GpuFrame(
-                scene, view, ceilDiv(width, scale), ceilDiv(height, scale),
+                scene, view, GpuSampling.draftSize(width, scale), GpuSampling.draftSize(height, scale),
                 minOf(rayTracer.maxDepth, PREVIEW_DEPTH), samples = 1, seed = random.nextFloat(),
             )
             val preview = gpuTracer.shader(look, previous = null, scale = scale)
@@ -98,7 +98,7 @@ class RenderController(
             delay(REFINE_DELAY_MS)
             var frame: Shader? = null
             var taken = 0
-            for (samples in FrameSampling.gpuSteps(passes)) {
+            for (samples in GpuSampling.steps(passes)) {
                 if (!isActive) break
                 val step = GpuFrame(
                     scene, view, camera.imageWidth, camera.imageHeight, rayTracer.maxDepth, samples, random.nextFloat(),
@@ -271,8 +271,6 @@ class RenderController(
         renderDispatcher.close()
         gpuTracer.close()
     }
-
-    private fun ceilDiv(size: Int, divisor: Int) = (size + divisor - 1) / divisor
 
     companion object {
         /** Bounces of the quick first look of a GPU frame. */

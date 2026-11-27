@@ -98,7 +98,7 @@ class GpuTracerTest {
         val scene = GpuScenePacking.pack(world.objects)
         var frame: org.jetbrains.skia.Shader? = null
         var taken = 0
-        FrameSampling.gpuSteps(SAMPLES).forEachIndexed { index, samples ->
+        GpuSampling.steps(SAMPLES).forEachIndexed { index, samples ->
             val step = GpuFrame(scene, camera.view(), SIZE, SIZE, DEPTH, samples, 0.1f * (index + 1), taken)
             frame = tracer.shader(step, frame)
             taken += samples
