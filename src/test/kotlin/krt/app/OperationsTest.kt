@@ -42,9 +42,16 @@ class OperationsTest {
     }
 
     @Test
-    fun `camera settings below renderable size change the camera but neither resize nor redraw`() {
+    fun `camera settings at the smallest accepted size resize and redraw`() {
         app.changeCameraSettings { imageWidth = 40 }
-        assertEquals(40, app.camera.imageWidth)
+        assertEquals(40, app.frameBuffer.image.width)
+        assertEquals(1, published)
+    }
+
+    @Test
+    fun `camera settings below the accepted size change the camera but neither resize nor redraw`() {
+        app.changeCameraSettings { imageWidth = 20 }
+        assertEquals(20, app.camera.imageWidth)
         assertEquals(400, app.frameBuffer.image.width)
         assertEquals(0, published)
     }
