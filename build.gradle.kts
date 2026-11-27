@@ -20,6 +20,12 @@ dependencies {
     // With compose.desktop.common you will also lose @Preview functionality
     implementation("com.darkrockstudios:mpfilepicker:3.1.0")
     implementation(compose.desktop.currentOs)
+
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 compose.desktop {
