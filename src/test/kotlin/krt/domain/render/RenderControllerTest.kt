@@ -9,6 +9,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import krt.domain.camera.Camera
+import krt.domain.render.model.RenderMode
 import krt.domain.scene.World
 
 class RenderControllerTest {
@@ -65,7 +66,7 @@ class RenderControllerTest {
         var pixelUpdates = 0
 
         RenderController(0L, 8, Random(1)).use { controller ->
-            controller.toggleGpuMode()
+            controller.mode = RenderMode.GPU
             val rayTracer = RayTracer(World.default(Random(2)), 3)
             controller.renderImage(frame, rayTracer, camera, onGpuFrame = { shaders += it }) { pixelUpdates++ }
         }

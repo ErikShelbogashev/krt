@@ -4,6 +4,7 @@ import krt.domain.camera.Camera
 import krt.domain.render.FrameBuffer
 import krt.domain.render.RayTracer
 import krt.domain.render.RenderController
+import krt.domain.render.model.RenderMode
 import krt.domain.render.renderFrame
 
 class RedrawOp(
@@ -15,26 +16,14 @@ class RedrawOp(
     operator fun invoke() = renderFrame(renderController, rayTracer, camera, frameBuffer)
 }
 
-class ToggleWireframeOp(
+class SetRenderModeOp(
     private val renderController: RenderController,
     private val rayTracer: RayTracer,
     private val camera: Camera,
     private val frameBuffer: FrameBuffer,
 ) {
-    operator fun invoke() {
-        renderController.toggleWireframeMode()
-        renderFrame(renderController, rayTracer, camera, frameBuffer)
-    }
-}
-
-class ToggleGpuModeOp(
-    private val renderController: RenderController,
-    private val rayTracer: RayTracer,
-    private val camera: Camera,
-    private val frameBuffer: FrameBuffer,
-) {
-    operator fun invoke() {
-        renderController.toggleGpuMode()
+    operator fun invoke(mode: RenderMode) {
+        renderController.mode = mode
         renderFrame(renderController, rayTracer, camera, frameBuffer)
     }
 }

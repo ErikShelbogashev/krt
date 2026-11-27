@@ -7,6 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import krt.domain.camera.CameraMove
+import krt.domain.render.model.RenderMode
 import krt.infra.AppContext
 import krt.platform.math.Point3
 
@@ -21,25 +22,24 @@ class OperationsTest {
 
     init {
         app.frameBuffer.onUpdate { published++ }
-        app.renderController.toggleWireframeMode()
+        app.renderController.mode = RenderMode.WIREFRAME
     }
 
     @AfterTest
     fun close() = app.close()
 
     @Test
-    fun `toggle wireframe switches mode and redraws`() {
-        app.toggleWireframe() // back to ray tracing: asynchronous, so switch again before checking
-        app.toggleWireframe()
+    fun `set render mode switches the renderer and redraws`() {
+        app.setRenderMode(RenderMode.WIREFRAME)
+        assertEquals(RenderMode.WIREFRAME, app.renderController.mode)
         assertEquals(1, published)
     }
 
     @Test
-    fun `toggle GPU mode hands the frame over as a shader`() {
+    fun `GPU mode hands the frame over as a shader`() {
         var gpuFrames = 0
         app.frameBuffer.onGpuUpdate { gpuFrames++ }
-        app.renderController.toggleWireframeMode() // wireframe off: GPU mode draws synchronously
-        app.toggleGpuMode()
+        app.setRenderMode(RenderMode.GPU)
         assertEquals(1, gpuFrames)
         assertEquals(0, published)
     }

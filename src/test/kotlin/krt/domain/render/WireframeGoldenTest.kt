@@ -7,6 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 import krt.domain.camera.Camera
+import krt.domain.render.model.RenderMode
 import krt.domain.scene.World
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Lambert
@@ -44,7 +45,7 @@ class WireframeGoldenTest {
         var updates = 0
 
         RenderController(50L, 50).use { controller ->
-            controller.toggleWireframeMode()
+            controller.mode = RenderMode.WIREFRAME
             controller.renderImage(frame, RayTracer(world, 5), camera) { updates++ }
         }
 
