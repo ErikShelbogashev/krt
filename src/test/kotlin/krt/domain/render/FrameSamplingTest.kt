@@ -70,6 +70,28 @@ class FrameSamplingTest {
     }
 
     @Test
+    fun `slow GPU steps take fewer samples, then fewer rows, and grow back when they fit`() {
+        val full = GpuSampling.StepBudget()
+        assertEquals(GpuSampling.StepBudget(2, 1), full.after(80.0))
+        assertEquals(GpuSampling.StepBudget(1, 1), full.after(400.0))
+        assertEquals(GpuSampling.StepBudget(1, 5), GpuSampling.StepBudget(1, 1).after(180.0))
+        var budget = GpuSampling.StepBudget(1, 5)
+        repeat(3) { budget = budget.after(10.0) }
+        assertEquals(5, budget.bands)
+        assertEquals(GpuSampling.StepBudget(1, 3), budget.after(10.0))
+        assertEquals(GpuSampling.StepBudget(2, 1), GpuSampling.StepBudget(1, 1, fitStreak = 3).after(15.0))
+        assertEquals(GpuSampling.StepBudget(1, 1, 0), GpuSampling.StepBudget(1, 1, fitStreak = 3).after(30.0))
+        assertEquals(listOf(1, 1, 2, 3), listOf(0, 1, 2, 4).map { GpuSampling.nextStep(it, 7, 3) })
+    }
+
+    @Test
+    fun `bands of rows cover the frame once, top to bottom`() {
+        val bands = (0 until 7).map { GpuSampling.bandRows(100, it, 7) }
+        assertEquals((0 until 100).toList(), bands.flatten())
+        assertEquals(listOf(2, 2, 5), (0 until 3).map { GpuSampling.samplesDone(2, 3, it, 3) })
+    }
+
+    @Test
     fun `the quick look of a GPU frame keeps within its pixel budget`() {
         assertEquals(1, GpuSampling.draftScale(400, 400))
         assertEquals(3, GpuSampling.draftScale(1024, 1024))

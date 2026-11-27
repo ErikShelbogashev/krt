@@ -291,6 +291,30 @@ class GpuTracerTest {
     }
 
     @Test
+    fun `a GPU frame made in bands of rows matches the one made whole`() {
+        val camera = camera()
+        val whole = progressiveGpuFrame(camera)
+        val banded = GpuTracer().use { tracer ->
+            val scene = GpuScenePacking.pack(world.objects)
+            var frame: org.jetbrains.skia.Shader? = null
+            var taken = 0
+            GpuSampling.steps(SAMPLES).forEachIndexed { index, samples ->
+                (0 until 3).forEach { band ->
+                    val rows = GpuSampling.bandRows(SIZE, band, 3)
+                    val seed = 0.1f * (index + 1) + band
+                    val step = GpuFrame(scene, camera.view(), SIZE, SIZE, DEPTH, samples, seed, GpuBand(taken, rows))
+                    frame = tracer.shader(step, frame)
+                }
+                taken += samples
+            }
+            pixels(requireNotNull(frame))
+        }
+        (0 until QUADRANTS).forEach { q ->
+            assertTrue(abs(brightness(whole, q) - brightness(banded, q)) < REGION_TOLERANCE, "quadrant $q")
+        }
+    }
+
+    @Test
     fun `triangles are drawn`() {
         val wall = Triangle(
             Point3(-50.0, -50.0, -3.0),
@@ -314,7 +338,7 @@ class GpuTracerTest {
         var frame: org.jetbrains.skia.Shader? = null
         var taken = 0
         GpuSampling.steps(SAMPLES).forEachIndexed { index, samples ->
-            val step = GpuFrame(scene, camera.view(), SIZE, SIZE, DEPTH, samples, 0.1f * (index + 1), taken)
+            val step = GpuFrame(scene, camera.view(), SIZE, SIZE, DEPTH, samples, 0.1f * (index + 1), GpuBand(taken))
             frame = tracer.shader(step, frame)
             taken += samples
         }

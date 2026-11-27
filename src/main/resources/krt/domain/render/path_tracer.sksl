@@ -5,6 +5,8 @@
 uniform shader scene;               // RGBA_8888, one 24-bit number per texel, see GpuScene
 uniform shader previous;            // the frame of the earlier steps, with previousSamples samples per pixel
 uniform float previousSamples;
+uniform float bandStart;            // the rows this step samples, from the top; the others keep the earlier frame
+uniform float bandEnd;
 uniform float nodeCount;
 uniform float primitiveStart;
 uniform float materialStart;
@@ -665,6 +667,7 @@ float3 trace(float3 origin, float3 direction) {
 }
 
 half4 main(float2 position) {
+    if (position.y < bandStart || position.y >= bandEnd) { return previous.eval(position); }
     float i = floor(position.x);
     float j = frameSize.y - 1.0 - floor(position.y);
     pixelId = float2(i, j);
