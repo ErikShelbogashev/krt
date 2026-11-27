@@ -6,6 +6,8 @@ compose-material3 = "1.9.0"
 konsist = "0.18.1"
 detekt = "2.0.0-alpha.6"
 compose-rules = "0.6.8"
+jmh = "1.37"
+gradle-jmh-plugin = "0.7.4"
 
 [libraries]
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-material3" }
@@ -17,4 +19,5 @@ compose-rules-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref 
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
+jmh = { id = "me.champeau.jmh", version.ref = "gradle-jmh-plugin" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
