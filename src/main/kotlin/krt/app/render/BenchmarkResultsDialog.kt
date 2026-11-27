@@ -69,7 +69,7 @@ fun BenchmarkResultsDialog(
                 TextButton(onClick = { clipboard.setText(AnnotatedString(Benchmark.markdown(results))) }) {
                     Text("Copy as Markdown")
                 }
-                TextButton(onClick = { saver.launch(suggestedName = "krt-benchmark", extension = "csv") }) {
+                TextButton(onClick = { saver.launch(suggestedName = "krt-benchmark", defaultExtension = "csv") }) {
                     Text("Save CSV")
                 }
                 TextButton(onClick = onDismiss) { Text("Close") }
