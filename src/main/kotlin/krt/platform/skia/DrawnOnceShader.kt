@@ -21,16 +21,23 @@ import org.jetbrains.skia.Shader
  */
 object DrawnOnceShader {
 
-    fun of(frame: Shader, width: Int, height: Int, scale: Float): Shader {
-        val paint = Paint().apply {
-            shader = frame
-            imageFilter = ImageFilter.makeMatrixTransform(Matrix33.makeScale(scale), SamplingMode.LINEAR, null)
+    /**
+     * The objects made on the way are closed at once: Skia counts its own references, so the picture and the
+     * returned shader keep what they need, and nothing waits for the garbage collector to free GPU memory.
+     */
+    fun of(frame: Shader, width: Int, height: Int, scale: Float): Shader =
+        ImageFilter.makeMatrixTransform(Matrix33.makeScale(scale), SamplingMode.LINEAR, null).use { filter ->
+            Paint().use { paint ->
+                paint.shader = frame
+                paint.imageFilter = filter
+                PictureRecorder().use { recorder ->
+                    recorder.beginRecording(Rect.makeWH(width * scale, height * scale))
+                        .drawRect(Rect.makeWH(width.toFloat(), height.toFloat()), paint)
+                    // No tile rectangle: the picture's own bounds are the tile; an explicit one draws nothing here.
+                    recorder.finishRecordingAsPicture().use { picture ->
+                        picture.makeShader(FilterTileMode.DECAL, FilterTileMode.DECAL, FilterMode.LINEAR, null, null)
+                    }
+                }
+            }
         }
-        val recorder = PictureRecorder()
-        recorder.beginRecording(Rect.makeWH(width * scale, height * scale))
-            .drawRect(Rect.makeWH(width.toFloat(), height.toFloat()), paint)
-        // No tile rectangle: the picture's own bounds are the tile; an explicit one draws nothing in this Skiko.
-        return recorder.finishRecordingAsPicture()
-            .makeShader(FilterTileMode.DECAL, FilterTileMode.DECAL, FilterMode.LINEAR, null, null)
-    }
 }

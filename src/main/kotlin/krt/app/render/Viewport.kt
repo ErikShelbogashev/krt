@@ -15,6 +15,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -93,6 +94,10 @@ fun Viewport(
         val shownGpuFrame = remember(gpuFrame, frameSize, placement.scale) {
             gpuFrame?.let { DrawnOnceShader.of(it, frameSize.width, frameSize.height, placement.scale) }
         }
+        DisposableEffect(shownGpuFrame) {
+            // Skia counts references: what the window still draws keeps the frame alive, the handle can go now.
+            onDispose { shownGpuFrame?.close() }
+        }
         var dragFrom by remember { mutableStateOf(IntOffset.Zero) }
         Canvas(
             Modifier.fillMaxSize().pointerInput(placement) {
@@ -121,6 +126,20 @@ fun Viewport(
         )
     }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    GpuFrameUpkeep(gpuFrame, onGpuFrameDraw)
+}
+
+
+/**
+ * Upkeep of the GPU frames shown: reports how long the window frame that drew a new one took, and frees the handle
+ * of a frame once a newer one replaced it.
+ */
+@Composable
+private fun GpuFrameUpkeep(gpuFrame: Shader?, onGpuFrameDraw: (Shader, Double) -> Unit) {
+    DisposableEffect(gpuFrame) {
+        // The renderer is done with a GPU frame once a newer one is on screen; free its handle for the GPU's sake.
+        onDispose { gpuFrame?.close() }
+    }
     val currentOnGpuFrameDraw by rememberUpdatedState(onGpuFrameDraw)
     val currentGpuFrame by rememberUpdatedState(gpuFrame)
     LaunchedEffect(Unit) {
