@@ -2,15 +2,16 @@ package krt.domain.render
 
 import java.awt.Color
 import java.awt.image.BufferedImage
+import java.awt.image.DataBufferInt
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.SwingUtilities
 import kotlin.random.Random
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import krt.domain.camera.Camera
 import krt.domain.scene.World
@@ -23,8 +24,9 @@ class RenderController(
     private val clock: () -> Long = System::currentTimeMillis,
 ) : AutoCloseable {
     private var renderJob: Job? = null
-    private val renderDispatcher =
-        Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()).asCoroutineDispatcher()
+    private val workers = Runtime.getRuntime().availableProcessors()
+    private val renderDispatcher = Executors.newFixedThreadPool(workers).asCoroutineDispatcher()
+    private val repaintLock = Any()
     private var lastRepaintTime = 0L
     private var useWireframe: Boolean = false
 
@@ -47,6 +49,12 @@ class RenderController(
 
     }
 
+    /**
+     * Workers, one per core, take batches of [batchSize] pixels in turn, so no core waits for the others.
+     * Pixels go straight into the image's pixel array. After each batch the worker that finished it
+     * asks the clock whether to publish an intermediate frame; the final frame is published once all
+     * workers are done.
+     */
     private fun renderRayTracedImage(
         image: BufferedImage,
         rayTracer: RayTracer,
@@ -55,34 +63,47 @@ class RenderController(
     ) {
         val pixels = FrameSampling.pixelOrder(camera.imageWidth, camera.imageHeight, random)
         val frameSeed = random.nextLong()
+        val batches = pixels.chunked(batchSize)
+        val nextBatch = AtomicInteger(0)
+        val raster = (image.raster.dataBuffer as DataBufferInt).data
         renderJob = CoroutineScope(renderDispatcher).launch {
-            pixels.chunked(batchSize).forEach { batch ->
-                batch.map { pixel ->
-                    async {
-                        val pixelRandom = FrameSampling.pixelRandom(frameSeed, pixel, camera.imageWidth)
-                        val color = FrameSampling.samplePixel(pixel, camera, rayTracer, pixelRandom)
-                        if (isActive) {
-                            image.setRGB(
-                                pixel.i,
-                                FrameSampling.imageY(pixel, camera.imageHeight),
-                                color.toAWTColor(camera.samplesPerPixel)
-                            )
-                        }
+            List(workers) {
+                launch {
+                    while (isActive) {
+                        val batch = batches.getOrNull(nextBatch.getAndIncrement()) ?: break
+                        renderBatch(batch, raster, frameSeed, rayTracer, camera)
+                        publishIfDue(onUpdate)
                     }
-                }.awaitAll()
-
-                val currentTime = clock()
-                if (FrameSampling.shouldRepaint(currentTime, lastRepaintTime, repaintIntervalMs)) {
-                    SwingUtilities.invokeLater {
-                        onUpdate.invoke()
-                    }
-                    lastRepaintTime = currentTime
                 }
-            }
-            SwingUtilities.invokeLater {
-                onUpdate.invoke()
-            }
+            }.joinAll()
+            if (isActive) SwingUtilities.invokeLater { onUpdate.invoke() }
         }
+    }
+
+    private fun CoroutineScope.renderBatch(
+        batch: List<FrameSampling.Pixel>,
+        raster: IntArray,
+        frameSeed: Long,
+        rayTracer: RayTracer,
+        camera: Camera,
+    ) {
+        for (pixel in batch) {
+            val pixelRandom = FrameSampling.pixelRandom(frameSeed, pixel, camera.imageWidth)
+            val color = FrameSampling.samplePixel(pixel, camera, rayTracer, pixelRandom)
+            if (!isActive) return
+            val y = FrameSampling.imageY(pixel, camera.imageHeight)
+            raster[y * camera.imageWidth + pixel.i] = color.toAWTColor(camera.samplesPerPixel)
+        }
+    }
+
+    /** One worker at a time reads the clock, so the repaint decision stays consistent across workers. */
+    private fun publishIfDue(onUpdate: () -> Unit) {
+        synchronized(repaintLock) {
+            val currentTime = clock()
+            if (!FrameSampling.shouldRepaint(currentTime, lastRepaintTime, repaintIntervalMs)) return
+            lastRepaintTime = currentTime
+        }
+        SwingUtilities.invokeLater { onUpdate.invoke() }
     }
 
     private fun renderWireframe(
