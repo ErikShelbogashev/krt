@@ -11,6 +11,7 @@ import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Sphere
+import krt.domain.scene.model.Triangle
 import krt.domain.trace.GpuScenePacking
 import krt.platform.awt.toAWTColor
 import krt.platform.math.Color
@@ -33,6 +34,7 @@ class GpuTracerTest {
             Sphere(Point3(-2.5, 1.0, 0.0), 1.0, Lambert(Color(0.4, 0.2, 0.1))),
             Sphere(Point3(2.5, 1.0, 0.0), 1.0, Metal(Color(0.7, 0.6, 0.5), 0.05)),
             Sphere(Point3(0.0, 1.0, 2.5), 0.6, Emissive(Color(0.1, 0.7, 0.4), 2.0)),
+            Triangle(Point3(-6.0, 0.0, -3.0), Point3(6.0, 0.0, -3.0), Point3(0.0, 5.0, -3.0), Lambert(WALL)),
         ),
     )
 
@@ -59,8 +61,21 @@ class GpuTracerTest {
         assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
     }
 
-    private fun gpuFrame(camera: Camera): IntArray = GpuTracer().use { tracer ->
-        val frame = GpuFrame(GpuScenePacking.pack(world.objects), camera.view(), SIZE, SIZE, DEPTH, SAMPLES, 0.37f)
+    @Test
+    fun `triangles are drawn`() {
+        val wall = Triangle(
+            Point3(-50.0, -50.0, -3.0),
+            Point3(50.0, -50.0, -3.0),
+            Point3(0.0, 50.0, -3.0),
+            Lambert(RED),
+        )
+        val centre = gpuFrame(camera(), World(listOf(wall)))[SIZE / 2 * SIZE + SIZE / 2]
+        val red = centre shr 16 and 255
+        assertTrue(red > (centre and 255), "centre ${Integer.toHexString(centre)} is not the red wall")
+    }
+
+    private fun gpuFrame(camera: Camera, scene: World = world): IntArray = GpuTracer().use { tracer ->
+        val frame = GpuFrame(GpuScenePacking.pack(scene.objects), camera.view(), SIZE, SIZE, DEPTH, SAMPLES, 0.37f)
         val surface = Surface.makeRaster(ImageInfo.makeN32Premul(SIZE, SIZE))
         surface.canvas.drawPaint(Paint().apply { shader = tracer.shader(frame) })
         val bitmap = Bitmap.makeFromImage(surface.makeImageSnapshot())
@@ -89,6 +104,8 @@ class GpuTracerTest {
         (if (index % SIZE < SIZE / 2) 0 else 1) + (if (index / SIZE < SIZE / 2) 0 else 2)
 
     private companion object {
+        val WALL = Color(0.2, 0.4, 0.8)
+        val RED = Color(0.8, 0.2, 0.1)
         const val SIZE = 48
         const val SAMPLES = 16
         const val DEPTH = 7
