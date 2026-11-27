@@ -65,6 +65,7 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
             is Sphere -> obj.material
             is Triangle -> obj.material
             is Fog -> obj.material
+            is Translucent -> obj.inside.material
             else -> null
         }
 
@@ -73,7 +74,8 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
             is Metal -> "Metal"
             is Dielectric -> "Glass"
             is Emissive -> "Emissive"
-            is Isotropic -> "Fog"
+            is Isotropic -> "Medium"
+            is Conductor -> "Metal"
             null -> "Unknown"
             else -> material::class.simpleName ?: "Material"
         }
@@ -84,6 +86,9 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
             is Emissive -> material.emitColor
             is Dielectric -> GLASS_COLOR
             is Isotropic -> material.albedo
+            is Conductor -> ConductorFresnel.reflectance(1.0, material.eta, material.k)
+            is Velvet -> material.base
+            is Iridescent -> material.base
             else -> UNKNOWN_COLOR
         }
     }

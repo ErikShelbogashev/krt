@@ -16,7 +16,9 @@ import krt.domain.scene.model.Sky
 import krt.domain.scene.model.SoapBubble
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
+import krt.domain.scene.model.Translucent
 import krt.domain.scene.model.Triangle
+import krt.domain.scene.model.Velvet
 import krt.domain.scene.model.VertexNormals
 import krt.platform.math.Point3
 
@@ -89,6 +91,7 @@ object GpuScenePacking {
     const val BUBBLE = 7
     const val IRIDESCENT = 8
     const val CONDUCTOR = 9
+    const val VELVET = 10
 
     private const val FIXED_BITS = 24
     private const val FIXED_ONE = 1 shl FIXED_BITS
@@ -102,7 +105,8 @@ object GpuScenePacking {
     private const val BOX_VALUES = 6
 
     fun pack(objects: List<Traceable>, sky: Sky = Sky.DAYLIGHT, sampleLights: Boolean = false): GpuScene {
-        val primitives = objects.filter { it is Sphere || it is Triangle || it is Fog }.toTypedArray()
+        val primitives = objects.flatMap { (it as? Translucent)?.parts ?: listOf(it) }
+            .filter { it is Sphere || it is Triangle || it is Fog }.toTypedArray()
         val bvh = Bvh(primitives).flatten()
         val primitiveStart = bvh.nodeCount * NODE_VALUES
         val materialStart = primitiveStart + primitives.size * PRIMITIVE_VALUES
@@ -185,7 +189,8 @@ object GpuScenePacking {
      * - Isotropic (the particles of fog): albedo;
      * - Soap bubble: none, film thickness in nm, film refraction index;
      * - Iridescent: base, film thickness in nm, film refraction index, none, roughness;
-     * - Conductor: η, GGX α along and across the tangent, k.
+     * - Conductor: η, GGX α along and across the tangent, k;
+     * - Velvet: base, roughness, chance of the diffuse bounce, sheen.
      */
     fun material(material: Material): DoubleArray = when (material) {
         is Lambert -> values(LAMBERT, material.albedo)
@@ -203,6 +208,7 @@ object GpuScenePacking {
             CHECKER, material.even, material.roughness, material.ior, odd = material.odd, third = material.cellSize,
         )
         is Isotropic -> values(ISOTROPIC, material.albedo)
+        is Velvet -> values(VELVET, material.base, material.roughness, material.diffuseChance, odd = material.sheen)
         is SoapBubble -> values(BUBBLE, Point3.ZERO, material.thickness, material.filmIor)
         is Iridescent -> values(
             IRIDESCENT, material.base, material.thickness, material.filmIor, third = material.roughness,

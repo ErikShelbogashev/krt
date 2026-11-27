@@ -21,6 +21,8 @@ import krt.domain.scene.model.Pose
 import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
 import krt.domain.scene.model.SoapBubble
+import krt.domain.scene.model.Translucent
+import krt.domain.scene.model.Velvet
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Triangle
 import krt.domain.trace.GpuScenePacking
@@ -88,6 +90,18 @@ class GpuTracerTest {
         ),
     )
 
+    /** Wax and jade balls and a velvet one, lit by a lamp with light sampling. */
+    private val soft = World(
+        listOf(
+            Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.6, 0.6, 0.6))),
+            Translucent(Point3(-2.3, 1.0, 0.0), 1.0, Color(0.95, 0.8, 0.55), density = 4.0),
+            Translucent(Point3(0.0, 1.0, 0.5), 1.0, Color(0.35, 0.85, 0.55), density = 3.0, roughness = 0.2),
+            Sphere(Point3(2.3, 1.0, 0.0), 1.0, Velvet(Color(0.35, 0.02, 0.1), Color(0.9, 0.6, 0.7), 0.4)),
+            Sphere(Point3(0.0, 5.0, 3.0), 0.8, Emissive(Color(1.0, 0.95, 0.9), 8.0)),
+        ),
+        SceneLook(Sky(Color(0.6, 0.65, 0.8), Color(0.2, 0.3, 0.6)), fov = 60.0, aperture = 0.0, sampleLights = true),
+    )
+
     private fun camera() = Camera(
         origin = Point3(0.0, 2.0, 7.0),
         target = Point3.ZERO,
@@ -152,6 +166,20 @@ class GpuTracerTest {
         val camera = camera()
         val gpu = gpuFrame(camera, microfacets)
         val cpu = cpuFrame(camera, microfacets)
+
+        (0 until CHANNELS).forEach { channel ->
+            val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+            assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
+        }
+        val regions = (0 until QUADRANTS).map { q -> abs(brightness(gpu, q) - brightness(cpu, q)) }
+        assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
+    }
+
+    @Test
+    fun `translucent balls and velvet look the same on the GPU as on the CPU`() {
+        val camera = camera()
+        val gpu = gpuFrame(camera, soft)
+        val cpu = cpuFrame(camera, soft)
 
         (0 until CHANNELS).forEach { channel ->
             val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
