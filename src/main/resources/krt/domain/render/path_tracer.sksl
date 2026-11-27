@@ -389,9 +389,12 @@ float patternValue(float kind, float3 p, float scale, float turbulence) {
     if (kind == MARBLE) {
         value = 1.0 - sqrt(0.5 + 0.5 * sin(q.x * 2.0 * PI + turbulence * 4.0 * fractal(q, true)));
     } else if (kind == WOOD) {
-        float rings = sqrt(q.x * q.x + q.z * q.z) + turbulence * perlin(q * 4.0);
+        // The trunk along x: long stripes of thin dark latewood, wavy along the grain, over fine fibres.
+        float rings = sqrt(q.y * q.y + q.z * q.z) + turbulence * perlin(q * float3(0.25, 2.0, 2.0));
         float ring = rings - floor(rings);
-        value = smoothstep(0.0, 0.8, ring) * (1.0 - smoothstep(0.8, 1.0, ring));
+        float latewood = smoothstep(0.72, 0.9, ring) * (1.0 - smoothstep(0.9, 1.0, ring));
+        float fibres = 0.5 + 0.5 * perlin(q * float3(0.5, 24.0, 24.0));
+        value = 0.75 * latewood + 0.25 * fibres;
     } else if (kind == CLOUDS) {
         value = smoothstep(0.45, 0.75, 0.5 + 0.5 * fractal(q, false));
     } else {

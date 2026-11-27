@@ -43,9 +43,13 @@ class PatternTest {
     }
 
     @Test
-    fun `wood grows in rings around the vertical axis`() {
+    fun `wood grows in rings around a trunk along the x axis, stripes along the grain`() {
         val wood = Pattern(PatternKind.WOOD, Color(0.6, 0.4, 0.2), Color(0.3, 0.15, 0.05), turbulence = 0.0)
-        assertEquals(wood.valueAt(Point3(0.5, 0.0, 0.0)), wood.valueAt(Point3(0.0, 3.0, 0.5)), 1e-9)
+        val ringsOnly = { p: Point3 -> wood.valueAt(p) - wood.valueAt(Point3(p.x, -p.y, -p.z)) }
+        assertEquals(0.0, ringsOnly(Point3(0.3, 0.0, 0.4)), 0.3)
+        val across = (0 until 200).map { wood.valueAt(Point3(0.0, 0.0, it * 0.01)) }
+        val along = (0 until 200).map { wood.valueAt(Point3(it * 0.01, 0.0, 0.33)) }
+        assertTrue(across.max() - across.min() > 2 * (along.max() - along.min()), "stripes run along x")
     }
 
     @Test

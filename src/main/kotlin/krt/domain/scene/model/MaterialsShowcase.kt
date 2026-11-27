@@ -109,7 +109,7 @@ object MaterialsShowcase {
     private val KEY = Emissive.kelvin(5500.0, 5.0)
 
     private val FLOOR = Patterned(
-        Pattern(PatternKind.WOOD, Color(0.55, 0.34, 0.18), Color(0.28, 0.14, 0.06), scale = 0.6, turbulence = 0.3),
+        Pattern(PatternKind.WOOD, Color(0.62, 0.4, 0.22), Color(0.26, 0.13, 0.05), scale = 2.0, turbulence = 0.35),
         roughness = 0.08,
         bump = 0.01,
     )

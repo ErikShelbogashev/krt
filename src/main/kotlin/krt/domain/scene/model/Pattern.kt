@@ -17,7 +17,10 @@ enum class PatternKind {
     /** Veins of [Pattern.second] winding through [Pattern.first], like marble. */
     MARBLE,
 
-    /** Rings of growth around the vertical axis, a little wavy, like wood. */
+    /**
+     * Wood cut along the trunk, the trunk along the x axis: the rings of growth meet a floor or a board as long
+     * stripes of thin dark latewood across pale earlywood, wavy along the grain, over fine fibres.
+     */
     WOOD,
 
     /** Puffs of [Pattern.second] over [Pattern.first] with clear gaps, like clouds. */
@@ -58,9 +61,12 @@ data class Pattern(
     }
 
     private fun wood(q: Point3): Double {
-        val rings = sqrt(q.x * q.x + q.z * q.z) + turbulence * Noise.perlin(q * WOOD_GRAIN)
+        val along = Point3(q.x * GRAIN_STRETCH, q.y * GRAIN_WAVE, q.z * GRAIN_WAVE)
+        val rings = sqrt(q.y * q.y + q.z * q.z) + turbulence * Noise.perlin(along)
         val ring = rings - floor(rings)
-        return smoothstep(0.0, WOOD_EDGE, ring) * (1 - smoothstep(WOOD_EDGE, 1.0, ring))
+        val latewood = smoothstep(LATEWOOD_START, LATEWOOD_PEAK, ring) * (1 - smoothstep(LATEWOOD_PEAK, 1.0, ring))
+        val fibres = HALF + HALF * Noise.perlin(Point3(q.x * FIBRE_STRETCH, q.y * FIBRES, q.z * FIBRES))
+        return LATEWOOD_SHARE * latewood + (1 - LATEWOOD_SHARE) * fibres
     }
 
     private fun smoothstep(low: Double, high: Double, x: Double): Double {
@@ -77,8 +83,13 @@ data class Pattern(
         private const val CLOUD_HIGH = 0.75
         private const val MARBLE_FREQUENCY = 2 * PI
         private const val MARBLE_SPREAD = 4.0
-        private const val WOOD_GRAIN = 4.0
-        private const val WOOD_EDGE = 0.8
+        private const val GRAIN_STRETCH = 0.25
+        private const val GRAIN_WAVE = 2.0
+        private const val LATEWOOD_START = 0.72
+        private const val LATEWOOD_PEAK = 0.9
+        private const val LATEWOOD_SHARE = 0.75
+        private const val FIBRE_STRETCH = 0.5
+        private const val FIBRES = 24.0
     }
 }
 
