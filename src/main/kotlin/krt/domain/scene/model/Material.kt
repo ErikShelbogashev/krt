@@ -17,7 +17,11 @@ enum class Lobe {
     VOLUME,
 }
 
-data class Scattered(val ray: Ray, val attenuation: Color, val lobe: Lobe = Lobe.SPECULAR)
+/**
+ * A ray that goes on from a surface, with the share of light it carries back. [normal], when the material bent the
+ * surface's normal (bump mapping), is the one direct light is weighed by.
+ */
+data class Scattered(val ray: Ray, val attenuation: Color, val lobe: Lobe = Lobe.SPECULAR, val normal: Point3? = null)
 
 interface Material {
     fun scatter(ray: Ray, hit: Hit, random: Random): Scattered?

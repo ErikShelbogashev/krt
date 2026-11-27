@@ -63,13 +63,13 @@ class GpuScenePackingTest {
     @Test
     fun `new materials pack their colours and parameters`() {
         val glass = Dielectric(1.5, tint = Color(0.5, 1.0, 1.0), density = 2.0)
-        assertValues(listOf(2.0, 2 * ln(2.0), 0.0, 0.0, 1.5), GpuScenePacking.material(glass).take(5))
+        assertValues(listOf(2.0, 2 * ln(2.0), 0.0, 0.0, 1.5), GpuMaterials.values(glass).take(5))
         val plastic = Plastic(Color(0.8, 0.1, 0.1), roughness = 0.05)
-        assertValues(listOf(4.0, 0.8, 0.1, 0.1, 0.05, 1.5), GpuScenePacking.material(plastic).take(6))
+        assertValues(listOf(4.0, 0.8, 0.1, 0.1, 0.05, 1.5), GpuMaterials.values(plastic).take(6))
         val checker = Checker(Color(0.9, 0.9, 0.9), Color(0.1, 0.1, 0.1), cellSize = 0.5, roughness = 0.1)
         assertValues(
             listOf(5.0, 0.9, 0.9, 0.9, 0.1, 1.5, 0.1, 0.1, 0.1, 0.5),
-            GpuScenePacking.material(checker).toList(),
+            GpuMaterials.values(checker).take(10),
         )
     }
 

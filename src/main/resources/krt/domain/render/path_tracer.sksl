@@ -34,7 +34,7 @@ const float RANGE = 4096.0;
 const float NODE_VALUES = 9.0;
 const float PRIMITIVE_VALUES = 11.0;
 const float NORMAL_VALUES = 9.0;
-const float MATERIAL_VALUES = 10.0;
+const float MATERIAL_VALUES = 12.0;
 const float T_MIN = 0.001;
 const float FAR = 1.0e30;
 const float PI = 3.14159265358979;
@@ -54,6 +54,12 @@ const float BUBBLE = 7.0;
 const float IRIDESCENT = 8.0;
 const float CONDUCTOR = 9.0;
 const float VELVET = 10.0;
+const float PATTERNED = 11.0;
+
+const float NOISE = 0.0;            // PatternKind
+const float MARBLE = 1.0;
+const float WOOD = 2.0;
+const float CLOUDS = 3.0;
 
 const float SPECULAR = 0.0;         // Lobe: how a ray left a surface, for light sampling
 const float DIFFUSE = 1.0;
@@ -320,6 +326,82 @@ float sheenWeight(float3 toViewer, float3 toLight, float3 normal, float roughnes
     return distribution * visibility * PI;
 }
 
+// Noise: Perlin's improved noise over the lattice hash (34x² + x) mod 289, exact in floats, so it matches the CPU.
+float permute(float x) { return mod((34.0 * x + 1.0) * x, 289.0); }
+
+float fade(float t) { return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
+
+float gradient(float hash, float3 d) {
+    float h = mod(hash, 16.0);
+    float u = h < 8.0 ? d.x : d.y;
+    float v = h < 4.0 ? d.y : (h == 12.0 || h == 14.0 ? d.x : d.z);
+    return (mod(h, 2.0) == 0.0 ? u : -u) + (mod(floor(h * 0.5), 2.0) == 0.0 ? v : -v);
+}
+
+float corner(float3 i, float3 f, float3 d) {
+    return gradient(permute(permute(permute(i.x + d.x) + i.y + d.y) + i.z + d.z), f - d);
+}
+
+float perlin(float3 p) {
+    float3 cell = floor(p);
+    float3 f = p - cell;
+    float3 i = mod(cell, 289.0);
+    float3 u = float3(fade(f.x), fade(f.y), fade(f.z));
+    float x00 = mix(corner(i, f, float3(0.0, 0.0, 0.0)), corner(i, f, float3(1.0, 0.0, 0.0)), u.x);
+    float x10 = mix(corner(i, f, float3(0.0, 1.0, 0.0)), corner(i, f, float3(1.0, 1.0, 0.0)), u.x);
+    float x01 = mix(corner(i, f, float3(0.0, 0.0, 1.0)), corner(i, f, float3(1.0, 0.0, 1.0)), u.x);
+    float x11 = mix(corner(i, f, float3(0.0, 1.0, 1.0)), corner(i, f, float3(1.0, 1.0, 1.0)), u.x);
+    return mix(mix(x00, x10, u.y), mix(x01, x11, u.y), u.z);
+}
+
+// Noise.fbm, or Noise.turbulence with [absolute].
+float fractal(float3 p, bool absolute) {
+    float sum = 0.0;
+    float amplitude = 1.0;
+    for (int octave = 0; octave < 5; octave++) {
+        float n = perlin(p);
+        sum += amplitude * (absolute ? abs(n) : n);
+        amplitude *= 0.5;
+        p *= 2.0;
+    }
+    return sum;
+}
+
+// Pattern.valueAt: the blend of the two colours at [p], in [0, 1].
+float patternValue(float kind, float3 p, float scale, float turbulence) {
+    float3 q = p * scale;
+    float value;
+    if (kind == MARBLE) {
+        value = 1.0 - sqrt(0.5 + 0.5 * sin(q.x * 2.0 * PI + turbulence * 4.0 * fractal(q, true)));
+    } else if (kind == WOOD) {
+        float rings = sqrt(q.x * q.x + q.z * q.z) + turbulence * perlin(q * 4.0);
+        float ring = rings - floor(rings);
+        value = smoothstep(0.0, 0.8, ring) * (1.0 - smoothstep(0.8, 1.0, ring));
+    } else if (kind == CLOUDS) {
+        value = smoothstep(0.45, 0.75, 0.5 + 0.5 * fractal(q, false));
+    } else {
+        value = 0.5 + 0.5 * fractal(q, false);
+    }
+    return clamp(value, 0.0, 1.0);
+}
+
+// The pattern of the material at [base]: its blend at [p].
+float materialPattern(float base, float3 p) {
+    return patternValue(number(base + 10.0), p, number(base + 5.0), number(base + 11.0));
+}
+
+// Bump.normal: [normal] tilted against the slope of the pattern times [strength].
+float3 bumpNormal(float base, float3 p, float3 normal, float strength) {
+    float scale = number(base + 5.0);
+    float step = 1.0e-3 / scale;
+    float here = materialPattern(base, p);
+    float3 slope = float3(materialPattern(base, p + float3(step, 0.0, 0.0)) - here,
+        materialPattern(base, p + float3(0.0, step, 0.0)) - here,
+        materialPattern(base, p + float3(0.0, 0.0, step)) - here) / step;
+    float3 along = slope - normal * dot(slope, normal);
+    return normalize(normal - along * (strength / scale));
+}
+
 float hitT;
 
 // The primitive the ray hits first before tMax, or -1; its distance goes to hitT. Walks the BVH along skip links.
@@ -426,11 +508,20 @@ float3 trace(float3 origin, float3 direction) {
         float3 scattered;
         float3 attenuation = color;
         float lobe = SPECULAR;
-        if (kind == PLASTIC || kind == CHECKER) {
+        if (kind == PATTERNED) {
+            // A pattern under a clear coat, as Patterned: the colour, and the bump of the normal.
+            float t = materialPattern(base, p);
+            color = mix(color, vector(base + 6.0), t);
+            attenuation = color;
+            float bump = number(base + 9.0);
+            if (bump > 0.0) { normal = bumpNormal(base, p, normal, bump); }
+        }
+        if (kind == PLASTIC || kind == CHECKER || kind == PATTERNED) {
             // Clear coat over a diffuse base, as ClearCoat.scatter.
             float3 unitDirection = normalize(direction);
             float cosine = min(dot(-unitDirection, normal), 1.0);
-            if (rnd() < reflectance(cosine, number(base + 5.0))) {
+            float coatIor = kind == PATTERNED ? 1.5 : number(base + 5.0);
+            if (rnd() < reflectance(cosine, coatIor)) {
                 scattered = reflect(unitDirection, normal) + randomInUnitSphere() * param;
                 if (dot(scattered, normal) <= 0.0) { return radiance; }
                 attenuation = float3(1.0);

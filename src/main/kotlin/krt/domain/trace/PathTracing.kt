@@ -47,7 +47,7 @@ object PathTracing {
         val response = when {
             shadow != null -> 0.0
             scattered.lobe == Lobe.VOLUME -> 1 / (4 * PI)
-            else -> maxOf(0.0, hit.normal.dot(light.direction)) / PI
+            else -> maxOf(0.0, (scattered.normal ?: hit.normal).dot(light.direction)) / PI
         }
         return light.emitted * scattered.attenuation * (response / light.pdf)
     }
