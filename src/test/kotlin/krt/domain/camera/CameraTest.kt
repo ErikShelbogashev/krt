@@ -1,5 +1,6 @@
 package krt.domain.camera
 
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -57,5 +58,21 @@ class CameraTest {
         val center = camera.ray(0.5, 0.5, kotlin.random.Random(0))
         assertEquals(Point3(0.0, 0.0, 0.0), center.origin)
         assertEquals(1.0, center.direction.unit().x, 1e-9)
+    }
+
+    @Test
+    fun `changing the image size updates the aspect ratio of the rays`() {
+        val resized = camera().apply { imageWidth = 200 }
+        val fresh = Camera(
+            origin = Point3(0.0, 0.0, 0.0),
+            target = Point3(0.0, 0.0, -1.0),
+            vup = Point3(0.0, 1.0, 0.0),
+            fov = 90.0,
+            aperture = 0.0,
+            focusDist = 1.0,
+            imageWidth = 200,
+            imageHeight = 100,
+        )
+        assertEquals(fresh.ray(1.0, 0.5, Random(0)).direction, resized.ray(1.0, 0.5, Random(0)).direction)
     }
 }
