@@ -477,7 +477,9 @@ float3 directLight(float3 p, float3 normal, float lobe) {
     if (cosine <= 1.0e-6) { return float3(0.0); }
     if (closestHit(p, direction, distance * (1.0 - SHADOW_MARGIN)) >= 0.0) { return float3(0.0); }
     float pdf = distanceSquared / (cosine * area) / lightCount;
-    float response = lobe == VOLUME ? 1.0 / (4.0 * PI) : max(0.0, dot(normal, direction)) / PI;
+    // PathTracing.diffuse: diffuse bounces go to a random point in the unit ball at the tip of the normal, 2 cos³ / π.
+    float lit = max(0.0, dot(normal, direction));
+    float response = lobe == VOLUME ? 1.0 / (4.0 * PI) : 2.0 * lit * lit * lit / PI;
     return vector(materialStart + slot * MATERIAL_VALUES + 1.0) * (response / pdf);
 }
 
@@ -581,7 +583,8 @@ float3 trace(float3 origin, float3 direction) {
             // Velvet: the diffuse bounce, lit by light sampling, or the sheen one, as Velvet.scatter.
             float diffuseChance = number(base + 5.0);
             bool diffuse = rnd() < diffuseChance;
-            scattered = normal + randomInUnitSphere();
+            float3 offset = randomInUnitSphere();
+            scattered = normal + (diffuse ? offset : normalize(offset));
             if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
             if (diffuse) {
                 attenuation = color / diffuseChance;

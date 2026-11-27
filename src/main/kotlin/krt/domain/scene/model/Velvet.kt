@@ -12,7 +12,7 @@ import krt.platform.math.Ray
  * rims, the wider the higher their [roughness] (Charlie sheen of Estevez and Kulla, ADR 0013).
  *
  * Each bounce picks one of the two: the diffuse one, which light sampling can light directly, or the sheen one,
- * which is sampled like it and weighed by the sheen BRDF; each is divided by the chance of picking it.
+ * sampled by the cosine and weighed by the sheen BRDF; each is divided by the chance of picking it.
  */
 class Velvet(val base: Color, val sheen: Color, val roughness: Double) : Material {
 
@@ -21,8 +21,12 @@ class Velvet(val base: Color, val sheen: Color, val roughness: Double) : Materia
 
     override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered {
         val diffuse = random.nextDouble() < diffuseChance
-        val direction = (hit.normal + Point3.randomInUnitSphere(random)).takeIf { !it.isNearZero() } ?: hit.normal
-        if (diffuse) return Scattered(ray.next(hit.p, direction), base / diffuseChance, Lobe.DIFFUSE)
+        val offset = Point3.randomInUnitSphere(random)
+        if (diffuse) {
+            val direction = (hit.normal + offset).takeIf { !it.isNearZero() } ?: hit.normal
+            return Scattered(ray.next(hit.p, direction), base / diffuseChance, Lobe.DIFFUSE)
+        }
+        val direction = (hit.normal + offset.unit()).takeIf { !it.isNearZero() } ?: hit.normal
         val weight = Sheen.weight(-ray.direction.unit(), direction.unit(), hit.normal, roughness)
         return Scattered(ray.next(hit.p, direction), sheen * (weight / (1 - diffuseChance)))
     }
@@ -40,7 +44,7 @@ object Sheen {
     }
 
     /**
-     * BRDF × cosine / pdf of a direction sampled like Lambert's: the Charlie distribution with Neubelt's visibility,
+     * BRDF × cosine / pdf of a direction sampled by the cosine: the Charlie distribution with Neubelt's visibility,
      * times π, between unit [toViewer] and [toLight] around [normal].
      */
     fun weight(toViewer: Point3, toLight: Point3, normal: Point3, roughness: Double): Double {

@@ -10,7 +10,10 @@ enum class Lobe {
     /** A mirror-like or refracted ray: direct light reaches it only along the ray itself. */
     SPECULAR,
 
-    /** Lambertian: a diffuse surface lit by [Scattered.attenuation] / π times the cosine. */
+    /**
+     * Diffuse: the ray goes from the normal to a random point in the unit ball around its tip, as [Lambert] does;
+     * the surface is lit by [Scattered.attenuation] times the density of such directions, 2 cos³ / π.
+     */
     DIFFUSE,
 
     /** Isotropic scattering inside a medium: lit by [Scattered.attenuation] / 4π in every direction. */
