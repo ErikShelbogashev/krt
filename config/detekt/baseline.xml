@@ -11,18 +11,6 @@
     <ID>MagicNumber:RenderController.kt:RenderController.Companion$50</ID>
     <ID>MagicNumber:RenderController.kt:RenderController.Companion$50L</ID>
     <ID>MagicNumber:Triangle.kt:Triangle$1e-10</ID>
-    <ID>MagicNumber:World.kt:World.Companion$0.05</ID>
-    <ID>MagicNumber:World.kt:World.Companion$0.1</ID>
-    <ID>MagicNumber:World.kt:World.Companion$0.2</ID>
-    <ID>MagicNumber:World.kt:World.Companion$0.4</ID>
-    <ID>MagicNumber:World.kt:World.Companion$0.5</ID>
-    <ID>MagicNumber:World.kt:World.Companion$0.6</ID>
-    <ID>MagicNumber:World.kt:World.Companion$0.7</ID>
-    <ID>MagicNumber:World.kt:World.Companion$0.9</ID>
-    <ID>MagicNumber:World.kt:World.Companion$1.5</ID>
-    <ID>MagicNumber:World.kt:World.Companion$1000.0</ID>
-    <ID>MagicNumber:World.kt:World.Companion$11</ID>
-    <ID>MagicNumber:World.kt:World.Companion$4.0</ID>
     <ID>MaxLineLength:GeometryTest.kt:GeometryTest$val original = Triangle(Point3(0.0, 0.0, 0.0), Point3(1.0, 0.0, 0.0), Point3(0.0, 1.0, 0.0), Dielectric(1.5), id = "T")</ID>
     <ID>MaxLineLength:Lambert.kt:Lambert$val scatterDirection = (hit.normal + Point3.randomInUnitSphere(random)).takeIf { !it.isNearZero() } ?: hit.normal</ID>
     <ID>NewLineAtEndOfFile:Emissive.kt:krt.domain.scene.model.Emissive.kt</ID>
