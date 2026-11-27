@@ -76,7 +76,15 @@ class GpuTracer : AutoCloseable {
         effect.close()
     }
 
+    /** The texture of the scene drawn last, so a new frame of the same scene does not upload it again. */
+    private var sceneTexture: Pair<GpuScene, Shader>? = null
+
+    @Synchronized
     private fun sceneTexture(scene: GpuScene): Shader =
+        sceneTexture?.takeIf { it.first === scene }?.second
+            ?: makeSceneTexture(scene).also { sceneTexture = scene to it }
+
+    private fun makeSceneTexture(scene: GpuScene): Shader =
         Image.makeRaster(
             ImageInfo(scene.width, scene.height, ColorType.RGBA_8888, ColorAlphaType.UNPREMUL, null),
             scene.data,
