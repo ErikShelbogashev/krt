@@ -1,6 +1,7 @@
 package krt.domain.trace
 
 import krt.domain.scene.model.Hit
+import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Traceable
 import krt.platform.math.Ray
@@ -9,9 +10,14 @@ import krt.platform.math.Ray
  * Scene compiled for tracing (ADR 0008): built once from the objects of the model,
  * immutable afterwards and read by all render threads without locks.
  */
-class TraceScene(objects: List<Traceable>, val sky: Sky = Sky.DAYLIGHT, val sampleLights: Boolean = false) {
+class TraceScene(objects: List<Traceable>, val look: SceneLook = SceneLook.CLASSIC) {
 
     private val bvh = Bvh(objects.toTypedArray())
+
+    val sky: Sky get() = look.sky
+
+    /** Whether light paths sample the lights directly (ADR 0012). */
+    val sampleLights: Boolean get() = look.sampleLights
 
     /** Lights for next event estimation, when [sampleLights] is on. */
     val lights = Lights(if (sampleLights) objects else emptyList())

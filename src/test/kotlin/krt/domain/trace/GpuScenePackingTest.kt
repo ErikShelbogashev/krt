@@ -16,6 +16,7 @@ import krt.domain.scene.model.Fog
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Plastic
+import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Triangle
 import krt.platform.math.Color
@@ -112,17 +113,17 @@ class GpuScenePackingTest {
             Triangle(Point3(0.0, 4.0, 0.0), Point3(1.0, 4.0, 0.0), Point3(0.0, 4.0, 1.0), Emissive(Color.ONE, 1.0)),
         )
 
-        val scene = Packed(GpuScenePacking.pack(objects, sampleLights = true))
+        val scene = Packed(GpuScenePacking.pack(objects, SceneLook.CLASSIC.copy(sampleLights = true)))
 
         val fog = (0 until 4).single { scene.code(scene.primitive(it)) == GpuScenePacking.MEDIUM }
         assertEquals(Point3(0.0, 2.0, 0.0), scene.vector(scene.primitive(fog) + 1))
         assertEquals(0.25, scene.number(scene.primitive(fog) + 5), 1e-3)
         scene.assertMaterial(fog, GpuScenePacking.ISOTROPIC, 0.9, 0.8, 0.7, 0.0)
         val lights = scene.scene.lights
-        assertEquals(2, lights.sampled)
+        assertEquals(2, scene.scene.sampledLights)
         val emissive = (0 until lights.count).map { scene.code(lights.start + it) }
         emissive.forEach { slot -> scene.assertMaterialKind(slot, GpuScenePacking.EMISSIVE) }
-        assertEquals(0, GpuScenePacking.pack(objects).lights.sampled)
+        assertEquals(0, GpuScenePacking.pack(objects).sampledLights)
     }
 
     @Test

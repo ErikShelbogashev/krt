@@ -23,10 +23,10 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
         val sky: Sky get() = look.sky
 
         /** Compiled on first use, so a burst of edits compiles the scene once. */
-        val traceScene by lazy { TraceScene(objects, sky, look.sampleLights) }
+        val traceScene by lazy { TraceScene(objects, look) }
 
         /** Packed for the GPU shader on first use (ADR 0009). */
-        val gpuScene by lazy { GpuScenePacking.pack(objects, sky, look.sampleLights) }
+        val gpuScene by lazy { GpuScenePacking.pack(objects, look) }
     }
 
     @Volatile
