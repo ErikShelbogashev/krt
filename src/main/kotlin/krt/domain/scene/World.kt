@@ -1,19 +1,13 @@
 package krt.domain.scene
 
 import kotlin.random.Random
-import krt.domain.scene.model.Dielectric
-import krt.domain.scene.model.Emissive
+import krt.domain.scene.model.DemoScenes
 import krt.domain.scene.model.Hit
-import krt.domain.scene.model.Lambert
-import krt.domain.scene.model.Material
-import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Sky
-import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
 import krt.domain.trace.GpuScene
 import krt.domain.trace.GpuScenePacking
 import krt.domain.trace.TraceScene
-import krt.platform.math.Color
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
@@ -65,32 +59,8 @@ class World(objects: List<Traceable> = emptyList(), sky: Sky = Sky.DAYLIGHT) {
     fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? = traceScene.hit(ray, tMin, tMax)
 
     companion object {
-        fun default(random: Random): World {
-            val world = World()
-            world.add(Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.5, 0.5, 0.5))))
-
-            for (a in -11 until 11) {
-                for (b in -11 until 11) {
-                    val chooseMaterial = random.nextDouble()
-                    val center = Point3(a + 0.9 * random.nextDouble(), 0.2, b + 0.9 * random.nextDouble())
-                    if ((center - Point3(4.0, 0.2, 0.0)).length() > 0.9) {
-                        val material: Material = when {
-                            chooseMaterial < 0.8 -> Lambert(Point3.random(random) * Point3.random(random))
-                            chooseMaterial < 0.95 -> Metal(Point3.random(random, 0.5, 1.0), random.nextDouble(0.0, 0.5))
-                            else -> Dielectric(1.5)
-                        }
-                        world.add(Sphere(center, 0.2, material))
-                    }
-                }
-            }
-
-            world.add(Sphere(Point3(0.0, 1.0, 0.0), 1.0, Dielectric(1.5)))
-            world.add(Sphere(Point3(0.0, 1.0, 2.0), 1.0, Emissive(Color(0.1, 0.7, 0.4), 2.0)))
-            world.add(Sphere(Point3(-4.0, 1.0, 0.0), 2.0, Lambert(Color(0.4, 0.2, 0.1)), id = "TEST"))
-            world.add(Sphere(Point3(4.0, 1.0, 0.0), 1.0, Metal(Color(0.7, 0.6, 0.5), 0.05)))
-
-            return world
-        }
+        /** The classic demo scene ([DemoScenes.classic]). */
+        fun default(random: Random): World = World(DemoScenes.classic(random))
     }
 }
 
