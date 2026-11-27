@@ -1,6 +1,6 @@
 package krt.domain.scene.model
 
-import java.util.*
+import java.util.UUID
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt

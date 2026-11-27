@@ -3,11 +3,29 @@ package krt.app.scene
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Button
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -16,22 +34,31 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 import krt.platform.math.Point3
 
 @Composable
-fun ObjectController(speed: Double, loadObjectIds: () -> List<String>, onMove: (String, Point3) -> Unit) {
+fun ObjectController(
+    speed: Double,
+    loadObjectIds: () -> List<String>,
+    onMove: (String, Point3) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var selectedId by remember { mutableStateOf<String?>(null) }
     val objectIds = remember { mutableStateListOf<String>() }
     var expanded by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(Unit) {
         objectIds.clear()
         objectIds.addAll(loadObjectIds())
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -90,7 +117,7 @@ private fun getDirection(center: Offset, touch: Offset): Point3 {
 
 @Composable
 private fun ControlPanel(selectedId: String?, speed: Double, onMove: (String, Point3) -> Unit) {
-    val canvasSize = 150.dp  // Reduced size for compact layout
+    val canvasSize = 150.dp
     val joystickRadius = canvasSize / 2
     var touchPosition by remember { mutableStateOf(Offset.Zero) }
     var realPosition by remember { mutableStateOf(Offset.Zero) }

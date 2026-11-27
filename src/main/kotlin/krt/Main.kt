@@ -3,20 +3,35 @@ package krt
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -33,7 +48,7 @@ fun main() {
     val app = AppContext.create()
     application {
         var imageBitmap by remember { mutableStateOf(app.frameBuffer.image.toComposeImageBitmap()) }
-        remember {
+        LaunchedEffect(Unit) {
             app.frameBuffer.onUpdate { imageBitmap = it.toComposeImageBitmap() }
             app.redraw()
         }
@@ -44,8 +59,8 @@ fun main() {
         ) {
             val focusRequester = remember { FocusRequester() }
             val scrollState = rememberScrollState()
-            var prevX by remember { mutableStateOf(0) }
-            var prevY by remember { mutableStateOf(0) }
+            var prevX by remember { mutableIntStateOf(0) }
+            var prevY by remember { mutableIntStateOf(0) }
 
             Column(modifier = Modifier.focusRequester(focusRequester).pointerInput(Unit) {
                 detectDragGestures(onDragStart = { offset ->
@@ -66,7 +81,7 @@ fun main() {
                 Row {
                     Image(bitmap = imageBitmap, contentDescription = null)
                     Box(Modifier.verticalScroll(scrollState)) {
-                        settingsPanel(app)
+                        SettingsPanel(app)
                     }
                 }
             }
@@ -78,10 +93,9 @@ fun main() {
 }
 
 @Composable
-fun settingsPanel(app: AppContext) {
+private fun SettingsPanel(app: AppContext, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
-            .padding(16.dp),
+        modifier = modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -101,7 +115,7 @@ fun settingsPanel(app: AppContext) {
             Text("Toggles", style = MaterialTheme.typography.h6)
 
             Row {
-                LoadObject { app.loadModel(it) }
+                LoadObject(onFilePicked = { app.loadModel(it) })
                 Button(onClick = { app.toggleWireframe() }) {
                     Text("Toggle Wireframe mode")
                 }
@@ -110,19 +124,23 @@ fun settingsPanel(app: AppContext) {
 
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
 
-        RayTracerSettings(app.rayTracer) { app.changeRayTracerSettings(it) }
+        RayTracerSettings(app.rayTracer, onChange = { app.changeRayTracerSettings(it) })
 
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
 
-        RenderControllerSettings(app.renderController) { app.changeRenderSettings(it) }
+        RenderControllerSettings(app.renderController, onChange = { app.changeRenderSettings(it) })
 
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
 
-        CameraSettings(app.camera) { app.changeCameraSettings(it) }
+        CameraSettings(app.camera, onChange = { app.changeCameraSettings(it) })
 
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
 
-        ObjectController(app.camera.movementSpeed, { app.world.getObjectIds() }) { id, offset -> app.moveObject(id, offset) }
+        ObjectController(
+            speed = app.camera.movementSpeed,
+            loadObjectIds = { app.world.getObjectIds() },
+            onMove = { id, offset -> app.moveObject(id, offset) },
+        )
     }
 }
 
