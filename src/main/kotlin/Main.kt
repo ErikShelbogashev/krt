@@ -19,95 +19,60 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import raytracer.model.*
+import raytracer.infra.AppContext
+import raytracer.model.CameraMove
 import raytracer.view.*
-import java.awt.image.BufferedImage
-import kotlin.random.Random
 
-fun main() = application {
-    val world = World.default(Random.Default)
-    val rayTracer = RayTracer(world, 7)
-    val camera = Camera.default()
-    val renderController = RenderController.default()
+fun main() {
+    val app = AppContext.create()
+    application {
+        var imageBitmap by remember { mutableStateOf(app.frameBuffer.image.toComposeImageBitmap()) }
+        remember {
+            app.frameBuffer.onUpdate { imageBitmap = it.toComposeImageBitmap() }
+            app.redraw()
+        }
 
-    var buffer = remember {
-        BufferedImage(
-            camera.imageWidth,
-            camera.imageHeight,
-            BufferedImage.TYPE_INT_ARGB
-        )
-    }
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = "Ray Tracing"
+        ) {
+            val focusRequester = remember { FocusRequester() }
+            val scrollState = rememberScrollState()
+            var prevX by remember { mutableStateOf(0) }
+            var prevY by remember { mutableStateOf(0) }
 
-    var imageBitmap by remember { mutableStateOf(buffer.toComposeImageBitmap()) }
-    renderController.renderImage(buffer, rayTracer, camera) {
-        imageBitmap = buffer.toComposeImageBitmap()
-    }
-
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "Ray Tracing"
-    ) {
-        val focusRequester = remember { FocusRequester() }
-        val scrollState = rememberScrollState()
-        var prevX by remember { mutableStateOf(0) }
-        var prevY by remember { mutableStateOf(0) }
-
-        Column(modifier = Modifier.focusRequester(focusRequester).pointerInput(Unit) {
-            detectDragGestures(onDragStart = { offset ->
-                prevX = offset.x.toInt()
-                prevY = offset.y.toInt()
-            }, onDrag = { change, _ ->
-                val deltaX = (change.position.x.toInt() - prevX) * 2 * Math.PI / camera.imageWidth * 0.1
-                val deltaY = (change.position.y.toInt() - prevY) * 2 * Math.PI / camera.imageHeight * 0.1
-
-                camera.adjustYaw(deltaX)
-                camera.adjustPitch(-deltaY)
-                prevX = change.position.x.toInt()
-                prevY = change.position.y.toInt()
-                change.consume()
-                renderController.renderImage(buffer, rayTracer, camera) {
-                    imageBitmap = buffer.toComposeImageBitmap()
-                }
-            })
-        }.focusable().onKeyEvent { keyEvent ->
-            if (keyEvent.type == KeyEventType.KeyDown) {
-                handleKeyEvent(keyEvent, camera)
-                renderController.renderImage(buffer, rayTracer, camera) {
-                    imageBitmap = buffer.toComposeImageBitmap()
-                }
-                true
-            } else false
-        }) {
-            Row {
-                Image(bitmap = imageBitmap, contentDescription = null)
-                Box(Modifier.verticalScroll(scrollState)) {
-                    settingsPanel(
-                        world,
-                        rayTracer,
-                        camera,
-                        renderController,
-                        buffer,
-                        { buffer = it },
-                        { imageBitmap = it.toComposeImageBitmap() })
+            Column(modifier = Modifier.focusRequester(focusRequester).pointerInput(Unit) {
+                detectDragGestures(onDragStart = { offset ->
+                    prevX = offset.x.toInt()
+                    prevY = offset.y.toInt()
+                }, onDrag = { change, _ ->
+                    app.rotateCamera(change.position.x.toInt() - prevX, change.position.y.toInt() - prevY)
+                    prevX = change.position.x.toInt()
+                    prevY = change.position.y.toInt()
+                    change.consume()
+                })
+            }.focusable().onKeyEvent { keyEvent ->
+                if (keyEvent.type == KeyEventType.KeyDown) {
+                    app.moveCamera(cameraMoveFor(keyEvent.key))
+                    true
+                } else false
+            }) {
+                Row {
+                    Image(bitmap = imageBitmap, contentDescription = null)
+                    Box(Modifier.verticalScroll(scrollState)) {
+                        settingsPanel(app)
+                    }
                 }
             }
-        }
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
         }
     }
 }
 
 @Composable
-fun settingsPanel(
-    world: World,
-    rayTracer: RayTracer,
-    camera: Camera,
-    renderController: RenderController,
-    buffer: BufferedImage,
-    updateBuffer: (BufferedImage) -> Unit,
-    updateImage: (BufferedImage) -> Unit
-) {
+fun settingsPanel(app: AppContext) {
     Column(
         modifier = Modifier
             .padding(16.dp),
@@ -130,22 +95,8 @@ fun settingsPanel(
             Text("Toggles", style = MaterialTheme.typography.h6)
 
             Row {
-                LoadObject {
-                    val triangles = ObjParser(
-                        it.absolutePath,
-                        Dielectric(1.5)
-                    ).triangles
-                    triangles.forEach(world::add)
-                    renderController.renderImage(buffer, rayTracer, camera) {
-                        updateImage(buffer)
-                    }
-                }
-                Button(onClick = {
-                    renderController.toggleWireframeMode()
-                    renderController.renderImage(buffer, rayTracer, camera) {
-                        updateImage(buffer)
-                    }
-                }) {
+                LoadObject { app.loadModel(it) }
+                Button(onClick = { app.toggleWireframe() }) {
                     Text("Toggle Wireframe mode")
                 }
             }
@@ -153,58 +104,28 @@ fun settingsPanel(
 
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
 
-        RayTracerSettings(rayTracer) {
-            renderController.renderImage(buffer, rayTracer, camera) {
-                updateImage(buffer)
-            }
-        }
+        RayTracerSettings(app.rayTracer) { app.changeRayTracerSettings(it) }
 
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
 
-        RenderControllerSettings(renderController) {
-            renderController.renderImage(buffer, rayTracer, camera) {
-                updateImage(buffer)
-            }
-        }
+        RenderControllerSettings(app.renderController) { app.changeRenderSettings(it) }
 
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
 
-        CameraSettings(camera) {
-            if (camera.imageWidth > 50 && camera.imageHeight > 50) {
-                val image = if (camera.imageWidth != buffer.width || camera.imageHeight != buffer.height) {
-                    val image = BufferedImage(
-                        camera.imageWidth,
-                        camera.imageHeight,
-                        BufferedImage.TYPE_INT_ARGB
-                    )
-                    updateBuffer(image)
-                    image
-                } else {
-                    buffer
-                }
-                renderController.renderImage(image, rayTracer, camera) {
-                    updateImage(image)
-                }
-            }
-        }
+        CameraSettings(app.camera) { app.changeCameraSettings(it) }
 
         Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
 
-        ObjectController(camera.movementSpeed, world) {
-            renderController.renderImage(buffer, rayTracer, camera) {
-                updateImage(buffer)
-            }
-        }
+        ObjectController(app.camera.movementSpeed, { app.world.getObjectIds() }) { id, offset -> app.moveObject(id, offset) }
     }
 }
 
-fun handleKeyEvent(keyEvent: KeyEvent, camera: Camera) {
-    when (keyEvent.key) {
-        Key.W, Key.DirectionUp -> camera.moveForward()
-        Key.S, Key.DirectionDown -> camera.moveBackward()
-        Key.A, Key.DirectionLeft -> camera.moveLeft()
-        Key.D, Key.DirectionRight -> camera.moveRight()
-        Key.R -> camera.moveUp()
-        Key.F -> camera.moveDown()
-    }
+private fun cameraMoveFor(key: Key): CameraMove = when (key) {
+    Key.W, Key.DirectionUp -> CameraMove.FORWARD
+    Key.S, Key.DirectionDown -> CameraMove.BACKWARD
+    Key.A, Key.DirectionLeft -> CameraMove.LEFT
+    Key.D, Key.DirectionRight -> CameraMove.RIGHT
+    Key.R -> CameraMove.UP
+    Key.F -> CameraMove.DOWN
+    else -> CameraMove.NONE
 }

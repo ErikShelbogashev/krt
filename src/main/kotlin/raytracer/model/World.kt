@@ -22,6 +22,10 @@ class World(objects: List<Traceable> = emptyList()) {
         objects = objects + obj
     }
 
+    fun addAll(objs: List<Traceable>) {
+        objects = objects + objs
+    }
+
     fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
         return objects.asSequence()
             .mapNotNull { it.hit(ray, tMin, tMax) }

@@ -13,7 +13,7 @@ import raytracer.model.Camera
 
 
 @Composable
-fun CameraSettings(camera: Camera, onUpdateSettings: () -> Unit) {
+fun CameraSettings(camera: Camera, onChange: (Camera.() -> Unit) -> Unit) {
     Column(
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -27,8 +27,7 @@ fun CameraSettings(camera: Camera, onUpdateSettings: () -> Unit) {
             value = fov.toFloat(),
             onValueChange = { newValue ->
                 fov = newValue.toDouble()
-                camera.fov = newValue.toDouble()
-                onUpdateSettings()
+                onChange { this.fov = newValue.toDouble() }
             },
             valueRange = 1f..180f,
             steps = 179,
@@ -42,8 +41,7 @@ fun CameraSettings(camera: Camera, onUpdateSettings: () -> Unit) {
             value = aperture.toFloat(),
             onValueChange = { newValue ->
                 aperture = newValue.toDouble()
-                camera.aperture = newValue.toDouble()
-                onUpdateSettings()
+                onChange { this.aperture = newValue.toDouble() }
             },
             valueRange = 0.0f..10f,
             steps = 199,
@@ -57,8 +55,7 @@ fun CameraSettings(camera: Camera, onUpdateSettings: () -> Unit) {
             value = focusDist.toFloat(),
             onValueChange = { newValue ->
                 focusDist = newValue.toDouble()
-                camera.focusDist = newValue.toDouble()
-                onUpdateSettings()
+                onChange { this.focusDist = newValue.toDouble() }
             },
             valueRange = 0.0f..10.0f,
             steps = 999,
@@ -72,8 +69,7 @@ fun CameraSettings(camera: Camera, onUpdateSettings: () -> Unit) {
             value = samplesPerPixel.toFloat(),
             onValueChange = { newValue ->
                 samplesPerPixel = newValue.toInt()
-                camera.samplesPerPixel = samplesPerPixel
-                onUpdateSettings()
+                onChange { this.samplesPerPixel = samplesPerPixel }
             },
             valueRange = 1.0f..50.0f,
             steps = 49,
@@ -86,8 +82,7 @@ fun CameraSettings(camera: Camera, onUpdateSettings: () -> Unit) {
             value = movementSpeed.toFloat(),
             onValueChange = { newValue ->
                 movementSpeed = newValue.toDouble()
-                camera.movementSpeed = movementSpeed
-                onUpdateSettings()
+                onChange { this.movementSpeed = movementSpeed }
             },
             valueRange = 0.1f..3.0f,
             steps = 100,
@@ -102,8 +97,7 @@ fun CameraSettings(camera: Camera, onUpdateSettings: () -> Unit) {
                 newValue.toIntOrNull()?.let {
                     imageWidth = it
                     if (it !in 32..1024) return@let
-                    camera.imageWidth = it
-                    onUpdateSettings()
+                    onChange { this.imageWidth = it }
                 }
             },
             label = { Text("Image Width") }
@@ -116,8 +110,7 @@ fun CameraSettings(camera: Camera, onUpdateSettings: () -> Unit) {
                 newValue.toIntOrNull()?.let {
                     imageHeight = it
                     if (it !in 32..1024) return@let
-                    camera.imageHeight = it
-                    onUpdateSettings()
+                    onChange { this.imageHeight = it }
                 }
             },
             label = { Text("Image Height") }
