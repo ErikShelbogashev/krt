@@ -7,6 +7,7 @@ import kotlin.random.Random
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -46,7 +47,7 @@ class RenderController(
         frame: Frame,
         rayTracer: RayTracer,
         camera: Camera,
-        onGpuFrame: ((Shader) -> Unit) = {},
+        onGpuFrame: ((Shader, RenderProgress) -> Unit) = { _, _ -> },
         onUpdate: ((RenderProgress) -> Unit),
     ) {
         renderJob?.cancel()
@@ -57,17 +58,33 @@ class RenderController(
         }
     }
 
-    private fun renderGpuImage(rayTracer: RayTracer, camera: Camera, onGpuFrame: (Shader) -> Unit) {
-        val gpuFrame = GpuFrame(
-            scene = rayTracer.world.gpuScene,
-            view = camera.view(),
-            width = camera.imageWidth,
-            height = camera.imageHeight,
-            maxDepth = rayTracer.maxDepth,
-            samples = camera.samplesPerPixel,
-            seed = random.nextFloat(),
-        )
-        onGpuFrame(gpuTracer.shader(gpuFrame))
+    /**
+     * Progressive GPU frame (ADR 0009): steps of [FrameSampling.gpuSteps] samples, each blended into the frame of the
+     * steps before on the GPU. A step is published to [onGpuFrame] on the UI thread, the next one [repaintIntervalMs]
+     * later, so the GPU draws one short step per repaint instead of the whole frame at once.
+     */
+    private fun renderGpuImage(rayTracer: RayTracer, camera: Camera, onGpuFrame: (Shader, RenderProgress) -> Unit) {
+        val scene = rayTracer.world.gpuScene
+        val view = camera.view()
+        val passes = camera.samplesPerPixel
+        val startedAt = clock()
+        renderJob = CoroutineScope(renderDispatcher).launch {
+            var frame: Shader? = null
+            var taken = 0
+            for (samples in FrameSampling.gpuSteps(passes)) {
+                if (!isActive) break
+                val step = GpuFrame(
+                    scene, view, camera.imageWidth, camera.imageHeight, rayTracer.maxDepth, samples, random.nextFloat(),
+                    previousSamples = taken,
+                )
+                val shader = gpuTracer.shader(step, frame)
+                frame = shader
+                taken += samples
+                val progress = RenderProgress(passes, taken, 0.0, clock() - startedAt)
+                SwingUtilities.invokeLater { onGpuFrame(shader, progress) }
+                delay(repaintIntervalMs)
+            }
+        }
     }
 
     /**

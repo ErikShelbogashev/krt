@@ -51,4 +51,14 @@ class FrameSamplingTest {
             FrameSampling.samplePixel(pixel, camera, tracer, Random(9)),
         )
     }
+
+    @Test
+    fun `GPU steps double the samples taken so far, up to the step limit`() {
+        assertEquals(listOf(1), FrameSampling.gpuSteps(1))
+        assertEquals(listOf(1, 1, 2, 1), FrameSampling.gpuSteps(5))
+        val fifty = FrameSampling.gpuSteps(50, maxStep = 4)
+        assertEquals(listOf(1, 1, 2, 4, 4), fifty.take(5))
+        assertEquals(50, fifty.sum())
+        assertEquals(4, fifty.max())
+    }
 }

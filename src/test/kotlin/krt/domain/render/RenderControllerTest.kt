@@ -84,19 +84,27 @@ class RenderControllerTest {
     }
 
     @Test
-    fun `in GPU mode the frame is handed over as a shader and the pixel buffer is left alone`() {
-        val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = 1 }
+    fun `in GPU mode the frame comes in steps on the UI thread and the pixel buffer is left alone`() {
+        val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = 5 }
         val frame = Frame(16, 16)
-        val shaders = mutableListOf<org.jetbrains.skia.Shader>()
+        val steps = Collections.synchronizedList(mutableListOf<RenderProgress>())
+        val onUiThread = Collections.synchronizedList(mutableListOf<Boolean>())
+        val done = CountDownLatch(1)
         var pixelUpdates = 0
 
         RenderController(0L, 8, Random(1)).use { controller ->
             controller.mode = RenderMode.GPU
             val rayTracer = RayTracer(World.default(Random(2)), 3)
-            controller.renderImage(frame, rayTracer, camera, onGpuFrame = { shaders += it }) { pixelUpdates++ }
+            controller.renderImage(frame, rayTracer, camera, onGpuFrame = { _, progress ->
+                steps += progress
+                onUiThread += SwingUtilities.isEventDispatchThread()
+                if (progress.isDone) done.countDown()
+            }) { pixelUpdates++ }
+            assertTrue(done.await(30, TimeUnit.SECONDS), "GPU frame did not finish")
         }
 
-        assertEquals(1, shaders.size)
+        assertEquals(listOf(1, 2, 4, 5), steps.map { it.completedPasses })
+        assertTrue(onUiThread.all { it })
         assertEquals(0, pixelUpdates)
         assertTrue(frame.pixels.all { it == 0 })
     }

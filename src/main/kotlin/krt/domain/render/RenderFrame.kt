@@ -12,7 +12,7 @@ fun renderFrame(renderController: RenderController, rayTracer: RayTracer, camera
         frame,
         rayTracer,
         camera,
-        onGpuFrame = { frameBuffer.publishGpu(it) },
+        onGpuFrame = { shader, progress -> frameBuffer.publishGpu(shader, progress) },
         onUpdate = { frameBuffer.publish(frame, it) },
     )
 }

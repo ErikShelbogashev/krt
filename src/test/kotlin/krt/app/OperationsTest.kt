@@ -1,6 +1,8 @@
 package krt.app
 
 import java.io.File
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import kotlin.random.Random
 import kotlin.test.AfterTest
@@ -39,12 +41,14 @@ class OperationsTest {
     }
 
     @Test
-    fun `GPU mode hands the frame over as a shader`() {
-        var gpuFrames = 0
-        app.frameBuffer.onGpuUpdate { gpuFrames++ }
+    fun `GPU mode hands the frame over as shaders, step by step`() {
+        val done = CountDownLatch(1)
+        app.frameBuffer.onGpuUpdate { if (app.frameBuffer.progress.isDone) done.countDown() }
+        app.changeRenderSettings { repaintIntervalMs = 0 }
         app.setRenderMode(RenderMode.GPU)
-        assertEquals(1, gpuFrames)
-        assertEquals(0, published)
+        assertTrue(done.await(30, TimeUnit.SECONDS), "GPU frame did not finish")
+        assertEquals(app.camera.samplesPerPixel, app.frameBuffer.progress.completedPasses)
+        assertEquals(1, published)
     }
 
     @Test

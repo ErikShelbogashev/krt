@@ -3,6 +3,7 @@ package krt.domain.render
 import krt.domain.camera.CameraView
 import krt.domain.trace.GpuScene
 import krt.platform.math.Point3
+import krt.platform.skia.DrawnOnceShader
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.FilterTileMode
@@ -13,7 +14,10 @@ import org.jetbrains.skia.RuntimeShaderBuilder
 import org.jetbrains.skia.SamplingMode
 import org.jetbrains.skia.Shader
 
-/** What the GPU shader draws: scene, projection, frame size and the settings of one frame. */
+/**
+ * What the GPU shader draws in one step of a frame: scene, projection, frame size, depth, the [samples] of this step
+ * and the [previousSamples] per pixel that earlier steps of the same frame took.
+ */
 class GpuFrame(
     val scene: GpuScene,
     val view: CameraView,
@@ -22,6 +26,7 @@ class GpuFrame(
     val maxDepth: Int,
     val samples: Int,
     val seed: Float,
+    val previousSamples: Int = 0,
 )
 
 /**
@@ -35,8 +40,14 @@ class GpuTracer : AutoCloseable {
         requireNotNull(GpuTracer::class.java.getResource(SHADER)) { "missing $SHADER" }.readText(),
     )
 
-    fun shader(frame: GpuFrame): Shader {
+    /**
+     * The frame after one more step: [previous] (the frame of the earlier steps, null before the first) with
+     * [GpuFrame.samples] more samples per pixel. The step runs once on the GPU, at the frame's size, when first drawn.
+     */
+    fun shader(frame: GpuFrame, previous: Shader? = null): Shader {
         val builder = RuntimeShaderBuilder(effect)
+        builder.child("previous", previous ?: noFrame)
+        builder.uniform("previousSamples", frame.previousSamples.toFloat())
         builder.child("scene", sceneTexture(frame.scene))
         builder.uniform("nodeCount", frame.scene.nodeCount.toFloat())
         builder.uniform("primitiveStart", frame.scene.primitiveStart.toFloat())
@@ -52,10 +63,13 @@ class GpuTracer : AutoCloseable {
         builder.uniform("maxDepth", frame.maxDepth.toFloat())
         builder.uniform("samples", frame.samples.toFloat())
         builder.uniform("seed", frame.seed)
-        return builder.makeShader()
+        return DrawnOnceShader.of(builder.makeShader(), frame.width, frame.height, scale = 1f)
     }
 
+    private val noFrame: Shader = Shader.makeColor(BLACK)
+
     override fun close() {
+        noFrame.close()
         effect.close()
     }
 
@@ -72,5 +86,6 @@ class GpuTracer : AutoCloseable {
     private companion object {
         const val SHADER = "path_tracer.sksl"
         const val BYTES_PER_TEXEL = 4
+        const val BLACK = 0xFF000000.toInt()
     }
 }

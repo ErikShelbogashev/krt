@@ -43,9 +43,8 @@ class FrameBuffer(width: Int, height: Int) {
         listener(frame)
     }
 
-    /** The GPU frame is drawn in one pass with all its samples (ADR 0009). */
-    fun publishGpu(shader: Shader) {
-        progress = RenderProgress.finished(1, 0)
+    fun publishGpu(shader: Shader, progress: RenderProgress) {
+        this.progress = progress
         gpuListener(shader)
     }
 }

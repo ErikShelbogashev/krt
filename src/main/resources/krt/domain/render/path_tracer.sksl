@@ -3,6 +3,8 @@
 // constant indices only, so the BVH is walked without a stack along skip links (see krt.domain.trace.FlatBvh).
 
 uniform shader scene;               // RGBA_8888, one 24-bit number per texel, see GpuScene
+uniform shader previous;            // the frame of the earlier steps, with previousSamples samples per pixel
+uniform float previousSamples;
 uniform float nodeCount;
 uniform float primitiveStart;
 uniform float materialStart;
@@ -247,7 +249,10 @@ half4 main(float2 position) {
         float3 direction = camLowerLeft + camHorizontal * s + camVertical * t - camOrigin - offset;
         sum += trace(origin, direction);
     }
+    // The earlier steps' frame holds the square root of their mean (gamma 2): back to linear, add, average.
+    float3 earlier = float3(previous.eval(position).rgb);
     float taken = clamp(samples, 1.0, float(MAX_SAMPLES));
-    float3 color = sqrt(clamp(sum / taken, 0.0, 1.0));
+    float3 mean = (earlier * earlier * previousSamples + clamp(sum, 0.0, taken)) / (previousSamples + taken);
+    float3 color = sqrt(clamp(mean, 0.0, 1.0));
     return half4(half3(min(color, float3(0.999))), 1.0);
 }
