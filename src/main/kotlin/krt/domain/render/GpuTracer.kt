@@ -66,7 +66,11 @@ class GpuTracer : AutoCloseable {
         builder.uniform("maxDepth", frame.maxDepth.toFloat())
         builder.uniform("samples", frame.samples.toFloat())
         builder.uniform("seed", frame.seed)
-        return DrawnOnceShader.of(builder.makeShader(), frame.width, frame.height, scale.toFloat())
+        // The drawn-once shader holds its own reference to the step's shader, so ours goes at once.
+        return builder.makeShader().use { step ->
+            builder.close()
+            DrawnOnceShader.of(step, frame.width, frame.height, scale.toFloat())
+        }
     }
 
     private val noFrame: Shader = Shader.makeColor(BLACK)
