@@ -53,6 +53,8 @@ class GpuTracer : AutoCloseable {
         builder.uniform("nodeCount", frame.scene.nodeCount.toFloat())
         builder.uniform("primitiveStart", frame.scene.primitiveStart.toFloat())
         builder.uniform("materialStart", frame.scene.materialStart.toFloat())
+        builder.uniform("lightStart", frame.scene.lights.start.toFloat())
+        builder.uniform("lightCount", frame.scene.lights.sampled.toFloat())
         builder.vector("skyHorizon", frame.scene.sky.horizon)
         builder.vector("skyZenith", frame.scene.sky.zenith)
         builder.uniform("frameSize", frame.width.toFloat(), frame.height.toFloat())

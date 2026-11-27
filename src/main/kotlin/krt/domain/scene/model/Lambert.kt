@@ -10,6 +10,6 @@ class Lambert(val albedo: Color) : Material {
         val scatterDirection = (hit.normal + Point3.randomInUnitSphere(random)).takeIf { !it.isNearZero() } ?: hit.normal
         val scatteredRay = Ray(hit.p, scatterDirection)
         val attenuation = albedo
-        return Scattered(scatteredRay, attenuation)
+        return Scattered(scatteredRay, attenuation, Lobe.DIFFUSE)
     }
 }
