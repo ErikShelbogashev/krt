@@ -11,10 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -101,18 +101,18 @@ private fun SettingsPanel(app: AppContext, modifier: Modifier = Modifier) {
     ) {
         Text(
             "Settings",
-            style = MaterialTheme.typography.h5,
-            color = MaterialTheme.colors.onSurface,
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.align(Alignment.Start)
         )
 
-        Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
 
         Column(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text("Toggles", style = MaterialTheme.typography.h6)
+            Text("Toggles", style = MaterialTheme.typography.titleLarge)
 
             Row {
                 LoadObject(onFilePicked = { app.loadModel(it) })
@@ -122,19 +122,19 @@ private fun SettingsPanel(app: AppContext, modifier: Modifier = Modifier) {
             }
         }
 
-        Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
 
         RayTracerSettings(app.rayTracer, onChange = { app.changeRayTracerSettings(it) })
 
-        Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
 
         RenderControllerSettings(app.renderController, onChange = { app.changeRenderSettings(it) })
 
-        Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
 
         CameraSettings(app.camera, onChange = { app.changeCameraSettings(it) })
 
-        Divider(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
 
         ObjectController(
             speed = app.camera.movementSpeed,

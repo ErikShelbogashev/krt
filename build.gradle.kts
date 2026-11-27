@@ -24,8 +24,7 @@ java {
 
 dependencies {
     implementation(compose.desktop.currentOs)
-    implementation(libs.compose.material)
-    implementation(libs.compose.material.icons.core)
+    implementation(libs.compose.material3)
     implementation(libs.filekit.dialogs.compose)
 
     testImplementation(kotlin("test"))
