@@ -76,6 +76,7 @@ private class SmokeResult(
     val height: Int,
     val steps: Int,
     val slowestStepMs: Double,
+    val medianStepMs: Double,
     val frameMs: Double,
     val failure: String?,
 )
@@ -132,7 +133,7 @@ private object Smoke {
         val frameMs = (System.nanoTime() - began) / NS_PER_MS
         failure = failure ?: picture(surface)
         surface.close()
-        return SmokeResult(name, width, height, stepMs.size, stepMs.max(), frameMs, failure)
+        return SmokeResult(name, width, height, stepMs.size, stepMs.max(), stepMs.sorted()[stepMs.size / 2], frameMs, failure)
     }
 
     /** What is wrong with the frame on [surface]: magenta pixels or black, or nothing. */
@@ -154,12 +155,12 @@ private object Smoke {
     fun report(results: List<SmokeResult>): String = buildString {
         appendLine("GPU smoke on Metal: ${results.count { it.failure == null }} of ${results.size} passed")
         appendLine()
-        appendLine("| Scene | Size | Steps | Slowest step ms | Frame ms | Result |")
-        appendLine("| --- | --- | --- | --- | --- | --- |")
+        appendLine("| Scene | Size | Steps | Median step ms | Slowest step ms | Frame ms | Result |")
+        appendLine("| --- | --- | --- | --- | --- | --- | --- |")
         results.forEach {
             appendLine(
-                "| ${it.scene} | ${it.width}×${it.height} | ${it.steps} | %.1f | %.0f | %s |"
-                    .format(it.slowestStepMs, it.frameMs, it.failure ?: "ok"),
+                "| ${it.scene} | ${it.width}×${it.height} | ${it.steps} | %.1f | %.1f | %.0f | %s |"
+                    .format(it.medianStepMs, it.slowestStepMs, it.frameMs, it.failure ?: "ok"),
             )
         }
     }
