@@ -13,7 +13,7 @@ data class VertexNormals(val n0: Point3, val n1: Point3, val n2: Point3) {
 
 /**
  * A flat triangle. With [normals] it shades as if curved (ADR 0013): hits keep the side of the flat face, but their
- * normal is blended from the corners.
+ * normal is blended from the corners, turned to the face's side when the corners give it the other way.
  */
 class Triangle(
     val v0: Point3,
@@ -59,7 +59,9 @@ class Triangle(
         val hitPoint = ray.at(t)
         val smooth = normals ?: return Hit.create(hitPoint, t, ray, outwardNormal, material)
         val isFrontFace = ray.direction.dot(outwardNormal) < 0
-        val shading = smooth.at(u, v)
+        val blended = smooth.at(u, v)
+        // Vertex normals given against the winding still shade the face's own side.
+        val shading = if (blended.dot(outwardNormal) < 0) -blended else blended
         return Hit(hitPoint, t, if (isFrontFace) shading else -shading, isFrontFace, material)
     }
 

@@ -48,7 +48,9 @@ class ObjParser(filePath: String, material: Material) {
                     val normalIndices = corners.map { it.split('/').getOrNull(2)?.toIntOrNull()?.minus(1) }
                     if (vertexIndices.size >= MIN_FACE_VERTICES) {
                         faces.add(vertexIndices)
-                        faceNormals.add(normalIndices.takeIf { all -> all.all { it != null } }?.map { it!! })
+                        // A face whose corners all share one normal is flat: it needs none.
+                        val smooth = normalIndices.takeIf { all -> all.all { it != null } && all.toSet().size > 1 }
+                        faceNormals.add(smooth?.map { it!! })
                     }
                 }
             }

@@ -273,7 +273,8 @@ float3 shadingNormal(float slot, float3 p, float3 outward) {
     float u = (d11 * d20 - d01 * d21) / denominator;
     float v = (d00 * d21 - d01 * d20) / denominator;
     float at = normalStart + (record - 1.0) * NORMAL_VALUES;
-    return normalize(vector(at) * (1.0 - u - v) + vector(at + 3.0) * u + vector(at + 6.0) * v);
+    float3 blended = normalize(vector(at) * (1.0 - u - v) + vector(at + 3.0) * u + vector(at + 6.0) * v);
+    return dot(blended, outward) < 0.0 ? -blended : blended;
 }
 
 // Microfacets.frame: the tangent around the vertical axis; the bitangent is cross(normal, tangent).

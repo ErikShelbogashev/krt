@@ -31,6 +31,17 @@ class MicrofacetMaterialTest {
     }
 
     @Test
+    fun `vertex normals given against the winding still face the side the ray comes from`() {
+        val against =
+            VertexNormals(Point3(0.0, 0.0, -1.0), Point3(0.1, 0.0, -1.0).unit(), Point3(0.0, 0.1, -1.0).unit())
+        val corners = listOf(Point3.ZERO, Point3(1.0, 0.0, 0.0), Point3(0.0, 1.0, 0.0))
+        val triangle = Triangle(corners[0], corners[1], corners[2], Dielectric(1.5), normals = against)
+        val hit = assertNotNull(triangle.hit(Ray(Point3(0.2, 0.2, 1.0), Point3(0.0, 0.0, -1.0)), 0.001, 10.0))
+        assertTrue(hit.isFrontFace)
+        assertTrue(hit.normal.z > 0.9, "normal ${hit.normal} faces away from the ray")
+    }
+
+    @Test
     fun `smoothing a sphere of flat faces gives normals pointing out from its centre`() {
         val sphere = Meshes.smooth(Meshes.icosphere(Pose(Point3.ZERO), 1.0, 2, Lambert(GREY)))
         sphere.forEach { triangle ->
