@@ -11,7 +11,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import krt.domain.camera.CameraMove
+import krt.domain.camera.model.Flights
 import krt.domain.camera.model.ViewPreset
+import krt.domain.render.model.BenchmarkConfig
 import krt.domain.scene.model.DemoScene
 import krt.domain.render.model.RenderMode
 import krt.infra.AppContext
@@ -168,6 +170,21 @@ class OperationsTest {
         app.resetCameraView()
         assertEquals(DemoScene.SHOWCASE.look.fov, app.camera.fov)
         assertEquals(3, published)
+    }
+
+    @Test
+    fun `a benchmark run sets up its scene and renderer, flies the camera and the settings come back`() {
+        app.changeCameraSettings { imageWidth = 120; imageHeight = 80; samplesPerPixel = 3 }
+        val before = app.captureSettings()
+        app.startBenchmarkRun(BenchmarkConfig(DemoScene.SHOWCASE, RenderMode.WIREFRAME, 64, 48))
+        assertEquals(64 to 48, app.frameBuffer.frame.width to app.frameBuffer.frame.height)
+        assertEquals(BenchmarkConfig.SAMPLES, app.camera.samplesPerPixel)
+        val pose = Flights.of(DemoScene.SHOWCASE).pose(100, 600)
+        app.flyCamera(pose)
+        assertEquals(pose.origin, app.camera.origin)
+        app.restoreSettings(before)
+        assertEquals(before, app.captureSettings())
+        assertEquals(4, published)
     }
 
     private companion object {
