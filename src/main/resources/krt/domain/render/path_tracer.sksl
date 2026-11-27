@@ -1,9 +1,11 @@
 // GPU path tracer of krt (ADR 0009). Mirrors krt.domain.trace.PathTracing and the materials of the scene model.
-// SkSL is GLSL ES 2.0: no recursion, loops have constant bounds and stop early with break.
+// SkSL is GLSL ES 2.0: no recursion, loops have constant bounds and stop early with break, and local arrays take
+// constant indices only, so the BVH is walked without a stack along skip links (see krt.domain.trace.FlatBvh).
 
-uniform shader materials;           // RGBA_8888, one 24-bit fixed-point number per texel, see GpuScenePacking
-uniform float4 spheres[512];        // centre x, y, z, radius; GpuScenePacking.MAX_SPHERES
-uniform float sphereCount;
+uniform shader scene;               // RGBA_8888, one 24-bit number per texel, see GpuScene
+uniform float nodeCount;
+uniform float primitiveStart;
+uniform float materialStart;
 uniform float2 frameSize;
 uniform float3 camOrigin;
 uniform float3 camLowerLeft;
@@ -16,29 +18,44 @@ uniform float maxDepth;
 uniform float samples;
 uniform float seed;
 
-const int MAX_SPHERES = 512;
 const int MAX_DEPTH = 32;
 const int MAX_SAMPLES = 64;
+const int MAX_STEPS = 65536;        // nodes one ray may visit
+const int LEAF_SIZE = 4;            // Bvh.LEAF_SIZE
 const float TEXTURE_WIDTH = 1024.0;
 const float RANGE = 4096.0;
+const float NODE_VALUES = 9.0;
+const float PRIMITIVE_VALUES = 10.0;
 const float MATERIAL_VALUES = 5.0;
 const float T_MIN = 0.001;
 const float FAR = 1.0e30;
 const float PI = 3.14159265358979;
+
+const float SPHERE = 0.0;
 
 const float LAMBERT = 0.0;
 const float METAL = 1.0;
 const float DIELECTRIC = 2.0;
 const float EMISSIVE = 3.0;
 
-float fetch(float index) {
+// The 24-bit number at texel [index], as is: an index, a count or a code.
+float code(float index) {
     float y = floor(index / TEXTURE_WIDTH);
     float x = index - y * TEXTURE_WIDTH;
-    half4 c = materials.eval(float2(x + 0.5, y + 0.5));
+    half4 c = scene.eval(float2(x + 0.5, y + 0.5));
     float r = floor(float(c.r) * 255.0 + 0.5);
     float g = floor(float(c.g) * 255.0 + 0.5);
     float b = floor(float(c.b) * 255.0 + 0.5);
-    return (r * 65536.0 + g * 256.0 + b) / 16777216.0 * (2.0 * RANGE) - RANGE;
+    return r * 65536.0 + g * 256.0 + b;
+}
+
+// The fixed-point coordinate at texel [index].
+float number(float index) {
+    return code(index) / 16777216.0 * (2.0 * RANGE) - RANGE;
+}
+
+float3 vector(float index) {
+    return float3(number(index), number(index + 1.0), number(index + 2.0));
 }
 
 // Hash without sine (Dave Hoskins): a pseudo-random number in [0, 1) from three floats.
@@ -87,44 +104,83 @@ float3 sky(float3 direction) {
     return float3(1.0) * (1.0 - t) + float3(0.5, 0.7, 1.0) * t;
 }
 
+// Distance along the ray to primitive [slot] within [T_MIN, tMax], or -1 when the ray misses it.
+float intersect(float slot, float3 origin, float3 direction, float tMax) {
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    float3 center = vector(base + 1.0);
+    float radius = number(base + 4.0);
+    float3 oc = origin - center;
+    float a = dot(direction, direction);
+    float halfB = dot(oc, direction);
+    float c = dot(oc, oc) - radius * radius;
+    float discriminant = halfB * halfB - a * c;
+    if (discriminant < 0.0) { return -1.0; }
+    float sqrtD = sqrt(discriminant);
+    float root = (-halfB - sqrtD) / a;
+    if (root < T_MIN || root > tMax) { root = (-halfB + sqrtD) / a; }
+    if (root < T_MIN || root > tMax) { return -1.0; }
+    return root;
+}
+
+// Normal of primitive [slot] at [p], pointing out of it.
+float3 outwardNormal(float slot, float3 p) {
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    return (p - vector(base + 1.0)) / number(base + 4.0);
+}
+
+float hitT;
+
+// The primitive the ray hits first, or -1; its distance goes to hitT. Walks the BVH along skip links.
+float closestHit(float3 origin, float3 direction) {
+    hitT = FAR;
+    float hitSlot = -1.0;
+    float3 inverse = 1.0 / direction;
+    float node = 0.0;
+    for (int step = 0; step < MAX_STEPS; step++) {
+        if (node >= nodeCount) { break; }
+        float base = node * NODE_VALUES;
+        float3 t1 = (vector(base) - origin) * inverse;
+        float3 t2 = (vector(base + 3.0) - origin) * inverse;
+        float3 lo = min(t1, t2);
+        float3 hi = max(t1, t2);
+        float near = max(max(lo.x, lo.y), max(lo.z, T_MIN));
+        float far = min(min(hi.x, hi.y), min(hi.z, hitT));
+        if (far < near) {
+            node = code(base + 6.0);
+        } else {
+            float count = code(base + 8.0);
+            float first = code(base + 7.0);
+            for (int k = 0; k < LEAF_SIZE; k++) {
+                if (float(k) >= count) { break; }
+                float t = intersect(first + float(k), origin, direction, hitT);
+                if (t > 0.0) {
+                    hitT = t;
+                    hitSlot = first + float(k);
+                }
+            }
+            node += 1.0;
+        }
+    }
+    return hitSlot;
+}
+
 float3 trace(float3 origin, float3 direction) {
     float3 throughput = float3(1.0);
     for (int depth = 0; depth < MAX_DEPTH; depth++) {
         if (float(depth) >= maxDepth) { break; }
 
-        float closest = FAR;
-        int hitIndex = -1;
-        float4 hitSphere = float4(0.0);
-        for (int i = 0; i < MAX_SPHERES; i++) {
-            if (float(i) >= sphereCount) { break; }
-            float4 s = spheres[i];
-            float3 oc = origin - s.xyz;
-            float a = dot(direction, direction);
-            float halfB = dot(oc, direction);
-            float c = dot(oc, oc) - s.w * s.w;
-            float discriminant = halfB * halfB - a * c;
-            if (discriminant >= 0.0) {
-                float sqrtD = sqrt(discriminant);
-                float root = (-halfB - sqrtD) / a;
-                if (root < T_MIN || root > closest) { root = (-halfB + sqrtD) / a; }
-                if (root >= T_MIN && root <= closest) {
-                    closest = root;
-                    hitIndex = i;
-                    hitSphere = s;
-                }
-            }
-        }
-        if (hitIndex < 0) { return throughput * sky(direction); }
+        float slot = closestHit(origin, direction);
+        if (slot < 0.0) { return throughput * sky(direction); }
 
-        float3 p = origin + direction * closest;
-        float3 outward = (p - hitSphere.xyz) / hitSphere.w;
+        float3 p = origin + direction * hitT;
+        float3 outward = outwardNormal(slot, p);
         bool frontFace = dot(direction, outward) < 0.0;
         float3 normal = frontFace ? outward : -outward;
 
-        float base = float(hitIndex) * MATERIAL_VALUES;
-        float kind = floor(fetch(base) + 0.5);
-        float3 color = float3(fetch(base + 1.0), fetch(base + 2.0), fetch(base + 3.0));
-        float param = fetch(base + 4.0);
+        float base = materialStart + slot * MATERIAL_VALUES;
+        float kind = code(base);
+        float3 color = vector(base + 1.0);
+        float param = number(base + 4.0);
 
         if (kind == EMISSIVE) { return throughput * color; }
 

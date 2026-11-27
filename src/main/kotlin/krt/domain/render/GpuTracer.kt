@@ -37,9 +37,10 @@ class GpuTracer : AutoCloseable {
 
     fun shader(frame: GpuFrame): Shader {
         val builder = RuntimeShaderBuilder(effect)
-        builder.child("materials", materials(frame.scene))
-        builder.uniform("spheres", frame.scene.spheres)
-        builder.uniform("sphereCount", frame.scene.sphereCount.toFloat())
+        builder.child("scene", sceneTexture(frame.scene))
+        builder.uniform("nodeCount", frame.scene.nodeCount.toFloat())
+        builder.uniform("primitiveStart", frame.scene.primitiveStart.toFloat())
+        builder.uniform("materialStart", frame.scene.materialStart.toFloat())
         builder.uniform("frameSize", frame.width.toFloat(), frame.height.toFloat())
         builder.vector("camOrigin", frame.view.origin)
         builder.vector("camLowerLeft", frame.view.lowerLeftCorner)
@@ -58,11 +59,11 @@ class GpuTracer : AutoCloseable {
         effect.close()
     }
 
-    private fun materials(scene: GpuScene): Shader =
+    private fun sceneTexture(scene: GpuScene): Shader =
         Image.makeRaster(
-            ImageInfo(scene.materialsWidth, scene.materialsHeight, ColorType.RGBA_8888, ColorAlphaType.UNPREMUL, null),
-            scene.materials,
-            scene.materialsWidth * BYTES_PER_TEXEL,
+            ImageInfo(scene.width, scene.height, ColorType.RGBA_8888, ColorAlphaType.UNPREMUL, null),
+            scene.data,
+            scene.width * BYTES_PER_TEXEL,
         ).makeShader(FilterTileMode.CLAMP, FilterTileMode.CLAMP, SamplingMode.DEFAULT, null)
 
     private fun RuntimeShaderBuilder.vector(name: String, value: Point3) =
