@@ -64,6 +64,7 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
         private fun materialOf(obj: Traceable): Material? = when (obj) {
             is Sphere -> obj.material
             is Triangle -> obj.material
+            is Fog -> obj.material
             else -> null
         }
 
@@ -72,6 +73,7 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
             is Metal -> "Metal"
             is Dielectric -> "Glass"
             is Emissive -> "Emissive"
+            is Isotropic -> "Fog"
             null -> "Unknown"
             else -> material::class.simpleName ?: "Material"
         }
@@ -81,6 +83,7 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
             is Metal -> material.albedo
             is Emissive -> material.emitColor
             is Dielectric -> GLASS_COLOR
+            is Isotropic -> material.albedo
             else -> UNKNOWN_COLOR
         }
     }

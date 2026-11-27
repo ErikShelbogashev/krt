@@ -9,9 +9,12 @@ import krt.domain.scene.World
 import krt.domain.scene.model.Checker
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
+import krt.domain.scene.model.Fog
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Plastic
+import krt.domain.scene.model.SceneLook
+import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Triangle
 import krt.domain.trace.GpuScenePacking
@@ -40,6 +43,19 @@ class GpuTracerTest {
             Sphere(Point3(-1.5, 0.5, 1.5), 0.5, Plastic(Color(0.8, 0.1, 0.1), 0.05)),
             Sphere(Point3(1.5, 0.5, 1.5), 0.5, Dielectric(1.5, Color(0.2, 0.6, 1.0), 1.5)),
         ),
+    )
+
+    /** A night scene lit by a lamp and a glowing panel, with a sphere of fog around the lamp. */
+    private val litFog = World(
+        listOf(
+            Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.7, 0.7, 0.7))),
+            Sphere(Point3(0.0, 2.0, 0.0), 0.3, Emissive(Color(1.0, 0.85, 0.6), 12.0)),
+            Triangle(Point3(-4.0, 0.0, -3.0), Point3(4.0, 0.0, -3.0), Point3(0.0, 4.0, -3.0), Emissive(WALL, 0.6)),
+            Sphere(Point3(-2.0, 0.8, 1.0), 0.8, Plastic(Color(0.8, 0.1, 0.1), 0.05)),
+            Sphere(Point3(2.0, 0.8, 1.0), 0.8, Metal(Color(0.7, 0.6, 0.5), 0.1)),
+            Fog(Point3(0.0, 1.5, 0.0), 2.0, 0.35, Color(0.9, 0.9, 0.9)),
+        ),
+        SceneLook(Sky(Color(0.03, 0.03, 0.05), Color(0.0, 0.0, 0.02)), fov = 60.0, aperture = 0.0, sampleLights = true),
     )
 
     private fun camera() = Camera(
@@ -76,6 +92,18 @@ class GpuTracerTest {
     }
 
     @Test
+    fun `with light sampling and fog the GPU frame matches the CPU frame in brightness`() {
+        val camera = camera()
+        val gpu = gpuFrame(camera, litFog)
+        val cpu = cpuFrame(camera, litFog)
+
+        val difference = abs(brightness(gpu) - brightness(cpu))
+        assertTrue(difference < TOLERANCE, "GPU ${brightness(gpu)} vs CPU ${brightness(cpu)}")
+        val regions = (0 until QUADRANTS).map { q -> abs(brightness(gpu, q) - brightness(cpu, q)) }
+        assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
+    }
+
+    @Test
     fun `triangles are drawn`() {
         val wall = Triangle(
             Point3(-50.0, -50.0, -3.0),
@@ -89,7 +117,7 @@ class GpuTracerTest {
     }
 
     private fun gpuFrame(camera: Camera, scene: World = world): IntArray = GpuTracer().use { tracer ->
-        val frame = GpuFrame(GpuScenePacking.pack(scene.objects), camera.view(), SIZE, SIZE, DEPTH, SAMPLES, 0.37f)
+        val frame = GpuFrame(scene.gpuScene, camera.view(), SIZE, SIZE, DEPTH, SAMPLES, 0.37f)
         pixels(tracer.shader(frame))
     }
 
@@ -113,8 +141,8 @@ class GpuTracerTest {
         return IntArray(SIZE * SIZE) { bitmap.getColor(it % SIZE, it / SIZE) }
     }
 
-    private fun cpuFrame(camera: Camera): IntArray {
-        val rayTracer = RayTracer(world, DEPTH)
+    private fun cpuFrame(camera: Camera, scene: World = world): IntArray {
+        val rayTracer = RayTracer(scene, DEPTH)
         val frameSeed = Random(5).nextLong()
         return IntArray(SIZE * SIZE) { index ->
             val pixel = FrameSampling.Pixel(index % SIZE, SIZE - 1 - index / SIZE)

@@ -63,6 +63,6 @@ internal object ClearCoat {
 
     private fun diffuse(hit: Hit, base: Color, random: Random): Scattered {
         val direction = (hit.normal + Point3.randomInUnitSphere(random)).takeIf { !it.isNearZero() } ?: hit.normal
-        return Scattered(Ray(hit.p, direction), base)
+        return Scattered(Ray(hit.p, direction), base, Lobe.DIFFUSE)
     }
 }

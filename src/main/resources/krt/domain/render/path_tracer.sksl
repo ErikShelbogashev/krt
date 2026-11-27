@@ -8,6 +8,8 @@ uniform float previousSamples;
 uniform float nodeCount;
 uniform float primitiveStart;
 uniform float materialStart;
+uniform float lightStart;           // the primitive slots of the lights, see GpuScene
+uniform float lightCount;           // lights to sample (next event estimation, ADR 0012); 0 when it is off
 uniform float3 skyHorizon;          // Sky: the gradient from the horizon to the zenith
 uniform float3 skyZenith;
 uniform float2 frameSize;
@@ -37,6 +39,7 @@ const float PI = 3.14159265358979;
 
 const float SPHERE = 0.0;
 const float TRIANGLE = 1.0;
+const float MEDIUM = 2.0;
 
 const float LAMBERT = 0.0;
 const float METAL = 1.0;
@@ -44,6 +47,12 @@ const float DIELECTRIC = 2.0;
 const float EMISSIVE = 3.0;
 const float PLASTIC = 4.0;
 const float CHECKER = 5.0;
+const float ISOTROPIC = 6.0;
+
+const float SPECULAR = 0.0;         // Lobe: how a ray left a surface, for light sampling
+const float DIFFUSE = 1.0;
+const float VOLUME = 2.0;
+const float SHADOW_MARGIN = 1.0e-4;
 
 // The 24-bit number at texel [index], as is: an index, a count or a code.
 float code(float index) {
@@ -131,10 +140,30 @@ float intersectTriangle(float base, float3 origin, float3 direction, float tMax)
     return t;
 }
 
+// Fog in a sphere, as Fog.hit: where a ray scatters after a random free path, or -1 when it passes through.
+float intersectMedium(float base, float3 origin, float3 direction, float tMax) {
+    float3 oc = origin - vector(base + 1.0);
+    float radius = number(base + 4.0);
+    float a = dot(direction, direction);
+    float halfB = dot(oc, direction);
+    float discriminant = halfB * halfB - a * (dot(oc, oc) - radius * radius);
+    if (discriminant < 0.0) { return -1.0; }
+    float root = sqrt(discriminant);
+    float enter = max((-halfB - root) / a, T_MIN);
+    float leave = min((-halfB + root) / a, tMax);
+    if (enter >= leave) { return -1.0; }
+    float speed = sqrt(a);
+    float freePath = -log(1.0 - rnd()) / number(base + 5.0);
+    if (freePath > (leave - enter) * speed) { return -1.0; }
+    return enter + freePath / speed;
+}
+
 // Distance along the ray to primitive [slot] within [T_MIN, tMax], or -1 when the ray misses it.
 float intersect(float slot, float3 origin, float3 direction, float tMax) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
-    if (code(base) == TRIANGLE) { return intersectTriangle(base, origin, direction, tMax); }
+    float kind = code(base);
+    if (kind == TRIANGLE) { return intersectTriangle(base, origin, direction, tMax); }
+    if (kind == MEDIUM) { return intersectMedium(base, origin, direction, tMax); }
     float3 center = vector(base + 1.0);
     float radius = number(base + 4.0);
     float3 oc = origin - center;
@@ -153,15 +182,17 @@ float intersect(float slot, float3 origin, float3 direction, float tMax) {
 // Normal of primitive [slot] at [p], pointing out of it.
 float3 outwardNormal(float slot, float3 p) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
-    if (code(base) == TRIANGLE) { return normalize(cross(vector(base + 4.0), vector(base + 7.0))); }
+    float kind = code(base);
+    if (kind == TRIANGLE) { return normalize(cross(vector(base + 4.0), vector(base + 7.0))); }
+    if (kind == MEDIUM) { return float3(0.0, 1.0, 0.0); }
     return (p - vector(base + 1.0)) / number(base + 4.0);
 }
 
 float hitT;
 
-// The primitive the ray hits first, or -1; its distance goes to hitT. Walks the BVH along skip links.
-float closestHit(float3 origin, float3 direction) {
-    hitT = FAR;
+// The primitive the ray hits first before tMax, or -1; its distance goes to hitT. Walks the BVH along skip links.
+float closestHit(float3 origin, float3 direction, float tMax) {
+    hitT = tMax;
     float hitSlot = -1.0;
     float3 inverse = 1.0 / direction;
     float node = 0.0;
@@ -193,13 +224,58 @@ float closestHit(float3 origin, float3 direction) {
     return hitSlot;
 }
 
+// Light reaching [p] straight from one light picked at random, as Lights.sample and PathTracing.direct take it:
+// a uniform point on the light, shadowed or not, weighed by the response of the lobe and the pdf of the sample.
+float3 directLight(float3 p, float3 normal, float lobe) {
+    float pick = min(floor(rnd() * lightCount), lightCount - 1.0);
+    float slot = code(lightStart + pick);
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    float3 target;
+    float3 lightNormal;
+    float area;
+    bool twoSided = code(base) == TRIANGLE;
+    if (twoSided) {
+        float3 edge1 = vector(base + 4.0);
+        float3 edge2 = vector(base + 7.0);
+        float u = rnd();
+        float v = rnd();
+        if (u + v > 1.0) { u = 1.0 - u; v = 1.0 - v; }
+        float3 c = cross(edge1, edge2);
+        float doubleArea = length(c);
+        target = vector(base + 1.0) + edge1 * u + edge2 * v;
+        lightNormal = c / doubleArea;
+        area = doubleArea * 0.5;
+    } else {
+        float radius = number(base + 4.0);
+        float z = 1.0 - 2.0 * rnd();
+        float phi = 2.0 * PI * rnd();
+        float ring = sqrt(max(0.0, 1.0 - z * z));
+        lightNormal = float3(ring * cos(phi), ring * sin(phi), z);
+        target = vector(base + 1.0) + lightNormal * radius;
+        area = 4.0 * PI * radius * radius;
+    }
+    float3 toLight = target - p;
+    float distanceSquared = dot(toLight, toLight);
+    float distance = sqrt(distanceSquared);
+    float3 direction = toLight / distance;
+    float facing = -dot(direction, lightNormal);
+    float cosine = twoSided ? abs(facing) : facing;
+    if (cosine <= 1.0e-6) { return float3(0.0); }
+    if (closestHit(p, direction, distance * (1.0 - SHADOW_MARGIN)) >= 0.0) { return float3(0.0); }
+    float pdf = distanceSquared / (cosine * area) / lightCount;
+    float response = lobe == VOLUME ? 1.0 / (4.0 * PI) : max(0.0, dot(normal, direction)) / PI;
+    return vector(materialStart + slot * MATERIAL_VALUES + 1.0) * (response / pdf);
+}
+
 float3 trace(float3 origin, float3 direction) {
+    float3 radiance = float3(0.0);
     float3 throughput = float3(1.0);
+    bool countEmission = true;
     for (int depth = 0; depth < MAX_DEPTH; depth++) {
         if (float(depth) >= maxDepth) { break; }
 
-        float slot = closestHit(origin, direction);
-        if (slot < 0.0) { return throughput * sky(direction); }
+        float slot = closestHit(origin, direction, FAR);
+        if (slot < 0.0) { return radiance + throughput * sky(direction); }
 
         float3 p = origin + direction * hitT;
         float3 outward = outwardNormal(slot, p);
@@ -211,21 +287,23 @@ float3 trace(float3 origin, float3 direction) {
         float3 color = vector(base + 1.0);
         float param = number(base + 4.0);
 
-        if (kind == EMISSIVE) { return throughput * color; }
+        if (kind == EMISSIVE) { return countEmission ? radiance + throughput * color : radiance; }
 
         float3 scattered;
         float3 attenuation = color;
+        float lobe = SPECULAR;
         if (kind == PLASTIC || kind == CHECKER) {
             // Clear coat over a diffuse base, as ClearCoat.scatter.
             float3 unitDirection = normalize(direction);
             float cosine = min(dot(-unitDirection, normal), 1.0);
             if (rnd() < reflectance(cosine, number(base + 5.0))) {
                 scattered = reflect(unitDirection, normal) + randomInUnitSphere() * param;
-                if (dot(scattered, normal) <= 0.0) { return float3(0.0); }
+                if (dot(scattered, normal) <= 0.0) { return radiance; }
                 attenuation = float3(1.0);
             } else {
                 scattered = normal + randomInUnitSphere();
                 if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+                lobe = DIFFUSE;
                 if (kind == CHECKER) {
                     float cell = number(base + 9.0);
                     float cells = floor(p.x / cell) + floor(p.y / cell) + floor(p.z / cell);
@@ -235,7 +313,7 @@ float3 trace(float3 origin, float3 direction) {
         } else if (kind == METAL) {
             float3 reflected = reflect(normalize(direction), normalize(normal));
             scattered = reflected + randomInUnitSphere() * param;
-            if (dot(scattered, normal) <= 0.0) { return float3(0.0); }
+            if (dot(scattered, normal) <= 0.0) { return radiance; }
         } else if (kind == DIELECTRIC) {
             // Beer–Lambert: light inside tinted glass fades with the distance it travelled.
             attenuation = frontFace ? float3(1.0) : exp(-color * hitT * length(direction));
@@ -245,15 +323,21 @@ float3 trace(float3 origin, float3 direction) {
             float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
             bool shouldReflect = ratio * sinTheta > 1.0 || reflectance(cosTheta, ratio) > rnd();
             scattered = shouldReflect ? reflect(unitDirection, normal) : refractDir(unitDirection, normal, ratio);
+        } else if (kind == ISOTROPIC) {
+            scattered = normalize(randomInUnitSphere());
+            lobe = VOLUME;
         } else {
             scattered = normal + randomInUnitSphere();
             if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+            lobe = DIFFUSE;
         }
         throughput *= attenuation;
+        countEmission = lightCount < 1.0 || lobe == SPECULAR;
+        if (!countEmission) { radiance += throughput * directLight(p, normal, lobe); }
         origin = p;
         direction = scattered;
     }
-    return float3(0.0);
+    return radiance;
 }
 
 half4 main(float2 position) {

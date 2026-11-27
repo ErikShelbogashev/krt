@@ -12,6 +12,7 @@ import krt.domain.scene.World
 import krt.domain.scene.model.Checker
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
+import krt.domain.scene.model.Fog
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Plastic
@@ -103,6 +104,28 @@ class GpuScenePackingTest {
     }
 
     @Test
+    fun `fog packs as a medium and emissive primitives as lights`() {
+        val objects = listOf(
+            Sphere(Point3(1.0, 0.0, 0.0), 0.5, Lambert(Color(0.1, 0.2, 0.3))),
+            Fog(Point3(0.0, 2.0, 0.0), 1.5, 0.25, Color(0.9, 0.8, 0.7)),
+            Sphere(Point3(5.0, 0.0, 0.0), 1.0, Emissive(Color(0.1, 0.7, 0.4), 2.0)),
+            Triangle(Point3(0.0, 4.0, 0.0), Point3(1.0, 4.0, 0.0), Point3(0.0, 4.0, 1.0), Emissive(Color.ONE, 1.0)),
+        )
+
+        val scene = Packed(GpuScenePacking.pack(objects, sampleLights = true))
+
+        val fog = (0 until 4).single { scene.code(scene.primitive(it)) == GpuScenePacking.MEDIUM }
+        assertEquals(Point3(0.0, 2.0, 0.0), scene.vector(scene.primitive(fog) + 1))
+        assertEquals(0.25, scene.number(scene.primitive(fog) + 5), 1e-3)
+        scene.assertMaterial(fog, GpuScenePacking.ISOTROPIC, 0.9, 0.8, 0.7, 0.0)
+        val lights = scene.scene.lights
+        assertEquals(2, lights.sampled)
+        val emissive = (0 until lights.count).map { scene.code(lights.start + it) }
+        emissive.forEach { slot -> scene.assertMaterialKind(slot, GpuScenePacking.EMISSIVE) }
+        assertEquals(0, GpuScenePacking.pack(objects).lights.sampled)
+    }
+
+    @Test
     fun `an empty scene packs no nodes`() {
         val scene = GpuScenePacking.pack(emptyList())
         assertEquals(0, scene.nodeCount)
@@ -132,6 +155,9 @@ class GpuScenePackingTest {
             assertEquals(kind, code(at))
             listOf(r, g, b, p).forEachIndexed { i, expected -> assertEquals(expected, number(at + 1 + i), 1e-3) }
         }
+
+        fun assertMaterialKind(slot: Int, kind: Int) =
+            assertEquals(kind, code(scene.materialStart + slot * GpuScenePacking.MATERIAL_VALUES))
 
         /** The stackless walk of path_tracer.sksl, over spheres. */
         fun walk(ray: Ray): Double? {
