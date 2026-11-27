@@ -26,11 +26,12 @@ data class SceneLook(
 
 /**
  * The scenes the window offers, each a scene file in the resources under `krt/scenes` ([path]): pbrt-v4 files of
- * krt's own and the OBJ scenes of the GitHub voxel package (ADR 0016).
+ * krt's own (ADR 0016); the showcase scenes are written by their builders in the tests (ShowcaseScenes).
  */
 enum class DemoScene(val title: String, val path: String) {
     SHOWCASE("Showcase", "showcase.pbrt"),
     MATERIALS("Materials", "materials.pbrt"),
     FRACTALS("Fractals", "fractals.pbrt"),
+    PRISM("Prism", "prism.pbrt"),
     CLASSIC("Classic spheres", "classic.pbrt"),
 }

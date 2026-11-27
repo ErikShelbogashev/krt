@@ -1,6 +1,8 @@
 package krt.domain.camera.model
 
+import kotlin.math.cos
 import kotlin.math.floor
+import kotlin.math.sin
 import krt.domain.scene.model.DemoScene
 import krt.platform.math.Point3
 
@@ -70,8 +72,33 @@ object Flights {
         ),
     )
 
+    /**
+     * A swing in front of a set: from [origin] round the point looked at, [target], up to about 40° each way, closer
+     * in and lower on the way, so walls behind the set stay out of the way.
+     */
+    private fun swing(origin: Point3, target: Point3): FlightPath {
+        val offset = origin - target
+        return FlightPath(
+            SWING.map { (degrees, distance, lift) ->
+                val angle = Math.toRadians(degrees)
+                val (c, s) = cos(angle) to sin(angle)
+                val turned = Point3(offset.x * c + offset.z * s, offset.y, -offset.x * s + offset.z * c)
+                FlightPose(target + turned * distance + Point3(0.0, lift, 0.0), target)
+            },
+        )
+    }
+
+    /** Angle in degrees, share of the start distance and lift of each keyframe of a [swing]. */
+    private val SWING = listOf(
+        Triple(0.0, 1.0, 0.0), Triple(25.0, 0.85, -0.2), Triple(40.0, 0.7, -0.3), Triple(15.0, 0.55, -0.4),
+        Triple(-20.0, 0.7, -0.2), Triple(-40.0, 0.85, 0.1), Triple(-15.0, 1.05, 0.3),
+    )
+
+    private val PRISM = swing(Point3(0.6, 1.7, 4.2), Point3(0.2, 0.9, -1.0))
+
     fun of(scene: DemoScene): FlightPath = when (scene) {
         DemoScene.SHOWCASE, DemoScene.MATERIALS, DemoScene.FRACTALS -> SHOWCASE
+        DemoScene.PRISM -> PRISM
         DemoScene.CLASSIC -> CLASSIC
     }
 }

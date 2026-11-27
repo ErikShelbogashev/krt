@@ -592,7 +592,10 @@ class GpuTracerTest {
         const val VOXEL_SAMPLES = 6
 
         /** The showcase scenes made for the switcher, each checked against the CPU as a whole. */
-        val SHOWCASE_SCENES = listOf(DemoScene.MATERIALS)
+        val SHOWCASE_SCENES = listOf(
+            DemoScene.MATERIALS,
+            DemoScene.PRISM,
+        )
         const val PIXEL_TOLERANCE = 0.02
         const val BUDGET_SAMPLES = 32
         const val SLOW_STEP_MS = 400.0

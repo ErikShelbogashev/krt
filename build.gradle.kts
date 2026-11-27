@@ -37,6 +37,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    // `-Dkrt.writeScenes=true` writes the showcase scene files from their builders (ShowcaseScenesTest).
+    systemProperty("krt.writeScenes", System.getProperty("krt.writeScenes") ?: "false")
 }
 
 // The GPU smoke check on the real GPU (Metal), off screen; not in `check`, CI has no GPU (ADR 0010).
