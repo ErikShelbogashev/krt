@@ -1,5 +1,6 @@
 package krt.domain.render
 
+import krt.domain.render.model.RenderProgress
 import org.jetbrains.skia.Shader
 
 /**
@@ -10,6 +11,11 @@ class FrameBuffer(width: Int, height: Int) {
 
     @Volatile
     var frame: Frame = Frame(width, height)
+        private set
+
+    /** Progress of the frame last published. */
+    @Volatile
+    var progress: RenderProgress = RenderProgress.NONE
         private set
 
     @Volatile
@@ -32,11 +38,14 @@ class FrameBuffer(width: Int, height: Int) {
         frame = Frame(width, height)
     }
 
-    fun publish(frame: Frame) {
+    fun publish(frame: Frame, progress: RenderProgress) {
+        this.progress = progress
         listener(frame)
     }
 
+    /** The GPU frame is drawn in one pass with all its samples (ADR 0009). */
     fun publishGpu(shader: Shader) {
+        progress = RenderProgress.finished(1, 0)
         gpuListener(shader)
     }
 }

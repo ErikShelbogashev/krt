@@ -12,6 +12,7 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import krt.domain.camera.Camera
 import krt.domain.render.model.RenderMode
+import krt.domain.render.model.RenderProgress
 import krt.domain.scene.World
 import krt.platform.awt.toAWTColor
 import krt.platform.math.Color
@@ -43,7 +44,7 @@ class RenderController(
         rayTracer: RayTracer,
         camera: Camera,
         onGpuFrame: ((Shader) -> Unit) = {},
-        onUpdate: (() -> Unit),
+        onUpdate: ((RenderProgress) -> Unit),
     ) {
         renderJob?.cancel()
         when (mode) {
@@ -74,33 +75,41 @@ class RenderController(
      * Within a pass, workers, one per core, take batches of [batchSize] pixels in turn, so no core waits for
      * the others. Pixels go straight into the frame's pixel array. After each batch the worker that finished it
      * asks the clock whether to publish an intermediate frame; the final frame is published once all passes
-     * are done.
+     * are done. Every update carries the progress of the frame at the moment it was published.
      */
     private fun renderRayTracedImage(
         frame: Frame,
         rayTracer: RayTracer,
         camera: Camera,
-        onUpdate: (() -> Unit),
+        onUpdate: ((RenderProgress) -> Unit),
     ) {
         val pixels = FrameSampling.pixelOrder(camera.imageWidth, camera.imageHeight, random)
         val frameSeed = random.nextLong()
         val batches = pixels.chunked(batchSize)
         val accumulated = Accumulator(camera.imageWidth * camera.imageHeight)
+        val passes = camera.samplesPerPixel
+        val startedAt = clock()
         renderJob = CoroutineScope(renderDispatcher).launch {
-            for (pass in 0 until camera.samplesPerPixel) {
+            for (pass in 0 until passes) {
                 if (!isActive) break
                 val nextBatch = AtomicInteger(0)
+                val doneBatches = AtomicInteger(0)
                 List(workers) {
                     launch {
                         while (isActive) {
                             val batch = batches.getOrNull(nextBatch.getAndIncrement()) ?: break
                             renderBatch(batch, Pass(pass, frameSeed), frame, accumulated, rayTracer, camera)
-                            publishIfDue(onUpdate)
+                            val passFraction = doneBatches.incrementAndGet().toDouble() / batches.size
+                            publishIfDue(onUpdate) { now ->
+                                RenderProgress(passes, pass, passFraction, now - startedAt)
+                            }
                         }
                     }
                 }.joinAll()
             }
-            if (isActive) SwingUtilities.invokeLater { onUpdate.invoke() }
+            if (!isActive) return@launch
+            val progress = RenderProgress.finished(passes, clock() - startedAt)
+            SwingUtilities.invokeLater { onUpdate(progress) }
         }
     }
 
@@ -143,24 +152,27 @@ class RenderController(
     }
 
     /** One worker at a time reads the clock, so the repaint decision stays consistent across workers. */
-    private fun publishIfDue(onUpdate: () -> Unit) {
-        synchronized(repaintLock) {
+    private fun publishIfDue(onUpdate: (RenderProgress) -> Unit, progressAt: (Long) -> RenderProgress) {
+        val currentTime = synchronized(repaintLock) {
             val currentTime = clock()
             if (!FrameSampling.shouldRepaint(currentTime, lastRepaintTime, repaintIntervalMs)) return
             lastRepaintTime = currentTime
+            currentTime
         }
-        SwingUtilities.invokeLater { onUpdate.invoke() }
+        val progress = progressAt(currentTime)
+        SwingUtilities.invokeLater { onUpdate(progress) }
     }
 
     private fun renderWireframe(
         frame: Frame,
         world: World,
         camera: Camera,
-        onUpdate: (() -> Unit),
+        onUpdate: ((RenderProgress) -> Unit),
     ) {
+        val startedAt = clock()
         val segments = FrameSampling.wireframe(world.objects, camera)
         WireframeRaster.draw(segments, frame.pixels, frame.width, frame.height)
-        onUpdate.invoke()
+        onUpdate(RenderProgress.finished(1, clock() - startedAt))
     }
 
     override fun close() {

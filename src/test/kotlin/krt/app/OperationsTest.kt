@@ -6,6 +6,7 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 import krt.domain.camera.CameraMove
 import krt.domain.render.model.RenderMode
 import krt.infra.AppContext
@@ -33,6 +34,7 @@ class OperationsTest {
         app.setRenderMode(RenderMode.WIREFRAME)
         assertEquals(RenderMode.WIREFRAME, app.renderController.mode)
         assertEquals(1, published)
+        assertTrue(app.frameBuffer.progress.isDone)
     }
 
     @Test

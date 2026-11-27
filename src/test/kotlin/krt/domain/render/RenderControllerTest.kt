@@ -10,6 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import krt.domain.camera.Camera
 import krt.domain.render.model.RenderMode
+import krt.domain.render.model.RenderProgress
 import krt.domain.scene.World
 
 class RenderControllerTest {
@@ -56,6 +57,30 @@ class RenderControllerTest {
         }
 
         assertEquals(expected, updates.size)
+    }
+
+    @Test
+    fun `progress grows pass by pass and the last update is the finished frame`() {
+        val passes = 3
+        val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = passes }
+        val batch = 64
+        val expected = passes * (16 * 16 / batch) + 1
+        val progress = Collections.synchronizedList(mutableListOf<RenderProgress>())
+        val done = CountDownLatch(1)
+        var lastTick = 0L
+
+        RenderController(0L, batch, Random(1), clock = { ++lastTick }).use { controller ->
+            controller.renderImage(Frame(16, 16), RayTracer(World.default(Random(2)), 3), camera) {
+                progress += it
+                if (progress.size == expected) done.countDown()
+            }
+            assertTrue(done.await(30, TimeUnit.SECONDS), "render did not finish")
+        }
+
+        val updates = progress.toList()
+        assertTrue(updates.dropLast(1).none { it.isDone })
+        assertEquals((0 until passes).toSet(), updates.dropLast(1).map { it.completedPasses }.toSet())
+        assertEquals(RenderProgress.finished(passes, updates.last().elapsedMs), updates.last())
     }
 
     @Test
