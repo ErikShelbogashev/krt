@@ -71,7 +71,7 @@ object Flights {
     )
 
     fun of(scene: DemoScene): FlightPath = when (scene) {
-        DemoScene.SHOWCASE -> SHOWCASE
+        DemoScene.SHOWCASE, DemoScene.MATERIALS -> SHOWCASE
         DemoScene.CLASSIC -> CLASSIC
     }
 }

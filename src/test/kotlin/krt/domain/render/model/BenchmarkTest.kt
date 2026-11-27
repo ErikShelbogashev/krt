@@ -37,7 +37,7 @@ class BenchmarkTest {
     @Test
     fun `the plan runs every combination`() {
         val plan = BenchmarkConfig.plan(DemoScene.entries, RenderMode.entries.take(2), listOf(400 to 400, 1024 to 1024))
-        assertEquals(2 * 2 * 2, plan.size)
+        assertEquals(DemoScene.entries.size * 2 * 2, plan.size)
         assertEquals(BenchmarkConfig(DemoScene.SHOWCASE, RenderMode.CPU, 400, 400), plan.first())
     }
 
