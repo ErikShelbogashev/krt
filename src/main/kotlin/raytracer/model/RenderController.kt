@@ -11,6 +11,7 @@ class RenderController(
     var repaintIntervalMs: Long,
     var batchSize: Int,
     private val random: Random = Random.Default,
+    private val clock: () -> Long = System::currentTimeMillis,
 ) : AutoCloseable {
     private var renderJob: Job? = null
     private val renderDispatcher =
@@ -43,35 +44,26 @@ class RenderController(
         camera: Camera,
         onUpdate: (() -> Unit),
     ) {
-        val pixels = (0 until camera.imageHeight).flatMap { j ->
-            (0 until camera.imageWidth).map { i ->
-                Pair(j, i)
-            }
-        }.shuffled(random)
+        val pixels = FrameSampling.pixelOrder(camera.imageWidth, camera.imageHeight, random)
         val frameSeed = random.nextLong()
         renderJob = CoroutineScope(renderDispatcher).launch {
             pixels.chunked(batchSize).forEach { batch ->
-                batch.map { (j, i) ->
+                batch.map { pixel ->
                     async {
-                        val pixelRandom = Random(frameSeed + j.toLong() * camera.imageWidth + i)
-                        val color = (0 until camera.samplesPerPixel).fold(Point3.ZERO) { acc, _ ->
-                            val u = (i.toDouble() + pixelRandom.nextDouble()) / (camera.imageWidth - 1)
-                            val v = (j.toDouble() + pixelRandom.nextDouble()) / (camera.imageHeight - 1)
-                            val r = camera.ray(u, v, pixelRandom)
-                            acc + rayTracer.color(r, pixelRandom)
-                        }
+                        val pixelRandom = FrameSampling.pixelRandom(frameSeed, pixel, camera.imageWidth)
+                        val color = FrameSampling.samplePixel(pixel, camera, rayTracer, pixelRandom)
                         if (isActive) {
                             image.setRGB(
-                                i,
-                                camera.imageHeight - 1 - j,
+                                pixel.i,
+                                FrameSampling.imageY(pixel, camera.imageHeight),
                                 color.toAWTColor(camera.samplesPerPixel)
                             )
                         }
                     }
                 }.awaitAll()
 
-                val currentTime = System.currentTimeMillis()
-                if (currentTime - lastRepaintTime > repaintIntervalMs) {
+                val currentTime = clock()
+                if (FrameSampling.shouldRepaint(currentTime, lastRepaintTime, repaintIntervalMs)) {
                     SwingUtilities.invokeLater {
                         onUpdate.invoke()
                     }
@@ -88,26 +80,13 @@ class RenderController(
         camera: Camera,
         onUpdate: (() -> Unit),
     ) {
-        // Clear image
+        val segments = FrameSampling.wireframe(world.objects, camera)
         val graphics = image.createGraphics()
         graphics.color = Color.BLACK
         graphics.fillRect(0, 0, image.width, image.height)
+        graphics.color = Color.WHITE
+        segments.forEach { graphics.drawLine(it.start.x, it.start.y, it.end.x, it.end.y) }
         graphics.dispose()
-
-        // Render wireframe
-        val lineSegments = world.objects.flatMap { it.linearize(1.0) } // Adjust the coefficient as needed
-        val graphics2D = image.createGraphics()
-        graphics2D.color = Color.WHITE
-
-        lineSegments.forEach { segment ->
-            val start = camera.project(segment.start)
-            val end = camera.project(segment.end)
-            if (start != null && end != null) {
-                graphics2D.drawLine(start.x, start.y, end.x, end.y)
-            }
-        }
-
-        graphics2D.dispose()
         onUpdate.invoke()
     }
 
