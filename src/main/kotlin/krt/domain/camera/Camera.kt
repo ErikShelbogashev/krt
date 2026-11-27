@@ -109,12 +109,17 @@ class Camera(
         updateCamera()
     }
 
-    /** Back to the view and lens the camera starts with; resolution, samples and speed stay. */
+    /** Stands the camera at [preset], focused on the point the preset looks at. */
+    fun standAt(preset: ViewPreset) {
+        focusDist = preset.focusDistance
+        lookFrom(preset.origin, preset.target)
+    }
+
+    /** To the start view ([ViewPreset.START]) and the default lens; resolution, samples and speed stay. */
     fun resetView() {
         fov = DEFAULT_FOV
         aperture = DEFAULT_APERTURE
-        focusDist = DEFAULT_FOCUS_DISTANCE
-        lookFrom(ViewPreset.DEFAULT.origin, ViewPreset.DEFAULT.target)
+        standAt(ViewPreset.START)
     }
 
     fun adjustYaw(delta: Double) {
