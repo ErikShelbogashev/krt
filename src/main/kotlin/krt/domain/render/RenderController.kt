@@ -54,7 +54,7 @@ class RenderController(
         when (mode) {
             RenderMode.WIREFRAME -> renderWireframe(frame, rayTracer.world, camera, onUpdate)
             RenderMode.GPU -> renderGpuImage(rayTracer, camera, onGpuFrame)
-            RenderMode.CPU -> renderRayTracedImage(frame, rayTracer, camera, onUpdate)
+            RenderMode.CPU -> renderJob = traceFrame(frame, rayTracer, camera, onUpdate)
         }
     }
 
@@ -97,19 +97,19 @@ class RenderController(
      * asks the clock whether to publish an intermediate frame; the final frame is published once all passes
      * are done. Every update carries the progress of the frame at the moment it was published.
      */
-    private fun renderRayTracedImage(
+    private fun traceFrame(
         frame: Frame,
         rayTracer: RayTracer,
         camera: Camera,
         onUpdate: ((RenderProgress) -> Unit),
-    ) {
+    ): Job {
         val pixels = FrameSampling.pixelOrder(camera.imageWidth, camera.imageHeight, random)
         val frameSeed = random.nextLong()
         val batches = pixels.chunked(batchSize)
         val accumulated = Accumulator(camera.imageWidth * camera.imageHeight)
         val passes = camera.samplesPerPixel
         val startedAt = clock()
-        renderJob = CoroutineScope(renderDispatcher).launch {
+        return CoroutineScope(renderDispatcher).launch {
             for (pass in 0 until passes) {
                 if (!isActive) break
                 val nextBatch = AtomicInteger(0)
