@@ -26,7 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -42,14 +42,17 @@ import krt.app.render.RenderControllerSettings
 import krt.app.scene.LoadObject
 import krt.app.scene.ObjectController
 import krt.domain.camera.CameraMove
+import krt.domain.render.Frame
 import krt.infra.AppContext
+import krt.platform.skia.ArgbBitmapConverter
 
 fun main() {
     val app = AppContext.create()
     application {
-        var imageBitmap by remember { mutableStateOf(app.frameBuffer.image.toComposeImageBitmap()) }
+        val converter = remember { ArgbBitmapConverter() }
+        var imageBitmap by remember { mutableStateOf(converter.toImageBitmap(app.frameBuffer.frame)) }
         LaunchedEffect(Unit) {
-            app.frameBuffer.onUpdate { imageBitmap = it.toComposeImageBitmap() }
+            app.frameBuffer.onUpdate { imageBitmap = converter.toImageBitmap(it) }
             app.redraw()
         }
 
@@ -156,3 +159,6 @@ private fun cameraMoveFor(key: Key): CameraMove = when (key) {
     Key.F -> CameraMove.DOWN
     else -> CameraMove.NONE
 }
+
+private fun ArgbBitmapConverter.toImageBitmap(frame: Frame): ImageBitmap =
+    toImageBitmap(frame.pixels, frame.width, frame.height)
