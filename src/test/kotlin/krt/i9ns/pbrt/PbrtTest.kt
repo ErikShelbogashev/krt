@@ -50,7 +50,8 @@ class PbrtTest {
     @Test
     fun `writing what was read gives the same file, for every demo scene`() {
         DemoScene.entries.forEach { scene ->
-            val first = PbrtWriter.write(scene.objects(), scene.look, overview, "scene")
+            val description = krt.i9ns.scenefile.SceneLibrary().load(scene)
+            val first = PbrtWriter.write(description.objects, description.look, overview, "scene")
             val read = PbrtReader.read(first.text, first.files)
             val second = PbrtWriter.write(read.objects, read.look, read.look.start ?: overview, "scene")
             assertEquals(first.text, second.text, "$scene")

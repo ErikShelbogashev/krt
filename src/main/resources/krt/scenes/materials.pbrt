@@ -1,0 +1,166 @@
+# A krt scene in pbrt-v4's format; #krt lines are krt's own, pbrt reads them as comments.
+#krt Look "bool sampleLights" true "bool motionBlur" true
+# pbrt's camera space is left-handed, krt's right-handed: the mirror keeps the picture the same.
+Scale -1 1 1
+LookAt 13.0 2.0 3.0  0.0 0.0 0.0  0 1 0
+Camera "perspective" "float fov" 34.0 "float lensradius" 0.02 "float focaldistance" 13.490737563232042 "float shutteropen" 0 "float shutterclose" 1
+Film "rgb" "integer xresolution" 800 "integer yresolution" 600
+Sampler "zsobol" "integer pixelsamples" 64
+Integrator "volpath" "integer maxdepth" 12
+
+WorldBegin
+#krt Sky "rgb horizon" [0.32 0.24 0.3] "rgb zenith" [0.02 0.03 0.09]
+LightSource "infinite" "rgb L" [0.17 0.135 0.195]
+MakeNamedMedium "medium_0" "string type" "homogeneous" "rgb sigma_a" [3.3 0.47999999999999954 2.4000000000000004] "rgb sigma_s" [2.7 5.5200000000000005 3.5999999999999996] "float scale" 1
+MakeNamedMedium "medium_1" "string type" "homogeneous" "rgb sigma_a" [0.025000000000000355 0.15000000000000036 0.5] "rgb sigma_s" [4.975 4.85 4.5] "float scale" 1
+MakeNamedMedium "medium_2" "string type" "homogeneous" "rgb sigma_a" [0.0024999999999999988 0.0024999999999999988 0.0024999999999999988] "rgb sigma_s" [0.022500000000000003 0.022500000000000003 0.022500000000000003] "float scale" 1
+
+AttributeBegin
+  #krt Name "Wooden floor"
+  #krt Material "patterned" "string kind" "wood" "rgb first" [0.62 0.4 0.22] "rgb second" [0.26 0.13 0.05] "float scale" 2.0 "float turbulence" 0.35 "float frequency" 1.0 "integer octaves" 5 "float roughness" 0.08 "float bump" 0.01
+  Material "coateddiffuse" "rgb reflectance" [0.44 0.265 0.135] "float roughness" 4.096E-5 "float eta" 1.5
+  Translate 0.0 -1000.0 0.0
+  Shape "sphere" "float radius" 1000.0
+AttributeEnd
+AttributeBegin
+  #krt Name "Gold"
+  #krt Material "conductor" "rgb eta" [0.143 0.374 1.442] "rgb k" [3.983 2.385 1.603] "float roughness" 0.25 "float anisotropy" 0.0
+  Material "conductor" "spectrum eta" "metal-Au-eta" "spectrum k" "metal-Au-k" "float uroughness" 0.00390625 "float vroughness" 0.00390625
+  Translate -1.0411858461936598 0.9 2.7358512943264617
+  Shape "sphere" "float radius" 0.9
+AttributeEnd
+AttributeBegin
+  #krt Name "Brushed aluminium"
+  #krt Material "conductor" "rgb eta" [1.657 0.88 0.521] "rgb k" [9.224 6.27 4.837] "float roughness" 0.35 "float anisotropy" 0.85
+  Material "conductor" "spectrum eta" "metal-Al-eta" "spectrum k" "metal-Al-k" "float uroughness" 0.0638563829787234 "float vroughness" 0.003526468749999999
+  Translate 0.4116539319738267 0.8 -2.6760100349675904
+  Shape "sphere" "float radius" 0.8
+AttributeEnd
+AttributeBegin
+  #krt Material "conductor" "rgb eta" [0.2 0.924 1.102] "rgb k" [3.912 2.452 2.142] "float roughness" 0.15 "float anisotropy" 0.0
+  Material "conductor" "spectrum eta" "metal-Cu-eta" "spectrum k" "metal-Cu-k" "float uroughness" 5.0625E-4 "float vroughness" 5.0625E-4
+  Shape "plymesh" "string filename" "materials-mesh3.ply"
+AttributeEnd
+AttributeBegin
+  #krt Name "Jade"
+  MediumInterface "medium_0" ""
+  Material "dielectric" "float eta" 1.45 "float roughness" 1.0000000000000002E-4
+  Translate 2.26317409809466 0.6 -0.9140619087615238
+  Shape "sphere" "float radius" 0.6
+AttributeEnd
+AttributeBegin
+  #krt Name "Wax"
+  MediumInterface "medium_1" ""
+  Material "dielectric" "float eta" 1.45
+  Translate 1.904026665996873 0.45 1.9793444606897546
+  Shape "sphere" "float radius" 0.45
+AttributeEnd
+AttributeBegin
+  #krt Name "Candle flame"
+  AreaLightSource "diffuse" "rgb L" [1.8686807831037073 0.8302768666114065 0.12333033949687035] "float scale" 30.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Translate 1.904026665996873 1.05 1.9793444606897546
+  Shape "sphere" "float radius" 0.07
+AttributeEnd
+AttributeBegin
+  #krt Name "Velvet"
+  #krt Material "velvet" "rgb base" [0.32 0.02 0.08] "rgb sheen" [1.0 0.55 0.65] "float roughness" 0.45
+  Material "diffuse" "rgb reflectance" [0.32 0.02 0.08]
+  Translate 2.330292394869109 0.55 -2.54069324525616
+  Shape "sphere" "float radius" 0.55
+AttributeEnd
+AttributeBegin
+  #krt Name "Beetle shell"
+  #krt Material "iridescent" "rgb base" [0.02 0.03 0.03] "float thickness" 480.0 "float filmior" 1.8 "float roughness" 0.05
+  Material "coateddiffuse" "rgb reflectance" [0.02 0.03 0.03] "float roughness" 6.250000000000001E-6 "float eta" 1.8
+  Translate 0.8401039980166352 0.5 3.4783413517390094
+  Shape "sphere" "float radius" 0.5
+AttributeEnd
+AttributeBegin
+  #krt Name "Lava"
+  #krt AreaLightSource "pattern" "string kind" "noise" "rgb first" [1.0 0.32 0.02] "rgb second" [0.12 0.01 0.0] "float scale" 2.2 "float turbulence" 1.0 "float frequency" 1.0 "integer octaves" 5 "float intensity" 4.0
+  AreaLightSource "diffuse" "rgb L" [0.56 0.165 0.01] "float scale" 4.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Translate -1.4174024545067503 0.5 -4.535402394478013
+  Shape "sphere" "float radius" 0.5
+AttributeEnd
+AttributeBegin
+  #krt Name "Cloudy planet"
+  #krt Material "patterned" "string kind" "clouds" "rgb first" [0.1 0.3 0.75] "rgb second" [0.95 0.95 0.97] "float scale" 1.6 "float turbulence" 1.0 "float frequency" 1.0 "integer octaves" 5 "float roughness" 0.15 "float bump" 0.0
+  Material "coateddiffuse" "rgb reflectance" [0.525 0.625 0.86] "float roughness" 5.0625E-4 "float eta" 1.5
+  Translate -3.0345215464589175 0.6 3.814881040017265
+  Shape "sphere" "float radius" 0.6
+AttributeEnd
+AttributeBegin
+  Material "dielectric" "spectrum eta" [380.0 1.8320268660273913 422.5 1.739405455334372 465.0 1.6709991712816454 507.5 1.6190476127123026 550.0 1.5786672817687892 592.5 1.5466605676744143 635.0 1.5208626702917976 677.5 1.499765693143254 720.0 1.482293187288634]
+  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59] "point3 P" [-0.5520176677250903 1.943183348769642 0.0 -0.893183348769642 1.05 0.5520176677250903 0.0 1.6020176677250904 0.893183348769642 -0.5520176677250903 1.943183348769642 0.0 0.0 1.6020176677250904 0.893183348769642 0.5520176677250903 1.943183348769642 0.0 -0.5520176677250903 1.943183348769642 0.0 0.5520176677250903 1.943183348769642 0.0 0.0 1.6020176677250904 -0.893183348769642 -0.5520176677250903 1.943183348769642 0.0 0.0 1.6020176677250904 -0.893183348769642 -0.893183348769642 1.05 -0.5520176677250903 -0.5520176677250903 1.943183348769642 0.0 -0.893183348769642 1.05 -0.5520176677250903 -0.893183348769642 1.05 0.5520176677250903 0.5520176677250903 1.943183348769642 0.0 0.0 1.6020176677250904 0.893183348769642 0.893183348769642 1.05 0.5520176677250903 0.0 1.6020176677250904 0.893183348769642 -0.893183348769642 1.05 0.5520176677250903 0.0 0.49798233227490973 0.893183348769642 -0.893183348769642 1.05 0.5520176677250903 -0.893183348769642 1.05 -0.5520176677250903 -0.5520176677250903 0.15681665123035804 0.0 -0.893183348769642 1.05 -0.5520176677250903 0.0 1.6020176677250904 -0.893183348769642 0.0 0.49798233227490973 -0.893183348769642 0.0 1.6020176677250904 -0.893183348769642 0.5520176677250903 1.943183348769642 0.0 0.893183348769642 1.05 -0.5520176677250903 0.5520176677250903 0.15681665123035804 0.0 0.893183348769642 1.05 0.5520176677250903 0.0 0.49798233227490973 0.893183348769642 0.5520176677250903 0.15681665123035804 0.0 0.0 0.49798233227490973 0.893183348769642 -0.5520176677250903 0.15681665123035804 0.0 0.5520176677250903 0.15681665123035804 0.0 -0.5520176677250903 0.15681665123035804 0.0 0.0 0.49798233227490973 -0.893183348769642 0.5520176677250903 0.15681665123035804 0.0 0.0 0.49798233227490973 -0.893183348769642 0.893183348769642 1.05 -0.5520176677250903 0.5520176677250903 0.15681665123035804 0.0 0.893183348769642 1.05 -0.5520176677250903 0.893183348769642 1.05 0.5520176677250903 0.0 0.49798233227490973 0.893183348769642 0.893183348769642 1.05 0.5520176677250903 0.0 1.6020176677250904 0.893183348769642 -0.5520176677250903 0.15681665123035804 0.0 0.0 0.49798233227490973 0.893183348769642 -0.893183348769642 1.05 0.5520176677250903 0.0 0.49798233227490973 -0.893183348769642 -0.5520176677250903 0.15681665123035804 0.0 -0.893183348769642 1.05 -0.5520176677250903 0.893183348769642 1.05 -0.5520176677250903 0.0 0.49798233227490973 -0.893183348769642 0.0 1.6020176677250904 -0.893183348769642 0.893183348769642 1.05 0.5520176677250903 0.893183348769642 1.05 -0.5520176677250903 0.5520176677250903 1.943183348769642 0.0]
+AttributeEnd
+AttributeBegin
+  #krt Name "Frosted glass"
+  Material "dielectric" "float eta" 1.5 "float roughness" 0.015006249999999995
+  Translate 3.372570409648055 0.4 0.06065000674363552
+  Shape "sphere" "float radius" 0.4
+AttributeEnd
+AttributeBegin
+  #krt Name "Bubble"
+  #krt Material "soapbubble" "float thickness" 380.0 "float filmior" 1.33
+  Material "thindielectric" "float eta" 1.33
+  Translate 1.0790805491712905 2.7 -0.67442728886445
+  Shape "sphere" "float radius" 0.45
+AttributeEnd
+AttributeBegin
+  #krt Name "Small bubble"
+  #krt Material "soapbubble" "float thickness" 460.0 "float filmior" 1.33
+  Material "thindielectric" "float eta" 1.33
+  Translate 0.14263466058338842 3.0 1.161918037847824
+  Shape "sphere" "float radius" 0.3
+AttributeEnd
+AttributeBegin
+  #krt Name "Tiny bubble"
+  #krt Material "soapbubble" "float thickness" 520.0 "float filmior" 1.33
+  Material "thindielectric" "float eta" 1.33
+  Translate -0.35266066008754726 3.3 -2.031503375782576
+  Shape "sphere" "float radius" 0.25
+AttributeEnd
+AttributeBegin
+  AreaLightSource "diffuse" "rgb L" [1.4165523860440883 0.9446607388944502 0.321601139469749] "float scale" 2.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [-4.867263522577862 1.5999999999999999 3.3785736657810337 -5.714062053923526 1.5999999999999999 1.5666872876350904 -5.714062053923526 3.2 1.5666872876350904 -4.867263522577862 1.5999999999999999 3.3785736657810337 -5.714062053923526 3.2 1.5666872876350904 -4.867263522577862 3.2 3.3785736657810337]
+AttributeEnd
+AttributeBegin
+  AreaLightSource "diffuse" "rgb L" [0.8493710009871481 1.0074526770225407 1.3697170440943385] "float scale" 2.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [-4.1347572388720035 1.8 -4.197494300105631 -2.4923970366515467 1.8 -5.338832534881974 -2.4923970366515467 3.4000000000000004 -5.338832534881974 -4.1347572388720035 1.8 -4.197494300105631 -2.4923970366515467 3.4000000000000004 -5.338832534881974 -4.1347572388720035 3.4000000000000004 -4.197494300105631]
+AttributeEnd
+AttributeBegin
+  AreaLightSource "diffuse" "rgb L" [0.9665927621961551 1.0145687323639756 0.954055697650721] "float scale" 5.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [0.30042720235782894 7.0 3.1484056778804526 1.6482539807732361 7.0 -2.6982483203809764 5.5456163470353665 7.0 -1.797933605382024 0.30042720235782894 7.0 3.1484056778804526 5.5456163470353665 7.0 -1.797933605382024 4.197789568619959 7.0 4.048720392879405]
+AttributeEnd
+AttributeBegin
+  #krt Name "Haze"
+  MediumInterface "medium_2" ""
+  Material "interface"
+  Translate -4.48196672120145 1.8 -1.0353619222487949
+  Shape "sphere" "float radius" 4.2
+AttributeEnd
+AttributeBegin
+  #krt Name "Rolling ball"
+  #krt Material "plastic" "rgb albedo" [0.95 0.1 0.08] "float roughness" 0.03 "float ior" 1.5
+  Material "coateddiffuse" "rgb reflectance" [0.95 0.1 0.08] "float roughness" 8.099999999999999E-7 "float eta" 1.5
+  Translate 4.713910416053223 0.3 -0.861094246283938
+  ActiveTransform EndTime
+  Translate 0.07862322874089875 0.0 -0.34105481656525
+  ActiveTransform All
+  Shape "sphere" "float radius" 0.3
+AttributeEnd
+AttributeBegin
+  #krt Name "Bouncing ball"
+  #krt Material "plastic" "rgb albedo" [0.2 0.5 1.0] "float roughness" 0.03 "float ior" 1.5
+  Material "coateddiffuse" "rgb reflectance" [0.2 0.5 1.0] "float roughness" 8.099999999999999E-7 "float eta" 1.5
+  Translate 4.572094881908799 0.3 1.9798836256129309
+  ActiveTransform EndTime
+  Translate 0.0 0.35 0.0
+  ActiveTransform All
+  Shape "sphere" "float radius" 0.3
+AttributeEnd

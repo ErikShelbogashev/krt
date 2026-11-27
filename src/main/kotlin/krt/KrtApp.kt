@@ -23,7 +23,8 @@ import krt.app.render.RenderTab
 import krt.app.render.SaveImageButton
 import krt.app.render.StatusBar
 import krt.app.render.Viewport
-import krt.app.scene.LoadModelButton
+import krt.app.scene.OpenSceneButton
+import krt.app.scene.SceneWarningsDialog
 import krt.app.scene.SceneTab
 import krt.app.shell.Inspector
 import krt.app.shell.KrtTheme
@@ -56,8 +57,10 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
     var dark by remember { mutableStateOf(true) }
     var mode by remember { mutableStateOf(app.renderController.mode) }
     val benchmark = rememberBenchmarkState()
+    var warnings by remember { mutableStateOf(emptyList<String>()) }
     KrtTheme(dark) {
         Surface(modifier, color = MaterialTheme.colorScheme.background) {
+            if (warnings.isNotEmpty()) SceneWarningsDialog(warnings, onDismiss = { warnings = emptyList() })
             Box(Modifier.fillMaxSize()) {
                 Column(Modifier.fillMaxSize()) {
                     TopBar(
@@ -71,7 +74,7 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
                             })
                         },
                         actions = {
-                            LoadModelButton(onOpen = { app.loadModel(it) })
+                            OpenSceneButton(onOpen = { warnings = app.openScene(it) })
                             SaveImageButton(onSave = { app.saveImage(it) })
                             BenchmarkButton(benchmark)
                         },
@@ -124,7 +127,7 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>, camera: Came
         },
         sceneTab = {
             SceneTab(
-                scene = DemoScene.showing(app.world.look),
+                scene = app.world.source,
                 onScene = { app.loadScene(it) },
                 catalog = catalog,
                 selectedId = selectedId,

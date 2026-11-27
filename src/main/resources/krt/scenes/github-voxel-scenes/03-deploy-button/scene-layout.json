@@ -1,0 +1,3388 @@
+{
+  "schema_version": 1,
+  "scene": "03-deploy-button",
+  "title": "Developer facing the DEPLOY button",
+  "description": "A lone developer reaches for a monumental red button while the team watches from the server-room shadows.",
+  "coordinate_system": "right-handed, Z-up",
+  "unit": "meter-like arbitrary unit",
+  "camera_suggestion": {
+    "position": [
+      14,
+      -22,
+      11
+    ],
+    "target": [
+      0,
+      2,
+      3.5
+    ],
+    "focal_length_mm": 55
+  },
+  "lighting_suggestion": {
+    "world_color": "#182030",
+    "key": {
+      "type": "area",
+      "position": [
+        4,
+        -6,
+        10
+      ],
+      "energy": 900,
+      "size": 6
+    },
+    "fill": {
+      "type": "area",
+      "position": [
+        -6,
+        -1,
+        6
+      ],
+      "energy": 450,
+      "size": 5
+    }
+  },
+  "objects": [
+    {
+      "name": "floor",
+      "role": "environment",
+      "primitive": "box",
+      "position": [
+        0,
+        3,
+        -0.35
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        20,
+        20,
+        0.7
+      ],
+      "material": "black"
+    },
+    {
+      "name": "runway",
+      "role": "environment",
+      "primitive": "box",
+      "position": [
+        0,
+        -0.2,
+        0.03
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        5.5,
+        13,
+        0.18
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "runway_light_l_0",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -2.35,
+        -5.0,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_r_0",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        2.35,
+        -5.0,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_l_1",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -2.35,
+        -3.25,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_r_1",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        2.35,
+        -3.25,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_l_2",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -2.35,
+        -1.5,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_r_2",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        2.35,
+        -1.5,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_l_3",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -2.35,
+        0.25,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_r_3",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        2.35,
+        0.25,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_l_4",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -2.35,
+        2.0,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_r_4",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        2.35,
+        2.0,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_l_5",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -2.35,
+        3.75,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_r_5",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        2.35,
+        3.75,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_l_6",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -2.35,
+        5.5,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "runway_light_r_6",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        2.35,
+        5.5,
+        0.25
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ],
+      "material": "red"
+    },
+    {
+      "name": "server_rack_l_1",
+      "role": "server",
+      "primitive": "box",
+      "position": [
+        -5.3,
+        3.8,
+        3.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.25,
+        3.0,
+        6.0
+      ],
+      "material": "charcoal"
+    },
+    {
+      "name": "server_led_l_1_1",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -4.66,
+        2.25,
+        1.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_l_1_2",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -4.66,
+        2.25,
+        1.85
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_l_1_3",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -4.66,
+        2.25,
+        2.7
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_l_1_4",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -4.66,
+        2.25,
+        3.55
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_l_1_5",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -4.66,
+        2.25,
+        4.4
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_rack_l_2",
+      "role": "server",
+      "primitive": "box",
+      "position": [
+        -7.0,
+        3.8,
+        3.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.25,
+        3.0,
+        6.0
+      ],
+      "material": "charcoal"
+    },
+    {
+      "name": "server_led_l_2_1",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -6.36,
+        2.25,
+        1.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_l_2_2",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -6.36,
+        2.25,
+        1.85
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_l_2_3",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -6.36,
+        2.25,
+        2.7
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_l_2_4",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -6.36,
+        2.25,
+        3.55
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_l_2_5",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -6.36,
+        2.25,
+        4.4
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_rack_l_3",
+      "role": "server",
+      "primitive": "box",
+      "position": [
+        -8.7,
+        3.8,
+        3.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.25,
+        3.0,
+        6.0
+      ],
+      "material": "charcoal"
+    },
+    {
+      "name": "server_led_l_3_1",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -8.059999999999999,
+        2.25,
+        1.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_l_3_2",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -8.059999999999999,
+        2.25,
+        1.85
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_l_3_3",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -8.059999999999999,
+        2.25,
+        2.7
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_l_3_4",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -8.059999999999999,
+        2.25,
+        3.55
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_l_3_5",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        -8.059999999999999,
+        2.25,
+        4.4
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_rack_r_1",
+      "role": "server",
+      "primitive": "box",
+      "position": [
+        5.3,
+        3.8,
+        3.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.25,
+        3.0,
+        6.0
+      ],
+      "material": "charcoal"
+    },
+    {
+      "name": "server_led_r_1_1",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        4.66,
+        2.25,
+        1.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_r_1_2",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        4.66,
+        2.25,
+        1.85
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_r_1_3",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        4.66,
+        2.25,
+        2.7
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_r_1_4",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        4.66,
+        2.25,
+        3.55
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_r_1_5",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        4.66,
+        2.25,
+        4.4
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_rack_r_2",
+      "role": "server",
+      "primitive": "box",
+      "position": [
+        7.0,
+        3.8,
+        3.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.25,
+        3.0,
+        6.0
+      ],
+      "material": "charcoal"
+    },
+    {
+      "name": "server_led_r_2_1",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        6.36,
+        2.25,
+        1.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_r_2_2",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        6.36,
+        2.25,
+        1.85
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_r_2_3",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        6.36,
+        2.25,
+        2.7
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_r_2_4",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        6.36,
+        2.25,
+        3.55
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_r_2_5",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        6.36,
+        2.25,
+        4.4
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_rack_r_3",
+      "role": "server",
+      "primitive": "box",
+      "position": [
+        8.7,
+        3.8,
+        3.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.25,
+        3.0,
+        6.0
+      ],
+      "material": "charcoal"
+    },
+    {
+      "name": "server_led_r_3_1",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        8.059999999999999,
+        2.25,
+        1.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_r_3_2",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        8.059999999999999,
+        2.25,
+        1.85
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_r_3_3",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        8.059999999999999,
+        2.25,
+        2.7
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "server_led_r_3_4",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        8.059999999999999,
+        2.25,
+        3.55
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "green"
+    },
+    {
+      "name": "server_led_r_3_5",
+      "role": "lighting",
+      "primitive": "box",
+      "position": [
+        8.059999999999999,
+        2.25,
+        4.4
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1,
+        0.12,
+        0.1
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "button_plinth",
+      "role": "hero_prop",
+      "primitive": "box",
+      "position": [
+        0,
+        4.0,
+        1.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        5.5,
+        4.0,
+        2.0
+      ],
+      "material": "slate"
+    },
+    {
+      "name": "button_bezel",
+      "role": "hero_prop",
+      "primitive": "box",
+      "position": [
+        0,
+        3.7,
+        2.18
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        3.6,
+        3.0,
+        0.42
+      ],
+      "material": "steel"
+    },
+    {
+      "name": "deploy_button",
+      "role": "hero_prop",
+      "primitive": "cylinder_smooth",
+      "position": [
+        0,
+        3.45,
+        2.72
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        2.5,
+        2.5,
+        0.82
+      ],
+      "material": "red",
+      "smooth_normals": true
+    },
+    {
+      "name": "button_safety_glass",
+      "role": "hero_prop",
+      "primitive": "box",
+      "position": [
+        0,
+        3.45,
+        3.55
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        3.5,
+        3.0,
+        0.18
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "deploy_sign_0_0_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -3.6,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_0_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -3.3000000000000003,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_0_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -3.0,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_1_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -3.6,
+        5.95,
+        7.9
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_1_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -2.7,
+        5.95,
+        7.9
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_2_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -3.6,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_2_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -2.7,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_3_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -3.6,
+        5.95,
+        7.3
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_3_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -2.7,
+        5.95,
+        7.3
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_4_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -3.6,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_4_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -3.3000000000000003,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_0_4_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -3.0,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_0_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -2.18,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_0_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -1.8800000000000001,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_0_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -1.58,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_0_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -1.2800000000000002,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_1_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -2.18,
+        5.95,
+        7.9
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_2_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -2.18,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_2_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -1.8800000000000001,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_2_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -1.58,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_3_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -2.18,
+        5.95,
+        7.3
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_4_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -2.18,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_4_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -1.8800000000000001,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_4_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -1.58,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_1_4_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -1.2800000000000002,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_2_0_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -0.7600000000000002,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_2_0_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -0.46000000000000024,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_2_0_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -0.16000000000000025,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_2_1_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -0.7600000000000002,
+        5.95,
+        7.9
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_2_1_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        0.13999999999999968,
+        5.95,
+        7.9
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_2_2_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -0.7600000000000002,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_2_2_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -0.46000000000000024,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_2_2_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -0.16000000000000025,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_2_3_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -0.7600000000000002,
+        5.95,
+        7.3
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_2_4_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        -0.7600000000000002,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_3_0_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        0.6599999999999997,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_3_1_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        0.6599999999999997,
+        5.95,
+        7.9
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_3_2_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        0.6599999999999997,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_3_3_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        0.6599999999999997,
+        5.95,
+        7.3
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_3_4_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        0.6599999999999997,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_3_4_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        0.9599999999999997,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_3_4_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        1.2599999999999998,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_3_4_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        1.5599999999999996,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_4_0_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        2.3799999999999994,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_4_0_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        2.6799999999999997,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_4_1_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        2.0799999999999996,
+        5.95,
+        7.9
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_4_1_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        2.9799999999999995,
+        5.95,
+        7.9
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_4_2_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        2.0799999999999996,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_4_2_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        2.9799999999999995,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_4_3_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        2.0799999999999996,
+        5.95,
+        7.3
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_4_3_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        2.9799999999999995,
+        5.95,
+        7.3
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_4_4_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        2.3799999999999994,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_4_4_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        2.6799999999999997,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_5_0_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        3.4999999999999996,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_5_0_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        4.3999999999999995,
+        5.95,
+        8.2
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_5_1_0",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        3.4999999999999996,
+        5.95,
+        7.9
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_5_1_3",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        4.3999999999999995,
+        5.95,
+        7.9
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_5_2_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        3.7999999999999994,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_5_2_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        4.1,
+        5.95,
+        7.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_5_3_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        3.7999999999999994,
+        5.95,
+        7.3
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_5_3_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        4.1,
+        5.95,
+        7.3
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_5_4_1",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        3.7999999999999994,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "deploy_sign_5_4_2",
+      "role": "signage",
+      "primitive": "box",
+      "position": [
+        4.1,
+        5.95,
+        7.0
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.264,
+        0.32,
+        0.264
+      ],
+      "material": "red"
+    },
+    {
+      "name": "developer_torso",
+      "role": "hero",
+      "primitive": "box",
+      "position": [
+        0,
+        -0.5,
+        1.7675
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.8999999999999999,
+        0.475,
+        1.125
+      ],
+      "material": "blue"
+    },
+    {
+      "name": "developer_head",
+      "role": "hero",
+      "primitive": "box",
+      "position": [
+        0,
+        -0.5,
+        2.7675
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.7000000000000001,
+        0.65,
+        0.7000000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "developer_hair",
+      "role": "hero",
+      "primitive": "box",
+      "position": [
+        0,
+        -0.5125,
+        3.1425
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.725,
+        0.675,
+        0.17500000000000002
+      ],
+      "material": "brown"
+    },
+    {
+      "name": "developer_arm_l",
+      "role": "hero",
+      "primitive": "box",
+      "position": [
+        -0.625,
+        -0.5,
+        1.805
+      ],
+      "rotation_deg": [
+        0,
+        -28,
+        0
+      ],
+      "scale": [
+        0.275,
+        0.3125,
+        1.075
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "developer_arm_r",
+      "role": "hero",
+      "primitive": "box",
+      "position": [
+        0.625,
+        -0.5,
+        1.805
+      ],
+      "rotation_deg": [
+        0,
+        28,
+        0
+      ],
+      "scale": [
+        0.275,
+        0.3125,
+        1.075
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "developer_leg_l",
+      "role": "hero",
+      "primitive": "box",
+      "position": [
+        -0.2625,
+        -0.5,
+        0.6799999999999999
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.3375,
+        0.4,
+        1.1500000000000001
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "developer_leg_r",
+      "role": "hero",
+      "primitive": "box",
+      "position": [
+        0.2625,
+        -0.5,
+        0.6799999999999999
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.3375,
+        0.4,
+        1.1500000000000001
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "developer_reaching_hand",
+      "role": "hero",
+      "primitive": "box",
+      "position": [
+        0.82,
+        0.85,
+        2.65
+      ],
+      "rotation_deg": [
+        -40,
+        0,
+        0
+      ],
+      "scale": [
+        0.28,
+        2.25,
+        0.28
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_1_torso",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -4.2,
+        -2.0,
+        1.1030000000000002
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.5616,
+        0.2964,
+        0.7020000000000001
+      ],
+      "material": "purple"
+    },
+    {
+      "name": "observer_1_head",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -4.2,
+        -2.0,
+        1.727
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4368000000000001,
+        0.4056,
+        0.4368000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_1_hair",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -4.2,
+        -2.0078,
+        1.9610000000000003
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.45239999999999997,
+        0.4212,
+        0.10920000000000002
+      ],
+      "material": "brown"
+    },
+    {
+      "name": "observer_1_arm_l",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -4.59,
+        -2.0,
+        1.1264
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1716,
+        0.195,
+        0.6708000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_1_arm_r",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -3.81,
+        -2.0,
+        1.1264
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1716,
+        0.195,
+        0.6708000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_1_leg_l",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -4.3638,
+        -2.0,
+        0.4244
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.2106,
+        0.24960000000000002,
+        0.7176
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "observer_1_leg_r",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -4.0362,
+        -2.0,
+        0.4244
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.2106,
+        0.24960000000000002,
+        0.7176
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "observer_2_torso",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        4.2,
+        -1.7,
+        1.1030000000000002
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.5616,
+        0.2964,
+        0.7020000000000001
+      ],
+      "material": "cyan"
+    },
+    {
+      "name": "observer_2_head",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        4.2,
+        -1.7,
+        1.727
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4368000000000001,
+        0.4056,
+        0.4368000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_2_hair",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        4.2,
+        -1.7078,
+        1.9610000000000003
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.45239999999999997,
+        0.4212,
+        0.10920000000000002
+      ],
+      "material": "brown"
+    },
+    {
+      "name": "observer_2_arm_l",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        3.81,
+        -1.7,
+        1.1264
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1716,
+        0.195,
+        0.6708000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_2_arm_r",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        4.59,
+        -1.7,
+        1.1264
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1716,
+        0.195,
+        0.6708000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_2_leg_l",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        4.0362,
+        -1.7,
+        0.4244
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.2106,
+        0.24960000000000002,
+        0.7176
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "observer_2_leg_r",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        4.3638,
+        -1.7,
+        0.4244
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.2106,
+        0.24960000000000002,
+        0.7176
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "observer_3_torso",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -5.0,
+        0.6,
+        1.1030000000000002
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.5616,
+        0.2964,
+        0.7020000000000001
+      ],
+      "material": "green"
+    },
+    {
+      "name": "observer_3_head",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -5.0,
+        0.6,
+        1.727
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4368000000000001,
+        0.4056,
+        0.4368000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_3_hair",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -5.0,
+        0.5922,
+        1.9610000000000003
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.45239999999999997,
+        0.4212,
+        0.10920000000000002
+      ],
+      "material": "brown"
+    },
+    {
+      "name": "observer_3_arm_l",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -5.39,
+        0.6,
+        1.1264
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1716,
+        0.195,
+        0.6708000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_3_arm_r",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -4.61,
+        0.6,
+        1.1264
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1716,
+        0.195,
+        0.6708000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_3_leg_l",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -5.1638,
+        0.6,
+        0.4244
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.2106,
+        0.24960000000000002,
+        0.7176
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "observer_3_leg_r",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        -4.8362,
+        0.6,
+        0.4244
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.2106,
+        0.24960000000000002,
+        0.7176
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "observer_4_torso",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        5.0,
+        0.9,
+        1.1030000000000002
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.5616,
+        0.2964,
+        0.7020000000000001
+      ],
+      "material": "orange"
+    },
+    {
+      "name": "observer_4_head",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        5.0,
+        0.9,
+        1.727
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4368000000000001,
+        0.4056,
+        0.4368000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_4_hair",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        5.0,
+        0.8922,
+        1.9610000000000003
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.45239999999999997,
+        0.4212,
+        0.10920000000000002
+      ],
+      "material": "brown"
+    },
+    {
+      "name": "observer_4_arm_l",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        4.61,
+        0.9,
+        1.1264
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1716,
+        0.195,
+        0.6708000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_4_arm_r",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        5.39,
+        0.9,
+        1.1264
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.1716,
+        0.195,
+        0.6708000000000001
+      ],
+      "material": "skin"
+    },
+    {
+      "name": "observer_4_leg_l",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        4.8362,
+        0.9,
+        0.4244
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.2106,
+        0.24960000000000002,
+        0.7176
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "observer_4_leg_r",
+      "role": "team",
+      "primitive": "box",
+      "position": [
+        5.1638,
+        0.9,
+        0.4244
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.2106,
+        0.24960000000000002,
+        0.7176
+      ],
+      "material": "dark"
+    },
+    {
+      "name": "warning_bar_l",
+      "role": "warning",
+      "primitive": "box",
+      "position": [
+        -2.25,
+        3.0,
+        3.15
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        -32
+      ],
+      "scale": [
+        0.38,
+        3.2,
+        0.38
+      ],
+      "material": "yellow"
+    },
+    {
+      "name": "warning_bar_r",
+      "role": "warning",
+      "primitive": "box",
+      "position": [
+        2.25,
+        3.0,
+        3.15
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        32
+      ],
+      "scale": [
+        0.38,
+        3.2,
+        0.38
+      ],
+      "material": "yellow"
+    },
+    {
+      "name": "warning_bulb_1",
+      "role": "light",
+      "primitive": "uv_sphere_smooth",
+      "position": [
+        -3.0,
+        4.4,
+        4.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.84,
+        0.84,
+        0.84
+      ],
+      "material": "orange",
+      "smooth_normals": true
+    },
+    {
+      "name": "warning_bulb_2",
+      "role": "light",
+      "primitive": "uv_sphere_smooth",
+      "position": [
+        3.0,
+        4.4,
+        4.6
+      ],
+      "rotation_deg": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.84,
+        0.84,
+        0.84
+      ],
+      "material": "orange",
+      "smooth_normals": true
+    }
+  ]
+}

@@ -97,10 +97,16 @@ class OperationsTest {
     }
 
     @Test
-    fun `load model adds its triangles to the scene and redraws`() {
-        val objectsBefore = app.world.objects.size
-        app.loadModel(File("samples/ORIGAMI_Chat_Free.obj"))
-        assertEquals(objectsBefore + 330, app.world.objects.size)
+    fun `open scene replaces the scene with a pbrt file and stands the camera at its view`() {
+        val file = File.createTempFile("krt", ".pbrt").apply {
+            deleteOnExit()
+            writeText("LookAt 0 1 9  0 1 0  0 1 0\nWorldBegin\n#krt Name \"Ball\"\nShape \"sphere\"\nShape \"curve\"\n")
+        }
+        val warnings = app.openScene(file)
+        assertEquals(listOf("Ball"), app.world.objects.map { it.id })
+        assertEquals(1, warnings.size)
+        assertEquals(Point3(0.0, 1.0, 9.0), app.camera.origin)
+        assertEquals(null, app.world.source)
         assertEquals(1, published)
     }
 
@@ -162,13 +168,15 @@ class OperationsTest {
     @Test
     fun `load scene replaces the scene, its look and the camera lens, and redraws`() {
         app.loadScene(DemoScene.SHOWCASE)
-        assertEquals(DemoScene.SHOWCASE.look, app.world.look)
+        val look = app.scenes.load(DemoScene.SHOWCASE).look
+        assertEquals(look, app.world.look)
+        assertEquals(DemoScene.SHOWCASE, app.world.source)
         assertTrue(app.world.objects.any { it.id == "Mirror ball" })
         assertEquals(ViewPreset.START, app.camera.snapshot().preset)
-        assertEquals(DemoScene.SHOWCASE.look.fov, app.camera.fov)
+        assertEquals(look.fov, app.camera.fov)
         app.changeCameraSettings { fov = 70.0 }
         app.resetCameraView()
-        assertEquals(DemoScene.SHOWCASE.look.fov, app.camera.fov)
+        assertEquals(look.fov, app.camera.fov)
         assertEquals(3, published)
     }
 

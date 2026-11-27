@@ -9,6 +9,8 @@ import kotlin.math.tan
 import kotlin.random.Random
 import krt.domain.camera.model.CameraSnapshot
 import krt.domain.camera.model.ViewPreset
+import krt.domain.camera.model.Lens
+import krt.domain.scene.model.SceneLook
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
@@ -118,6 +120,15 @@ class Camera(
         this.fov = fov
         this.aperture = aperture
         standAt(ViewPreset.START)
+    }
+
+    /** To the start view and lens of a scene of [look]: its own view, when it has one, else [ViewPreset.START]. */
+    fun resetView(look: SceneLook) {
+        resetView(look.fov, look.aperture)
+        look.start?.let { start ->
+            focusDist = Lens.focusOn(start.origin, start.target)
+            lookFrom(start.origin, start.target)
+        }
     }
 
     fun adjustYaw(delta: Double) {

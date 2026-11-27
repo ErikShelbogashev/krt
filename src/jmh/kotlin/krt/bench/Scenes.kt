@@ -5,7 +5,8 @@ import kotlin.random.Random
 import krt.domain.camera.Camera
 import krt.domain.scene.World
 import krt.domain.scene.model.Dielectric
-import krt.i9ns.objfile.ObjParser
+import krt.domain.scene.model.Triangle
+import krt.i9ns.objfile.ObjText
 
 /** Scenes and camera shared by the benchmarks; everything is seeded, so runs are comparable. */
 internal object Scenes {
@@ -18,7 +19,7 @@ internal object Scenes {
         val world = World.default(Random(WORLD_SEED))
         if (name == DEMO_WITH_MODEL) {
             val root = System.getProperty("krt.projectDir") ?: "."
-            world.addAll(ObjParser(File(root, SAMPLE_MODEL).path, Dielectric(MODEL_REFRACTION)).triangles)
+            world.addAll(model(File(root, SAMPLE_MODEL).readText()))
         }
         return world
     }
@@ -33,4 +34,15 @@ internal object Scenes {
     private const val FRAME_SIZE = 160
     private const val WORLD_SEED = 42
     private const val MODEL_REFRACTION = 1.5
+
+    /** The sample model as the benchmarks have always taken it: scaled into [-1, 1], all of glass. */
+    private fun model(text: String): List<Triangle> {
+        val obj = ObjText.obj(text)
+        val extent = obj.points.maxOf { maxOf(kotlin.math.abs(it.x), kotlin.math.abs(it.y), kotlin.math.abs(it.z)) }
+        val glass = Dielectric(MODEL_REFRACTION)
+        return obj.objects.flatMap { it.faces }.map { face ->
+            val (a, b, c) = face.points.map { obj.points[it] / extent }
+            Triangle(a, b, c, glass)
+        }
+    }
 }

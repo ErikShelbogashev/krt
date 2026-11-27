@@ -88,8 +88,9 @@ object PbrtGeometry {
     fun mesh(d: PbrtDirective, mesh: PlyMesh, placement: Placement, covering: Covering): List<Triangle> {
         val ctm = placement.ctm
         val flip = placement.reverse xor (ctm.determinant() < 0)
-        val points = mesh.points.map(ctm::point)
-        val normals = mesh.normals?.map(ctm::normal)
+        val placed = ctm != Matrix4.IDENTITY
+        val points = if (placed) mesh.points.map(ctm::point) else mesh.points
+        val normals = if (placed) mesh.normals?.map(ctm::normal) else mesh.normals
         if (mesh.triangles.any { t -> t.any { it !in points.indices } }) d.fail("index out of range")
         return mesh.triangles.map { t ->
             val (a, b, c) = if (flip) Triple(t[0], t[2], t[1]) else Triple(t[0], t[1], t[2])

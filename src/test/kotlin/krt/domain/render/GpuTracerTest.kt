@@ -6,6 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 import krt.domain.camera.Camera
 import krt.domain.scene.World
+import krt.domain.scene.model.DemoScene
 import krt.domain.scene.model.Checker
 import krt.domain.scene.model.Conductor
 import krt.domain.scene.model.Dielectric
@@ -438,6 +439,26 @@ class GpuTracerTest {
     }
 
     @Test
+    fun `each scene of the voxel package looks the same on the GPU as on the CPU`() {
+        val library = krt.i9ns.scenefile.SceneLibrary()
+        listOf(DemoScene.NOTIFICATIONS, DemoScene.LAPTOP_CREW, DemoScene.DEPLOY).forEach { demo ->
+            val description = library.load(demo)
+            val scene = World(description.objects, description.look)
+            val start = requireNotNull(description.look.start)
+            val camera = Camera(
+                start.origin, start.target, Point3(0.0, 1.0, 0.0), description.look.fov, 0.0,
+                (start.target - start.origin).length(), SIZE, SIZE,
+            ).apply { samplesPerPixel = VOXEL_SAMPLES }
+            val gpu = gpuFrame(camera, scene, VOXEL_SAMPLES)
+            val cpu = cpuFrame(camera, scene)
+            (0 until CHANNELS).forEach { channel ->
+                val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+                assertTrue(abs(onGpu - onCpu) < TOLERANCE, "$demo channel $channel: GPU $onGpu vs CPU $onCpu")
+            }
+        }
+    }
+
+    @Test
     fun `triangles are drawn`() {
         val wall = Triangle(
             Point3(-50.0, -50.0, -3.0),
@@ -450,10 +471,11 @@ class GpuTracerTest {
         assertTrue(red > (centre and 255), "centre ${Integer.toHexString(centre)} is not the red wall")
     }
 
-    private fun gpuFrame(camera: Camera, scene: World = world): IntArray = GpuTracer().use { tracer ->
-        val frame = GpuFrame(scene.gpuScene, camera.view(), SIZE, SIZE, DEPTH, SAMPLES, 0.37f)
-        pixels(tracer.shader(frame))
-    }
+    private fun gpuFrame(camera: Camera, scene: World = world, samples: Int = SAMPLES): IntArray =
+        GpuTracer().use { tracer ->
+            val frame = GpuFrame(scene.gpuScene, camera.view(), SIZE, SIZE, DEPTH, samples, 0.37f)
+            pixels(tracer.shader(frame))
+        }
 
     /** The frame as RenderController makes it under [budget]: steps of its samples, each over its bands of rows. */
     private fun budgetedGpuFrame(camera: Camera, scene: World, budget: GpuSampling.StepBudget): IntArray =
@@ -543,6 +565,7 @@ class GpuTracerTest {
         const val REGION_TOLERANCE = 0.06
         const val QUADRANTS = 4
         const val CHANNELS = 3
+        const val VOXEL_SAMPLES = 6
         const val PIXEL_TOLERANCE = 0.02
         const val BUDGET_SAMPLES = 32
         const val SLOW_STEP_MS = 400.0

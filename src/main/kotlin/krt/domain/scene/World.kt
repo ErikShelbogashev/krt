@@ -1,6 +1,7 @@
 package krt.domain.scene
 
 import kotlin.random.Random
+import krt.domain.scene.model.DemoScene
 import krt.domain.scene.model.DemoScenes
 import krt.domain.scene.model.Hit
 import krt.domain.scene.model.SceneLook
@@ -17,9 +18,9 @@ import krt.platform.math.Ray
  * and the scene compiled from it for tracing (ADR 0008).
  * Writers replace both at once, readers (the render pool) always see a consistent snapshot.
  */
-class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.CLASSIC) {
+class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.CLASSIC, source: DemoScene? = null) {
 
-    private class Snapshot(val objects: List<Traceable>, val look: SceneLook) {
+    private class Snapshot(val objects: List<Traceable>, val look: SceneLook, val source: DemoScene?) {
         val sky: Sky get() = look.sky
 
         /** Compiled on first use, so a burst of edits compiles the scene once. */
@@ -30,7 +31,7 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
     }
 
     @Volatile
-    private var snapshot = Snapshot(objects, look)
+    private var snapshot = Snapshot(objects, look, source)
 
     val objects: List<Traceable> get() = snapshot.objects
 
@@ -39,9 +40,12 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
     /** How the scene is shown: sky and the lens the camera starts with. */
     val look: SceneLook get() = snapshot.look
 
-    /** Replaces the whole scene, for instance with another demo scene. */
-    fun load(objects: List<Traceable>, look: SceneLook) {
-        snapshot = Snapshot(objects, look)
+    /** The demo scene shown, or null for a scene of one's own. */
+    val source: DemoScene? get() = snapshot.source
+
+    /** Replaces the whole scene, with a demo scene ([source]) or a scene of one's own. */
+    fun load(objects: List<Traceable>, look: SceneLook, source: DemoScene? = null) {
+        snapshot = Snapshot(objects, look, source)
     }
 
     /** The scene to trace; consistent with [objects] read at the same moment. */
@@ -51,7 +55,7 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
     val gpuScene: GpuScene get() = snapshot.gpuScene
 
     fun translateObjectById(objectId: String, offset: Point3) {
-        snapshot = Snapshot(objects.translateFirst(objectId, offset), look)
+        snapshot = Snapshot(objects.translateAll(objectId, offset), look, source)
     }
 
     fun getObjectIds(): List<String> = objects.map { it.id }
@@ -60,11 +64,11 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
     fun centerOf(objectId: String): Point3? = objects.find { it.id == objectId }?.bounds()?.center
 
     fun add(obj: Traceable) {
-        snapshot = Snapshot(objects + obj, look)
+        snapshot = Snapshot(objects + obj, look, source)
     }
 
     fun addAll(objs: List<Traceable>) {
-        snapshot = Snapshot(objects + objs, look)
+        snapshot = Snapshot(objects + objs, look, source)
     }
 
     fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? = traceScene.hit(ray, tMin, tMax)
@@ -75,8 +79,6 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
     }
 }
 
-private fun List<Traceable>.translateFirst(objectId: String, offset: Point3): List<Traceable> {
-    val index = indexOfFirst { it.id == objectId }
-    if (index < 0) return this
-    return toMutableList().also { it[index] = it[index].translate(offset) }
-}
+/** Moves every part of object [objectId]: the triangles of a mesh share its id. */
+private fun List<Traceable>.translateAll(objectId: String, offset: Point3): List<Traceable> =
+    map { if (it.id == objectId) it.translate(offset) else it }

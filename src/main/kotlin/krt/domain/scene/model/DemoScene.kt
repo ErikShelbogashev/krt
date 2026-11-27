@@ -1,6 +1,5 @@
 package krt.domain.scene.model
 
-import kotlin.random.Random
 import krt.platform.math.Point3
 
 /** Where the camera of a scene stands at the start and the point it looks at. */
@@ -25,24 +24,16 @@ data class SceneLook(
     }
 }
 
-/** The scenes the window offers. */
-enum class DemoScene(val title: String, val look: SceneLook) {
-    SHOWCASE("Showcase", Showcase.LOOK),
-    MATERIALS("Materials", MaterialsShowcase.LOOK),
-    CLASSIC("Classic spheres", SceneLook.CLASSIC),
-    ;
-
-    /** The scene's objects; the default randomness lays the scene out the same way every time. */
-    fun objects(random: Random = Random(LAYOUT_SEED)): List<Traceable> = when (this) {
-        SHOWCASE -> Showcase.objects(random)
-        MATERIALS -> MaterialsShowcase.objects()
-        CLASSIC -> DemoScenes.classic(random)
-    }
-
-    companion object {
-        private const val LAYOUT_SEED = 1
-
-        /** The demo scene shown with [look], or null for a scene of one's own. */
-        fun showing(look: SceneLook): DemoScene? = entries.find { it.look == look }
-    }
+/**
+ * The scenes the window offers, each a scene file in the resources under `krt/scenes` ([path]): pbrt-v4 files of
+ * krt's own and the OBJ scenes of the GitHub voxel package (ADR 0016).
+ */
+enum class DemoScene(val title: String, val path: String) {
+    SHOWCASE("Showcase", "showcase.pbrt"),
+    MATERIALS("Materials", "materials.pbrt"),
+    FRACTALS("Fractals", "fractals.pbrt"),
+    NOTIFICATIONS("Notifications", "github-voxel-scenes/01-notification-avalanche/01-notification-avalanche.obj"),
+    LAPTOP_CREW("Laptop crew", "github-voxel-scenes/02-laptop-construction/02-laptop-construction.obj"),
+    DEPLOY("Deploy", "github-voxel-scenes/03-deploy-button/03-deploy-button.obj"),
+    CLASSIC("Classic spheres", "classic.pbrt"),
 }

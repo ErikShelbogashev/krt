@@ -1,0 +1,99 @@
+{
+  "format": "OBJ+MTL with JSON look-development contract",
+  "external_textures": false,
+  "scenes": [
+    {
+      "scene": "01-notification-avalanche",
+      "objects": 80,
+      "vertices": 866,
+      "normals": 717,
+      "faces": 663,
+      "effects": [
+        "dispersion",
+        "rough_glass_ggx",
+        "anisotropic_conductor_ggx",
+        "homogeneous_volume",
+        "subsurface_scattering",
+        "fabric_sheen",
+        "procedural_wood",
+        "procedural_bump",
+        "textured_emission",
+        "color_temperature",
+        "smooth_vertex_normals",
+        "light_sampling"
+      ]
+    },
+    {
+      "scene": "02-laptop-construction",
+      "objects": 105,
+      "vertices": 1928,
+      "normals": 1734,
+      "faces": 1600,
+      "effects": [
+        "thin_film_soap_bubble",
+        "thin_film_iridescent_coat",
+        "anisotropic_conductor_ggx",
+        "subsurface_scattering",
+        "fabric_sheen",
+        "procedural_perlin",
+        "procedural_bump",
+        "textured_emission",
+        "color_temperature",
+        "smooth_vertex_normals",
+        "light_sampling"
+      ]
+    },
+    {
+      "scene": "03-deploy-button",
+      "objects": 159,
+      "vertices": 1592,
+      "normals": 1282,
+      "faces": 1222,
+      "effects": [
+        "homogeneous_volume",
+        "god_rays",
+        "light_sampling",
+        "rough_glass_ggx",
+        "dispersion",
+        "anisotropic_conductor_ggx",
+        "subsurface_scattering",
+        "fabric_sheen",
+        "procedural_marble",
+        "procedural_bump",
+        "textured_emission",
+        "color_temperature",
+        "smooth_vertex_normals"
+      ]
+    }
+  ],
+  "total_effect_coverage": [
+    "anisotropic_conductor_ggx",
+    "color_temperature",
+    "dispersion",
+    "fabric_sheen",
+    "god_rays",
+    "homogeneous_volume",
+    "light_sampling",
+    "procedural_bump",
+    "procedural_marble",
+    "procedural_perlin",
+    "procedural_wood",
+    "rough_glass_ggx",
+    "smooth_vertex_normals",
+    "subsurface_scattering",
+    "textured_emission",
+    "thin_film_iridescent_coat",
+    "thin_film_soap_bubble"
+  ],
+  "renderer_acceptance": {
+    "cpu_gpu_parity_required": true,
+    "compare_same_seed_camera_and_sample_count": true,
+    "benchmark_each_scene_before_and_after": true,
+    "golden_frame_policy": "Existing golden frames need not change; add these as Showcase-only coverage.",
+    "noise_hotspots": [
+      "dispersion",
+      "homogeneous_volume",
+      "small_emissive_lights"
+    ]
+  }
+}
