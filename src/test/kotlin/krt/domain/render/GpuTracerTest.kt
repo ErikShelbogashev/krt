@@ -11,6 +11,8 @@ import krt.domain.scene.model.Conductor
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
+import krt.domain.scene.model.Fractal
+import krt.domain.scene.model.FractalKind
 import krt.domain.scene.model.GlowingPattern
 import krt.domain.scene.model.Iridescent
 import krt.domain.scene.model.Lambert
@@ -199,6 +201,17 @@ class GpuTracerTest {
             } +
             Meshes.panel(Pose(Point3(0.0, 5.0, -3.0)), 4.0, 1.0, Emissive(Color(0.4, 0.5, 0.9), 0.3)),
         SceneLook(Sky(Color(0.02, 0.02, 0.03), Color(0.0, 0.0, 0.01)), 60.0, 0.0, sampleLights = true),
+    )
+
+    /** The four fractals in a row: a gold bulb, a sponge, a box and a Julia set of glass. */
+    private val fractals = World(
+        listOf(
+            Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.6, 0.6, 0.6))),
+            Fractal(FractalKind.MANDELBULB, Point3(-3.0, 1.0, 0.0), 1.0, Conductor(Metals.GOLD, 0.2)),
+            Fractal(FractalKind.MENGER, Point3(-1.0, 1.0, 0.0), 0.9, Lambert(Color(0.8, 0.3, 0.2))),
+            Fractal(FractalKind.MANDELBOX, Point3(1.0, 1.0, 0.0), 0.9, Plastic(Color(0.2, 0.5, 0.9), 0.1)),
+            Fractal(FractalKind.JULIA, Point3(3.0, 1.0, 0.0), 1.0, Dielectric(1.5)),
+        ),
     )
 
     private fun camera() = Camera(
@@ -401,6 +414,20 @@ class GpuTracerTest {
         val camera = camera()
         val gpu = gpuFrame(camera, sign)
         val cpu = cpuFrame(camera, sign)
+
+        (0 until CHANNELS).forEach { channel ->
+            val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+            assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
+        }
+        val regions = (0 until QUADRANTS).map { q -> abs(brightness(gpu, q) - brightness(cpu, q)) }
+        assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
+    }
+
+    @Test
+    fun `fractals look the same on the GPU as on the CPU`() {
+        val camera = camera()
+        val gpu = gpuFrame(camera, fractals)
+        val cpu = cpuFrame(camera, fractals)
 
         (0 until CHANNELS).forEach { channel ->
             val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)

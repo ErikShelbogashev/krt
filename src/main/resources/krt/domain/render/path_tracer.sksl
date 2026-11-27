@@ -39,7 +39,7 @@ const int LEAF_SIZE = 4;            // Bvh.LEAF_SIZE
 const float TEXTURE_WIDTH = 1024.0;
 const float RANGE = 4096.0;
 const float NODE_VALUES = 9.0;
-const float PRIMITIVE_VALUES = 13.0;
+const float PRIMITIVE_VALUES = 14.0;
 const float MEDIUM_VALUES = 6.0;
 const float LIGHT_VALUES = 4.0;
 const float MEMBER_VALUES = 2.0;
@@ -51,6 +51,7 @@ const float PI = 3.14159265358979;
 
 const float SPHERE = 0.0;
 const float TRIANGLE = 1.0;
+const float FRACTAL = 2.0;
 
 const float LAMBERT = 0.0;
 const float METAL = 1.0;
@@ -215,11 +216,125 @@ float intersectTriangle(float base, float3 origin, float3 direction, float tMax)
     return t;
 }
 
+// FractalDistance: the distance estimates of the fractals in their own space, as the Kotlin functions.
+float mandelbulb(float3 p, float iterations, float power) {
+    float3 z = p;
+    float dr = 1.0;
+    float r = length(z);
+    for (int i = 0; i < 16; i++) {
+        if (float(i) >= iterations || r > 2.0) { break; }
+        float theta = acos(clamp(z.z / r, -1.0, 1.0)) * power;
+        float phi = atan(z.y, z.x) * power;
+        dr = power * pow(r, power - 1.0) * dr + 1.0;
+        float zr = pow(r, power);
+        z = zr * float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)) + p;
+        r = length(z);
+    }
+    return 0.5 * log(r) * r / dr;
+}
+
+float boxDistance(float3 p) {
+    float3 q = abs(p) - float3(1.0);
+    return length(max(q, float3(0.0))) + min(max(q.x, max(q.y, q.z)), 0.0);
+}
+
+float menger(float3 p, float iterations) {
+    float d = boxDistance(p);
+    float s = 1.0;
+    for (int i = 0; i < 8; i++) {
+        if (float(i) >= iterations) { break; }
+        float3 a = mod(p * s, 2.0) - 1.0;
+        s *= 3.0;
+        float3 r = abs(1.0 - 3.0 * abs(a));
+        float c = (min(max(r.x, r.y), min(max(r.y, r.z), max(r.z, r.x))) - 1.0) / s;
+        d = max(d, c);
+    }
+    return d;
+}
+
+float mandelbox(float3 p, float iterations, float scale) {
+    float3 z = p;
+    float dr = 1.0;
+    for (int i = 0; i < 16; i++) {
+        if (float(i) >= iterations) { break; }
+        z = clamp(z, -1.0, 1.0) * 2.0 - z;
+        float r2 = dot(z, z);
+        float factor = r2 < 0.25 ? 4.0 : (r2 < 1.0 ? 1.0 / r2 : 1.0);
+        z = z * factor * scale + p;
+        dr = dr * factor * abs(scale) + 1.0;
+    }
+    return length(z) / abs(dr);
+}
+
+float julia(float3 p, float iterations, float3 c) {
+    float4 q = float4(p, 0.0);
+    float md2 = 1.0;
+    float mz2 = dot(p, p);
+    for (int i = 0; i < 16; i++) {
+        if (float(i) >= iterations || mz2 > 4.0) { break; }
+        md2 *= 4.0 * mz2;
+        q = float4(q.x * q.x - q.y * q.y - q.z * q.z - q.w * q.w, 2.0 * q.x * q.yzw) + float4(c, 0.0);
+        mz2 = dot(q, q);
+    }
+    return 0.25 * sqrt(mz2 / md2) * log(mz2);
+}
+
+// Fractal.distance: from [p] in the world to the surface of the fractal at [base], at most.
+float fractalDistance(float base, float3 p) {
+    float radius = number(base + 4.0);
+    float kind = code(base + 5.0);
+    float nativeRadius = kind == 0.0 ? 1.25 : (kind == 1.0 ? 1.75 : (kind == 2.0 ? 10.4 : 1.5));
+    float scale = radius / nativeRadius;
+    float3 q = (p - vector(base + 1.0)) / scale;
+    float iterations = code(base + 6.0);
+    float parameter = number(base + 7.0);
+    float d;
+    if (kind == 0.0) { d = mandelbulb(q, iterations, parameter); }
+    else if (kind == 1.0) { d = menger(q, iterations); }
+    else if (kind == 2.0) { d = mandelbox(q, iterations, parameter); }
+    else { d = julia(q, iterations, vector(base + 8.0)); }
+    return d * scale;
+}
+
+// Fractal.hit: sphere tracing inside the bounding ball, until closer than a ten-thousandth of the radius.
+float intersectFractal(float base, float3 origin, float3 direction, float tMax) {
+    float3 oc = origin - vector(base + 1.0);
+    float radius = number(base + 4.0);
+    float a = dot(direction, direction);
+    float halfB = dot(oc, direction);
+    float discriminant = halfB * halfB - a * (dot(oc, oc) - radius * radius);
+    if (discriminant < 0.0) { return -1.0; }
+    float root = sqrt(discriminant);
+    float speed = sqrt(a);
+    float t = max((-halfB - root) / a, T_MIN);
+    float leave = min((-halfB + root) / a, tMax);
+    float epsilon = radius * 1.0e-4;
+    for (int i = 0; i < 160; i++) {
+        if (t >= leave) { return -1.0; }
+        float d = fractalDistance(base, origin + direction * t);
+        if (d < epsilon) { return t; }
+        t += d / speed;
+    }
+    return -1.0;
+}
+
+// Fractal.normalAt: the gradient of the distance by four taps on a tetrahedron.
+float3 fractalNormal(float base, float3 p) {
+    float h = number(base + 4.0) * 2.0e-4;
+    float3 a = float3(1.0, -1.0, -1.0);
+    float3 b = float3(-1.0, -1.0, 1.0);
+    float3 c = float3(-1.0, 1.0, -1.0);
+    float3 d = float3(1.0, 1.0, 1.0);
+    return normalize(a * fractalDistance(base, p + a * h) + b * fractalDistance(base, p + b * h) +
+        c * fractalDistance(base, p + c * h) + d * fractalDistance(base, p + d * h));
+}
+
 // Distance along the ray to primitive [slot] within [T_MIN, tMax], or -1 when the ray misses it.
 float intersect(float slot, float3 origin, float3 direction, float tMax) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
     float kind = code(base);
     if (kind == TRIANGLE) { return intersectTriangle(base, origin, direction, tMax); }
+    if (kind == FRACTAL) { return intersectFractal(base, origin, direction, tMax); }
     float3 center = centerOf(base);
     float radius = number(base + 4.0);
     float3 oc = origin - center;
@@ -240,6 +355,7 @@ float3 outwardNormal(float slot, float3 p) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
     float kind = code(base);
     if (kind == TRIANGLE) { return normalize(cross(vector(base + 4.0), vector(base + 7.0))); }
+    if (kind == FRACTAL) { return fractalNormal(base, p); }
     return (p - centerOf(base)) / number(base + 4.0);
 }
 
@@ -248,7 +364,7 @@ float3 outwardNormal(float slot, float3 p) {
 float3 shadingNormal(float slot, float3 p, float3 outward) {
     if (smoothNormals < 0.5) { return outward; }
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
-    float record = code(base + 10.0);
+    float record = code(base + 11.0);
     if (record < 1.0) { return outward; }
     float3 edge1 = vector(base + 4.0);
     float3 edge2 = vector(base + 7.0);
@@ -472,12 +588,12 @@ float3 mediumAlbedo(float medium) { return vector(mediaStart + medium * MEDIUM_V
 // 1 + its number in the primitive's record, the inside one through the front, the outside one through the back.
 float mediumBeyond(float slot, bool frontFace) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
-    return code(base + (frontFace ? 11.0 : 12.0)) - 1.0;
+    return code(base + (frontFace ? 12.0 : 13.0)) - 1.0;
 }
 
 bool boundsMedia(float slot) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
-    return code(base + 11.0) + code(base + 12.0) > 0.0;
+    return code(base + 12.0) + code(base + 13.0) > 0.0;
 }
 
 // FreeFlight.distance: the distance to the next particle, with the density of one channel picked at random.
@@ -622,7 +738,9 @@ float3 trace(float3 origin, float3 direction) {
         float param = number(base + 4.0);
 
         if (kind == EMISSIVE || kind == GLOWING) {
-            return countEmission ? radiance + throughput * emission(base, kind, p) : radiance;
+            // A glowing fractal is no sampled light (Emitters): its glow counts on every bounce.
+            bool unsampled = code(primitiveStart + slot * PRIMITIVE_VALUES) == FRACTAL;
+            return countEmission || unsampled ? radiance + throughput * emission(base, kind, p) : radiance;
         }
 
         float3 scattered;

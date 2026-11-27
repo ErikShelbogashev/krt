@@ -10,6 +10,8 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
+import krt.domain.scene.model.Fractal
+import krt.domain.scene.model.FractalKind
 import krt.domain.scene.model.GlowingPattern
 import krt.domain.scene.model.Interface
 import krt.domain.scene.model.Iridescent
@@ -112,6 +114,19 @@ class LightSamplingTest {
         val plainMean = meanBrightness(TraceScene(objects, NIGHT), Random(7))
         val sampledMean = meanBrightness(TraceScene(objects, NIGHT.copy(sampleLights = true)), Random(8))
         assertTrue(abs(plainMean - sampledMean) < plainMean * 0.05, "plain $plainMean vs sampled $sampledMean")
+    }
+
+    @Test
+    fun `a glowing fractal is no sampled light, yet sampling keeps the brightness of the floor it lights`() {
+        val objects = listOf(
+            Sphere(Point3(0.0, -100.0, 0.0), 100.0, Lambert(Color(0.7, 0.7, 0.7))),
+            Fractal(FractalKind.MENGER, Point3(0.0, 1.5, 0.0), 0.6, Emissive(Color.ONE, 4.0)),
+        )
+        assertEquals(0, Lights(objects).count)
+        val plain = floorBrightness(TraceScene(objects, NIGHT), Random(31))
+        val sampled = floorBrightness(TraceScene(objects, NIGHT.copy(sampleLights = true)), Random(32))
+        assertTrue(plain > 0.01, "the fractal lights the floor: $plain")
+        assertTrue(abs(plain - sampled) < plain * 0.03, "plain $plain vs sampled $sampled")
     }
 
     @Test
