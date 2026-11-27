@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.jmh)
 }
 
 group = "ru.erxxshll6y.krt"
@@ -35,6 +36,15 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+jmh {
+    jmhVersion = libs.versions.jmh
+    warmupIterations = 2
+    iterations = 3
+    fork = 1
+    // Lets the benchmarks find samples/ without depending on the working directory.
+    jvmArgsAppend.add("-Dkrt.projectDir=${project.projectDir}")
 }
 
 detekt {
