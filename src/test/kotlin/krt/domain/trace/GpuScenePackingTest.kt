@@ -149,7 +149,8 @@ class GpuScenePackingTest {
         assertEquals(-1, scene.scene.mediumAt(Point3(0.0, -2.5, 0.0)))
         val lights = scene.scene.sections
         assertEquals(2, scene.scene.sampledLights)
-        val emissive = (0 until lights.lightCount).map { scene.code(lights.lightStart + it) }
+        val emissive = (0 until 2).map { scene.code(lights.memberStart + it * GpuScenePacking.MEMBER_VALUES) }
+        assertEquals(GpuLightTable.SHARE_ONE, scene.code(lights.lightStart + GpuScenePacking.LIGHT_VALUES))
         emissive.forEach { slot -> scene.assertMaterialKind(slot, GpuScenePacking.EMISSIVE) }
         assertEquals(0, GpuScenePacking.pack(objects).sampledLights)
     }

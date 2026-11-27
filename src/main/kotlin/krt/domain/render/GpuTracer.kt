@@ -63,6 +63,7 @@ class GpuTracer : AutoCloseable {
         builder.uniform("materialStart", frame.scene.materialStart.toFloat())
         builder.uniform("lightStart", frame.scene.sections.lightStart.toFloat())
         builder.uniform("lightCount", frame.scene.sampledLights.toFloat())
+        builder.uniform("memberStart", frame.scene.sections.memberStart.toFloat())
         builder.uniform("normalStart", frame.scene.sections.normalStart.toFloat())
         builder.uniform("mediaStart", frame.scene.sections.mediaStart.toFloat())
         builder.uniform("cameraMedium", frame.scene.mediumAt(frame.view.origin).toFloat())
