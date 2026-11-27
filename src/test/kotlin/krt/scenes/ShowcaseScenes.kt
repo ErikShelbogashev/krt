@@ -3,6 +3,7 @@ package krt.scenes
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import krt.domain.scene.model.Conductor
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
@@ -15,9 +16,11 @@ import krt.domain.scene.model.Material
 import krt.domain.scene.model.Medium
 import krt.domain.scene.model.MediumInterface
 import krt.domain.scene.model.Meshes
+import krt.domain.scene.model.Metals
 import krt.domain.scene.model.Pattern
 import krt.domain.scene.model.PatternKind
 import krt.domain.scene.model.Patterned
+import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.Pose
 import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
@@ -40,7 +43,7 @@ class BuiltScene(val file: String, val objects: List<Traceable>, val look: Scene
  */
 object ShowcaseScenes {
 
-    val ALL: List<BuiltScene> get() = listOf(prism(), bubbles(), candle(), temple())
+    val ALL: List<BuiltScene> get() = listOf(prism(), bubbles(), candle(), temple(), metals())
 
     private fun p(x: Double, y: Double, z: Double) = Point3(x, y, z)
     private fun c(r: Double, g: Double, b: Double) = Color(r, g, b)
@@ -260,4 +263,55 @@ object ShowcaseScenes {
         return BuiltScene("temple", objects, look)
     }
 
+    /**
+     * Metals: gold and copper by their complex refraction index, a brushed aluminium disk and a brushed can,
+     * frosted glass and red car paint under a clear coat, on a grey studio sweep under three softboxes.
+     */
+    fun metals(): BuiltScene {
+        val grey = Lambert(c(0.42, 0.42, 0.43))
+        val paint = Plastic(c(0.55, 0.02, 0.03), 0.02)
+        val objects = buildList {
+            addAll(named("Studio sweep", studioSweep(grey)))
+            add(Sphere(p(-1.5, 0.55, 0.3), 0.55, Conductor(Metals.GOLD, 0.08), "Gold"))
+            add(Sphere(p(1.55, 0.5, 0.45), 0.5, Conductor(Metals.COPPER, 0.18), "Copper"))
+            add(Sphere(p(0.35, 0.42, 1.25), 0.42, Dielectric(1.5, roughness = 0.25), "Frosted glass"))
+            val (disk, can) = Conductor(Metals.ALUMINIUM, 0.3, 0.85) to Conductor(Metals.ALUMINIUM, 0.22, 0.85)
+            addAll(named("Brushed disk", cylinder(p(0.0, 0.0, -0.4), 0.9, 0.05, 96, disk)))
+            addAll(named("Brushed can", cylinder(p(-0.25, 0.05, -0.55), 0.3, 0.75, 64, can)))
+            addAll(named("Car paint", Meshes.smooth(Meshes.torusKnot(
+                Pose(p(0.45, 0.62, -0.1)), 0.17, 0.09, 2, 3, 96, 10, paint,
+            ))))
+            addAll(named("Softbox left", softbox(p(-3.2, 2.6, 2.0), p(1.0, -0.6, -0.6), 5500.0, 7.0)))
+            addAll(named("Softbox right", softbox(p(3.4, 2.2, 1.4), p(-1.0, -0.5, -0.4), 5500.0, 5.0)))
+            addAll(named("Softbox top", softbox(p(0.0, 4.2, -0.6), p(0.0, -1.0, 0.1), 6000.0, 4.0)))
+        }
+        val look = SceneLook(
+            Sky(c(0.02, 0.02, 0.022), c(0.01, 0.01, 0.012)), fov = 38.0, aperture = 0.015, sampleLights = true,
+            start = StartView(p(0.2, 2.0, 5.6), p(0.0, 0.45, 0.0)),
+        )
+        return BuiltScene("metals", objects, look)
+    }
+
+    /** A floor that bends up into the back wall: the seamless backdrop of a studio. */
+    private fun studioSweep(material: Material): List<Triangle> {
+        val bend = (0..12).map { i ->
+            val a = PI / 2 * i / 12
+            p(0.0, 1.5 - 1.5 * cos(a), -2.0 - 1.5 * sin(a))
+        }
+        val path = listOf(p(0.0, 0.0, 4.0)) + bend + listOf(p(0.0, 5.0, -3.5))
+        val half = 6.0
+        val raw = path.zipWithNext { a, b ->
+            val side = p(half, 0.0, 0.0)
+            listOf(Triangle(a - side, a + side, b + side, material), Triangle(a - side, b + side, b - side, material))
+        }.flatten()
+        return Meshes.smooth(raw)
+    }
+
+    /** A square softbox [center]ed, facing [facing], glowing at [kelvin]. */
+    private fun softbox(center: Point3, facing: Point3, kelvin: Double, intensity: Double): List<Triangle> {
+        val z = facing.unit()
+        val x = p(0.0, 1.0, 0.0).cross(z).let { if (it.length() < 1e-6) p(1.0, 0.0, 0.0) else it.unit() }
+        val y = z.cross(x)
+        return Meshes.panel(Pose(center, x, y, z), 0.8, 0.8, Emissive.kelvin(kelvin, intensity))
+    }
 }
