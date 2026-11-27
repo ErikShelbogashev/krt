@@ -1,10 +1,14 @@
 package krt.domain.camera
 
 import java.awt.Point
+import kotlin.math.asin
+import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.tan
 import kotlin.random.Random
+import krt.domain.camera.model.CameraSnapshot
+import krt.domain.camera.model.ViewPreset
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
@@ -78,6 +82,31 @@ class Camera(
 
     init {
         updateCamera()
+    }
+
+    /** Where the camera stands. */
+    val origin: Point3 get() = _origin
+
+    /** The point one unit ahead of the camera, along its view. */
+    val lookAt: Point3 get() = _target
+
+    fun snapshot(): CameraSnapshot = CameraSnapshot(origin, lookAt, fov, aperture, focusDist, movementSpeed)
+
+    /** Stands the camera at [origin] looking at [target]; the pitch keeps clear of the poles. */
+    fun lookFrom(origin: Point3, target: Point3) {
+        val direction = (target - origin).unit()
+        _origin = origin
+        pitch = asin(direction.y.coerceIn(-1.0, 1.0)).coerceIn(-maxPitch, maxPitch)
+        yaw = atan2(direction.z, direction.x)
+        updateCamera()
+    }
+
+    /** Back to the view and lens the camera starts with; resolution, samples and speed stay. */
+    fun resetView() {
+        fov = DEFAULT_FOV
+        aperture = DEFAULT_APERTURE
+        focusDist = DEFAULT_FOCUS_DISTANCE
+        lookFrom(ViewPreset.DEFAULT.origin, ViewPreset.DEFAULT.target)
     }
 
     fun adjustYaw(delta: Double) {
@@ -173,6 +202,9 @@ class Camera(
 
     companion object {
         private const val DRAG_SENSITIVITY = 0.1
+        private const val DEFAULT_FOV = 90.0
+        private const val DEFAULT_APERTURE = 0.1
+        private const val DEFAULT_FOCUS_DISTANCE = 10.0
 
         /** Image sizes, in pixels, that the settings accept and the renderer draws. */
         val IMAGE_SIZE_RANGE = 32..1024
@@ -184,9 +216,9 @@ class Camera(
             origin = Point3.ONE,
             target = Point3.ZERO,
             vup = Point3(0.0, 1.0, 0.0),
-            fov = 90.0,
-            aperture = 0.1,
-            focusDist = 10.0,
+            fov = DEFAULT_FOV,
+            aperture = DEFAULT_APERTURE,
+            focusDist = DEFAULT_FOCUS_DISTANCE,
             imageWidth = 400,
             imageHeight = 400
         )

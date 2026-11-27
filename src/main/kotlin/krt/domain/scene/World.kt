@@ -48,6 +48,9 @@ class World(objects: List<Traceable> = emptyList()) {
 
     fun getObjectIds(): List<String> = objects.map { it.id }
 
+    /** Centre of the box around object [objectId], or null when the scene has no such object. */
+    fun centerOf(objectId: String): Point3? = objects.find { it.id == objectId }?.bounds()?.center
+
     fun add(obj: Traceable) {
         snapshot = Snapshot(objects + obj)
     }
