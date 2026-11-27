@@ -89,14 +89,21 @@ class GeometryTest {
     @Test
     fun `world translates object by id`() {
         val world = World()
-        val sphere = object : Sphere(Point3(0.0, 0.0, -3.0), 1.0, Lambert(Color(0.2, 0.2, 0.2))) {
-            override fun id() = "S"
-        }
-        world.add(sphere)
+        world.add(Sphere(Point3(0.0, 0.0, -3.0), 1.0, Lambert(Color(0.2, 0.2, 0.2)), id = "S"))
         assertEquals(listOf("S"), world.getObjectIds())
         world.translateObjectById("S", Point3(0.0, 0.0, -1.0))
         val hit = assertNotNull(world.hit(Ray(Point3.ZERO, Point3(0.0, 0.0, -1.0)), 0.001, Double.POSITIVE_INFINITY))
         assertEquals(3.0, hit.t, eps)
+        assertEquals(listOf("S"), world.getObjectIds())
+    }
+
+    @Test
+    fun `translate returns a moved copy and keeps the original`() {
+        val original = Triangle(Point3(0.0, 0.0, 0.0), Point3(1.0, 0.0, 0.0), Point3(0.0, 1.0, 0.0), Dielectric(1.5), id = "T")
+        val moved = original.translate(Point3(1.0, 1.0, 1.0))
+        assertEquals("T", moved.id)
+        assertEquals(LineSegment(Point3(0.0, 0.0, 0.0), Point3(1.0, 0.0, 0.0)), original.linearize(1.0).first())
+        assertEquals(LineSegment(Point3(1.0, 1.0, 1.0), Point3(2.0, 1.0, 1.0)), moved.linearize(1.0).first())
     }
 
     @Test

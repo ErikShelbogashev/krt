@@ -5,8 +5,12 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-open class Sphere(private val center: Point3, private val radius: Double, private val material: Material) : Traceable {
-    private val uuid by lazy { UUID.randomUUID() }
+class Sphere(
+    private val center: Point3,
+    private val radius: Double,
+    private val material: Material,
+    override val id: String = "Sphere[${UUID.randomUUID()}]",
+) : Traceable {
 
     override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
         val oc = ray.origin - center
@@ -32,13 +36,7 @@ open class Sphere(private val center: Point3, private val radius: Double, privat
         return Hit.create(hitPoint, root, ray, outwardNormal, material)
     }
 
-    override fun translate(offset: Point3) {
-        center.translate(offset)
-    }
-
-    override fun id(): String {
-        return "Sphere[$uuid]"
-    }
+    override fun translate(offset: Point3): Sphere = Sphere(center + offset, radius, material, id)
 
     override fun linearize(coefficient: Double): List<LineSegment> {
         val segments = mutableListOf<LineSegment>()

@@ -6,14 +6,22 @@ import kotlin.math.abs
 class ObjParser(filePath: String, material: Material) {
     private val vertices = mutableListOf<Point3>()
     private val normals = mutableListOf<Point3>()
-    val triangles = mutableListOf<Triangle>()
+    private val quads = mutableListOf<List<Int>>()
+    val triangles: List<Triangle>
 
     init {
-        parseFile(filePath, material)
-        normalizeVertices()
+        parseFile(filePath)
+        val normalized = normalizeVertices(vertices)
+        triangles = quads.flatMap { quad ->
+            // Two triangles from a quad
+            listOf(
+                Triangle(normalized[quad[0]], normalized[quad[1]], normalized[quad[2]], material),
+                Triangle(normalized[quad[0]], normalized[quad[2]], normalized[quad[3]], material),
+            )
+        }
     }
 
-    private fun parseFile(filePath: String, material: Material) {
+    private fun parseFile(filePath: String) {
         File(filePath).forEachLine { line ->
             when {
                 line.startsWith("v ") -> {
@@ -30,35 +38,19 @@ class ObjParser(filePath: String, material: Material) {
                     val parts = line.substring(2).split(" ").map { it.trim() }
                     if (parts.size == 5) { // Обработка четырехугольников
                         val idxGroups = parts.dropLast(1).map { it.split('/').map { it.toInt() - 1 } }
-                        // Создаем два треугольника из квада
-                        triangles.add(
-                            Triangle(
-                                vertices[idxGroups[0][0]],
-                                vertices[idxGroups[1][0]],
-                                vertices[idxGroups[2][0]],
-                                material
-                            )
-                        )
-                        triangles.add(
-                            Triangle(
-                                vertices[idxGroups[0][0]],
-                                vertices[idxGroups[2][0]],
-                                vertices[idxGroups[3][0]],
-                                material
-                            )
-                        )
+                        quads.add(idxGroups.map { it[0] })
                     }
                 }
             }
         }
     }
 
-    private fun normalizeVertices() {
-        if (vertices.isEmpty()) return
+    private fun normalizeVertices(vertices: List<Point3>): List<Point3> {
+        if (vertices.isEmpty()) return vertices
         val maxCoordinate = vertices.fold(0.0) { acc, vertex ->
             maxOf(acc, abs(vertex.x), abs(vertex.y), abs(vertex.z))
         }
-        if (maxCoordinate == 0.0) return // To avoid division by zero if all vertices are at the origin.
-        vertices.forEach { it /= maxCoordinate }
+        if (maxCoordinate == 0.0) return vertices // To avoid division by zero if all vertices are at the origin.
+        return vertices.map { it / maxCoordinate }
     }
 }
