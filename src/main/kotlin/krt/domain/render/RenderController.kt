@@ -122,6 +122,7 @@ class RenderController(
      * the others. Pixels go straight into the frame's pixel array. After each batch the worker that finished it
      * asks the clock whether to publish an intermediate frame; the final frame is published once all passes
      * are done. Every update carries the progress of the frame at the moment it was published.
+     * The caller's thread only reads the camera's size; the pixel order and sums are set up in the job.
      */
     private fun traceFrame(
         frame: Frame,
@@ -129,13 +130,18 @@ class RenderController(
         camera: Camera,
         onUpdate: ((RenderProgress) -> Unit),
     ): Job {
-        val pixels = FrameSampling.pixelOrder(camera.imageWidth, camera.imageHeight, random)
-        val frameSeed = random.nextLong()
-        val batches = pixels.chunked(batchSize)
-        val accumulated = Accumulator(camera.imageWidth * camera.imageHeight)
+        val width = camera.imageWidth
+        val height = camera.imageHeight
         val passes = camera.samplesPerPixel
+        val batchPixels = batchSize
         val startedAt = clock()
         return CoroutineScope(renderDispatcher).launch {
+            // Setting up a frame of a million pixels takes a while: off the UI thread, which a dragged camera
+            // asks for a new frame every repaint.
+            val pixels = FrameSampling.pixelOrder(width, height, random)
+            val frameSeed = random.nextLong()
+            val batches = pixels.chunked(batchPixels)
+            val accumulated = Accumulator(width * height)
             for (pass in 0 until passes) {
                 if (!isActive) break
                 val nextBatch = AtomicInteger(0)
