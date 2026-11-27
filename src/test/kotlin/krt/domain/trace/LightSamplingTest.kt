@@ -10,13 +10,17 @@ import kotlin.test.assertTrue
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
 import krt.domain.scene.model.GlowingPattern
+import krt.domain.scene.model.Iridescent
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Pattern
 import krt.domain.scene.model.PatternKind
+import krt.domain.scene.model.Patterned
+import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Triangle
+import krt.domain.scene.model.Velvet
 import krt.platform.math.Color
 import krt.platform.math.Point3
 import krt.platform.math.Ray
@@ -80,6 +84,36 @@ class LightSamplingTest {
     }
 
     @Test
+    fun `light sampling keeps the brightness of a lit floor of every material it lights`() {
+        val floors = listOf(
+            Lambert(Color(0.7, 0.7, 0.7)),
+            Plastic(Color(0.7, 0.3, 0.2), 0.2),
+            Velvet(Color(0.4, 0.1, 0.2), Color(0.8, 0.6, 0.6), 0.5),
+            Iridescent(Color(0.5, 0.5, 0.5), 450.0, 1.8, 0.2),
+            Patterned(Pattern(PatternKind.MARBLE, Color(0.8, 0.8, 0.8), Color(0.2, 0.2, 0.3), 2.0), 0.2, bump = 0.3),
+        )
+        floors.forEach { floor ->
+            val objects = listOf(
+                Sphere(Point3(0.0, -100.0, 0.0), 100.0, floor),
+                Sphere(Point3(0.0, 1.5, 0.0), 0.6, Emissive(Color.ONE, 4.0)),
+            )
+            val plain = floorBrightness(TraceScene(objects, NIGHT), Random(11))
+            val sampled = floorBrightness(TraceScene(objects, NIGHT.copy(sampleLights = true)), Random(12))
+            val name = floor::class.simpleName
+            assertTrue(abs(plain - sampled) < plain * 0.03, "$name: plain $plain vs sampled $sampled")
+        }
+    }
+
+    /** Mean brightness of the floor around the light, seen straight from above, away from the light itself. */
+    private fun floorBrightness(scene: TraceScene, random: Random): Double = (0 until FLOOR_RAYS).sumOf {
+        val angle = random.nextDouble(0.0, 2 * PI)
+        val distance = random.nextDouble(0.9, 2.5)
+        val origin = Point3(distance * kotlin.math.cos(angle), 4.0, distance * kotlin.math.sin(angle))
+        val color = PathTracing.color(scene, Ray(origin, Point3(0.0, -1.0, 0.0)), DEPTH, random)
+        (color.x + color.y + color.z) / 3
+    } / FLOOR_RAYS
+
+    @Test
     fun `fog lets through the share of rays its density allows`() {
         val density = 0.5
         val fog = Fog(Point3.ZERO, 1.0, density, WHITE)
@@ -111,5 +145,6 @@ class LightSamplingTest {
         const val SAMPLES = 20_000
         const val RAYS = 40_000
         const val DEPTH = 6
+        const val FLOOR_RAYS = 60_000
     }
 }
