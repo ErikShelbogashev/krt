@@ -3,11 +3,13 @@ kotlin = "2.4.21"
 compose-multiplatform = "1.12.2"
 filekit = "0.17.1"
 compose-material-icons = "1.7.3"
+konsist = "0.18.1"
 
 [libraries]
 compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose-multiplatform" }
 compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-material-icons" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
+konsist = { module = "com.lemonappdev:konsist", version.ref = "konsist" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
