@@ -26,6 +26,7 @@ import org.openjdk.jmh.infra.Blackhole
  * Cost of the render hot path: one ray–scene intersection, one frame on one thread
  * and one frame through [RenderController] on all cores.
  */
+@Suppress("unused") // JMH finds and runs the benchmarks by reflection
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
