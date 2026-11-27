@@ -10,6 +10,7 @@ import kotlin.random.Random
 class RenderController(
     var repaintIntervalMs: Long,
     var batchSize: Int,
+    private val random: Random = Random.Default,
 ) : AutoCloseable {
     private var renderJob: Job? = null
     private val renderDispatcher =
@@ -46,16 +47,18 @@ class RenderController(
             (0 until camera.imageWidth).map { i ->
                 Pair(j, i)
             }
-        }.shuffled()
+        }.shuffled(random)
+        val frameSeed = random.nextLong()
         renderJob = CoroutineScope(renderDispatcher).launch {
             pixels.chunked(batchSize).forEach { batch ->
                 batch.map { (j, i) ->
                     async {
+                        val pixelRandom = Random(frameSeed + j.toLong() * camera.imageWidth + i)
                         val color = (0 until camera.samplesPerPixel).fold(Point3.ZERO) { acc, _ ->
-                            val u = (i.toDouble() + Random.nextDouble()) / (camera.imageWidth - 1)
-                            val v = (j.toDouble() + Random.nextDouble()) / (camera.imageHeight - 1)
-                            val r = camera.ray(u, v)
-                            acc + rayTracer.color(r)
+                            val u = (i.toDouble() + pixelRandom.nextDouble()) / (camera.imageWidth - 1)
+                            val v = (j.toDouble() + pixelRandom.nextDouble()) / (camera.imageHeight - 1)
+                            val r = camera.ray(u, v, pixelRandom)
+                            acc + rayTracer.color(r, pixelRandom)
                         }
                         if (isActive) {
                             image.setRGB(
