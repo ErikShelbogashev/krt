@@ -53,6 +53,7 @@ const float ISOTROPIC = 6.0;
 const float BUBBLE = 7.0;
 const float IRIDESCENT = 8.0;
 const float CONDUCTOR = 9.0;
+const float VELVET = 10.0;
 
 const float SPECULAR = 0.0;         // Lobe: how a ray left a surface, for light sampling
 const float DIFFUSE = 1.0;
@@ -309,6 +310,17 @@ float3 conductorFresnel(float cosine, float3 eta, float3 k) {
     return (rs + rp) * 0.5;
 }
 
+// Sheen.weight: the Charlie sheen BRDF with Neubelt's visibility, times the cosine over the pdf of Lambert's sampling.
+float sheenWeight(float3 toViewer, float3 toLight, float3 normal, float roughness) {
+    float cosViewer = max(dot(toViewer, normal), 0.0);
+    float cosLight = max(dot(toLight, normal), 0.0);
+    float cosHalf = dot(normalize(toViewer + toLight), normal);
+    float inverseAlpha = 1.0 / max(roughness * roughness, 1.0e-3);
+    float distribution = (2.0 + inverseAlpha) * pow(max(1.0 - cosHalf * cosHalf, 0.0), inverseAlpha * 0.5) / (2.0 * PI);
+    float visibility = 1.0 / max(4.0 * (cosLight + cosViewer - cosLight * cosViewer), 1.0e-3);
+    return distribution * visibility * PI;
+}
+
 float hitT;
 
 // The primitive the ray hits first before tMax, or -1; its distance goes to hitT. Walks the BVH along skip links.
@@ -474,6 +486,19 @@ float3 trace(float3 origin, float3 direction) {
                 float3 i = float3(dot(scattered, tangent), dot(scattered, bitangent), dot(scattered, normal));
                 if (shouldReflect ? i.z <= 0.0 : i.z >= 0.0) { return radiance; }
                 attenuation *= shadowing(o, i, alpha, alpha);
+            }
+        } else if (kind == VELVET) {
+            // Velvet: the diffuse bounce, lit by light sampling, or the sheen one, as Velvet.scatter.
+            float diffuseChance = number(base + 5.0);
+            bool diffuse = rnd() < diffuseChance;
+            scattered = normal + randomInUnitSphere();
+            if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+            if (diffuse) {
+                attenuation = color / diffuseChance;
+                lobe = DIFFUSE;
+            } else {
+                float weight = sheenWeight(-normalize(direction), normalize(scattered), normal, param);
+                attenuation = vector(base + 6.0) * (weight / (1.0 - diffuseChance));
             }
         } else if (kind == CONDUCTOR) {
             // Metal with GGX microfacets, as Conductor.scatter.
