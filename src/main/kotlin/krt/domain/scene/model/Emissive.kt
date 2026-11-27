@@ -48,7 +48,7 @@ object Blackbody {
 
     /**
      * Planck's spectrum at [kelvin] seen through the channel weights of [Spectrum]: the colour of the glow, scaled
-     * so its brightest channel is 1.
+     * to a luminance of 1, as pbrt-v4 scales its black bodies (ADR 0016).
      */
     fun color(kelvin: Double): Color {
         val step = (Spectrum.MAX_NM - Spectrum.MIN_NM) / STEPS
@@ -56,8 +56,11 @@ object Blackbody {
             val wavelength = Spectrum.MIN_NM + (i + 0.5) * step
             acc + Spectrum.weight(wavelength) * radiance(wavelength, kelvin)
         }
-        return sum / maxOf(sum.x, sum.y, sum.z)
+        return sum / sum.dot(LUMINANCE)
     }
+
+    /** Weights of the red, green and blue channels in luminance (Rec. 709). */
+    private val LUMINANCE = Point3(0.2126, 0.7152, 0.0722)
 
     /** Planck's law, up to a constant factor. */
     private fun radiance(wavelength: Double, kelvin: Double): Double {

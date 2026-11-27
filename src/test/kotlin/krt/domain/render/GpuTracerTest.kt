@@ -547,7 +547,8 @@ class GpuTracerTest {
         const val BUDGET_SAMPLES = 32
         const val SLOW_STEP_MS = 400.0
         const val BRIGHTNESS_SHARE = 0.03
-        const val CPU_BRIGHTNESS_SHARE = 0.06
+        /** The first GPU steps take 1, 1 and 2 samples and clip bright lamps in the 8-bit frame; the CPU does not. */
+        const val CPU_BRIGHTNESS_SHARE = 0.1
         val SHARPNESS_RANGE = 0.8..1.25
     }
 }

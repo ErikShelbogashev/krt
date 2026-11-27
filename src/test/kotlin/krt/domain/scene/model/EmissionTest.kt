@@ -17,9 +17,11 @@ class EmissionTest {
         val sky = Blackbody.color(12000.0)
         assertTrue(candle.x > candle.y && candle.y > candle.z, "candle $candle")
         assertTrue(sky.z > sky.x, "sky $sky")
-        listOf(candle, sky, Blackbody.color(6500.0)).forEach { assertEquals(1.0, maxOf(it.x, it.y, it.z), 1e-12) }
+        val luminance = Point3(0.2126, 0.7152, 0.0722)
+        listOf(candle, sky, Blackbody.color(6500.0)).forEach { assertEquals(1.0, it.dot(luminance), 1e-12) }
         val daylight = Blackbody.color(6500.0)
-        assertTrue(minOf(daylight.x, daylight.y, daylight.z) > 0.7, "daylight $daylight")
+        val brightest = maxOf(daylight.x, daylight.y, daylight.z)
+        assertTrue(minOf(daylight.x, daylight.y, daylight.z) > 0.7 * brightest, "daylight $daylight")
     }
 
     @Test
