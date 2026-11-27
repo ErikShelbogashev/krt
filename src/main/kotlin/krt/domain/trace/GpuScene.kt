@@ -1,7 +1,6 @@
 package krt.domain.trace
 
 import kotlin.math.roundToLong
-import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
 import krt.domain.scene.model.Material
 import krt.domain.scene.model.Sky
@@ -82,6 +81,7 @@ object GpuScenePacking {
     const val CONDUCTOR = 9
     const val VELVET = 10
     const val PATTERNED = 11
+    const val GLOWING = 12
 
     private const val FIXED_BITS = 24
     private const val FIXED_ONE = 1 shl FIXED_BITS
@@ -101,7 +101,7 @@ object GpuScenePacking {
         val primitiveStart = bvh.nodeCount * NODE_VALUES
         val materialStart = primitiveStart + primitives.size * PRIMITIVE_VALUES
         val lightStart = materialStart + primitives.size * MATERIAL_VALUES
-        val lightSlots = bvh.order.indices.filter { slot -> materialOf(primitives[bvh.order[slot]]) is Emissive }
+        val lightSlots = bvh.order.indices.filter { slot -> materialOf(primitives[bvh.order[slot]]).emits }
         val normalStart = lightStart + lightSlots.size
         val smooth = bvh.order.map { (primitives[it] as? Triangle)?.normals }
         val records = smooth.runningFold(0) { count, normals -> if (normals == null) count else count + 1 }

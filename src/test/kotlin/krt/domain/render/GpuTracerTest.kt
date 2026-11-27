@@ -11,6 +11,7 @@ import krt.domain.scene.model.Conductor
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
+import krt.domain.scene.model.GlowingPattern
 import krt.domain.scene.model.Iridescent
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Meshes
@@ -121,6 +122,21 @@ class GpuTracerTest {
         ),
     )
 
+    /** A lava ball and two lamps, warm and cold, over a grey floor at night. */
+    private val glowing = World(
+        listOf(
+            Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.6, 0.6, 0.6))),
+            Sphere(
+                Point3(0.0, 1.0, 0.0), 1.0,
+                GlowingPattern(Pattern(PatternKind.NOISE, Color(1.0, 0.35, 0.0), Color(0.15, 0.0, 0.0), 2.5), 3.0),
+            ),
+            Sphere(Point3(-2.5, 0.7, 1.0), 0.4, Emissive.kelvin(1900.0, 6.0)),
+            Sphere(Point3(2.5, 0.7, 1.0), 0.4, Emissive.kelvin(10000.0, 6.0)),
+            Sphere(Point3(0.0, 0.5, 2.0), 0.5, Lambert(Color(0.8, 0.8, 0.8))),
+        ),
+        SceneLook(Sky(Color(0.02, 0.02, 0.03), Color(0.0, 0.0, 0.01)), fov = 60.0, aperture = 0.0, sampleLights = true),
+    )
+
     private fun camera() = Camera(
         origin = Point3(0.0, 2.0, 7.0),
         target = Point3.ZERO,
@@ -223,6 +239,33 @@ class GpuTracerTest {
     }
 
     @Test
+    fun `a glowing pattern is the same pattern on the GPU as on the CPU, pixel by pixel`() {
+        val pattern = Pattern(PatternKind.MARBLE, Color(0.9, 0.5, 0.1), Color(0.1, 0.0, 0.3), 0.7)
+        val wall = World(
+            Meshes.panel(Pose(Point3(0.0, 1.0, -2.0)), 20.0, 20.0, GlowingPattern(pattern, 1.0)),
+        )
+        val camera = camera()
+        val gpu = gpuFrame(camera, wall)
+        val cpu = cpuFrame(camera, wall)
+        val difference = gpu.indices.sumOf { i ->
+            (0 until CHANNELS).sumOf { c -> channelDifference(gpu[i], cpu[i], c) }
+        }
+        assertTrue(difference / (gpu.size * CHANNELS) < PIXEL_TOLERANCE, "mean difference per channel $difference")
+    }
+
+    @Test
+    fun `lights by temperature and glowing patterns look the same on the GPU as on the CPU`() {
+        val camera = camera()
+        val gpu = gpuFrame(camera, glowing)
+        val cpu = cpuFrame(camera, glowing)
+
+        (0 until CHANNELS).forEach { channel ->
+            val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+            assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
+        }
+    }
+
+    @Test
     fun `triangles are drawn`() {
         val wall = Triangle(
             Point3(-50.0, -50.0, -3.0),
@@ -281,6 +324,11 @@ class GpuTracerTest {
     private fun channelMean(pixels: IntArray, channel: Int): Double =
         pixels.sumOf { (it shr (16 - 8 * channel) and 255) / 255.0 } / pixels.size
 
+    private fun channelDifference(a: Int, b: Int, channel: Int): Double {
+        val shift = 16 - 8 * channel
+        return abs((a shr shift and 255) - (b shr shift and 255)) / 255.0
+    }
+
     private fun quadrantOf(index: Int): Int =
         (if (index % SIZE < SIZE / 2) 0 else 1) + (if (index / SIZE < SIZE / 2) 0 else 2)
 
@@ -295,5 +343,6 @@ class GpuTracerTest {
         const val REGION_TOLERANCE = 0.06
         const val QUADRANTS = 4
         const val CHANNELS = 3
+        const val PIXEL_TOLERANCE = 0.02
     }
 }

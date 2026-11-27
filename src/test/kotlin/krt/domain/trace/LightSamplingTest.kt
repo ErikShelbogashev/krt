@@ -9,7 +9,10 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
+import krt.domain.scene.model.GlowingPattern
 import krt.domain.scene.model.Lambert
+import krt.domain.scene.model.Pattern
+import krt.domain.scene.model.PatternKind
 import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Triangle
@@ -59,7 +62,20 @@ class LightSamplingTest {
         val sampled = TraceScene(objects, NIGHT, sampleLights = true)
         val plainMean = meanBrightness(plain, Random(7))
         val sampledMean = meanBrightness(sampled, Random(8))
-        assertTrue(abs(plainMean - sampledMean) < plainMean * 0.08, "plain $plainMean vs sampled $sampledMean")
+        assertTrue(abs(plainMean - sampledMean) < plainMean * 0.05, "plain $plainMean vs sampled $sampledMean")
+    }
+
+    @Test
+    fun `a glowing pattern is a light and sampling it keeps the brightness`() {
+        val lava = GlowingPattern(Pattern(PatternKind.MARBLE, Color(1.0, 0.3, 0.0), Color(0.2, 0.0, 0.0), 2.0), 6.0)
+        val objects = listOf(
+            Sphere(Point3(0.0, -100.0, 0.0), 100.0, Lambert(Color(0.7, 0.7, 0.7))),
+            Sphere(Point3(0.0, 2.5, 0.0), 0.6, lava),
+        )
+        assertEquals(1, Lights(objects).count)
+        val plainMean = meanBrightness(TraceScene(objects, NIGHT, sampleLights = false), Random(7))
+        val sampledMean = meanBrightness(TraceScene(objects, NIGHT, sampleLights = true), Random(8))
+        assertTrue(abs(plainMean - sampledMean) < plainMean * 0.05, "plain $plainMean vs sampled $sampledMean")
     }
 
     @Test
