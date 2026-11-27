@@ -29,18 +29,26 @@ object GpuSampling {
      * How much of a pass a GPU step takes at most: [samples] per pixel over one of [bands] bands of rows, adapted to
      * the window frames that drew steps. A step runs inside a window repaint, and steps that take longer than the
      * repaint interval queue up on the GPU, so every window frame waits behind them, and a camera moved meanwhile
-     * gets its frames late. A step frame over [STEP_FRAME_TARGET_MS] cuts the work in proportion at once: the
-     * samples first, then the rows, in more bands; after [STEPS_TO_GROW] step frames in a row that would still fit
-     * with twice the rows or one more sample, it grows back by that.
+     * gets its frames late. A step frame over [STEP_FRAME_TARGET_MS] cuts the work in proportion: the samples
+     * first, then the rows, in more bands; but a single one less than [HICCUP_LOAD] times over, a hiccup of the
+     * window, cuts nothing until a second one in a row follows. After
+     * [STEPS_TO_GROW] step frames in a row that would still fit with twice the rows or one more sample, it grows
+     * back by that.
      */
-    data class StepBudget(val samples: Int = GPU_STEP_SAMPLES, val bands: Int = 1, val fitStreak: Int = 0) {
+    data class StepBudget(
+        val samples: Int = GPU_STEP_SAMPLES,
+        val bands: Int = 1,
+        val fitStreak: Int = 0,
+        val slow: Boolean = false,
+    ) {
         fun after(frameMs: Double): StepBudget {
             val load = frameMs / STEP_FRAME_TARGET_MS
             return when {
+                load > 1 && load < HICCUP_LOAD && !slow -> copy(fitStreak = 0, slow = true)
                 load > 1 && samples > 1 -> StepBudget((samples / load).toInt().coerceAtLeast(1), bands)
                 load > 1 -> StepBudget(1, ceil(bands * load).toInt().coerceAtMost(MAX_BANDS))
-                !fitsMore(load) -> copy(fitStreak = 0)
-                fitStreak + 1 < STEPS_TO_GROW -> copy(fitStreak = fitStreak + 1)
+                !fitsMore(load) -> copy(fitStreak = 0, slow = false)
+                fitStreak + 1 < STEPS_TO_GROW -> copy(fitStreak = fitStreak + 1, slow = false)
                 bands > 1 -> StepBudget(samples, (bands + 1) / 2)
                 else -> StepBudget(samples + 1, 1)
             }
@@ -62,6 +70,9 @@ object GpuSampling {
 
     /** Window frame a GPU step should fit in: under the repaint interval that paces the steps. */
     private const val STEP_FRAME_TARGET_MS = 40.0
+
+    /** A step frame up to this many times over its target may be a hiccup of the window, once. */
+    private const val HICCUP_LOAD = 2.0
 
     /** Step frames in a row that must fit before the step budget grows. */
     private const val STEPS_TO_GROW = 4

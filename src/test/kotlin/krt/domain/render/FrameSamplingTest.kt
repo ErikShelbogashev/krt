@@ -72,9 +72,11 @@ class FrameSamplingTest {
     @Test
     fun `slow GPU steps take fewer samples, then fewer rows, and grow back when they fit`() {
         val full = GpuSampling.StepBudget()
-        assertEquals(GpuSampling.StepBudget(2, 1), full.after(80.0))
-        assertEquals(GpuSampling.StepBudget(1, 1), full.after(400.0))
-        assertEquals(GpuSampling.StepBudget(1, 5), GpuSampling.StepBudget(1, 1).after(180.0))
+        assertEquals(full.copy(slow = true), full.after(70.0), "one step a little slow is a hiccup")
+        assertEquals(GpuSampling.StepBudget(2, 1), full.after(70.0).after(80.0))
+        assertEquals(GpuSampling.StepBudget(1, 1), full.after(400.0), "a step far too slow cuts at once")
+        assertEquals(GpuSampling.StepBudget(1, 5), GpuSampling.StepBudget(1, 1, slow = true).after(180.0))
+        assertEquals(full, full.after(70.0).after(10.0))
         var budget = GpuSampling.StepBudget(1, 5)
         repeat(3) { budget = budget.after(10.0) }
         assertEquals(5, budget.bands)
