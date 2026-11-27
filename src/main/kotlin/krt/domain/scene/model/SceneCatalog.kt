@@ -22,6 +22,9 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
 
     val size: Int get() = featured.size + groups.sumOf { it.objects.size }
 
+    /** The object picked by [id], or the first listed one until one is picked. */
+    fun selected(id: String?): ObjectSummary? = find(id) ?: featured.firstOrNull()
+
     fun find(id: String?): ObjectSummary? =
         featured.find { it.id == id } ?: groups.firstNotNullOfOrNull { group -> group.objects.find { it.id == id } }
 
