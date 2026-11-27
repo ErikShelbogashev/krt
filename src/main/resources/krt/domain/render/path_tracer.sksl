@@ -11,6 +11,7 @@ uniform float materialStart;
 uniform float lightStart;           // the primitive slots of the lights, see GpuScene
 uniform float lightCount;           // lights to sample (next event estimation, ADR 0012); 0 when it is off
 uniform float normalStart;          // the vertex normals of smooth triangles
+uniform float motionBlur;           // 1 when rays go at random moments of the shutter and balls move (ADR 0013)
 uniform float3 skyHorizon;          // Sky: the gradient from the horizon to the zenith
 uniform float3 skyZenith;
 uniform float2 frameSize;
@@ -96,6 +97,14 @@ float hash13(float3 p3) {
 
 float2 pixelId;
 float counter;
+float rayTime;                      // the moment of the shutter of the path being traced, as Ray.time
+
+// Sphere.centerAt: the centre of the ball at [base] at the moment of the path; moving balls only with motion blur.
+float3 centerOf(float base) {
+    float3 center = vector(base + 1.0);
+    if (motionBlur > 0.5) { center += vector(base + 5.0) * rayTime; }
+    return center;
+}
 
 float rnd() {
     counter += 1.0;
@@ -220,7 +229,7 @@ float intersect(float slot, float3 origin, float3 direction, float tMax) {
     float kind = code(base);
     if (kind == TRIANGLE) { return intersectTriangle(base, origin, direction, tMax); }
     if (kind == MEDIUM) { return intersectMedium(base, origin, direction, tMax); }
-    float3 center = vector(base + 1.0);
+    float3 center = centerOf(base);
     float radius = number(base + 4.0);
     float3 oc = origin - center;
     float a = dot(direction, direction);
@@ -241,7 +250,7 @@ float3 outwardNormal(float slot, float3 p) {
     float kind = code(base);
     if (kind == TRIANGLE) { return normalize(cross(vector(base + 4.0), vector(base + 7.0))); }
     if (kind == MEDIUM) { return float3(0.0, 1.0, 0.0); }
-    return (p - vector(base + 1.0)) / number(base + 4.0);
+    return (p - centerOf(base)) / number(base + 4.0);
 }
 
 // The normal to shade with at [p] on primitive [slot], whose flat normal is [outward]: blended from the vertex
@@ -474,7 +483,7 @@ float3 directLight(float3 p, float3 normal, float lobe) {
         float phi = 2.0 * PI * rnd();
         float ring = sqrt(max(0.0, 1.0 - z * z));
         lightNormal = float3(ring * cos(phi), ring * sin(phi), z);
-        target = vector(base + 1.0) + lightNormal * radius;
+        target = centerOf(base) + lightNormal * radius;
         area = 4.0 * PI * radius * radius;
     }
     float3 toLight = target - p;
@@ -494,6 +503,7 @@ float3 directLight(float3 p, float3 normal, float lobe) {
 }
 
 float3 trace(float3 origin, float3 direction) {
+    rayTime = motionBlur > 0.5 ? rnd() : 0.0;
     float3 radiance = float3(0.0);
     float3 throughput = float3(1.0);
     bool countEmission = true;

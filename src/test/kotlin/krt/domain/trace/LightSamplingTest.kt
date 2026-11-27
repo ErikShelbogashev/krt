@@ -30,7 +30,7 @@ class LightSamplingTest {
         val lights = Lights(listOf(Sphere(Point3(0.0, distance, 0.0), radius, Emissive(Color(1.0, 1.0, 1.0), 1.0))))
         val random = Random(3)
         val irradiance = (0 until SAMPLES).sumOf {
-            lights.sample(Point3.ZERO, random)?.let { it.emitted.x * it.direction.y / it.pdf } ?: 0.0
+            lights.sample(Point3.ZERO, 0.0, random)?.let { it.emitted.x * it.direction.y / it.pdf } ?: 0.0
         } / SAMPLES
         val expected = PI * (radius / distance) * (radius / distance)
         assertEquals(expected, irradiance, expected * 0.03)
@@ -41,15 +41,15 @@ class LightSamplingTest {
         val corners = listOf(Point3(-1.0, 2.0, -1.0), Point3(1.0, 2.0, -1.0), Point3(0.0, 2.0, 1.0))
         val light = Triangle(corners[0], corners[1], corners[2], Emissive(WHITE, 1.0))
         val lights = Lights(listOf(light))
-        assertTrue(lights.sample(Point3.ZERO, Random(1)) != null)
-        assertTrue(lights.sample(Point3(0.0, 4.0, 0.0), Random(1)) != null)
+        assertTrue(lights.sample(Point3.ZERO, 0.0, Random(1)) != null)
+        assertTrue(lights.sample(Point3(0.0, 4.0, 0.0), 0.0, Random(1)) != null)
     }
 
     @Test
     fun `only emissive spheres and triangles are lights`() {
         val lights = Lights(listOf(Sphere(Point3.ZERO, 1.0, Lambert(WHITE)), Fog(Point3.ZERO, 1.0, 1.0, WHITE)))
         assertEquals(0, lights.count)
-        assertNull(lights.sample(Point3(5.0, 0.0, 0.0), Random(1)))
+        assertNull(lights.sample(Point3(5.0, 0.0, 0.0), 0.0, Random(1)))
     }
 
     @Test

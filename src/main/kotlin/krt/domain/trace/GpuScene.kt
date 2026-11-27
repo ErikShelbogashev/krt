@@ -20,9 +20,9 @@ import krt.domain.scene.model.VertexNormals
  * - [nodeCount] BVH nodes from texel 0, [GpuScenePacking.NODE_VALUES] each: box min x, y, z, max x, y, z,
  *   skip link, first primitive, primitive count (0 for an inner node); see [FlatBvh];
  * - [primitiveCount] primitives from [primitiveStart] in the order of the leaves, [GpuScenePacking.PRIMITIVE_VALUES]
- *   each: kind, then the centre and radius of a sphere, the first vertex and the two edges from it of a triangle
- *   or the centre, radius and density of a sphere of fog; last, for a triangle with vertex normals, 1 + the number
- *   of its record in the normals section, 0 for a flat one;
+ *   each: kind, then the centre, radius and velocity of a sphere, the first vertex and the two edges from it of
+ *   a triangle or the centre, radius and density of a sphere of fog; last, for a triangle with vertex normals,
+ *   1 + the number of its record in the normals section, 0 for a flat one;
  * - their materials from [materialStart], [GpuScenePacking.MATERIAL_VALUES] each: material code, then a colour,
  *   two parameters, a second colour and a third parameter, as [GpuMaterials.values] lays them out;
  * - [GpuLights.count] lights from [GpuLights.start]: the primitive slots of the emissive spheres and triangles,
@@ -43,6 +43,9 @@ class GpuScene(
 
     /** The lights the shader samples: all of them, or none when light sampling is off. */
     val sampledLights: Int get() = if (look.sampleLights) lights.count else 0
+
+    /** 1 when the shader sends rays at random moments of the shutter and moves the balls, else 0. */
+    val motionBlur: Float get() = if (look.motionBlur) 1f else 0f
 
     val primitiveCount: Int get() = (materialStart - primitiveStart) / GpuScenePacking.PRIMITIVE_VALUES
 
@@ -150,8 +153,10 @@ object GpuScenePacking {
         return intArrayOf(kind) + values + normalRecord
     }
 
-    private fun sphereGeometry(sphere: Sphere): DoubleArray =
-        doubleArrayOf(sphere.center.x, sphere.center.y, sphere.center.z, sphere.radius)
+    private fun sphereGeometry(sphere: Sphere): DoubleArray = doubleArrayOf(
+        sphere.center.x, sphere.center.y, sphere.center.z, sphere.radius,
+        sphere.velocity.x, sphere.velocity.y, sphere.velocity.z,
+    )
 
     /** First vertex and the edges from it to the other two, as the intersection test of the shader takes them. */
     private fun triangleGeometry(triangle: Triangle): DoubleArray {

@@ -29,22 +29,23 @@ class Lights(objects: List<Traceable>) {
 
     val count: Int get() = lights.size
 
-    fun sample(point: Point3, random: Random): LightSample? {
+    /** A light sample seen from [point] at moment [time] of the shutter, when moving lights are where they are. */
+    fun sample(point: Point3, time: Double, random: Random): LightSample? {
         if (lights.isEmpty()) return null
         return when (val light = lights[random.nextInt(lights.size)]) {
-            is Sphere -> sphere(light, point, random)
+            is Sphere -> sphere(light, point, time, random)
             is Triangle -> triangle(light, point, random)
             else -> null
         }
     }
 
-    private fun sphere(light: Sphere, point: Point3, random: Random): LightSample? {
+    private fun sphere(light: Sphere, point: Point3, time: Double, random: Random): LightSample? {
         val z = 1 - 2 * random.nextDouble()
         val phi = 2 * PI * random.nextDouble()
         val ring = sqrt(maxOf(0.0, 1 - z * z))
         val normal = Point3(ring * cos(phi), ring * sin(phi), z)
         val area = 4 * PI * light.radius * light.radius
-        val target = light.center + normal * light.radius
+        val target = light.centerAt(time) + normal * light.radius
         return seen(point, target, normal, area, light.material, twoSided = false)
     }
 
