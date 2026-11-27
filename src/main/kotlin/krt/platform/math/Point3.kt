@@ -15,16 +15,18 @@ data class Point3(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0)
         fun random(random: Random, from: Double = 0.0, until: Double = 1.0): Point3 =
             Point3(random.nextDouble(from, until), random.nextDouble(from, until), random.nextDouble(from, until))
 
+        /** Uniform point inside the unit sphere centred at the origin. */
         fun randomInUnitSphere(random: Random): Point3 {
             while (true) {
-                val v = random(random, 0.0, 1.0)
+                val v = random(random, -1.0, 1.0)
                 if (v.length() < 1) return v
             }
         }
 
+        /** Uniform point inside the unit disk in the z = 0 plane, centred at the origin. */
         fun randomInUnitDisk(random: Random): Point3 {
             while (true) {
-                val p = Point3(random.nextDouble(0.0, 1.0), random.nextDouble(0.0, 1.0), 0.0)
+                val p = Point3(random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0), 0.0)
                 if (p.length() < 1) return p
             }
         }
