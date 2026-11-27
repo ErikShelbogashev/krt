@@ -40,20 +40,22 @@ class WireframeGoldenTest {
             imageWidth = 96,
             imageHeight = 64,
         )
-        val image = BufferedImage(camera.imageWidth, camera.imageHeight, BufferedImage.TYPE_INT_ARGB)
+        val frame = Frame(camera.imageWidth, camera.imageHeight)
         var updates = 0
 
         RenderController(50L, 50).use { controller ->
             controller.toggleWireframeMode()
-            controller.renderImage(image, RayTracer(world, 5), camera) { updates++ }
+            controller.renderImage(frame, RayTracer(world, 5), camera) { updates++ }
         }
 
         assertEquals(1, updates)
-        assertMatchesGolden("wireframe.png", image)
+        assertMatchesGolden("wireframe.png", frame)
     }
 }
 
-internal fun assertMatchesGolden(name: String, actual: BufferedImage) {
+internal fun assertMatchesGolden(name: String, frame: Frame) {
+    val actual = BufferedImage(frame.width, frame.height, BufferedImage.TYPE_INT_ARGB)
+    actual.setRGB(0, 0, frame.width, frame.height, frame.pixels, 0, frame.width)
     val golden = File("src/test/resources/golden/$name")
     if (!golden.exists()) {
         golden.parentFile.mkdirs()

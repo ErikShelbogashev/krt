@@ -1,10 +1,10 @@
 package krt.bench
 
-import java.awt.image.BufferedImage
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 import krt.domain.camera.Camera
+import krt.domain.render.Frame
 import krt.domain.render.FrameSampling
 import krt.domain.render.RayTracer
 import krt.domain.render.RenderController
@@ -40,7 +40,7 @@ open class TraceBenchmark {
     private lateinit var pixels: List<FrameSampling.Pixel>
     private lateinit var primaryRays: List<Ray>
     private lateinit var renderController: RenderController
-    private lateinit var image: BufferedImage
+    private lateinit var frame: Frame
 
     @Setup(Level.Trial)
     fun setUp() {
@@ -53,7 +53,7 @@ open class TraceBenchmark {
             camera.ray(random.nextDouble(), random.nextDouble(), random)
         }
         renderController = RenderController(Long.MAX_VALUE, BATCH_SIZE, Random(PIXEL_ORDER_SEED))
-        image = BufferedImage(camera.imageWidth, camera.imageHeight, BufferedImage.TYPE_INT_ARGB)
+        frame = Frame(camera.imageWidth, camera.imageHeight)
     }
 
     @TearDown(Level.Trial)
@@ -80,7 +80,7 @@ open class TraceBenchmark {
     @Benchmark
     fun frameRenderController() {
         val done = CountDownLatch(1)
-        renderController.renderImage(image, rayTracer, camera) { done.countDown() }
+        renderController.renderImage(frame, rayTracer, camera) { done.countDown() }
         check(done.await(FRAME_TIMEOUT_S, TimeUnit.SECONDS)) { "frame did not finish" }
     }
 

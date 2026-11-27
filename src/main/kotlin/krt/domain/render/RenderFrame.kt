@@ -7,6 +7,6 @@ import krt.domain.camera.Camera
  * Not a component: called with the resources of the calling operation.
  */
 fun renderFrame(renderController: RenderController, rayTracer: RayTracer, camera: Camera, frameBuffer: FrameBuffer) {
-    val image = frameBuffer.image
-    renderController.renderImage(image, rayTracer, camera) { frameBuffer.publish(image) }
+    val frame = frameBuffer.frame
+    renderController.renderImage(frame, rayTracer, camera) { frameBuffer.publish(frame) }
 }

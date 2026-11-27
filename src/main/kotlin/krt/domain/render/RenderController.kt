@@ -1,7 +1,5 @@
 package krt.domain.render
 
-import java.awt.image.BufferedImage
-import java.awt.image.DataBufferInt
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.SwingUtilities
@@ -34,28 +32,28 @@ class RenderController(
     }
 
     fun renderImage(
-        image: BufferedImage,
+        frame: Frame,
         rayTracer: RayTracer,
         camera: Camera,
         onUpdate: (() -> Unit),
     ) {
         renderJob?.cancel()
         if (useWireframe) {
-            renderWireframe(image, rayTracer.world, camera, onUpdate)
+            renderWireframe(frame, rayTracer.world, camera, onUpdate)
         } else {
-            renderRayTracedImage(image, rayTracer, camera, onUpdate)
+            renderRayTracedImage(frame, rayTracer, camera, onUpdate)
         }
 
     }
 
     /**
      * Workers, one per core, take batches of [batchSize] pixels in turn, so no core waits for the others.
-     * Pixels go straight into the image's pixel array. After each batch the worker that finished it
+     * Pixels go straight into the frame's pixel array. After each batch the worker that finished it
      * asks the clock whether to publish an intermediate frame; the final frame is published once all
      * workers are done.
      */
     private fun renderRayTracedImage(
-        image: BufferedImage,
+        frame: Frame,
         rayTracer: RayTracer,
         camera: Camera,
         onUpdate: (() -> Unit),
@@ -64,7 +62,7 @@ class RenderController(
         val frameSeed = random.nextLong()
         val batches = pixels.chunked(batchSize)
         val nextBatch = AtomicInteger(0)
-        val raster = (image.raster.dataBuffer as DataBufferInt).data
+        val raster = frame.pixels
         renderJob = CoroutineScope(renderDispatcher).launch {
             List(workers) {
                 launch {
@@ -106,13 +104,13 @@ class RenderController(
     }
 
     private fun renderWireframe(
-        image: BufferedImage,
+        frame: Frame,
         world: World,
         camera: Camera,
         onUpdate: (() -> Unit),
     ) {
         val segments = FrameSampling.wireframe(world.objects, camera)
-        WireframeRaster.draw(segments, (image.raster.dataBuffer as DataBufferInt).data, image.width, image.height)
+        WireframeRaster.draw(segments, frame.pixels, frame.width, frame.height)
         onUpdate.invoke()
     }
 

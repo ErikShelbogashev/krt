@@ -37,14 +37,14 @@ class OperationsTest {
     @Test
     fun `camera settings resize the frame and redraw`() {
         app.changeCameraSettings { imageWidth = 120; imageHeight = 80 }
-        assertEquals(120 to 80, app.frameBuffer.image.width to app.frameBuffer.image.height)
+        assertEquals(120 to 80, app.frameBuffer.frame.width to app.frameBuffer.frame.height)
         assertEquals(1, published)
     }
 
     @Test
     fun `camera settings at the smallest accepted size resize and redraw`() {
         app.changeCameraSettings { imageWidth = 40 }
-        assertEquals(40, app.frameBuffer.image.width)
+        assertEquals(40, app.frameBuffer.frame.width)
         assertEquals(1, published)
     }
 
@@ -52,7 +52,7 @@ class OperationsTest {
     fun `camera settings below the accepted size change the camera but neither resize nor redraw`() {
         app.changeCameraSettings { imageWidth = 20 }
         assertEquals(20, app.camera.imageWidth)
-        assertEquals(400, app.frameBuffer.image.width)
+        assertEquals(400, app.frameBuffer.frame.width)
         assertEquals(0, published)
     }
 
