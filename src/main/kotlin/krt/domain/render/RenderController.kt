@@ -5,7 +5,13 @@ import java.awt.image.BufferedImage
 import java.util.concurrent.Executors
 import javax.swing.SwingUtilities
 import kotlin.random.Random
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import krt.domain.camera.Camera
 import krt.domain.scene.World
 import krt.platform.awt.toAWTColor
