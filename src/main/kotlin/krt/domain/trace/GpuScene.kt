@@ -3,6 +3,7 @@ package krt.domain.trace
 import kotlin.math.roundToLong
 import krt.domain.scene.model.Fog
 import krt.domain.scene.model.Material
+import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
@@ -25,7 +26,7 @@ import krt.domain.scene.model.VertexNormals
  * - their materials from [materialStart], [GpuScenePacking.MATERIAL_VALUES] each: material code, then a colour,
  *   two parameters, a second colour and a third parameter, as [GpuMaterials.values] lays them out;
  * - [GpuLights.count] lights from [GpuLights.start]: the primitive slots of the emissive spheres and triangles,
- *   which next event estimation samples when [GpuLights.sampleLights] is on (ADR 0012);
+ *   which next event estimation samples when [SceneLook.sampleLights] is on (ADR 0012);
  * - from [GpuLights.normalStart], the vertex normals of smooth triangles, [GpuScenePacking.NORMAL_VALUES] per record:
  *   the normals at the first, second and third vertex (ADR 0013).
  */
@@ -35,23 +36,22 @@ class GpuScene(
     val nodeCount: Int,
     val primitiveStart: Int,
     val materialStart: Int,
-    val sky: Sky = Sky.DAYLIGHT,
-    val lights: GpuLights = GpuLights(materialStart, 0, sampleLights = false, normalStart = materialStart),
+    val look: SceneLook = SceneLook.CLASSIC,
+    val lights: GpuLights = GpuLights(materialStart, 0, normalStart = materialStart),
 ) {
+    val sky: Sky get() = look.sky
+
+    /** The lights the shader samples: all of them, or none when light sampling is off. */
+    val sampledLights: Int get() = if (look.sampleLights) lights.count else 0
+
     val primitiveCount: Int get() = (materialStart - primitiveStart) / GpuScenePacking.PRIMITIVE_VALUES
 
     /** Rows of the texture. */
     val height: Int get() = data.size / (width * GpuScenePacking.BYTES_PER_TEXEL)
 }
 
-/**
- * Where the light slots of a [GpuScene] lie, how many there are and whether the shader samples them; and where the
- * vertex normals that follow them start.
- */
-data class GpuLights(val start: Int, val count: Int, val sampleLights: Boolean, val normalStart: Int) {
-    /** The lights the shader samples: all of them, or none when light sampling is off. */
-    val sampled: Int get() = if (sampleLights) count else 0
-}
+/** Where the light slots of a [GpuScene] lie and how many there are; and where the vertex normals after them start. */
+data class GpuLights(val start: Int, val count: Int, val normalStart: Int)
 
 /** Packing of the scene model for the GPU shader: a pure transformation, mirrored by the shader's decoding. */
 object GpuScenePacking {
@@ -94,7 +94,7 @@ object GpuScenePacking {
     private const val ALPHA = 3
     private const val BOX_VALUES = 6
 
-    fun pack(objects: List<Traceable>, sky: Sky = Sky.DAYLIGHT, sampleLights: Boolean = false): GpuScene {
+    fun pack(objects: List<Traceable>, look: SceneLook = SceneLook.CLASSIC): GpuScene {
         val primitives = objects.flatMap { (it as? Translucent)?.parts ?: listOf(it) }
             .filter { it is Sphere || it is Triangle || it is Fog }.toTypedArray()
         val bvh = Bvh(primitives).flatten()
@@ -121,8 +121,8 @@ object GpuScenePacking {
             nodeCount = bvh.nodeCount,
             primitiveStart = primitiveStart,
             materialStart = materialStart,
-            sky = sky,
-            lights = GpuLights(lightStart, lightSlots.size, sampleLights && lightSlots.isNotEmpty(), normalStart),
+            look = look,
+            lights = GpuLights(lightStart, lightSlots.size, normalStart),
         )
     }
 

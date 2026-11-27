@@ -13,6 +13,7 @@ import krt.domain.scene.model.GlowingPattern
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Pattern
 import krt.domain.scene.model.PatternKind
+import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Triangle
@@ -58,8 +59,8 @@ class LightSamplingTest {
             Sphere(Point3(0.0, 3.0, 0.0), 0.4, Emissive(Color(1.0, 0.9, 0.7), 20.0)),
             Fog(Point3(0.0, 1.0, 0.0), 1.5, 0.4, Color(0.9, 0.9, 0.9)),
         )
-        val plain = TraceScene(objects, NIGHT, sampleLights = false)
-        val sampled = TraceScene(objects, NIGHT, sampleLights = true)
+        val plain = TraceScene(objects, NIGHT)
+        val sampled = TraceScene(objects, NIGHT.copy(sampleLights = true))
         val plainMean = meanBrightness(plain, Random(7))
         val sampledMean = meanBrightness(sampled, Random(8))
         assertTrue(abs(plainMean - sampledMean) < plainMean * 0.05, "plain $plainMean vs sampled $sampledMean")
@@ -73,8 +74,8 @@ class LightSamplingTest {
             Sphere(Point3(0.0, 2.5, 0.0), 0.6, lava),
         )
         assertEquals(1, Lights(objects).count)
-        val plainMean = meanBrightness(TraceScene(objects, NIGHT, sampleLights = false), Random(7))
-        val sampledMean = meanBrightness(TraceScene(objects, NIGHT, sampleLights = true), Random(8))
+        val plainMean = meanBrightness(TraceScene(objects, NIGHT), Random(7))
+        val sampledMean = meanBrightness(TraceScene(objects, NIGHT.copy(sampleLights = true)), Random(8))
         assertTrue(abs(plainMean - sampledMean) < plainMean * 0.05, "plain $plainMean vs sampled $sampledMean")
     }
 
@@ -106,7 +107,7 @@ class LightSamplingTest {
 
     private companion object {
         val WHITE = Color(1.0, 1.0, 1.0)
-        val NIGHT = Sky(Color(0.02, 0.02, 0.03), Color(0.0, 0.0, 0.01))
+        val NIGHT = SceneLook(Sky(Color(0.02, 0.02, 0.03), Color(0.0, 0.0, 0.01)), fov = 60.0, aperture = 0.0)
         const val SAMPLES = 20_000
         const val RAYS = 40_000
         const val DEPTH = 6
