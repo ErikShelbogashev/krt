@@ -1,6 +1,7 @@
 package krt.domain.scene.model
 
 import java.util.UUID
+import krt.platform.math.Aabb
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
@@ -47,6 +48,11 @@ class Triangle(
         val hitPoint = ray.at(t)
         return Hit.create(hitPoint, t, ray, outwardNormal, material)
     }
+
+    override fun bounds(): Aabb = Aabb(
+        Point3(minOf(v0.x, v1.x, v2.x), minOf(v0.y, v1.y, v2.y), minOf(v0.z, v1.z, v2.z)),
+        Point3(maxOf(v0.x, v1.x, v2.x), maxOf(v0.y, v1.y, v2.y), maxOf(v0.z, v1.z, v2.z)),
+    )
 
     override fun translate(offset: Point3): Triangle = Triangle(v0 + offset, v1 + offset, v2 + offset, material, id)
 

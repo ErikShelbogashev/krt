@@ -4,6 +4,7 @@ import java.util.UUID
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import krt.platform.math.Aabb
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
@@ -36,6 +37,11 @@ class Sphere(
         val hitPoint = ray.at(root)
         val outwardNormal = (hitPoint - center) / radius
         return Hit.create(hitPoint, root, ray, outwardNormal, material)
+    }
+
+    override fun bounds(): Aabb {
+        val extent = Point3(radius, radius, radius)
+        return Aabb(center - extent, center + extent)
     }
 
     override fun translate(offset: Point3): Sphere = Sphere(center + offset, radius, material, id)
