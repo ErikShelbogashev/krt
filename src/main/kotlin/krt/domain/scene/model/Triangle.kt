@@ -1,6 +1,6 @@
 package krt.domain.scene.model
 
-import java.util.*
+import java.util.UUID
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
