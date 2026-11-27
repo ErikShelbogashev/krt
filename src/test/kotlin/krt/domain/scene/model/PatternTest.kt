@@ -33,7 +33,8 @@ class PatternTest {
     fun `every pattern blends its two colours`() {
         val random = Random(2)
         PatternKind.entries.forEach { kind ->
-            val pattern = Pattern(kind, Color(1.0, 0.0, 0.0), Color(0.0, 0.0, 1.0), scale = 2.0)
+            val frequency = if (kind == PatternKind.GRID) 0.1 else 1.0
+            val pattern = Pattern(kind, Color(1.0, 0.0, 0.0), Color(0.0, 0.0, 1.0), scale = 2.0, frequency = frequency)
             val values = (0 until 500).map { pattern.valueAt(Point3.random(random, -3.0, 3.0)) }
             assertTrue(values.all { it in 0.0..1.0 }, "$kind")
             assertTrue(values.max() - values.min() > 0.3, "$kind varies")
@@ -50,6 +51,23 @@ class PatternTest {
         val across = (0 until 200).map { wood.valueAt(Point3(0.0, 0.0, it * 0.01)) }
         val along = (0 until 200).map { wood.valueAt(Point3(it * 0.01, 0.0, 0.33)) }
         assertTrue(across.max() - across.min() > 2 * (along.max() - along.min()), "stripes run along x")
+    }
+
+    @Test
+    fun `a grid draws lines a share of a cell wide, stripes run across the vertical`() {
+        val grid = Pattern(PatternKind.GRID, Color.ZERO, Color.ONE, scale = 1 / 0.22, frequency = 0.025 / 0.22)
+        assertEquals(1.0, grid.valueAt(Point3(0.22 * 3 + 0.001, 0.5, 0.1)))
+        assertEquals(0.0, grid.valueAt(Point3(0.11, 0.11 + 0.22, 0.11)))
+        val stripes = Pattern(PatternKind.STRIPES, Color.ZERO, Color.ONE, frequency = 8.0)
+        assertEquals(stripes.valueAt(Point3(0.0, 0.03, 0.0)), stripes.valueAt(Point3(5.0, 0.03, -2.0)))
+        assertTrue(abs(stripes.valueAt(Point3(0.0, 0.03, 0.0)) - stripes.valueAt(Point3(0.0, 0.09, 0.0))) > 0.5)
+    }
+
+    @Test
+    fun `noise takes the octaves it is given`() {
+        val p = Point3(0.31, 0.77, 0.12)
+        assertEquals(Noise.perlin(p), Noise.fbm(p, 1), 1e-12)
+        assertTrue(Noise.fbm(p, 2) != Noise.fbm(p, 6))
     }
 
     @Test

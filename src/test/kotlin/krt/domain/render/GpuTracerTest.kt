@@ -121,6 +121,20 @@ class GpuTracerTest {
                 Patterned(Pattern(PatternKind.WOOD, Color(0.7, 0.45, 0.2), RED, 3.0), 0.2, 0.2),
             ),
             Sphere(Point3(2.3, 1.0, 0.0), 1.0, Patterned(Pattern(PatternKind.CLOUDS, WALL, Color.ONE, 2.0), 0.5)),
+            Sphere(
+                Point3(0.0, 0.4, 2.2), 0.4,
+                Conductor(Metals.ALUMINIUM, 0.4, anisotropy = 0.9, brushing = Point3(1.0, 0.0, 0.0)),
+            ),
+        ) + Meshes.panel(
+            Pose(Point3(-1.5, 2.6, -2.0)), 1.0, 0.5,
+            GlowingPattern(
+                Pattern(PatternKind.GRID, Color(0.1, 0.1, 0.1), Color(0.2, 0.9, 0.4), 4.0, frequency = 0.15), 2.0,
+            ),
+        ) + Meshes.panel(
+            Pose(Point3(1.5, 2.6, -2.0)), 1.0, 0.5,
+            GlowingPattern(
+                Pattern(PatternKind.STRIPES, Color.ZERO, Color(0.9, 0.3, 0.2), 1.0, frequency = 3.0, octaves = 3), 2.0,
+            ),
         ),
     )
 

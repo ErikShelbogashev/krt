@@ -92,7 +92,7 @@ object GpuScenePacking {
     const val LIGHT_VALUES = 4
     const val MEMBER_VALUES = 2
     const val NORMAL_VALUES = 9
-    const val MATERIAL_VALUES = 12
+    const val MATERIAL_VALUES = 14
     const val TEXTURE_WIDTH = 1024
 
     /** Packed coordinates lie in [-RANGE, RANGE). */

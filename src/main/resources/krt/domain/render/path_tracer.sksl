@@ -44,7 +44,7 @@ const float MEDIUM_VALUES = 6.0;
 const float LIGHT_VALUES = 4.0;
 const float MEMBER_VALUES = 2.0;
 const float NORMAL_VALUES = 9.0;
-const float MATERIAL_VALUES = 12.0;
+const float MATERIAL_VALUES = 14.0;
 const float T_MIN = 0.001;
 const float FAR = 1.0e30;
 const float PI = 3.14159265358979;
@@ -70,6 +70,8 @@ const float NOISE = 0.0;            // PatternKind
 const float MARBLE = 1.0;
 const float WOOD = 2.0;
 const float CLOUDS = 3.0;
+const float GRID = 4.0;
+const float STRIPES = 5.0;
 
 const float SPECULAR = 0.0;         // Lobe: how a ray left a surface, for light sampling
 const float DIFFUSE = 1.0;
@@ -270,6 +272,12 @@ float3 tangentOf(float3 normal) {
     return normalize(cross(axis, normal));
 }
 
+// Microfacets.frame with a direction of brushing laid on the surface; around the vertical axis without one.
+float3 tangentAlong(float3 normal, float3 direction) {
+    float3 along = direction - normal * dot(direction, normal);
+    return length(along) < 1.0e-6 ? tangentOf(normal) : normalize(along);
+}
+
 // Microfacets.visibleNormal: Heitz's sampling of the GGX normals the direction [o] sees, in the local frame.
 float3 visibleNormal(float3 o, float alphaX, float alphaY) {
     float3 stretched = normalize(float3(alphaX * o.x, alphaY * o.y, o.z));
@@ -354,11 +362,12 @@ float perlin(float3 p) {
     return mix(mix(x00, x10, u.y), mix(x01, x11, u.y), u.z);
 }
 
-// Noise.fbm, or Noise.turbulence with [absolute].
-float fractal(float3 p, bool absolute) {
+// Noise.fbm, or Noise.turbulence with [absolute], of [octaves] octaves.
+float fractal(float3 p, bool absolute, float octaves) {
     float sum = 0.0;
     float amplitude = 1.0;
-    for (int octave = 0; octave < 5; octave++) {
+    for (int octave = 0; octave < 8; octave++) {
+        if (float(octave) >= octaves) { break; }
         float n = perlin(p);
         sum += amplitude * (absolute ? abs(n) : n);
         amplitude *= 0.5;
@@ -368,29 +377,36 @@ float fractal(float3 p, bool absolute) {
 }
 
 // Pattern.valueAt: the blend of the two colours at [p], in [0, 1].
-float patternValue(float kind, float3 p, float scale, float turbulence) {
+float patternValue(float kind, float3 p, float scale, float turbulence, float frequency, float octaves) {
     float3 q = p * scale;
     float value;
     if (kind == MARBLE) {
-        value = 1.0 - sqrt(0.5 + 0.5 * sin(q.x * 2.0 * PI + turbulence * 4.0 * fractal(q, true)));
+        float veins = q.x * 2.0 * PI * frequency + turbulence * 4.0 * fractal(q, true, octaves);
+        value = 1.0 - sqrt(0.5 + 0.5 * sin(veins));
     } else if (kind == WOOD) {
         // The trunk along x: long stripes of thin dark latewood, wavy along the grain, over fine fibres.
-        float rings = sqrt(q.y * q.y + q.z * q.z) + turbulence * perlin(q * float3(0.25, 2.0, 2.0));
+        float rings = sqrt(q.y * q.y + q.z * q.z) * frequency + turbulence * perlin(q * float3(0.25, 2.0, 2.0));
         float ring = rings - floor(rings);
         float latewood = smoothstep(0.72, 0.9, ring) * (1.0 - smoothstep(0.9, 1.0, ring));
         float fibres = 0.5 + 0.5 * perlin(q * float3(0.5, 24.0, 24.0));
         value = 0.75 * latewood + 0.25 * fibres;
     } else if (kind == CLOUDS) {
-        value = smoothstep(0.45, 0.75, 0.5 + 0.5 * fractal(q, false));
+        value = smoothstep(0.45, 0.75, 0.5 + 0.5 * fractal(q, false, octaves));
+    } else if (kind == GRID) {
+        float3 cell = q - floor(q);
+        value = (cell.x < frequency || cell.y < frequency || cell.z < frequency) ? 1.0 : 0.0;
+    } else if (kind == STRIPES) {
+        value = smoothstep(0.35, 0.65, 0.5 + 0.5 * sin(2.0 * PI * frequency * q.y));
     } else {
-        value = 0.5 + 0.5 * fractal(q, false);
+        value = 0.5 + 0.5 * fractal(q, false, octaves);
     }
     return clamp(value, 0.0, 1.0);
 }
 
 // The pattern of the material at [base]: its blend at [p].
 float materialPattern(float base, float3 p) {
-    return patternValue(number(base + 10.0), p, number(base + 5.0), number(base + 11.0));
+    return patternValue(number(base + 10.0), p, number(base + 5.0), number(base + 11.0), number(base + 12.0),
+        number(base + 13.0));
 }
 
 // Bump.normal: [normal] tilted against the slope of the pattern times [strength].
@@ -696,8 +712,8 @@ float3 trace(float3 origin, float3 direction) {
                 attenuation = vector(base + 6.0) * (weight / (1.0 - diffuseChance));
             }
         } else if (kind == CONDUCTOR) {
-            // Metal with GGX microfacets, as Conductor.scatter.
-            float3 tangent = tangentOf(normal);
+            // Metal with GGX microfacets, as Conductor.scatter, brushed along the direction it gives, if any.
+            float3 tangent = tangentAlong(normal, vector(base + 9.0));
             float3 bitangent = cross(normal, tangent);
             float3 toViewer = -normalize(direction);
             float3 o = float3(dot(toViewer, tangent), dot(toViewer, bitangent), dot(toViewer, normal));
