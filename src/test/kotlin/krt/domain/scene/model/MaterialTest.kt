@@ -76,10 +76,10 @@ class MaterialTest {
         val glass = Dielectric(1.5, tint = Color(0.5, 1.0, 1.0), density = 1.0)
         val inside = Ray(Point3(0.0, 0.0, 0.0), Point3(0.0, 1.0, 0.0))
         val exit = Hit.create(Point3(0.0, 2.0, 0.0), 2.0, inside, Point3(0.0, 1.0, 0.0), glass)
-        val attenuation = glass.scatter(inside, exit, Random(1)).attenuation
+        val attenuation = assertNotNull(glass.scatter(inside, exit, Random(1))).attenuation
         assertEquals(0.25, attenuation.x, 1e-9)
         assertEquals(1.0, attenuation.y, 1e-9)
-        assertEquals(Point3.ONE, glass.scatter(ray, hit(glass), Random(1)).attenuation)
+        assertEquals(Point3.ONE, glass.scatter(ray, hit(glass), Random(1))?.attenuation)
     }
 
     @Test

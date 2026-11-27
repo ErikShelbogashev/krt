@@ -4,6 +4,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import krt.platform.math.Color
 import krt.platform.math.Point3
@@ -35,7 +36,7 @@ class SpectralMaterialTest {
     @Test
     fun `white light through dispersive glass goes on as one weighted wavelength`() {
         val glass = Dielectric(1.5, dispersion = 0.05)
-        val scattered = glass.scatter(slanted, hit(slanted, glass), Random(4))
+        val scattered = assertNotNull(glass.scatter(slanted, hit(slanted, glass), Random(4)))
         val wavelength = scattered.ray.wavelength
         assertTrue(wavelength in Spectrum.MIN_NM..Spectrum.MAX_NM)
         assertEquals(Spectrum.weight(wavelength), scattered.attenuation)
@@ -50,7 +51,7 @@ class SpectralMaterialTest {
 
     @Test
     fun `glass without dispersion leaves white light white`() {
-        val scattered = Dielectric(1.5).scatter(slanted, hit(slanted, Dielectric(1.5)), Random(4))
+        val scattered = assertNotNull(Dielectric(1.5).scatter(slanted, hit(slanted, Dielectric(1.5)), Random(4)))
         assertEquals(0.0, scattered.ray.wavelength)
         assertEquals(Point3.ONE, scattered.attenuation)
     }
@@ -91,5 +92,5 @@ class SpectralMaterialTest {
     }
 
     private fun refracted(glass: Dielectric, ray: Ray): Ray =
-        (0 until 50).map { glass.scatter(ray, hit(ray, glass), Random(it)).ray }.first { it.direction.y < 0 }
+        (0 until 50).mapNotNull { glass.scatter(ray, hit(ray, glass), Random(it))?.ray }.first { it.direction.y < 0 }
 }

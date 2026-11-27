@@ -4,21 +4,27 @@ import java.io.File
 import kotlin.math.abs
 import krt.domain.scene.model.Material
 import krt.domain.scene.model.Triangle
+import krt.domain.scene.model.VertexNormals
 import krt.platform.math.Point3
 
 class ObjParser(filePath: String, material: Material) {
     private val vertices = mutableListOf<Point3>()
     private val normals = mutableListOf<Point3>()
     private val faces = mutableListOf<List<Int>>()
+
+    /** Normal indices of each face's corners, or null for a face without them: such a face stays flat. */
+    private val faceNormals = mutableListOf<List<Int>?>()
     val triangles: List<Triangle>
 
     init {
         parseFile(filePath)
         val normalized = normalizeVertices(vertices)
-        triangles = faces.flatMap { face ->
+        triangles = faces.flatMapIndexed { index, face ->
+            val corners = faceNormals[index]
             // Fan triangulation: a triangle stays as is, a quad gives two triangles, and so on.
             (1 until face.size - 1).map { i ->
-                Triangle(normalized[face[0]], normalized[face[i]], normalized[face[i + 1]], material)
+                val smooth = corners?.let { VertexNormals(normal(it[0]), normal(it[i]), normal(it[i + 1])) }
+                Triangle(normalized[face[0]], normalized[face[i]], normalized[face[i + 1]], material, normals = smooth)
             }
         }
     }
@@ -37,12 +43,21 @@ class ObjParser(filePath: String, material: Material) {
                 }
 
                 line.startsWith("f ") -> {
-                    val vertexIndices = line.fields().drop(1).map { it.substringBefore('/').toInt() - 1 }
-                    if (vertexIndices.size >= MIN_FACE_VERTICES) faces.add(vertexIndices)
+                    val corners = line.fields().drop(1)
+                    val vertexIndices = corners.map { it.substringBefore('/').toInt() - 1 }
+                    val normalIndices = corners.map { it.split('/').getOrNull(2)?.toIntOrNull()?.minus(1) }
+                    if (vertexIndices.size >= MIN_FACE_VERTICES) {
+                        faces.add(vertexIndices)
+                        // A face whose corners all share one normal is flat: it needs none.
+                        val smooth = normalIndices.takeIf { all -> all.all { it != null } && all.toSet().size > 1 }
+                        faceNormals.add(smooth?.map { it!! })
+                    }
                 }
             }
         }
     }
+
+    private fun normal(index: Int): Point3 = normals[index].unit()
 
     private fun normalizeVertices(vertices: List<Point3>): List<Point3> {
         if (vertices.isEmpty()) return vertices

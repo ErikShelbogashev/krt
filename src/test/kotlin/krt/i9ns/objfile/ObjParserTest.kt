@@ -66,4 +66,14 @@ class ObjParserTest {
         // 163 quads and 4 triangles
         const val EXPECTED_SAMPLE_TRIANGLES = 330
     }
+
+    @Test
+    fun `a face whose corners share one normal stays flat, others shade smoothly`() {
+        val file = objFile(
+            "v 0 0 0\nv 1 0 0\nv 0 1 0\nvn 0 0 1\nvn 0 0.6 0.8\nf 1//1 2//1 3//1\nf 1//1 2//1 3//2\n",
+        )
+        val (flat, smooth) = ObjParser(file.absolutePath, Lambert(Color(0.5, 0.5, 0.5))).triangles
+        assertEquals(null, flat.normals)
+        assertEquals(Point3(0.0, 0.6, 0.8), smooth.normals?.n2)
+    }
 }

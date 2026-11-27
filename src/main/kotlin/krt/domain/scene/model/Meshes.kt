@@ -126,6 +126,31 @@ object Meshes {
         return listOf(Triple(a, ab, ca), Triple(b, bc, ab), Triple(c, ca, bc), Triple(ab, bc, ca))
     }
 
+    /**
+     * The same triangles shading as one smooth surface: each corner gets the mean normal of the faces that share
+     * that point, weighted by their area. Faces facing away from the mean at a corner keep a crease there.
+     */
+    fun smooth(triangles: List<Triangle>): List<Triangle> {
+        val sums = HashMap<Point3, Point3>()
+        for (triangle in triangles) {
+            val weighted = (triangle.v1 - triangle.v0).cross(triangle.v2 - triangle.v0)
+            for (corner in listOf(triangle.v0, triangle.v1, triangle.v2)) {
+                sums[corner] = (sums[corner] ?: Point3.ZERO) + weighted
+            }
+        }
+        return triangles.map { triangle ->
+            val flat = (triangle.v1 - triangle.v0).cross(triangle.v2 - triangle.v0).unit()
+            fun normalAt(corner: Point3) = sums.getValue(corner).unit().takeIf { it.dot(flat) > CREASE } ?: flat
+            Triangle(
+                triangle.v0, triangle.v1, triangle.v2, triangle.material, triangle.id,
+                normals = VertexNormals(normalAt(triangle.v0), normalAt(triangle.v1), normalAt(triangle.v2)),
+            )
+        }
+    }
+
+    /** A corner whose mean normal turns further than this cosine from the face keeps the face's own normal. */
+    private const val CREASE = 0.5
+
     private val ICOSAHEDRON_FACES = listOf(
         Triple(0, 11, 5), Triple(0, 5, 1), Triple(0, 1, 7), Triple(0, 7, 10), Triple(0, 10, 11),
         Triple(1, 5, 9), Triple(5, 11, 4), Triple(11, 10, 2), Triple(10, 7, 6), Triple(7, 1, 8),

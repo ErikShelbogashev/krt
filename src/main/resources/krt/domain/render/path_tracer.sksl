@@ -10,6 +10,7 @@ uniform float primitiveStart;
 uniform float materialStart;
 uniform float lightStart;           // the primitive slots of the lights, see GpuScene
 uniform float lightCount;           // lights to sample (next event estimation, ADR 0012); 0 when it is off
+uniform float normalStart;          // the vertex normals of smooth triangles
 uniform float3 skyHorizon;          // Sky: the gradient from the horizon to the zenith
 uniform float3 skyZenith;
 uniform float2 frameSize;
@@ -31,7 +32,8 @@ const int LEAF_SIZE = 4;            // Bvh.LEAF_SIZE
 const float TEXTURE_WIDTH = 1024.0;
 const float RANGE = 4096.0;
 const float NODE_VALUES = 9.0;
-const float PRIMITIVE_VALUES = 10.0;
+const float PRIMITIVE_VALUES = 11.0;
+const float NORMAL_VALUES = 9.0;
 const float MATERIAL_VALUES = 10.0;
 const float T_MIN = 0.001;
 const float FAR = 1.0e30;
@@ -50,6 +52,7 @@ const float CHECKER = 5.0;
 const float ISOTROPIC = 6.0;
 const float BUBBLE = 7.0;
 const float IRIDESCENT = 8.0;
+const float CONDUCTOR = 9.0;
 
 const float SPECULAR = 0.0;         // Lobe: how a ray left a surface, for light sampling
 const float DIFFUSE = 1.0;
@@ -233,6 +236,79 @@ float3 outwardNormal(float slot, float3 p) {
     return (p - vector(base + 1.0)) / number(base + 4.0);
 }
 
+// The normal to shade with at [p] on primitive [slot], whose flat normal is [outward]: blended from the vertex
+// normals of a smooth triangle, as VertexNormals.at, or [outward] itself.
+float3 shadingNormal(float slot, float3 p, float3 outward) {
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    float record = code(base + 10.0);
+    if (record < 1.0) { return outward; }
+    float3 edge1 = vector(base + 4.0);
+    float3 edge2 = vector(base + 7.0);
+    float3 w = p - vector(base + 1.0);
+    float d00 = dot(edge1, edge1);
+    float d01 = dot(edge1, edge2);
+    float d11 = dot(edge2, edge2);
+    float d20 = dot(w, edge1);
+    float d21 = dot(w, edge2);
+    float denominator = d00 * d11 - d01 * d01;
+    float u = (d11 * d20 - d01 * d21) / denominator;
+    float v = (d00 * d21 - d01 * d20) / denominator;
+    float at = normalStart + (record - 1.0) * NORMAL_VALUES;
+    float3 blended = normalize(vector(at) * (1.0 - u - v) + vector(at + 3.0) * u + vector(at + 6.0) * v);
+    return dot(blended, outward) < 0.0 ? -blended : blended;
+}
+
+// Microfacets.frame: the tangent around the vertical axis; the bitangent is cross(normal, tangent).
+float3 tangentOf(float3 normal) {
+    float3 axis = abs(normal.y) < 0.999 ? float3(0.0, 1.0, 0.0) : float3(1.0, 0.0, 0.0);
+    return normalize(cross(axis, normal));
+}
+
+// Microfacets.visibleNormal: Heitz's sampling of the GGX normals the direction [o] sees, in the local frame.
+float3 visibleNormal(float3 o, float alphaX, float alphaY) {
+    float3 stretched = normalize(float3(alphaX * o.x, alphaY * o.y, o.z));
+    float lengthSquared = stretched.x * stretched.x + stretched.y * stretched.y;
+    float3 t1 = lengthSquared > 0.0 ? float3(-stretched.y, stretched.x, 0.0) / sqrt(lengthSquared)
+        : float3(1.0, 0.0, 0.0);
+    float3 t2 = cross(stretched, t1);
+    float radius = sqrt(rnd());
+    float phi = 2.0 * PI * rnd();
+    float p1 = radius * cos(phi);
+    float blend = (1.0 + stretched.z) * 0.5;
+    float p2 = (1.0 - blend) * sqrt(1.0 - p1 * p1) + blend * radius * sin(phi);
+    float3 h = t1 * p1 + t2 * p2 + stretched * sqrt(max(0.0, 1.0 - p1 * p1 - p2 * p2));
+    return normalize(float3(alphaX * h.x, alphaY * h.y, max(0.0, h.z)));
+}
+
+// Microfacets.lambda: Smith's Λ of a local direction.
+float ggxLambda(float3 w, float alphaX, float alphaY) {
+    float cosSquared = w.z * w.z;
+    float slopes = (alphaX * alphaX * w.x * w.x + alphaY * alphaY * w.y * w.y) / max(cosSquared, 1.0e-12);
+    return (sqrt(1.0 + slopes) - 1.0) * 0.5;
+}
+
+// Microfacets.shadowing: G2 / G1.
+float shadowing(float3 o, float3 i, float alphaX, float alphaY) {
+    float viewer = ggxLambda(float3(o.xy, abs(o.z)), alphaX, alphaY);
+    return (1.0 + viewer) / (1.0 + viewer + ggxLambda(float3(i.xy, abs(i.z)), alphaX, alphaY));
+}
+
+// ConductorFresnel.reflectance: exact unpolarised Fresnel of a metal of complex index eta + i k, per channel.
+float3 conductorFresnel(float cosine, float3 eta, float3 k) {
+    float cos2 = cosine * cosine;
+    float sin2 = 1.0 - cos2;
+    float3 t0 = eta * eta - k * k - sin2;
+    float3 a2b2 = sqrt(t0 * t0 + 4.0 * eta * eta * k * k);
+    float3 a = sqrt(max(float3(0.0), (a2b2 + t0) * 0.5));
+    float3 t1 = a2b2 + cos2;
+    float3 t2 = 2.0 * a * cosine;
+    float3 rs = (t1 - t2) / (t1 + t2);
+    float3 t3 = cos2 * a2b2 + sin2 * sin2;
+    float3 t4 = t2 * sin2;
+    float3 rp = rs * (t3 - t4) / (t3 + t4);
+    return (rs + rp) * 0.5;
+}
+
 float hitT;
 
 // The primitive the ray hits first before tMax, or -1; its distance goes to hitT. Walks the BVH along skip links.
@@ -326,7 +402,8 @@ float3 trace(float3 origin, float3 direction) {
         float3 p = origin + direction * hitT;
         float3 outward = outwardNormal(slot, p);
         bool frontFace = dot(direction, outward) < 0.0;
-        float3 normal = frontFace ? outward : -outward;
+        float3 shading = shadingNormal(slot, p, outward);
+        float3 normal = frontFace ? shading : -shading;
 
         float base = materialStart + slot * MATERIAL_VALUES;
         float kind = code(base);
@@ -376,10 +453,40 @@ float3 trace(float3 origin, float3 direction) {
             }
             float ratio = frontFace ? 1.0 / index : index;
             float3 unitDirection = normalize(direction);
-            float cosTheta = min(dot(-unitDirection, normal), 1.0);
+            // Frosted glass, as Dielectric with roughness: the light meets a GGX microfacet, not the surface.
+            float alpha = number(base + 9.0);
+            float3 tangent = float3(0.0);
+            float3 bitangent = float3(0.0);
+            float3 o = float3(0.0);
+            float3 facet = normal;
+            if (alpha > 0.0) {
+                tangent = tangentOf(normal);
+                bitangent = cross(normal, tangent);
+                o = float3(dot(-unitDirection, tangent), dot(-unitDirection, bitangent), dot(-unitDirection, normal));
+                float3 m = visibleNormal(o, alpha, alpha);
+                facet = tangent * m.x + bitangent * m.y + normal * m.z;
+            }
+            float cosTheta = min(dot(-unitDirection, facet), 1.0);
             float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
             bool shouldReflect = ratio * sinTheta > 1.0 || reflectance(cosTheta, ratio) > rnd();
-            scattered = shouldReflect ? reflect(unitDirection, normal) : refractDir(unitDirection, normal, ratio);
+            scattered = shouldReflect ? reflect(unitDirection, facet) : refractDir(unitDirection, facet, ratio);
+            if (alpha > 0.0) {
+                float3 i = float3(dot(scattered, tangent), dot(scattered, bitangent), dot(scattered, normal));
+                if (shouldReflect ? i.z <= 0.0 : i.z >= 0.0) { return radiance; }
+                attenuation *= shadowing(o, i, alpha, alpha);
+            }
+        } else if (kind == CONDUCTOR) {
+            // Metal with GGX microfacets, as Conductor.scatter.
+            float3 tangent = tangentOf(normal);
+            float3 bitangent = cross(normal, tangent);
+            float3 toViewer = -normalize(direction);
+            float3 o = float3(dot(toViewer, tangent), dot(toViewer, bitangent), dot(toViewer, normal));
+            float alphaY = number(base + 5.0);
+            float3 m = visibleNormal(o, param, alphaY);
+            float3 i = m * (2.0 * dot(o, m)) - o;
+            if (o.z <= 0.0 || i.z <= 0.0) { return radiance; }
+            attenuation = conductorFresnel(dot(o, m), color, vector(base + 6.0)) * shadowing(o, i, param, alphaY);
+            scattered = tangent * i.x + bitangent * i.y + normal * i.z;
         } else if (kind == BUBBLE || kind == IRIDESCENT) {
             // Thin film, as SoapBubble and Iridescent: interference colours the reflection.
             float3 unitDirection = normalize(direction);
