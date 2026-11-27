@@ -21,15 +21,10 @@ object PathTracing {
                 emitted
             }
         } else {
-            val unitDirection = ray.direction.unit()
-            val t = 0.5 * (unitDirection.y + 1.0)
-            SKY_HORIZON * (1.0 - t) + SKY_ZENITH * t
+            scene.sky.color(ray.direction)
         }
     }
 
     /** Hits closer than this are self-intersections of the surface the ray starts on. */
     private const val T_MIN = 0.001
-
-    private val SKY_HORIZON = Color(1.0, 1.0, 1.0)
-    private val SKY_ZENITH = Color(0.5, 0.7, 1.0)
 }

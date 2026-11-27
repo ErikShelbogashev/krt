@@ -1,6 +1,7 @@
 package krt.domain.trace
 
 import krt.domain.scene.model.Hit
+import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Traceable
 import krt.platform.math.Ray
 
@@ -8,7 +9,7 @@ import krt.platform.math.Ray
  * Scene compiled for tracing (ADR 0008): built once from the objects of the model,
  * immutable afterwards and read by all render threads without locks.
  */
-class TraceScene(objects: List<Traceable>) {
+class TraceScene(objects: List<Traceable>, val sky: Sky = Sky.DAYLIGHT) {
 
     private val bvh = Bvh(objects.toTypedArray())
 
