@@ -83,10 +83,14 @@ object Flights {
                 val angle = Math.toRadians(degrees)
                 val (c, s) = cos(angle) to sin(angle)
                 val turned = Point3(offset.x * c + offset.z * s, offset.y, -offset.x * s + offset.z * c)
-                FlightPose(target + turned * distance + Point3(0.0, lift, 0.0), target)
+                val origin = target + turned * distance + Point3(0.0, lift, 0.0)
+                FlightPose(Point3(origin.x, maxOf(origin.y, MIN_SWING_HEIGHT), origin.z), target)
             },
         )
     }
+
+    /** A swing never flies lower than this: close to a small set it would graze the table. */
+    private const val MIN_SWING_HEIGHT = 0.7
 
     /** Angle in degrees, share of the start distance and lift of each keyframe of a [swing]. */
     private val SWING = listOf(
@@ -96,11 +100,13 @@ object Flights {
 
     private val PRISM = swing(Point3(0.6, 1.7, 4.2), Point3(0.2, 0.9, -1.0))
     private val BUBBLES = swing(Point3(0.6, 1.9, 5.2), Point3(0.0, 1.2, 0.0))
+    private val CANDLE = swing(Point3(0.2, 1.0, 2.6), Point3(0.0, 0.5, 0.0))
 
     fun of(scene: DemoScene): FlightPath = when (scene) {
         DemoScene.SHOWCASE, DemoScene.MATERIALS, DemoScene.FRACTALS -> SHOWCASE
         DemoScene.PRISM -> PRISM
         DemoScene.BUBBLES -> BUBBLES
+        DemoScene.CANDLE -> CANDLE
         DemoScene.CLASSIC -> CLASSIC
     }
 }
