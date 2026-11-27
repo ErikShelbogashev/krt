@@ -6,7 +6,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
-import krt.domain.scene.model.Emissive
+import krt.domain.scene.model.Material
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
 import krt.domain.scene.model.Triangle
@@ -17,13 +17,14 @@ import krt.platform.math.Point3
 class LightSample(val direction: Point3, val distance: Double, val emitted: Color, val pdf: Double)
 
 /**
- * The lights of a scene for next event estimation: emissive spheres and triangles. A sample picks one light
- * uniformly and a point uniformly on its surface; the pdf is in solid angle at the lit point, with the pick.
+ * The lights of a scene for next event estimation: spheres and triangles whose material [Material.emits].
+ * A sample picks one light uniformly and a point uniformly on its surface; the pdf is in solid angle at the lit
+ * point, with the pick.
  */
 class Lights(objects: List<Traceable>) {
 
     private val lights: Array<Traceable> =
-        objects.filter { (it as? Sphere)?.material is Emissive || (it as? Triangle)?.material is Emissive }
+        objects.filter { ((it as? Sphere)?.material ?: (it as? Triangle)?.material)?.emits == true }
             .toTypedArray()
 
     val count: Int get() = lights.size
@@ -44,7 +45,7 @@ class Lights(objects: List<Traceable>) {
         val normal = Point3(ring * cos(phi), ring * sin(phi), z)
         val area = 4 * PI * light.radius * light.radius
         val target = light.center + normal * light.radius
-        return seen(point, target, normal, area, light.material as Emissive, twoSided = false)
+        return seen(point, target, normal, area, light.material, twoSided = false)
     }
 
     private fun triangle(light: Triangle, point: Point3, random: Random): LightSample? {
@@ -59,7 +60,7 @@ class Lights(objects: List<Traceable>) {
         val cross = edge1.cross(edge2)
         val doubleArea = cross.length()
         val target = light.v0 + edge1 * u + edge2 * v
-        return seen(point, target, cross / doubleArea, doubleArea / 2, light.material as Emissive, twoSided = true)
+        return seen(point, target, cross / doubleArea, doubleArea / 2, light.material, twoSided = true)
     }
 
     @Suppress("LongParameterList")
@@ -68,7 +69,7 @@ class Lights(objects: List<Traceable>) {
         target: Point3,
         normal: Point3,
         area: Double,
-        light: Emissive,
+        light: Material,
         twoSided: Boolean,
     ): LightSample? {
         val toLight = target - point

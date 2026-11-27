@@ -31,4 +31,7 @@ interface Material {
     fun emitted(u: Double, v: Double, p: Point3): Color {
         return Color(0.0, 0.0, 0.0) // Default to no emission
     }
+
+    /** Whether the material gives off light, so light sampling treats objects of it as lights (ADR 0012). */
+    val emits: Boolean get() = false
 }

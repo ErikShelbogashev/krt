@@ -4,6 +4,7 @@ import krt.domain.scene.model.Checker
 import krt.domain.scene.model.Conductor
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
+import krt.domain.scene.model.GlowingPattern
 import krt.domain.scene.model.Iridescent
 import krt.domain.scene.model.Isotropic
 import krt.domain.scene.model.Lambert
@@ -19,6 +20,7 @@ import krt.domain.trace.GpuScenePacking.CHECKER
 import krt.domain.trace.GpuScenePacking.CONDUCTOR
 import krt.domain.trace.GpuScenePacking.DIELECTRIC
 import krt.domain.trace.GpuScenePacking.EMISSIVE
+import krt.domain.trace.GpuScenePacking.GLOWING
 import krt.domain.trace.GpuScenePacking.IRIDESCENT
 import krt.domain.trace.GpuScenePacking.ISOTROPIC
 import krt.domain.trace.GpuScenePacking.LAMBERT
@@ -45,7 +47,8 @@ object GpuMaterials {
      * - Iridescent: base, film thickness in nm, film refraction index, none, roughness;
      * - Conductor: η, GGX α along and across the tangent, k;
      * - Velvet: base, roughness, chance of the diffuse bounce, sheen;
-     * - Patterned: first colour, coat roughness, pattern scale, second colour, bump, pattern kind, turbulence.
+     * - Patterned: first colour, coat roughness, pattern scale, second colour, bump, pattern kind, turbulence;
+     * - Glowing pattern: first colour, intensity, pattern scale, second colour, none, pattern kind, turbulence.
      */
     fun values(material: Material): DoubleArray = surface(material) ?: physical(material)
         ?: values(LAMBERT, Point3(UNKNOWN_GREY, UNKNOWN_GREY, UNKNOWN_GREY))
@@ -72,6 +75,7 @@ object GpuMaterials {
         is Isotropic -> values(ISOTROPIC, material.albedo)
         is Velvet -> values(VELVET, material.base, material.roughness, material.diffuseChance, odd = material.sheen)
         is Patterned -> patterned(PATTERNED, material.pattern, material.roughness, material.bump)
+        is GlowingPattern -> patterned(GLOWING, material.pattern, material.intensity, 0.0)
         is SoapBubble -> values(BUBBLE, Point3.ZERO, material.thickness, material.filmIor)
         is Iridescent -> values(
             IRIDESCENT, material.base, material.thickness, material.filmIor, third = material.roughness,
