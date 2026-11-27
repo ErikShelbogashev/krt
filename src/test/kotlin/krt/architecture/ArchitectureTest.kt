@@ -148,7 +148,7 @@ class ArchitectureTest {
     fun `domain models are immutable`() {
         // ADR 0005: no `var` property in a model, local variables of a computation aside.
         modelFiles().assertFalse { file ->
-            file.properties(includeNested = true).any { it.hasVarModifier }
+            file.properties(includeNested = true).any { it.isVar }
         }
     }
 

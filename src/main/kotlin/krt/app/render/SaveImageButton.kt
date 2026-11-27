@@ -15,7 +15,7 @@ fun SaveImageButton(onSave: (File) -> Unit, modifier: Modifier = Modifier) {
         platformFile?.let { onSave(it.file) }
     }
     OutlinedButton(
-        onClick = { launcher.launch(suggestedName = "krt-frame", extension = "png") },
+        onClick = { launcher.launch(suggestedName = "krt-frame", defaultExtension = "png") },
         modifier = modifier,
     ) {
         Text("Save image…")
