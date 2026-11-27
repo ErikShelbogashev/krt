@@ -29,11 +29,15 @@ object GpuSampling {
      * How much of a pass a GPU step takes at most: [samples] per pixel over one of [bands] bands of rows, adapted to
      * the window frames that drew steps. A step runs inside a window repaint, and steps that take longer than the
      * repaint interval queue up on the GPU, so every window frame waits behind them, and a camera moved meanwhile
-     * gets its frames late. A step frame over [STEP_FRAME_TARGET_MS] cuts the work in proportion: the samples
-     * first, then the rows, in more bands; but a single one less than [HICCUP_LOAD] times over, a hiccup of the
-     * window, cuts nothing until a second one in a row follows. After
+     * gets its frames late. A step frame over [STEP_FRAME_TARGET_MS] cuts the work in proportion: the rows first,
+     * in more bands, and the samples only once the bands are as thin as they get; but a single one less than
+     * [HICCUP_LOAD] times over, a hiccup of the window, cuts nothing until a second one in a row follows. After
      * [STEPS_TO_GROW] step frames in a row that would still fit with twice the rows or one more sample, it grows
      * back by that.
+     *
+     * Rows before samples: a step clips its mean to 1 before the frame stores it in 8 bits, so steps of one sample
+     * clip every bright sample, and a frame made of them comes out dimmer than the CPU's, which clips only the
+     * mean of all samples.
      */
     data class StepBudget(
         val samples: Int = GPU_STEP_SAMPLES,
@@ -45,8 +49,8 @@ object GpuSampling {
             val load = frameMs / STEP_FRAME_TARGET_MS
             return when {
                 load > 1 && load < HICCUP_LOAD && !slow -> copy(fitStreak = 0, slow = true)
-                load > 1 && samples > 1 -> StepBudget((samples / load).toInt().coerceAtLeast(1), bands)
-                load > 1 -> StepBudget(1, ceil(bands * load).toInt().coerceAtMost(MAX_BANDS))
+                load > 1 && bands < MAX_BANDS -> StepBudget(samples, ceil(bands * load).toInt().coerceAtMost(MAX_BANDS))
+                load > 1 -> StepBudget((samples / load).toInt().coerceAtLeast(1), bands)
                 !fitsMore(load) -> copy(fitStreak = 0, slow = false)
                 fitStreak + 1 < STEPS_TO_GROW -> copy(fitStreak = fitStreak + 1, slow = false)
                 bands > 1 -> StepBudget(samples, (bands + 1) / 2)
