@@ -18,6 +18,7 @@ import krt.domain.scene.World
 
 /**
  * Composition root (ADR 0006): creates resources and operations once and wires them together.
+ * Closing it releases the resources it created.
  */
 class AppContext(
     val world: World,
@@ -25,7 +26,7 @@ class AppContext(
     val camera: Camera,
     val renderController: RenderController,
     val frameBuffer: FrameBuffer,
-) {
+) : AutoCloseable {
     val redraw = RedrawOp(renderController, rayTracer, camera, frameBuffer)
     val rotateCamera = RotateCameraOp(camera, renderController, rayTracer, frameBuffer)
     val moveCamera = MoveCameraOp(camera, renderController, rayTracer, frameBuffer)
@@ -35,6 +36,10 @@ class AppContext(
     val toggleWireframe = ToggleWireframeOp(renderController, rayTracer, camera, frameBuffer)
     val changeRayTracerSettings = ChangeRayTracerSettingsOp(renderController, rayTracer, camera, frameBuffer)
     val changeRenderSettings = ChangeRenderSettingsOp(renderController, rayTracer, camera, frameBuffer)
+
+    override fun close() {
+        renderController.close()
+    }
 
     companion object {
         private const val DEFAULT_MAX_DEPTH = 7

@@ -100,6 +100,7 @@ class RenderController(
     }
 
     override fun close() {
+        renderJob?.cancel()
         renderDispatcher.close()
     }
 
