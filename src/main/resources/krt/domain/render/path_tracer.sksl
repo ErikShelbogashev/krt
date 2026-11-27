@@ -8,6 +8,8 @@ uniform float previousSamples;
 uniform float nodeCount;
 uniform float primitiveStart;
 uniform float materialStart;
+uniform float3 skyHorizon;          // Sky: the gradient from the horizon to the zenith
+uniform float3 skyZenith;
 uniform float2 frameSize;
 uniform float3 camOrigin;
 uniform float3 camLowerLeft;
@@ -106,7 +108,7 @@ float3 refractDir(float3 uv, float3 n, float etaiOverEtat) {
 
 float3 sky(float3 direction) {
     float t = 0.5 * (normalize(direction).y + 1.0);
-    return float3(1.0) * (1.0 - t) + float3(0.5, 0.7, 1.0) * t;
+    return skyHorizon * (1.0 - t) + skyZenith * t;
 }
 
 // Möller–Trumbore, as Triangle.hit: the triangle at [base] is its first vertex and the edges from it.

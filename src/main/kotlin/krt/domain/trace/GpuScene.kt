@@ -8,6 +8,7 @@ import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Material
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Plastic
+import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
 import krt.domain.scene.model.Triangle
@@ -34,6 +35,7 @@ class GpuScene(
     val primitiveCount: Int,
     val primitiveStart: Int,
     val materialStart: Int,
+    val sky: Sky = Sky.DAYLIGHT,
 )
 
 /** Packing of the scene model for the GPU shader: a pure transformation, mirrored by the shader's decoding. */
@@ -68,7 +70,7 @@ object GpuScenePacking {
     private const val ALPHA = 3
     private const val BOX_VALUES = 6
 
-    fun pack(objects: List<Traceable>): GpuScene {
+    fun pack(objects: List<Traceable>, sky: Sky = Sky.DAYLIGHT): GpuScene {
         val primitives = objects.filter { it is Sphere || it is Triangle }.toTypedArray()
         val bvh = Bvh(primitives).flatten()
         val primitiveStart = bvh.nodeCount * NODE_VALUES
@@ -88,6 +90,7 @@ object GpuScenePacking {
             primitiveCount = primitives.size,
             primitiveStart = primitiveStart,
             materialStart = materialStart,
+            sky = sky,
         )
     }
 
