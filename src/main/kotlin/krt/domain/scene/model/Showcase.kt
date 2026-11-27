@@ -27,14 +27,23 @@ object Showcase {
 
     private fun at(right: Double, up: Double, towards: Double) = RIGHT * right + UP * up + TOWARDS * towards
 
-    fun objects(random: Random): List<Traceable> = heroes() + lights() + scattered(random)
+    fun objects(random: Random): List<Traceable> = buildList {
+        addAll(heroes())
+        addAll(lights())
+        addAll(scattered(random))
+    }
 
-    private fun heroes(): List<Traceable> = listOf<Traceable>(
-        Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, FLOOR, "Floor"),
-        Sphere(at(-2.9, 1.0, 0.0), 1.0, Metal(Color(0.92, 0.92, 0.95), 0.0), "Mirror ball"),
-        Sphere(at(2.6, 0.7, 0.8), 0.7, Plastic(Color(0.85, 0.08, 0.06), 0.02), "Red plastic"),
-        Sphere(at(0.9, 0.35, 2.4), 0.35, Plastic(Color(0.9, 0.9, 0.9), 0.05), "White plastic"),
-    ) + Meshes.torusKnot(
+    private fun heroes(): List<Traceable> = buildList {
+        add(Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, FLOOR, "Floor"))
+        add(Sphere(at(-2.9, 1.0, 0.0), 1.0, Metal(Color(0.92, 0.92, 0.95), 0.0), "Mirror ball"))
+        add(Sphere(at(2.6, 0.7, 0.8), 0.7, Plastic(Color(0.85, 0.08, 0.06), 0.02), "Red plastic"))
+        add(Sphere(at(0.9, 0.35, 2.4), 0.35, Plastic(Color(0.9, 0.9, 0.9), 0.05), "White plastic"))
+        addAll(knot())
+        addAll(ring())
+        addAll(gem())
+    }
+
+    private fun knot() = Meshes.torusKnot(
         Pose(Point3(0.0, 1.38, 0.0), x = RIGHT, y = TOWARDS, z = UP * -1.0),
         scale = 0.36,
         tube = 0.26,
@@ -43,14 +52,18 @@ object Showcase {
         segments = 200,
         sides = 14,
         material = Dielectric(1.5, tint = Color(1.0, 0.7, 0.3), density = 0.6),
-    ) + Meshes.torus(
+    )
+
+    private fun ring() = Meshes.torus(
         Pose(at(1.6, 1.05, -2.6), x = RIGHT, y = TOWARDS, z = UP),
         radius = 0.8,
         tube = 0.2,
         segments = 64,
         sides = 16,
         material = Metal(Color(1.0, 0.76, 0.33), 0.12),
-    ) + Meshes.icosphere(
+    )
+
+    private fun gem() = Meshes.icosphere(
         Pose(at(-1.2, 0.5, 2.6)),
         radius = 0.5,
         subdivisions = 1,
