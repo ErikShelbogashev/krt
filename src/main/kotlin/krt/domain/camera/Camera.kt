@@ -107,8 +107,8 @@ class Camera(
         adjustPitch(-(dyPixels * 2 * Math.PI / imageHeight * DRAG_SENSITIVITY))
     }
 
-    /** Frames of 50 px or less are not rendered after a settings change. */
-    fun hasRenderableSize(): Boolean = imageWidth > MIN_RENDERED_SIZE && imageHeight > MIN_RENDERED_SIZE
+    /** The frame is rendered only when both sides are within [IMAGE_SIZE_RANGE]. */
+    fun hasRenderableSize(): Boolean = imageWidth in IMAGE_SIZE_RANGE && imageHeight in IMAGE_SIZE_RANGE
 
     private fun updateCamera() {
         val forward = Point3(cos(pitch) * cos(yaw), sin(pitch), cos(pitch) * sin(yaw))
@@ -159,7 +159,9 @@ class Camera(
 
     companion object {
         private const val DRAG_SENSITIVITY = 0.1
-        private const val MIN_RENDERED_SIZE = 50
+
+        /** Image sizes, in pixels, that the settings accept and the renderer draws. */
+        val IMAGE_SIZE_RANGE = 32..1024
 
         fun default() = Camera(
             origin = Point3.ONE,

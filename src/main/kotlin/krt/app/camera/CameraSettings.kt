@@ -102,7 +102,7 @@ fun CameraSettings(
             onValueChange = { newValue ->
                 newValue.toIntOrNull()?.let {
                     imageWidth = it
-                    if (it !in 32..1024) return@let
+                    if (it !in Camera.IMAGE_SIZE_RANGE) return@let
                     onChange { this.imageWidth = it }
                 }
             },
@@ -115,7 +115,7 @@ fun CameraSettings(
             onValueChange = { newValue ->
                 newValue.toIntOrNull()?.let {
                     imageHeight = it
-                    if (it !in 32..1024) return@let
+                    if (it !in Camera.IMAGE_SIZE_RANGE) return@let
                     onChange { this.imageHeight = it }
                 }
             },
