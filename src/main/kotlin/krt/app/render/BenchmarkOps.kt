@@ -1,16 +1,20 @@
 package krt.app.render
 
+import java.io.File
 import krt.domain.camera.Camera
 import krt.domain.camera.model.FlightPose
 import krt.domain.render.FrameBuffer
 import krt.domain.render.RayTracer
 import krt.domain.render.RenderController
+import krt.domain.render.model.Benchmark
 import krt.domain.render.model.BenchmarkConfig
+import krt.domain.render.model.BenchmarkResult
 import krt.domain.render.model.FrameQuality
 import krt.domain.render.model.SettingsSnapshot
 import krt.domain.render.model.ViewState
 import krt.domain.render.renderFrame
 import krt.domain.scene.World
+import krt.i9ns.textfile.TextFiles
 
 class CaptureSettingsOp(
     private val world: World,
@@ -80,5 +84,12 @@ class RestoreSettingsOp(
         camera.lookFrom(settings.view.origin, settings.view.lookAt)
         frameBuffer.resizeTo(settings.quality.width, settings.quality.height)
         renderFrame(renderController, rayTracer, camera, frameBuffer)
+    }
+}
+
+class SaveBenchmarkReportOp(private val textFiles: TextFiles) {
+    /** Writes [results] to [file] as CSV, one row per run. */
+    operator fun invoke(file: File, results: List<BenchmarkResult>) {
+        textFiles.write(file, Benchmark.csv(results))
     }
 }
