@@ -5,12 +5,14 @@ import krt.domain.scene.model.Checker
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
+import krt.domain.scene.model.Iridescent
 import krt.domain.scene.model.Isotropic
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Material
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.Sky
+import krt.domain.scene.model.SoapBubble
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
 import krt.domain.scene.model.Triangle
@@ -73,6 +75,8 @@ object GpuScenePacking {
     const val PLASTIC = 4
     const val CHECKER = 5
     const val ISOTROPIC = 6
+    const val BUBBLE = 7
+    const val IRIDESCENT = 8
 
     private const val FIXED_BITS = 24
     private const val FIXED_ONE = 1 shl FIXED_BITS
@@ -156,22 +160,28 @@ object GpuScenePacking {
      * The values of [material]: code; colour r, g, b; parameters 1 and 2; second colour r, g, b; parameter 3.
      * - Lambert: albedo;
      * - Metal: albedo, fuzz;
-     * - Dielectric: absorption per unit of distance (Beer–Lambert), refraction index;
+     * - Dielectric: absorption per unit of distance (Beer–Lambert), refraction index, dispersion;
      * - Emissive: emitted light;
      * - Plastic: albedo, coat roughness, coat refraction index;
      * - Checker: even cells, coat roughness, coat refraction index, odd cells, cell size;
-     * - Isotropic (the particles of fog): albedo.
+     * - Isotropic (the particles of fog): albedo;
+     * - Soap bubble: none, film thickness in nm, film refraction index;
+     * - Iridescent: base, film thickness in nm, film refraction index, none, roughness.
      */
     fun material(material: Material): DoubleArray = when (material) {
         is Lambert -> values(LAMBERT, material.albedo)
         is Metal -> values(METAL, material.albedo, material.fuzz)
-        is Dielectric -> values(DIELECTRIC, material.absorption, material.indexOfReflection)
+        is Dielectric -> values(DIELECTRIC, material.absorption, material.indexOfReflection, material.dispersion)
         is Emissive -> values(EMISSIVE, material.emitColor * material.intensity)
         is Plastic -> values(PLASTIC, material.albedo, material.roughness, material.ior)
         is Checker -> values(
             CHECKER, material.even, material.roughness, material.ior, odd = material.odd, third = material.cellSize,
         )
         is Isotropic -> values(ISOTROPIC, material.albedo)
+        is SoapBubble -> values(BUBBLE, Point3.ZERO, material.thickness, material.filmIor)
+        is Iridescent -> values(
+            IRIDESCENT, material.base, material.thickness, material.filmIor, third = material.roughness,
+        )
         else -> values(LAMBERT, Point3(UNKNOWN_GREY, UNKNOWN_GREY, UNKNOWN_GREY))
     }
 

@@ -10,11 +10,13 @@ import krt.domain.scene.model.Checker
 import krt.domain.scene.model.Dielectric
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
+import krt.domain.scene.model.Iridescent
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
 import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
+import krt.domain.scene.model.SoapBubble
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Triangle
 import krt.domain.trace.GpuScenePacking
@@ -58,6 +60,18 @@ class GpuTracerTest {
         SceneLook(Sky(Color(0.03, 0.03, 0.05), Color(0.0, 0.0, 0.02)), fov = 60.0, aperture = 0.0, sampleLights = true),
     )
 
+    /** A prism of dispersive glass, a soap bubble and an iridescent ball on a dark floor under a lamp. */
+    private val spectral = World(
+        listOf(
+            Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.3, 0.3, 0.3))),
+            Sphere(Point3(0.0, 1.0, 0.0), 1.0, Dielectric(1.6, dispersion = 0.08)),
+            Sphere(Point3(-2.3, 1.0, 0.5), 1.0, SoapBubble(thickness = 420.0)),
+            Sphere(Point3(2.3, 1.0, 0.5), 1.0, Iridescent(Color(0.03, 0.03, 0.03), 520.0, 1.8, 0.05)),
+            Sphere(Point3(0.0, 6.0, 3.0), 1.0, Emissive(Color(1.0, 1.0, 1.0), 6.0)),
+        ),
+        SceneLook(Sky(Color(0.5, 0.6, 0.8), Color(0.1, 0.2, 0.5)), fov = 60.0, aperture = 0.0, sampleLights = true),
+    )
+
     private fun camera() = Camera(
         origin = Point3(0.0, 2.0, 7.0),
         target = Point3.ZERO,
@@ -99,6 +113,20 @@ class GpuTracerTest {
 
         val difference = abs(brightness(gpu) - brightness(cpu))
         assertTrue(difference < TOLERANCE, "GPU ${brightness(gpu)} vs CPU ${brightness(cpu)}")
+        val regions = (0 until QUADRANTS).map { q -> abs(brightness(gpu, q) - brightness(cpu, q)) }
+        assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
+    }
+
+    @Test
+    fun `dispersive glass and thin films look the same on the GPU as on the CPU`() {
+        val camera = camera()
+        val gpu = gpuFrame(camera, spectral)
+        val cpu = cpuFrame(camera, spectral)
+
+        (0 until CHANNELS).forEach { channel ->
+            val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+            assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
+        }
         val regions = (0 until QUADRANTS).map { q -> abs(brightness(gpu, q) - brightness(cpu, q)) }
         assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
     }
@@ -159,6 +187,9 @@ class GpuTracerTest {
         } / selected.size
     }
 
+    private fun channelMean(pixels: IntArray, channel: Int): Double =
+        pixels.sumOf { (it shr (16 - 8 * channel) and 255) / 255.0 } / pixels.size
+
     private fun quadrantOf(index: Int): Int =
         (if (index % SIZE < SIZE / 2) 0 else 1) + (if (index / SIZE < SIZE / 2) 0 else 2)
 
@@ -171,5 +202,6 @@ class GpuTracerTest {
         const val TOLERANCE = 0.03
         const val REGION_TOLERANCE = 0.06
         const val QUADRANTS = 4
+        const val CHANNELS = 3
     }
 }
