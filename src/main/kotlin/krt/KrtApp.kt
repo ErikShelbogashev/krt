@@ -28,6 +28,7 @@ import krt.app.shell.Inspector
 import krt.app.shell.KrtTheme
 import krt.app.shell.TopBar
 import krt.domain.camera.CameraMove
+import krt.domain.camera.model.CameraSnapshot
 import krt.domain.render.Frame
 import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
@@ -38,12 +39,13 @@ import krt.platform.skia.ArgbBitmapConverter
 import org.jetbrains.skia.Shader
 
 /** What the window shows of the last published frame; listeners of the frame buffer write it. */
-private class ShownFrame(objects: List<Traceable>) {
+private class ShownFrame(objects: List<Traceable>, camera: CameraSnapshot) {
     var image by mutableStateOf<ImageBitmap?>(null)
     var gpuFrame by mutableStateOf<Shader?>(null)
     var size by mutableStateOf(IntSize.Zero)
     var progress by mutableStateOf(RenderProgress.NONE)
     var objects by mutableStateOf(objects, referentialEqualityPolicy())
+    var camera by mutableStateOf(camera)
 }
 
 /** The window's content: views of the features wired to the operations of [app]; the lambdas are the ports. */
@@ -80,7 +82,7 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
                         onKey = { app.moveCamera(cameraMoveFor(it)) },
                         modifier = Modifier.weight(1f),
                     )
-                    AppInspector(app, shown.objects)
+                    AppInspector(app, shown.objects, shown.camera)
                 }
                 StatusBar(mode, shown.progress, app.renderController.threads, app.rayTracer.maxDepth)
             }
@@ -89,7 +91,7 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun AppInspector(app: AppContext, objects: List<Traceable>) {
+private fun AppInspector(app: AppContext, objects: List<Traceable>, camera: CameraSnapshot) {
     val catalog = remember(objects) { SceneCatalog.of(objects) }
     var selectedId by remember { mutableStateOf<String?>(null) }
     Inspector(
@@ -103,7 +105,16 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>) {
                 onRenderChange = { app.changeRenderSettings(it) },
             )
         },
-        cameraTab = { CameraTab(app.camera, onChange = { app.changeCameraSettings(it) }) },
+        cameraTab = {
+            CameraTab(
+                camera,
+                catalog.selected(selectedId),
+                onChange = { app.changeCameraSettings(it) },
+                onPreset = { app.setCameraView(it) },
+                onReset = { app.resetCameraView() },
+                onFocusOn = { app.focusOnObject(it) },
+            )
+        },
         sceneTab = {
             SceneTab(
                 catalog,
@@ -119,7 +130,7 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>) {
 /** Subscribes to the frame buffer once and draws the first frame. */
 @Composable
 private fun rememberShownFrame(app: AppContext): ShownFrame {
-    val shown = remember { ShownFrame(app.world.objects) }
+    val shown = remember { ShownFrame(app.world.objects, app.camera.snapshot()) }
     val converter = remember { ArgbBitmapConverter() }
     LaunchedEffect(Unit) {
         app.frameBuffer.onUpdate { frame ->
@@ -128,12 +139,14 @@ private fun rememberShownFrame(app: AppContext): ShownFrame {
             shown.size = IntSize(frame.width, frame.height)
             shown.progress = app.frameBuffer.progress
             shown.objects = app.world.objects
+            shown.camera = app.camera.snapshot()
         }
         app.frameBuffer.onGpuUpdate {
             shown.gpuFrame = it
             shown.size = IntSize(app.camera.imageWidth, app.camera.imageHeight)
             shown.progress = app.frameBuffer.progress
             shown.objects = app.world.objects
+            shown.camera = app.camera.snapshot()
         }
         app.redraw()
     }
