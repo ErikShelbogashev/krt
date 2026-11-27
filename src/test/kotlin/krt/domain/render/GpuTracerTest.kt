@@ -62,6 +62,16 @@ class GpuTracerTest {
     }
 
     @Test
+    fun `a GPU frame made in steps matches the CPU frame in brightness`() {
+        val camera = camera()
+        val gpu = progressiveGpuFrame(camera)
+        val cpu = cpuFrame(camera)
+
+        val difference = abs(brightness(gpu) - brightness(cpu))
+        assertTrue(difference < TOLERANCE, "GPU in steps ${brightness(gpu)} vs CPU ${brightness(cpu)}")
+    }
+
+    @Test
     fun `triangles are drawn`() {
         val wall = Triangle(
             Point3(-50.0, -50.0, -3.0),
@@ -76,10 +86,27 @@ class GpuTracerTest {
 
     private fun gpuFrame(camera: Camera, scene: World = world): IntArray = GpuTracer().use { tracer ->
         val frame = GpuFrame(GpuScenePacking.pack(scene.objects), camera.view(), SIZE, SIZE, DEPTH, SAMPLES, 0.37f)
+        pixels(tracer.shader(frame))
+    }
+
+    /** The frame as RenderController makes it in GPU mode: steps, each blended into the frame of those before. */
+    private fun progressiveGpuFrame(camera: Camera): IntArray = GpuTracer().use { tracer ->
+        val scene = GpuScenePacking.pack(world.objects)
+        var frame: org.jetbrains.skia.Shader? = null
+        var taken = 0
+        FrameSampling.gpuSteps(SAMPLES).forEachIndexed { index, samples ->
+            val step = GpuFrame(scene, camera.view(), SIZE, SIZE, DEPTH, samples, 0.1f * (index + 1), taken)
+            frame = tracer.shader(step, frame)
+            taken += samples
+        }
+        pixels(requireNotNull(frame))
+    }
+
+    private fun pixels(shader: org.jetbrains.skia.Shader): IntArray {
         val surface = Surface.makeRaster(ImageInfo.makeN32Premul(SIZE, SIZE))
-        surface.canvas.drawPaint(Paint().apply { shader = tracer.shader(frame) })
+        surface.canvas.drawPaint(Paint().apply { this.shader = shader })
         val bitmap = Bitmap.makeFromImage(surface.makeImageSnapshot())
-        IntArray(SIZE * SIZE) { bitmap.getColor(it % SIZE, it / SIZE) }
+        return IntArray(SIZE * SIZE) { bitmap.getColor(it % SIZE, it / SIZE) }
     }
 
     private fun cpuFrame(camera: Camera): IntArray {
