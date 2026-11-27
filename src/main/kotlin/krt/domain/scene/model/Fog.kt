@@ -1,97 +1,41 @@
 package krt.domain.scene.model
 
-import kotlin.math.ln
-import kotlin.math.sqrt
-import kotlin.random.Random
 import krt.platform.math.Aabb
 import krt.platform.math.Color
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
 /**
- * Fog, smoke or haze filling a sphere: a homogeneous medium of [density] (the chance per unit of distance that light
- * scatters) whose particles scatter light in every direction, tinted by [albedo]. A ray inside the sphere scatters
- * after a random free path; light that passes through without scattering goes on as if the fog were not there.
- *
- * The free path's random number comes from a hash of the ray, so the hit stays a pure function of its inputs.
+ * Fog, smoke or haze filling a sphere: the [medium] inside a sphere of [Interface], which light crosses unchanged
+ * (ADR 0014). Rays that enter it travel in the medium until they leave it again, into [outside].
  */
 class Fog(
     val center: Point3,
     val radius: Double,
-    val density: Double,
-    val albedo: Color,
+    val medium: Medium,
     override val id: String = "Fog[${java.util.UUID.randomUUID()}]",
-    val enclosed: Boolean = false,
+    val outside: Medium? = null,
 ) : Traceable {
 
-    val material = Isotropic(albedo, enclosed)
+    /** Grey fog of one [density] for every channel, whose particles reflect [albedo]. */
+    constructor(
+        center: Point3,
+        radius: Double,
+        density: Double,
+        albedo: Color,
+        id: String = "Fog[${java.util.UUID.randomUUID()}]",
+    ) : this(center, radius, Medium.grey(density, albedo), id)
 
-    override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
-        val oc = ray.origin - center
-        val a = ray.direction.dot(ray.direction)
-        val halfB = oc.dot(ray.direction)
-        val discriminant = halfB * halfB - a * (oc.dot(oc) - radius * radius)
-        if (discriminant < 0) return null
-        val root = sqrt(discriminant)
-        // Where the ray is inside the sphere within [tMin, tMax]; it scatters there after a random free path.
-        val enter = maxOf((-halfB - root) / a, tMin)
-        val leave = minOf((-halfB + root) / a, tMax)
-        val t = if (enter < leave) enter - ln(1.0 - Hashing.uniform(ray)) / density / sqrt(a) else leave
-        return if (t < leave) Hit(ray.at(t), t, UP, true, material) else null
-    }
+    val boundary = Sphere(center, radius, Interface, id, media = MediumInterface(medium, outside))
 
-    override fun bounds(): Aabb = Aabb(center - Point3(radius, radius, radius), center + Point3(radius, radius, radius))
+    /** Whether [point] lies in the fog, so a camera there starts its rays in it. */
+    fun contains(point: Point3): Boolean = (point - center).length() < radius
 
-    override fun translate(offset: Point3): Fog = Fog(center + offset, radius, density, albedo, id, enclosed)
+    override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? = boundary.hit(ray, tMin, tMax)
 
-    override fun linearize(coefficient: Double): List<LineSegment> =
-        Sphere(center, radius, material).linearize(coefficient)
+    override fun bounds(): Aabb = boundary.bounds()
 
-    private companion object {
-        val UP = Point3(0.0, 1.0, 0.0)
-    }
-}
+    override fun translate(offset: Point3): Fog = Fog(center + offset, radius, medium, id, outside)
 
-/**
- * Particles of a medium: they scatter light equally in every direction, tinted by [albedo]. Particles [enclosed] in
- * glass do not sample the lights ([Lobe.ENCLOSED_VOLUME]).
- */
-class Isotropic(val albedo: Color, val enclosed: Boolean = false) : Material {
-    private val lobe = if (enclosed) Lobe.ENCLOSED_VOLUME else Lobe.VOLUME
-
-    override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered =
-        Scattered(ray.next(hit.p, Point3.randomInUnitSphere(random).unit()), albedo, lobe)
-}
-
-/** A pseudo-random number in [0, 1) from the bits of a ray: the same ray, the same number. */
-internal object Hashing {
-    private const val MIX1 = -0x40a7b892e31b1a47L
-    private const val MIX2 = -0x6b2fb644ecceee15L
-    private const val GOLDEN = -0x61c8864680b583ebL
-    private const val MANTISSA_BITS = 53
-    private const val SHIFT_A = 30
-    private const val SHIFT_B = 27
-    private const val SHIFT_C = 31
-
-    fun uniform(ray: Ray): Double {
-        val origin = ray.origin
-        val direction = ray.direction
-        var h = mix(step(0L, origin.x))
-        h = mix(step(h, origin.y))
-        h = mix(step(h, origin.z))
-        h = mix(step(h, direction.x))
-        h = mix(step(h, direction.y))
-        h = mix(step(h, direction.z))
-        return (h ushr (Long.SIZE_BITS - MANTISSA_BITS)).toDouble() / (1L shl MANTISSA_BITS)
-    }
-
-    private fun step(h: Long, value: Double): Long = h + java.lang.Double.doubleToLongBits(value) + GOLDEN
-
-    /** SplitMix64's finaliser. */
-    private fun mix(value: Long): Long {
-        var z = value
-        z = (z xor (z ushr SHIFT_A)) * MIX1
-        z = (z xor (z ushr SHIFT_B)) * MIX2
-        return z xor (z ushr SHIFT_C)
-    }
+    override fun linearize(coefficient: Double): List<LineSegment> = boundary.linearize(coefficient)
 }

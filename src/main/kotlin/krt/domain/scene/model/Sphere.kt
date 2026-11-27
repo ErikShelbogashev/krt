@@ -11,6 +11,7 @@ import krt.platform.math.Ray
 /**
  * A ball of [radius] around [center]. A ball with a [velocity] moves by it over the shutter's open time: at moment
  * t in [0, 1) of a ray it is at [center] + [velocity] × t, so it comes out blurred along its path (ADR 0013).
+ * A ball with [media] bounds them: fog or the inside of a translucent ball (ADR 0014).
  */
 class Sphere(
     val center: Point3,
@@ -18,6 +19,7 @@ class Sphere(
     val material: Material,
     override val id: String = "Sphere[${UUID.randomUUID()}]",
     val velocity: Point3 = Point3.ZERO,
+    val media: MediumInterface? = null,
 ) : Traceable {
 
     private val moving = velocity != Point3.ZERO
@@ -47,7 +49,7 @@ class Sphere(
         }
         val hitPoint = ray.at(root)
         val outwardNormal = (hitPoint - center) / radius
-        return Hit.create(hitPoint, root, ray, outwardNormal, material)
+        return Hit.create(hitPoint, root, ray, outwardNormal, material, media)
     }
 
     override fun bounds(): Aabb {
@@ -58,7 +60,7 @@ class Sphere(
         return Aabb(low - extent, high + extent)
     }
 
-    override fun translate(offset: Point3): Sphere = Sphere(center + offset, radius, material, id, velocity)
+    override fun translate(offset: Point3): Sphere = Sphere(center + offset, radius, material, id, velocity, media)
 
     override fun linearize(coefficient: Double): List<LineSegment> {
         val segments = mutableListOf<LineSegment>()

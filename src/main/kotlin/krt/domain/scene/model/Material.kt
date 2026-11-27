@@ -19,12 +19,13 @@ enum class Lobe(val samplesLights: Boolean) {
      */
     DIFFUSE(samplesLights = true),
 
-    /** Isotropic scattering inside a medium: lit by [Scattered.attenuation] / 4π in every direction. */
+    /** Isotropic scattering in a medium: lit by [Scattered.attenuation] / 4π in every direction. */
     VOLUME(samplesLights = true),
 
     /**
-     * Isotropic scattering inside a medium closed in glass, as in a [Translucent] ball: every shadow ray would end
-     * on the glass, so the lights are not sampled there and the path goes on as after a specular bounce.
+     * Isotropic scattering in a medium closed in glass or another solid surface, as in a [Translucent] ball: every
+     * shadow ray would end on that surface, so the lights are not sampled there and the path goes on as after a
+     * specular bounce.
      */
     ENCLOSED_VOLUME(samplesLights = false),
 }

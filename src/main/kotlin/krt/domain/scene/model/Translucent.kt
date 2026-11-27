@@ -7,36 +7,40 @@ import krt.platform.math.Point3
 import krt.platform.math.Ray
 
 /**
- * A translucent ball, like wax, jade or marble: light refracts in through a glass-like [surface] of index [ior],
- * wanders inside, scattering off particles of [albedo] after free paths of 1 / [density] on average, and leaves
- * somewhere else (random-walk subsurface scattering, ADR 0013). The inside is [Fog] filling the same sphere: a ray
- * inside meets either a particle or the surface on its way out, whichever comes first.
+ * A translucent ball, like wax, jade or marble: light refracts in through a glass-like surface of index [ior],
+ * wanders inside the [medium], scattering off its particles, and leaves somewhere else (random-walk subsurface
+ * scattering, ADR 0013 and 0014). The ball bounds the medium; leaving it, light goes into [outside].
  */
 class Translucent(
     val center: Point3,
     val radius: Double,
-    val albedo: Color,
-    val density: Double,
+    val medium: Medium,
     val ior: Double = WAX_IOR,
     val roughness: Double = 0.0,
     override val id: String = "Translucent[${UUID.randomUUID()}]",
+    val outside: Medium? = null,
 ) : Traceable {
 
-    val surface = Sphere(center, radius, Dielectric(ior, roughness = roughness))
-    val inside = Fog(center, radius, density, albedo, enclosed = true)
+    /** A ball of grey [density] whose particles reflect [albedo]. */
+    constructor(
+        center: Point3,
+        radius: Double,
+        albedo: Color,
+        density: Double,
+        ior: Double = WAX_IOR,
+        roughness: Double = 0.0,
+        id: String = "Translucent[${UUID.randomUUID()}]",
+    ) : this(center, radius, Medium.grey(density, albedo), ior, roughness, id)
 
-    /** The objects it is made of, for the GPU, which has spheres and fog but no translucent balls. */
-    val parts: List<Traceable> get() = listOf(surface, inside)
+    val surface =
+        Sphere(center, radius, Dielectric(ior, roughness = roughness), id, media = MediumInterface(medium, outside))
 
-    override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
-        val wall = surface.hit(ray, tMin, tMax)
-        return inside.hit(ray, tMin, wall?.t ?: tMax) ?: wall
-    }
+    override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? = surface.hit(ray, tMin, tMax)
 
     override fun bounds(): Aabb = surface.bounds()
 
     override fun translate(offset: Point3): Translucent =
-        Translucent(center + offset, radius, albedo, density, ior, roughness, id)
+        Translucent(center + offset, radius, medium, ior, roughness, id, outside)
 
     override fun linearize(coefficient: Double): List<LineSegment> = surface.linearize(coefficient)
 

@@ -14,6 +14,8 @@ uniform float lightStart;           // the primitive slots of the lights, see Gp
 uniform float lightCount;           // lights to sample (next event estimation, ADR 0012); 0 when it is off
 uniform float normalStart;          // the vertex normals of smooth triangles
 uniform float smoothNormals;        // 1 when the scene has smooth triangles, so hits read their vertex normals
+uniform float mediaStart;           // the media: density and albedo each (ADR 0014)
+uniform float cameraMedium;         // the medium the camera stands in, -1 for clear air
 uniform float motionBlur;           // 1 when rays go at random moments of the shutter and balls move (ADR 0013)
 uniform float3 skyHorizon;          // Sky: the gradient from the horizon to the zenith
 uniform float3 skyZenith;
@@ -29,14 +31,15 @@ uniform float maxDepth;
 uniform float samples;
 uniform float seed;
 
-const int MAX_DEPTH = 32;
+const int MAX_STEPS_PER_PATH = 48;  // bounces up to MAX_DEPTH and crossings of interfaces between media
 const int MAX_SAMPLES = 64;
 const int MAX_STEPS = 65536;        // nodes one ray may visit
 const int LEAF_SIZE = 4;            // Bvh.LEAF_SIZE
 const float TEXTURE_WIDTH = 1024.0;
 const float RANGE = 4096.0;
 const float NODE_VALUES = 9.0;
-const float PRIMITIVE_VALUES = 11.0;
+const float PRIMITIVE_VALUES = 13.0;
+const float MEDIUM_VALUES = 6.0;
 const float NORMAL_VALUES = 9.0;
 const float MATERIAL_VALUES = 12.0;
 const float T_MIN = 0.001;
@@ -45,7 +48,6 @@ const float PI = 3.14159265358979;
 
 const float SPHERE = 0.0;
 const float TRIANGLE = 1.0;
-const float MEDIUM = 2.0;
 
 const float LAMBERT = 0.0;
 const float METAL = 1.0;
@@ -53,7 +55,7 @@ const float DIELECTRIC = 2.0;
 const float EMISSIVE = 3.0;
 const float PLASTIC = 4.0;
 const float CHECKER = 5.0;
-const float ISOTROPIC = 6.0;
+const float INTERFACE = 6.0;
 const float BUBBLE = 7.0;
 const float IRIDESCENT = 8.0;
 const float CONDUCTOR = 9.0;
@@ -208,30 +210,11 @@ float intersectTriangle(float base, float3 origin, float3 direction, float tMax)
     return t;
 }
 
-// Fog in a sphere, as Fog.hit: where a ray scatters after a random free path, or -1 when it passes through.
-float intersectMedium(float base, float3 origin, float3 direction, float tMax) {
-    float3 oc = origin - vector(base + 1.0);
-    float radius = number(base + 4.0);
-    float a = dot(direction, direction);
-    float halfB = dot(oc, direction);
-    float discriminant = halfB * halfB - a * (dot(oc, oc) - radius * radius);
-    if (discriminant < 0.0) { return -1.0; }
-    float root = sqrt(discriminant);
-    float enter = max((-halfB - root) / a, T_MIN);
-    float leave = min((-halfB + root) / a, tMax);
-    if (enter >= leave) { return -1.0; }
-    float speed = sqrt(a);
-    float freePath = -log(1.0 - rnd()) / number(base + 5.0);
-    if (freePath > (leave - enter) * speed) { return -1.0; }
-    return enter + freePath / speed;
-}
-
 // Distance along the ray to primitive [slot] within [T_MIN, tMax], or -1 when the ray misses it.
 float intersect(float slot, float3 origin, float3 direction, float tMax) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
     float kind = code(base);
     if (kind == TRIANGLE) { return intersectTriangle(base, origin, direction, tMax); }
-    if (kind == MEDIUM) { return intersectMedium(base, origin, direction, tMax); }
     float3 center = centerOf(base);
     float radius = number(base + 4.0);
     float3 oc = origin - center;
@@ -252,7 +235,6 @@ float3 outwardNormal(float slot, float3 p) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
     float kind = code(base);
     if (kind == TRIANGLE) { return normalize(cross(vector(base + 4.0), vector(base + 7.0))); }
-    if (kind == MEDIUM) { return float3(0.0, 1.0, 0.0); }
     return (p - centerOf(base)) / number(base + 4.0);
 }
 
@@ -463,9 +445,53 @@ float closestHit(float3 origin, float3 direction, float tMax) {
     return hitSlot;
 }
 
+float3 mediumDensity(float medium) { return vector(mediaStart + medium * MEDIUM_VALUES); }
+
+float3 mediumAlbedo(float medium) { return vector(mediaStart + medium * MEDIUM_VALUES + 3.0); }
+
+// The medium beyond the surface of primitive [slot] for a ray that passes it [frontFace] first, as PathTracing.after:
+// 1 + its number in the primitive's record, the inside one through the front, the outside one through the back.
+float mediumBeyond(float slot, bool frontFace) {
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    return code(base + (frontFace ? 11.0 : 12.0)) - 1.0;
+}
+
+bool boundsMedia(float slot) {
+    float base = primitiveStart + slot * PRIMITIVE_VALUES;
+    return code(base + 11.0) + code(base + 12.0) > 0.0;
+}
+
+// FreeFlight.distance: the distance to the next particle, with the density of one channel picked at random.
+float freeDistance(float3 density) {
+    float pick = rnd();
+    float channel = pick < 1.0 / 3.0 ? density.x : (pick < 2.0 / 3.0 ? density.y : density.z);
+    float u = rnd();
+    return channel > 0.0 ? -log(1.0 - u) / channel : FAR;
+}
+
+// PathTracing.transmittance: the share of light along a unit [direction] over [distance] from [origin] in [medium]:
+// none past a solid surface; through media and their interfaces, what the media let through.
+float3 transmittance(float3 origin, float3 direction, float distance, float medium) {
+    float3 share = float3(1.0);
+    float remaining = distance;
+    for (int crossing = 0; crossing < 8; crossing++) {
+        float slot = closestHit(origin, direction, remaining);
+        if (slot < 0.0) {
+            return medium >= 0.0 ? share * exp(-mediumDensity(medium) * remaining) : share;
+        }
+        if (code(materialStart + slot * MATERIAL_VALUES) != INTERFACE) { return float3(0.0); }
+        if (medium >= 0.0) { share *= exp(-mediumDensity(medium) * hitT); }
+        float3 p = origin + direction * hitT;
+        medium = mediumBeyond(slot, dot(direction, outwardNormal(slot, p)) < 0.0);
+        remaining -= hitT;
+        origin = p;
+    }
+    return float3(0.0);
+}
+
 // Light reaching [p] straight from one light picked at random, as Lights.sample and PathTracing.direct take it:
 // a uniform point on the light, shadowed or not, weighed by the response of the lobe and the pdf of the sample.
-float3 directLight(float3 p, float3 normal, float lobe) {
+float3 directLight(float3 p, float3 normal, float lobe, float medium) {
     float pick = min(floor(rnd() * lightCount), lightCount - 1.0);
     float slot = code(lightStart + pick);
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
@@ -500,13 +526,14 @@ float3 directLight(float3 p, float3 normal, float lobe) {
     float facing = -dot(direction, lightNormal);
     float cosine = twoSided ? abs(facing) : facing;
     if (cosine <= 1.0e-6) { return float3(0.0); }
-    if (closestHit(p, direction, distance * (1.0 - SHADOW_MARGIN)) >= 0.0) { return float3(0.0); }
     float pdf = distanceSquared / (cosine * area) / lightCount;
     // PathTracing.diffuse: diffuse bounces go to a random point in the unit ball at the tip of the normal, 2 cos³ / π.
     float lit = max(0.0, dot(normal, direction));
     float response = lobe == VOLUME ? 1.0 / (4.0 * PI) : 2.0 * lit * lit * lit / PI;
+    if (response == 0.0) { return float3(0.0); }
     float lightBase = materialStart + slot * MATERIAL_VALUES;
-    return emission(lightBase, code(lightBase), target) * (response / pdf);
+    float3 light = emission(lightBase, code(lightBase), target);
+    return light * transmittance(p, direction, distance * (1.0 - SHADOW_MARGIN), medium) * (response / pdf);
 }
 
 float3 trace(float3 origin, float3 direction) {
@@ -515,10 +542,36 @@ float3 trace(float3 origin, float3 direction) {
     float3 throughput = float3(1.0);
     bool countEmission = true;
     float wavelength = 0.0;         // 0 for white light, the wavelength in nm once dispersion split it
-    for (int depth = 0; depth < MAX_DEPTH; depth++) {
-        if (float(depth) >= maxDepth) { break; }
+    float medium = cameraMedium;    // the medium the path travels in, -1 for clear air (ADR 0014)
+    bool enclosed = false;          // whether a solid surface closes that medium, so its particles sample no lights
+    float bounces = 0.0;            // crossings of interfaces between media do not count
+    for (int step = 0; step < MAX_STEPS_PER_PATH; step++) {
+        if (bounces >= maxDepth) { break; }
 
         float slot = closestHit(origin, direction, FAR);
+        if (medium >= 0.0) {
+            // PathTracing.color in a medium: a particle before the surface, or the surface, weighed by FreeFlight.
+            float3 density = mediumDensity(medium);
+            float speed = length(direction);
+            float flight = freeDistance(density);
+            float surfaceDistance = slot < 0.0 ? FAR : hitT * speed;
+            if (flight < surfaceDistance) {
+                float3 passed = exp(-density * flight);
+                float pdf = dot(density * passed, float3(1.0 / 3.0));
+                throughput *= mediumAlbedo(medium) * density * passed / pdf;
+                float3 at = origin + direction * (flight / speed);
+                float particleLobe = enclosed ? SPECULAR : VOLUME;
+                countEmission = lightCount < 1.0 || particleLobe == SPECULAR;
+                if (!countEmission) { radiance += throughput * directLight(at, float3(0.0), VOLUME, medium); }
+                origin = at;
+                direction = normalize(randomInUnitSphere());
+                bounces += 1.0;
+                continue;
+            }
+            if (slot < 0.0) { return radiance; }
+            float3 through = exp(-density * surfaceDistance);
+            throughput *= through / dot(through, float3(1.0 / 3.0));
+        }
         if (slot < 0.0) { return radiance + throughput * sky(direction); }
 
         float3 p = origin + direction * hitT;
@@ -655,10 +708,12 @@ float3 trace(float3 origin, float3 direction) {
                 attenuation = color * (float3(1.0) - reflectance) / (1.0 - chance);
                 lobe = DIFFUSE;
             }
-        } else if (kind == ISOTROPIC) {
-            scattered = normalize(randomInUnitSphere());
-            // Particles enclosed in glass do not sample the lights: every shadow ray would end on the glass.
-            lobe = param > 0.5 ? SPECULAR : VOLUME;
+        } else if (kind == INTERFACE) {
+            // The edge of a medium: light passes unchanged and only the medium changes; no bounce, no new lobe.
+            medium = mediumBeyond(slot, frontFace);
+            enclosed = false;
+            origin = p;
+            continue;
         } else {
             scattered = normal + randomInUnitSphere();
             if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
@@ -666,9 +721,15 @@ float3 trace(float3 origin, float3 direction) {
         }
         throughput *= attenuation;
         countEmission = lightCount < 1.0 || lobe == SPECULAR;
-        if (!countEmission) { radiance += throughput * directLight(p, normal, lobe); }
+        if (!countEmission) { radiance += throughput * directLight(p, normal, lobe, medium); }
+        if (boundsMedia(slot) && dot(scattered, normal) < 0.0) {
+            // Through a surface that bounds media, as PathTracing.after: into the medium beyond, closed by it.
+            medium = mediumBeyond(slot, frontFace);
+            enclosed = frontFace;
+        }
         origin = p;
         direction = scattered;
+        bounces += 1.0;
     }
     return radiance;
 }

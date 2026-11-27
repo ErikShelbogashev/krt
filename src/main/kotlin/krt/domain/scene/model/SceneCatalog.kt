@@ -44,7 +44,7 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
         fun summary(obj: Traceable): ObjectSummary {
             val material = materialOf(obj)
             val name = if (hasCustomId(obj)) obj.id else "${kindOf(obj)} · ${materialName(material)}"
-            return ObjectSummary(obj.id, name, materialColor(material), obj.bounds().center)
+            return ObjectSummary(obj.id, name, mediumOf(obj)?.albedo ?: materialColor(material), obj.bounds().center)
         }
 
         private fun isFeatured(obj: Traceable): Boolean =
@@ -64,8 +64,15 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
         private fun materialOf(obj: Traceable): Material? = when (obj) {
             is Sphere -> obj.material
             is Triangle -> obj.material
-            is Fog -> obj.material
-            is Translucent -> obj.inside.material
+            is Fog -> Interface
+            is Translucent -> obj.surface.material
+            else -> null
+        }
+
+        /** The medium a bank of fog or a translucent ball holds, whose colour the list shows. */
+        private fun mediumOf(obj: Traceable): Medium? = when (obj) {
+            is Fog -> obj.medium
+            is Translucent -> obj.medium
             else -> null
         }
 
@@ -74,7 +81,7 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
             is Metal -> "Metal"
             is Dielectric -> "Glass"
             is Emissive -> "Emissive"
-            is Isotropic -> "Medium"
+            is Interface -> "Medium"
             is Conductor -> "Metal"
             null -> "Unknown"
             else -> material::class.simpleName ?: "Material"
@@ -85,7 +92,6 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
             is Metal -> material.albedo
             is Emissive -> material.emitColor
             is Dielectric -> GLASS_COLOR
-            is Isotropic -> material.albedo
             is Conductor -> ConductorFresnel.reflectance(1.0, material.eta, material.k)
             is Velvet -> material.base
             is Iridescent -> material.base

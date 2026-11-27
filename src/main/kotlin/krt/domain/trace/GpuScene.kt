@@ -3,6 +3,8 @@ package krt.domain.trace
 import kotlin.math.roundToLong
 import krt.domain.scene.model.Fog
 import krt.domain.scene.model.Material
+import krt.domain.scene.model.Medium
+import krt.domain.scene.model.MediumInterface
 import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Sphere
@@ -10,25 +12,27 @@ import krt.domain.scene.model.Traceable
 import krt.domain.scene.model.Translucent
 import krt.domain.scene.model.Triangle
 import krt.domain.scene.model.VertexNormals
+import krt.platform.math.Point3
 
 /**
  * Scene packed for the GPU shader (ADR 0009): one RGBA_8888 texture [width] texels wide, one number per texel.
  * A number is 24 bits in the R, G, B channels, alpha is always 255: a coordinate in fixed point
  * (see [GpuScenePacking.encode]) or a whole number (an index, a count, a code) as is.
  *
- * Five sections follow each other:
+ * Six sections follow each other:
  * - [nodeCount] BVH nodes from texel 0, [GpuScenePacking.NODE_VALUES] each: box min x, y, z, max x, y, z,
  *   skip link, first primitive, primitive count (0 for an inner node); see [FlatBvh];
  * - [primitiveCount] primitives from [primitiveStart] in the order of the leaves, [GpuScenePacking.PRIMITIVE_VALUES]
- *   each: kind, then the centre, radius and velocity of a sphere, the first vertex and the two edges from it of
- *   a triangle or the centre, radius and density of a sphere of fog; last, for a triangle with vertex normals,
- *   1 + the number of its record in the normals section, 0 for a flat one;
+ *   each: kind, then the centre, radius and velocity of a sphere or the first vertex and the two edges from it of
+ *   a triangle; then, for a triangle with vertex normals, 1 + the number of its record in the normals section,
+ *   0 for a flat one; last 1 + the numbers of the media inside and outside the surface, 0 for none (ADR 0014);
  * - their materials from [materialStart], [GpuScenePacking.MATERIAL_VALUES] each: material code, then a colour,
  *   two parameters, a second colour and a third parameter, as [GpuMaterials.values] lays them out;
- * - [GpuLights.count] lights from [GpuLights.start]: the primitive slots of the emissive spheres and triangles,
- *   which next event estimation samples when [SceneLook.sampleLights] is on (ADR 0012);
- * - from [GpuLights.normalStart], the vertex normals of smooth triangles, [GpuScenePacking.NORMAL_VALUES] per record:
- *   the normals at the first, second and third vertex (ADR 0013).
+ * - [GpuSections.lightCount] lights from [GpuSections.lightStart]: the primitive slots of the emissive spheres and
+ *   triangles, which next event estimation samples when [SceneLook.sampleLights] is on (ADR 0012);
+ * - from [GpuSections.normalStart], the vertex normals of smooth triangles, [GpuScenePacking.NORMAL_VALUES] per
+ *   record: the normals at the first, second and third vertex (ADR 0013);
+ * - from [GpuSections.mediaStart], the media, [GpuScenePacking.MEDIUM_VALUES] each: density and albedo.
  */
 class GpuScene(
     val data: ByteArray,
@@ -37,15 +41,19 @@ class GpuScene(
     val primitiveStart: Int,
     val materialStart: Int,
     val look: SceneLook = SceneLook.CLASSIC,
-    val lights: GpuLights = GpuLights(materialStart, 0, normalStart = materialStart),
+    val sections: GpuSections = GpuSections(materialStart, 0, materialStart, 0, materialStart),
+    val fogs: List<GpuFog> = emptyList(),
 ) {
     val sky: Sky get() = look.sky
 
     /** The lights the shader samples: all of them, or none when light sampling is off. */
-    val sampledLights: Int get() = if (look.sampleLights) lights.count else 0
+    val sampledLights: Int get() = if (look.sampleLights) sections.lightCount else 0
 
     /** 1 when the scene has smooth triangles, whose vertex normals the shader reads, else 0. */
-    val smoothNormals: Float get() = if (lights.normalCount > 0) 1f else 0f
+    val smoothNormals: Float get() = if (sections.normalCount > 0) 1f else 0f
+
+    /** The number of the medium at [point], that of a bank of fog around it, or -1 in clear air (ADR 0014). */
+    fun mediumAt(point: Point3): Int = fogs.firstOrNull { (point - it.center).length() < it.radius }?.medium ?: -1
 
     /** 1 when the shader sends rays at random moments of the shutter and moves the balls, else 0. */
     val motionBlur: Float get() = if (look.motionBlur) 1f else 0f
@@ -57,16 +65,26 @@ class GpuScene(
 }
 
 /**
- * Where the light slots of a [GpuScene] lie and how many there are; and where the records of vertex normals after
- * them start and how many there are.
+ * Where the light slots of a [GpuScene] lie and how many there are; where the records of vertex normals after
+ * them start and how many there are; and where the media start.
  */
-data class GpuLights(val start: Int, val count: Int, val normalStart: Int, val normalCount: Int = 0)
+data class GpuSections(
+    val lightStart: Int,
+    val lightCount: Int,
+    val normalStart: Int,
+    val normalCount: Int,
+    val mediaStart: Int,
+)
+
+/** A bank of fog of a [GpuScene]: where it is and the number of its [medium], so a camera in it starts there. */
+data class GpuFog(val center: Point3, val radius: Double, val medium: Int)
 
 /** Packing of the scene model for the GPU shader: a pure transformation, mirrored by the shader's decoding. */
 object GpuScenePacking {
 
     const val NODE_VALUES = 9
-    const val PRIMITIVE_VALUES = 11
+    const val PRIMITIVE_VALUES = 13
+    const val MEDIUM_VALUES = 6
     const val NORMAL_VALUES = 9
     const val MATERIAL_VALUES = 12
     const val TEXTURE_WIDTH = 1024
@@ -76,7 +94,6 @@ object GpuScenePacking {
 
     const val SPHERE = 0
     const val TRIANGLE = 1
-    const val MEDIUM = 2
 
     const val LAMBERT = 0
     const val METAL = 1
@@ -84,7 +101,7 @@ object GpuScenePacking {
     const val EMISSIVE = 3
     const val PLASTIC = 4
     const val CHECKER = 5
-    const val ISOTROPIC = 6
+    const val INTERFACE = 6
     const val BUBBLE = 7
     const val IRIDESCENT = 8
     const val CONDUCTOR = 9
@@ -104,8 +121,8 @@ object GpuScenePacking {
     private const val BOX_VALUES = 6
 
     fun pack(objects: List<Traceable>, look: SceneLook = SceneLook.CLASSIC): GpuScene {
-        val primitives = objects.flatMap { (it as? Translucent)?.parts ?: listOf(it) }
-            .filter { it is Sphere || it is Triangle || it is Fog }.toTypedArray()
+        val primitives = objects.mapNotNull(::primitiveOf).toTypedArray()
+        val media = primitives.flatMap { listOfNotNull(mediaOf(it)?.inside, mediaOf(it)?.outside) }.distinct()
         val bvh = Bvh(primitives).flatten()
         val primitiveStart = bvh.nodeCount * NODE_VALUES
         val materialStart = primitiveStart + primitives.size * PRIMITIVE_VALUES
@@ -114,15 +131,22 @@ object GpuScenePacking {
         val normalStart = lightStart + lightSlots.size
         val smooth = bvh.order.map { (primitives[it] as? Triangle)?.normals }
         val records = smooth.runningFold(0) { count, normals -> if (normals == null) count else count + 1 }
-        val codes = IntArray(normalStart + records.last() * NORMAL_VALUES)
+        val mediaStart = normalStart + records.last() * NORMAL_VALUES
+        val codes = IntArray(mediaStart + media.size * MEDIUM_VALUES)
         for (node in 0 until bvh.nodeCount) nodeCodes(bvh, node).copyInto(codes, node * NODE_VALUES)
         bvh.order.forEachIndexed { slot, index ->
             val record = smooth[slot]?.let { records[slot] + 1 } ?: 0
-            primitiveCodes(primitives[index], record).copyInto(codes, primitiveStart + slot * PRIMITIVE_VALUES)
+            val numbers = mediaOf(primitives[index])?.let { listOf(it.inside, it.outside) }
+                ?.map { medium -> media.indexOf(medium) + 1 } ?: listOf(0, 0)
+            primitiveCodes(primitives[index], intArrayOf(record) + numbers)
+                .copyInto(codes, primitiveStart + slot * PRIMITIVE_VALUES)
             materialCodes(primitives[index]).copyInto(codes, materialStart + slot * MATERIAL_VALUES)
             smooth[slot]?.let { normalCodes(it).copyInto(codes, normalStart + records[slot] * NORMAL_VALUES) }
         }
         lightSlots.toIntArray().copyInto(codes, lightStart)
+        media.forEachIndexed { number, medium ->
+            mediumCodes(medium).copyInto(codes, mediaStart + number * MEDIUM_VALUES)
+        }
         val height = maxOf(1, (codes.size + TEXTURE_WIDTH - 1) / TEXTURE_WIDTH)
         return GpuScene(
             data = texture(codes, height),
@@ -131,7 +155,8 @@ object GpuScenePacking {
             primitiveStart = primitiveStart,
             materialStart = materialStart,
             look = look,
-            lights = GpuLights(lightStart, lightSlots.size, normalStart, records.last()),
+            sections = GpuSections(lightStart, lightSlots.size, normalStart, records.last(), mediaStart),
+            fogs = objects.filterIsInstance<Fog>().map { GpuFog(it.center, it.radius, media.indexOf(it.medium)) },
         )
     }
 
@@ -146,17 +171,20 @@ object GpuScenePacking {
         return box + intArrayOf(bvh.skip[node], bvh.first[node], bvh.count[node])
     }
 
-    private fun primitiveCodes(primitive: Traceable, normalRecord: Int): IntArray {
+    /** Kind, geometry, then [tail]: the normals record and the numbers of the media inside and outside. */
+    private fun primitiveCodes(primitive: Traceable, tail: IntArray): IntArray {
         val (kind, geometry) = when (primitive) {
             is Sphere -> SPHERE to sphereGeometry(primitive)
             is Triangle -> TRIANGLE to triangleGeometry(primitive)
-            is Fog -> MEDIUM to doubleArrayOf(
-                primitive.center.x, primitive.center.y, primitive.center.z, primitive.radius, primitive.density,
-            )
             else -> error("not a GPU primitive: $primitive")
         }
-        val values = IntArray(PRIMITIVE_VALUES - 2) { geometry.getOrNull(it)?.let(::encode) ?: 0 }
-        return intArrayOf(kind) + values + normalRecord
+        val values = IntArray(PRIMITIVE_VALUES - 1 - tail.size) { geometry.getOrNull(it)?.let(::encode) ?: 0 }
+        return intArrayOf(kind) + values + tail
+    }
+
+    private fun mediumCodes(medium: Medium): IntArray {
+        val values = listOf(medium.density, medium.albedo).flatMap { listOf(it.x, it.y, it.z) }
+        return IntArray(MEDIUM_VALUES) { encode(values[it]) }
     }
 
     private fun sphereGeometry(sphere: Sphere): DoubleArray = doubleArrayOf(
@@ -192,11 +220,24 @@ object GpuScenePacking {
 
 }
 
+/** The sphere or triangle the shader draws for [obj]: fog and translucent balls are spheres bounding media. */
+private fun primitiveOf(obj: Traceable): Traceable? = when (obj) {
+    is Sphere, is Triangle -> obj
+    is Fog -> obj.boundary
+    is Translucent -> obj.surface
+    else -> null
+}
+
 private fun materialOf(primitive: Traceable): Material = when (primitive) {
     is Sphere -> primitive.material
     is Triangle -> primitive.material
-    is Fog -> primitive.material
     else -> error("not a GPU primitive: $primitive")
+}
+
+private fun mediaOf(primitive: Traceable): MediumInterface? = when (primitive) {
+    is Sphere -> primitive.media
+    is Triangle -> primitive.media
+    else -> null
 }
 
 private fun normalCodes(normals: VertexNormals): IntArray {

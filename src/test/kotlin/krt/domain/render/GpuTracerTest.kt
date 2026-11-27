@@ -14,6 +14,8 @@ import krt.domain.scene.model.Fog
 import krt.domain.scene.model.GlowingPattern
 import krt.domain.scene.model.Iridescent
 import krt.domain.scene.model.Lambert
+import krt.domain.scene.model.Medium
+import krt.domain.scene.model.MediumInterface
 import krt.domain.scene.model.Meshes
 import krt.domain.scene.model.Metals
 import krt.domain.scene.model.Metal
@@ -147,6 +149,28 @@ class GpuTracerTest {
         ),
         SceneLook(Sky.DAYLIGHT, fov = 60.0, aperture = 0.0, sampleLights = true, motionBlur = true),
     )
+
+    /**
+     * A block of wax and a block of red resin bounding media of coloured density, in a bank of bluish fog that the
+     * camera stands in, lit by a sampled lamp.
+     */
+    private val media: World
+        get() {
+            val haze = Medium(Color(0.05, 0.08, 0.12), Color(0.8, 0.85, 0.95))
+            val wax = MediumInterface(Medium.ofMeanFreePath(Color(0.7, 0.35, 0.22), Color(0.95, 0.85, 0.7)), haze)
+            val resin = MediumInterface(Medium(Color(0.9, 6.0, 9.0), Color(0.95, 0.4, 0.3)), haze)
+            return World(
+                listOf(
+                    Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.6, 0.6, 0.6))),
+                    Fog(Point3(0.0, 1.0, 3.0), 9.0, haze),
+                    Sphere(Point3(0.0, 4.0, 1.0), 0.6, Emissive(Color(1.0, 0.9, 0.8), 10.0)),
+                ) + Meshes.box(Pose(Point3(-1.6, 0.8, 0.0)), Point3(0.8, 0.8, 0.8), Dielectric(1.4), wax) +
+                    Meshes.box(
+                        Pose(Point3(1.6, 0.8, 0.0)), Point3(0.7, 0.8, 0.7), Dielectric(1.5, roughness = 0.1), resin,
+                    ),
+                SceneLook(Sky(Color(0.1, 0.12, 0.16), Color(0.02, 0.03, 0.06)), 60.0, 0.0, sampleLights = true),
+            )
+        }
 
     private fun camera() = Camera(
         origin = Point3(0.0, 2.0, 7.0),
@@ -327,6 +351,20 @@ class GpuTracerTest {
         assertTrue(abs(inSteps - brightness(cpu)) < brightness(cpu) * CPU_BRIGHTNESS_SHARE, "CPU ${brightness(cpu)}")
         val sharpness = detail(stepped) / detail(whole)
         assertTrue(sharpness in SHARPNESS_RANGE, "the frame in steps has ${sharpness}x the detail of the whole one")
+    }
+
+    @Test
+    fun `media in closed meshes and coloured fog look the same on the GPU as on the CPU`() {
+        val camera = camera()
+        val gpu = gpuFrame(camera, media)
+        val cpu = cpuFrame(camera, media)
+
+        (0 until CHANNELS).forEach { channel ->
+            val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+            assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
+        }
+        val regions = (0 until QUADRANTS).map { q -> abs(brightness(gpu, q) - brightness(cpu, q)) }
+        assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
     }
 
     @Test
