@@ -5,6 +5,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.SwingUtilities
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -105,7 +106,7 @@ class RenderController(
      * Progressive GPU frame (ADR 0009). First a quick look: one sample per pixel at a resolution of at most
      * [GpuSampling.draftScale]'s budget, with few bounces, shown at once. The GPU draws a step inside a window
      * repaint, so while the camera moves every repaint, only quick looks keep the window fluid. When the camera has
-     * rested for [REFINE_DELAY_MS], steps of [GpuSampling.steps] samples at full resolution and depth follow,
+     * rested for [REFINE_DELAY], steps of [GpuSampling.steps] samples at full resolution and depth follow,
      * each blended into the frame of the steps before, the next as soon as the window has drawn the one before
      * (see [gpuFrameShown]), at most [repaintIntervalMs] later. A newer frame cancels them all.
      */
@@ -129,7 +130,7 @@ class RenderController(
             }
             val previewProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true)
             SwingUtilities.invokeLater { onGpuFrame(preview, previewProgress) }
-            delay(REFINE_DELAY_MS)
+            delay(REFINE_DELAY)
             var frame: Shader? = null
             var taken = 0
             for (samples in GpuSampling.steps(passes)) {
@@ -147,14 +148,14 @@ class RenderController(
                 val drawn = CompletableDeferred<Unit>()
                 stepShown = shader to drawn
                 SwingUtilities.invokeLater { onGpuFrame(shader, progress) }
-                withTimeoutOrNull(repaintIntervalMs) { drawn.await() }
+                withTimeoutOrNull(repaintIntervalMs.milliseconds) { drawn.await() }
             }
         }
     }
 
     /**
      * Progressive frame: first a quick look ([CpuDraft]), shown at once; then, once the camera has rested for
-     * [REFINE_DELAY_MS], [Camera.samplesPerPixel] passes of one sample per pixel each, so a noisy but complete
+     * [REFINE_DELAY], [Camera.samplesPerPixel] passes of one sample per pixel each, so a noisy but complete
      * frame appears after the first pass and sharpens with every next one. Every pixel shows the average
      * of the samples taken so far; after the last pass the frame has the full sample count.
      *
@@ -184,7 +185,7 @@ class RenderController(
             CpuDraft.trace(frame, camera, rayTracer, work.frameSeed, workers)
             val draftProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true)
             if (isActive) SwingUtilities.invokeLater { onUpdate(draftProgress) }
-            delay(REFINE_DELAY_MS)
+            delay(REFINE_DELAY)
             for (pass in 0 until passes) {
                 if (!isActive) break
                 val nextBatch = AtomicInteger(0)
@@ -323,7 +324,7 @@ class RenderController(
         private const val PREVIEW_DEPTH = 3
 
         /** How long the camera rests before a GPU frame is refined at full resolution. */
-        private const val REFINE_DELAY_MS = 120L
+        private val REFINE_DELAY = 120.milliseconds
 
         /** Sums per pixel: r, g and b. */
         private const val CHANNELS = 3
