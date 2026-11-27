@@ -11,6 +11,7 @@ import krt.app.render.ChangeRenderSettingsOp
 import krt.app.render.CaptureSettingsOp
 import krt.app.render.FlyCameraOp
 import krt.app.render.RedrawOp
+import krt.app.render.ReportGpuFrameOp
 import krt.app.render.RestoreSettingsOp
 import krt.app.render.SaveBenchmarkReportOp
 import krt.app.render.StartBenchmarkRunOp
@@ -57,6 +58,7 @@ class AppContext(
     val loadModel = LoadModelOp(world, renderController, rayTracer, camera, frameBuffer)
     val moveObject = MoveObjectOp(world, renderController, rayTracer, camera, frameBuffer)
     val setRenderMode = SetRenderModeOp(renderController, rayTracer, camera, frameBuffer)
+    val reportGpuFrame = ReportGpuFrameOp(renderController)
     val saveImage = SaveImageOp(renderController, rayTracer, camera, frameBuffer, pngFiles)
     val changeRayTracerSettings = ChangeRayTracerSettingsOp(renderController, rayTracer, camera, frameBuffer)
     val changeRenderSettings = ChangeRenderSettingsOp(renderController, rayTracer, camera, frameBuffer)

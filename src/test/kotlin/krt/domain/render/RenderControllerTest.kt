@@ -84,6 +84,29 @@ class RenderControllerTest {
     }
 
     @Test
+    fun `slow GPU quick looks shrink the next ones, other frames change nothing`() {
+        RenderController(0L, 8, Random(1)).use { controller ->
+            val quickLook = CountDownLatch(1)
+            var draft: org.jetbrains.skia.Shader? = null
+            controller.mode = RenderMode.GPU
+            val camera = Camera.default().apply { imageWidth = 400; imageHeight = 400; samplesPerPixel = 1 }
+            val rayTracer = RayTracer(World.default(Random(2)), 3)
+            controller.renderImage(Frame(400, 400), rayTracer, camera, onGpuFrame = { shader, p ->
+                if (p.completedPasses == 0) {
+                    draft = shader
+                    quickLook.countDown()
+                }
+            }) {}
+            assertTrue(quickLook.await(30, TimeUnit.SECONDS))
+            val before = controller.draftPixels
+            controller.gpuFrameShown(org.jetbrains.skia.Shader.makeEmpty(), 50.0)
+            assertEquals(before, controller.draftPixels)
+            controller.gpuFrameShown(requireNotNull(draft), 50.0)
+            assertTrue(controller.draftPixels < before)
+        }
+    }
+
+    @Test
     fun `in GPU mode the frame comes in steps on the UI thread and the pixel buffer is left alone`() {
         val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = 5 }
         val frame = Frame(16, 16)

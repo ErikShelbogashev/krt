@@ -85,6 +85,7 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
                             modeTitle = mode.title,
                             onRotate = { dx, dy -> app.rotateCamera(dx, dy) },
                             onKey = { app.moveCamera(cameraMoveFor(it)) },
+                            onGpuFrameDraw = { shader, ms -> app.reportGpuFrame(shader, ms) },
                             modifier = Modifier.weight(1f),
                         )
                         AppInspector(app, shown.objects, shown.camera)

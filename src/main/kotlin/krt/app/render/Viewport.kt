@@ -19,7 +19,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.filterNotNull
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -65,6 +69,7 @@ fun Viewport(
     modeTitle: String,
     onRotate: (Int, Int) -> Unit,
     onKey: (Key) -> Unit,
+    onGpuFrameDraw: (Shader, Double) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -116,6 +121,17 @@ fun Viewport(
         )
     }
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    val currentOnGpuFrameDraw by rememberUpdatedState(onGpuFrameDraw)
+    val currentGpuFrame by rememberUpdatedState(gpuFrame)
+    LaunchedEffect(Unit) {
+        // A new GPU frame is drawn in the window frame that follows; its length is what drawing it cost. Frames that
+        // come while one is measured are skipped, so a camera moved every frame still gets measured.
+        snapshotFlow { currentGpuFrame }.filterNotNull().collect { shader ->
+            val drawn = withFrameNanos { it }
+            val next = withFrameNanos { it }
+            currentOnGpuFrameDraw(shader, (next - drawn) / NS_PER_MS)
+        }
+    }
 }
 
 @Composable
@@ -135,6 +151,8 @@ private fun ScalingToggle(scaling: FrameScaling, onSelect: (FrameScaling) -> Uni
         }
     }
 }
+
+private const val NS_PER_MS = 1e6
 
 private fun FramePlacement.framePoint(offset: Offset) = IntOffset(frameX(offset.x), frameY(offset.y))
 
