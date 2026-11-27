@@ -13,9 +13,9 @@ WorldBegin
 LightSource "infinite" "rgb L" [0.095 0.07750000000000001 0.12000000000000001]
 
 AttributeBegin
-  #krt Name "Marble floor"
-  #krt Material "patterned" "string kind" "marble" "rgb first" [0.12 0.12 0.14] "rgb second" [0.55 0.5 0.45] "float scale" 0.35 "float turbulence" 1.5 "float frequency" 0.8 "integer octaves" 5 "float roughness" 0.05 "float bump" 0.02
-  Material "coateddiffuse" "rgb reflectance" [0.335 0.31 0.29500000000000004] "float roughness" 6.250000000000001E-6 "float eta" 1.5
+  #krt Name "Floor"
+  #krt Material "checker" "rgb even" [0.32 0.31 0.33] "rgb odd" [0.04 0.04 0.05] "float cellsize" 1.0 "float roughness" 0.06 "float ior" 1.5
+  Material "coateddiffuse" "rgb reflectance" [0.18 0.175 0.19] "float roughness" 1.296E-5 "float eta" 1.5
   Translate 0.0 -1000.0 0.0
   Shape "sphere" "float radius" 1000.0
 AttributeEnd
