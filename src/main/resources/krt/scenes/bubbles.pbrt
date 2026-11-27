@@ -1,0 +1,83 @@
+# A krt scene in pbrt-v4's format; #krt lines are krt's own, pbrt reads them as comments.
+#krt Look "bool sampleLights" true "bool motionBlur" true
+# pbrt's camera space is left-handed, krt's right-handed: the mirror keeps the picture the same.
+Scale -1 1 1
+LookAt 0.6 1.9 5.2  0.0 1.2 0.0  0 1 0
+Camera "perspective" "float fov" 40.0 "float lensradius" 0.015 "float focaldistance" 5.281098370604358 "float shutteropen" 0 "float shutterclose" 1
+Film "rgb" "integer xresolution" 800 "integer yresolution" 600
+Sampler "zsobol" "integer pixelsamples" 64
+Integrator "volpath" "integer maxdepth" 12
+
+WorldBegin
+#krt Sky "rgb horizon" [0.05 0.05 0.07] "rgb zenith" [0.01 0.012 0.02]
+LightSource "infinite" "rgb L" [0.030000000000000002 0.031 0.045000000000000005]
+
+AttributeBegin
+  #krt Name "Table"
+  #krt Material "patterned" "string kind" "wood" "rgb first" [0.22 0.12 0.06] "rgb second" [0.08 0.04 0.02] "float scale" 1.2 "float turbulence" 0.35 "float frequency" 1.5 "integer octaves" 5 "float roughness" 0.1 "float bump" 0.008
+  Material "coateddiffuse" "rgb reflectance" [0.15 0.08 0.04] "float roughness" 1.0000000000000002E-4 "float eta" 1.5
+  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [-6.0 0.0 5.0 6.0 0.0 5.0 6.0 0.0 -5.0 -6.0 0.0 5.0 6.0 0.0 -5.0 -6.0 0.0 -5.0]
+AttributeEnd
+AttributeBegin
+  #krt Name "Cushion"
+  #krt Material "velvet" "rgb base" [0.05 0.14 0.15] "rgb sheen" [0.22 0.4 0.38] "float roughness" 0.7
+  Material "diffuse" "rgb reflectance" [0.05 0.14 0.15]
+  Shape "plymesh" "string filename" "bubbles-mesh2.ply"
+AttributeEnd
+AttributeBegin
+  #krt Name "Bubble 1"
+  #krt Material "soapbubble" "float thickness" 380.0 "float filmior" 1.33
+  Material "thindielectric" "float eta" 1.33
+  Translate -0.9 1.25 0.2
+  Shape "sphere" "float radius" 0.42
+AttributeEnd
+AttributeBegin
+  #krt Name "Bubble 2"
+  #krt Material "soapbubble" "float thickness" 470.0 "float filmior" 1.33
+  Material "thindielectric" "float eta" 1.33
+  Translate 0.15 1.65 -0.35
+  Shape "sphere" "float radius" 0.5
+AttributeEnd
+AttributeBegin
+  #krt Name "Bubble 3"
+  #krt Material "soapbubble" "float thickness" 560.0 "float filmior" 1.33
+  Material "thindielectric" "float eta" 1.33
+  Translate 1.05 1.15 0.35
+  Shape "sphere" "float radius" 0.33
+AttributeEnd
+AttributeBegin
+  #krt Name "Bubble 4"
+  #krt Material "soapbubble" "float thickness" 300.0 "float filmior" 1.33
+  Material "thindielectric" "float eta" 1.33
+  Translate -0.25 0.95 0.75
+  Shape "sphere" "float radius" 0.24
+AttributeEnd
+AttributeBegin
+  #krt Name "Bubble 5"
+  #krt Material "soapbubble" "float thickness" 520.0 "float filmior" 1.33
+  Material "thindielectric" "float eta" 1.33
+  Translate 0.75 2.3 -0.9
+  Shape "sphere" "float radius" 0.3
+AttributeEnd
+AttributeBegin
+  #krt Name "Rising bubble"
+  #krt Material "soapbubble" "float thickness" 420.0 "float filmior" 1.33
+  Material "thindielectric" "float eta" 1.33
+  Translate -0.55 2.05 -0.6
+  ActiveTransform EndTime
+  Translate 0.0 0.35 0.0
+  ActiveTransform All
+  Shape "sphere" "float radius" 0.28
+AttributeEnd
+AttributeBegin
+  #krt Name "Window"
+  AreaLightSource "diffuse" "rgb L" [0.8971702185714404 1.0132898864633428 1.1711452179103743] "float scale" 7.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [-3.6 1.5 4.800000000000001 -3.6 1.5 1.6 -3.6 3.7 1.6 -3.6 1.5 4.800000000000001 -3.6 3.7 1.6 -3.6 3.7 4.800000000000001]
+AttributeEnd
+AttributeBegin
+  #krt Name "Ring light"
+  AreaLightSource "diffuse" "rgb L" [1.0491625953594217 1.0092478479048583 0.7636284128120832] "float scale" 9.0
+  Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
+  Shape "plymesh" "string filename" "bubbles-mesh1290.ply"
+AttributeEnd

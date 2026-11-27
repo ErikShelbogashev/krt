@@ -33,5 +33,6 @@ enum class DemoScene(val title: String, val path: String) {
     MATERIALS("Materials", "materials.pbrt"),
     FRACTALS("Fractals", "fractals.pbrt"),
     PRISM("Prism", "prism.pbrt"),
+    BUBBLES("Bubbles", "bubbles.pbrt"),
     CLASSIC("Classic spheres", "classic.pbrt"),
 }

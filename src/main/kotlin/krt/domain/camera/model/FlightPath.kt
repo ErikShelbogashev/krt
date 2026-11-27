@@ -95,10 +95,12 @@ object Flights {
     )
 
     private val PRISM = swing(Point3(0.6, 1.7, 4.2), Point3(0.2, 0.9, -1.0))
+    private val BUBBLES = swing(Point3(0.6, 1.9, 5.2), Point3(0.0, 1.2, 0.0))
 
     fun of(scene: DemoScene): FlightPath = when (scene) {
         DemoScene.SHOWCASE, DemoScene.MATERIALS, DemoScene.FRACTALS -> SHOWCASE
         DemoScene.PRISM -> PRISM
+        DemoScene.BUBBLES -> BUBBLES
         DemoScene.CLASSIC -> CLASSIC
     }
 }
