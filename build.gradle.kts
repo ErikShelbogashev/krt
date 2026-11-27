@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.detekt)
 }
 
 group = "ru.erxxshll6y.krt"
@@ -29,10 +30,18 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(libs.konsist)
+
+    detektPlugins(libs.compose.rules.detekt)
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom(file("config/detekt/detekt.yml"))
+    baseline = file("config/detekt/baseline.xml")
 }
 
 compose.desktop {
