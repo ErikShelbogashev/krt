@@ -3,12 +3,12 @@ package raytracer.model
 import java.util.*
 
 class Triangle(
-    private var v0: Point3,
-    private var v1: Point3,
-    private var v2: Point3,
+    private val v0: Point3,
+    private val v1: Point3,
+    private val v2: Point3,
     private val material: Material,
+    override val id: String = "Triangle[${UUID.randomUUID()}]",
 ) : Traceable {
-    private val uuid by lazy { UUID.randomUUID() }
 
     override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
         val edge1 = v1 - v0
@@ -45,15 +45,7 @@ class Triangle(
         return Hit.create(hitPoint, t, ray, outwardNormal, material)
     }
 
-    override fun translate(offset: Point3) {
-        v0 += offset
-        v1 += offset
-        v2 += offset
-    }
-
-    override fun id(): String {
-        return "Triangle[$uuid]"
-    }
+    override fun translate(offset: Point3): Triangle = Triangle(v0 + offset, v1 + offset, v2 + offset, material, id)
 
     override fun linearize(coefficient: Double): List<LineSegment> {
         return listOf(
