@@ -31,7 +31,7 @@ object PathTracing {
             when {
                 scattered == null -> emitted
                 scene.sampleLights && scattered.lobe != Lobe.SPECULAR ->
-                    emitted + direct(scene, hitRecord, scattered, random) +
+                    emitted + direct(scene, ray, hitRecord, scattered, random) +
                         scattered.attenuation * color(scene, scattered.ray, depth - 1, random, false)
                 else -> emitted + scattered.attenuation * color(scene, scattered.ray, depth - 1, random, true)
             }
@@ -41,9 +41,9 @@ object PathTracing {
     }
 
     /** Light reaching [hit] straight from one sampled light, as the scattering surface or medium returns it. */
-    private fun direct(scene: TraceScene, hit: Hit, scattered: Scattered, random: Random): Color {
+    private fun direct(scene: TraceScene, ray: Ray, hit: Hit, scattered: Scattered, random: Random): Color {
         val light = scene.lights.sample(hit.p, random) ?: return Point3.ZERO
-        val shadow = scene.hit(Ray(hit.p, light.direction), T_MIN, light.distance * (1 - SHADOW_MARGIN))
+        val shadow = scene.hit(ray.next(hit.p, light.direction), T_MIN, light.distance * (1 - SHADOW_MARGIN))
         val response = when {
             shadow != null -> 0.0
             scattered.lobe == Lobe.VOLUME -> 1 / (4 * PI)

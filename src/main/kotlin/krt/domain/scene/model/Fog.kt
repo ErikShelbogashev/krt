@@ -57,7 +57,7 @@ class Fog(
 /** Particles of a medium: they scatter light equally in every direction, tinted by [albedo]. */
 class Isotropic(val albedo: Color) : Material {
     override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered =
-        Scattered(Ray(hit.p, Point3.randomInUnitSphere(random).unit()), albedo, Lobe.VOLUME)
+        Scattered(ray.next(hit.p, Point3.randomInUnitSphere(random).unit()), albedo, Lobe.VOLUME)
 }
 
 /** A pseudo-random number in [0, 1) from the bits of a ray: the same ray, the same number. */

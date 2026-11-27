@@ -50,9 +50,9 @@ internal object ClearCoat {
     fun scatter(ray: Ray, hit: Hit, base: Color, roughness: Double, ior: Double, random: Random): Scattered? {
         val unit = ray.direction.unit()
         val cosine = min(-unit.dot(hit.normal), 1.0)
-        if (random.nextDouble() >= reflectance(cosine, ior)) return diffuse(hit, base, random)
+        if (random.nextDouble() >= reflectance(cosine, ior)) return diffuse(ray, hit, base, random)
         val reflected = unit.reflect(hit.normal) + Point3.randomInUnitSphere(random) * roughness
-        return if (reflected.dot(hit.normal) > 0) Scattered(Ray(hit.p, reflected), WHITE) else null
+        return if (reflected.dot(hit.normal) > 0) Scattered(ray.next(hit.p, reflected), WHITE) else null
     }
 
     /** Schlick's approximation of the Fresnel reflectance at the coat. */
@@ -61,8 +61,8 @@ internal object ClearCoat {
         return r0 + (1 - r0) * (1 - cosine).pow(FRESNEL_POWER)
     }
 
-    private fun diffuse(hit: Hit, base: Color, random: Random): Scattered {
+    private fun diffuse(ray: Ray, hit: Hit, base: Color, random: Random): Scattered {
         val direction = (hit.normal + Point3.randomInUnitSphere(random)).takeIf { !it.isNearZero() } ?: hit.normal
-        return Scattered(Ray(hit.p, direction), base, Lobe.DIFFUSE)
+        return Scattered(ray.next(hit.p, direction), base, Lobe.DIFFUSE)
     }
 }
