@@ -102,6 +102,22 @@ class RenderControllerTest {
     }
 
     @Test
+    fun `GPU steps follow one another as soon as the window has drawn them`() {
+        val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = 5 }
+        val done = CountDownLatch(1)
+        // A repaint interval of a minute: without the window's word, the second step would come a minute later.
+        RenderController(60_000L, 8, Random(1)).use { controller ->
+            controller.mode = RenderMode.GPU
+            val rayTracer = RayTracer(World.default(Random(2)), 3)
+            controller.renderImage(Frame(16, 16), rayTracer, camera, onGpuFrame = { shader, progress ->
+                controller.gpuFrameShown(shader, 5.0)
+                if (progress.isDone) done.countDown()
+            }) {}
+            assertTrue(done.await(10, TimeUnit.SECONDS), "steps waited for the repaint interval")
+        }
+    }
+
+    @Test
     fun `slow GPU quick looks shrink the next ones, other frames change nothing`() {
         RenderController(0L, 8, Random(1)).use { controller ->
             val quickLook = CountDownLatch(1)

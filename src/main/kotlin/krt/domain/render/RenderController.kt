@@ -5,6 +5,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.SwingUtilities
 import kotlin.random.Random
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -12,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import krt.domain.camera.Camera
 import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
@@ -54,9 +56,15 @@ class RenderController(
      * the next ones smaller, a quick one lets them grow again.
      */
     fun gpuFrameShown(shader: Shader, frameMs: Double) {
+        stepShown?.takeIf { it.first === shader }?.second?.complete(Unit)
         if (synchronized(recentDrafts) { recentDrafts.none { it === shader } }) return
         draftBudget = draftBudget.after(frameMs)
     }
+
+    /** The GPU step published last and the signal that the window has drawn it. */
+    @Volatile
+    private var stepShown: Pair<Shader, CompletableDeferred<Unit>>? = null
+
 
     /** Which renderer draws the next frame; in GPU mode (ADR 0009) a Skia shader draws it instead of the workers. */
     @Volatile
@@ -98,7 +106,8 @@ class RenderController(
      * [GpuSampling.draftScale]'s budget, with few bounces, shown at once. The GPU draws a step inside a window
      * repaint, so while the camera moves every repaint, only quick looks keep the window fluid. When the camera has
      * rested for [REFINE_DELAY_MS], steps of [GpuSampling.steps] samples at full resolution and depth follow,
-     * each blended into the frame of the steps before, one per [repaintIntervalMs]. A newer frame cancels them all.
+     * each blended into the frame of the steps before, the next as soon as the window has drawn the one before
+     * (see [gpuFrameShown]), at most [repaintIntervalMs] later. A newer frame cancels them all.
      */
     private fun renderGpuImage(rayTracer: RayTracer, camera: Camera, onGpuFrame: (Shader, RenderProgress) -> Unit) {
         val scene = rayTracer.world.gpuScene
@@ -133,8 +142,12 @@ class RenderController(
                 frame = shader
                 taken += samples
                 val progress = RenderProgress(passes, taken, 0.0, clock() - startedAt)
+                // Registered before publishing, so a window that draws the step at once is not missed; a window that
+                // never says so, like a test, gets the next step after the repaint interval.
+                val drawn = CompletableDeferred<Unit>()
+                stepShown = shader to drawn
                 SwingUtilities.invokeLater { onGpuFrame(shader, progress) }
-                delay(repaintIntervalMs)
+                withTimeoutOrNull(repaintIntervalMs) { drawn.await() }
             }
         }
     }
