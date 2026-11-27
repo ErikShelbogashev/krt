@@ -8,14 +8,25 @@ import krt.platform.math.Aabb
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
+/**
+ * A ball of [radius] around [center]. A ball with a [velocity] moves by it over the shutter's open time: at moment
+ * t in [0, 1) of a ray it is at [center] + [velocity] × t, so it comes out blurred along its path (ADR 0013).
+ */
 class Sphere(
     val center: Point3,
     val radius: Double,
     val material: Material,
     override val id: String = "Sphere[${UUID.randomUUID()}]",
+    val velocity: Point3 = Point3.ZERO,
 ) : Traceable {
 
+    private val moving = velocity != Point3.ZERO
+
+    /** The centre at moment [time] of the shutter. */
+    fun centerAt(time: Double): Point3 = if (moving) center + velocity * time else center
+
     override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
+        val center = centerAt(ray.time)
         val oc = ray.origin - center
         val a = ray.direction.dot(ray.direction)
         val halfB = oc.dot(ray.direction)
@@ -41,10 +52,13 @@ class Sphere(
 
     override fun bounds(): Aabb {
         val extent = Point3(radius, radius, radius)
-        return Aabb(center - extent, center + extent)
+        val end = center + velocity
+        val low = Point3(minOf(center.x, end.x), minOf(center.y, end.y), minOf(center.z, end.z))
+        val high = Point3(maxOf(center.x, end.x), maxOf(center.y, end.y), maxOf(center.z, end.z))
+        return Aabb(low - extent, high + extent)
     }
 
-    override fun translate(offset: Point3): Sphere = Sphere(center + offset, radius, material, id)
+    override fun translate(offset: Point3): Sphere = Sphere(center + offset, radius, material, id, velocity)
 
     override fun linearize(coefficient: Double): List<LineSegment> {
         val segments = mutableListOf<LineSegment>()

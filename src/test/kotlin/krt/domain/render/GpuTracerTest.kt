@@ -137,6 +137,17 @@ class GpuTracerTest {
         SceneLook(Sky(Color(0.02, 0.02, 0.03), Color(0.0, 0.0, 0.01)), fov = 60.0, aperture = 0.0, sampleLights = true),
     )
 
+    /** Balls flying past over the shutter, one of them a moving lamp. */
+    private val moving = World(
+        listOf(
+            Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.6, 0.6, 0.6))),
+            Sphere(Point3(-3.0, 1.0, 0.0), 0.8, Lambert(RED), velocity = Point3(2.5, 0.0, 0.0)),
+            Sphere(Point3(1.0, 0.6, 1.5), 0.5, Emissive(Color(1.0, 0.8, 0.4), 6.0), velocity = Point3(0.0, 1.5, 0.0)),
+            Sphere(Point3(2.5, 1.0, -1.0), 1.0, Metal(Color(0.7, 0.6, 0.5), 0.1)),
+        ),
+        SceneLook(Sky.DAYLIGHT, fov = 60.0, aperture = 0.0, sampleLights = true, motionBlur = true),
+    )
+
     private fun camera() = Camera(
         origin = Point3(0.0, 2.0, 7.0),
         target = Point3.ZERO,
@@ -263,6 +274,20 @@ class GpuTracerTest {
             val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
             assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
         }
+    }
+
+    @Test
+    fun `motion blur looks the same on the GPU as on the CPU`() {
+        val camera = camera()
+        val gpu = gpuFrame(camera, moving)
+        val cpu = cpuFrame(camera, moving)
+
+        (0 until CHANNELS).forEach { channel ->
+            val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+            assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
+        }
+        val regions = (0 until QUADRANTS).map { q -> abs(brightness(gpu, q) - brightness(cpu, q)) }
+        assertTrue(regions.all { it < REGION_TOLERANCE }, "per quadrant $regions")
     }
 
     @Test

@@ -5,6 +5,7 @@ import kotlin.random.Random
 import krt.domain.scene.model.Hit
 import krt.domain.scene.model.Lobe
 import krt.domain.scene.model.Scattered
+import krt.domain.scene.model.SceneLook
 import krt.platform.math.Color
 import krt.platform.math.Point3
 import krt.platform.math.Ray
@@ -19,7 +20,18 @@ import krt.platform.math.Ray
  */
 object PathTracing {
 
-    fun color(scene: TraceScene, ray: Ray, depth: Int, random: Random): Color = color(scene, ray, depth, random, true)
+    /**
+     * With [SceneLook.motionBlur] the ray from the camera is sent at a random moment of the shutter, and the rays
+     * that go on from it keep that moment (ADR 0013).
+     */
+    fun color(scene: TraceScene, ray: Ray, depth: Int, random: Random): Color {
+        val timed = if (scene.look.motionBlur) {
+            Ray(ray.origin, ray.direction, random.nextDouble(), ray.wavelength)
+        } else {
+            ray
+        }
+        return color(scene, timed, depth, random, true)
+    }
 
     private fun color(scene: TraceScene, ray: Ray, depth: Int, random: Random, countEmission: Boolean): Color {
         if (depth <= 0) return Point3.ZERO
@@ -42,7 +54,7 @@ object PathTracing {
 
     /** Light reaching [hit] straight from one sampled light, as the scattering surface or medium returns it. */
     private fun direct(scene: TraceScene, ray: Ray, hit: Hit, scattered: Scattered, random: Random): Color {
-        val light = scene.lights.sample(hit.p, random) ?: return Point3.ZERO
+        val light = scene.lights.sample(hit.p, ray.time, random) ?: return Point3.ZERO
         val shadow = scene.hit(ray.next(hit.p, light.direction), T_MIN, light.distance * (1 - SHADOW_MARGIN))
         val response = when {
             shadow != null -> 0.0
