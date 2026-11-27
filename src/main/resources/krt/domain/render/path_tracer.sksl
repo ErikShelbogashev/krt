@@ -742,7 +742,9 @@ float3 trace(float3 origin, float3 direction) {
         float param = number(base + 4.0);
 
         if (kind == EMISSIVE || kind == GLOWING) {
-            return countEmission ? radiance + throughput * emission(base, kind, p) : radiance;
+            // A glowing fractal is no sampled light (Emitters): its glow counts on every bounce.
+            bool unsampled = code(primitiveStart + slot * PRIMITIVE_VALUES) == FRACTAL;
+            return countEmission || unsampled ? radiance + throughput * emission(base, kind, p) : radiance;
         }
 
         float3 scattered;

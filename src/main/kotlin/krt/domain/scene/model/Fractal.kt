@@ -76,7 +76,7 @@ class Fractal(
             if (!found) t += d / speed
             step++
         }
-        return if (found) Hit.create(ray.at(t), t, ray, normalAt(ray.at(t)), material) else null
+        return if (found) Hit.create(ray.at(t), t, ray, normalAt(ray.at(t)), material, lightSampled = false) else null
     }
 
     /** The normal at [p]: the gradient of the distance, by four taps on a tetrahedron. */

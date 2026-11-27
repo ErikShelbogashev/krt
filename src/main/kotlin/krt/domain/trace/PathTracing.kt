@@ -76,7 +76,8 @@ object PathTracing {
     private fun surface(scene: TraceScene, ray: Ray, hit: Hit?, depth: Int, random: Random, state: State): Color {
         if (hit == null) return scene.sky.color(ray.direction)
         val scattered = hit.material.scatter(ray, hit, random)
-        val emitted = if (state.countEmission) hit.material.emitted(0.0, 0.0, hit.p) else Point3.ZERO
+        val counted = state.countEmission || !hit.lightSampled
+        val emitted = if (counted) hit.material.emitted(0.0, 0.0, hit.p) else Point3.ZERO
         return if (scattered == null) emitted else emitted + bounce(scene, ray, hit, scattered, depth, random, state)
     }
 
