@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.filekit.dialogs.compose)
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.konsist)
 }
 
 tasks.test {
