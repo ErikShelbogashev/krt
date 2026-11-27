@@ -9,18 +9,17 @@ import krt.platform.math.Point3
 class ObjParser(filePath: String, material: Material) {
     private val vertices = mutableListOf<Point3>()
     private val normals = mutableListOf<Point3>()
-    private val quads = mutableListOf<List<Int>>()
+    private val faces = mutableListOf<List<Int>>()
     val triangles: List<Triangle>
 
     init {
         parseFile(filePath)
         val normalized = normalizeVertices(vertices)
-        triangles = quads.flatMap { quad ->
-            // Two triangles from a quad
-            listOf(
-                Triangle(normalized[quad[0]], normalized[quad[1]], normalized[quad[2]], material),
-                Triangle(normalized[quad[0]], normalized[quad[2]], normalized[quad[3]], material),
-            )
+        triangles = faces.flatMap { face ->
+            // Fan triangulation: a triangle stays as is, a quad gives two triangles, and so on.
+            (1 until face.size - 1).map { i ->
+                Triangle(normalized[face[0]], normalized[face[i]], normalized[face[i + 1]], material)
+            }
         }
     }
 
@@ -28,21 +27,18 @@ class ObjParser(filePath: String, material: Material) {
         File(filePath).forEachLine { line ->
             when {
                 line.startsWith("v ") -> {
-                    val parts = line.substring(2).split(" ").map { it.trim() }
+                    val parts = line.fields()
                     vertices.add(Point3(parts[1].toDouble(), parts[2].toDouble(), parts[3].toDouble()))
                 }
 
                 line.startsWith("vn ") -> {
-                    val parts = line.substring(2).split(" ").map { it.trim() }
+                    val parts = line.fields()
                     normals.add(Point3(parts[1].toDouble(), parts[2].toDouble(), parts[3].toDouble()))
                 }
 
                 line.startsWith("f ") -> {
-                    val parts = line.substring(2).split(" ").map { it.trim() }
-                    if (parts.size == 5) { // Обработка четырехугольников
-                        val idxGroups = parts.dropLast(1).map { it.split('/').map { it.toInt() - 1 } }
-                        quads.add(idxGroups.map { it[0] })
-                    }
+                    val vertexIndices = line.fields().drop(1).map { it.substringBefore('/').toInt() - 1 }
+                    if (vertexIndices.size >= MIN_FACE_VERTICES) faces.add(vertexIndices)
                 }
             }
         }
@@ -55,5 +51,14 @@ class ObjParser(filePath: String, material: Material) {
         }
         if (maxCoordinate == 0.0) return vertices // To avoid division by zero if all vertices are at the origin.
         return vertices.map { it / maxCoordinate }
+    }
+
+    private companion object {
+        const val MIN_FACE_VERTICES = 3
+
+        /** Splits an OBJ line into fields separated by any run of whitespace. */
+        fun String.fields(): List<String> = trim().split(WHITESPACE)
+
+        val WHITESPACE = Regex("\\s+")
     }
 }
