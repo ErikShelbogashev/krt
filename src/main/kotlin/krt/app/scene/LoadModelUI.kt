@@ -2,22 +2,17 @@ package krt.app.scene
 
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import androidx.compose.runtime.Composable
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import java.io.File
 
 @Composable
 fun LoadObject(onFilePicked: (File) -> Unit) {
-    var showFilePicker by remember { mutableStateOf(false) }
-    Button(onClick = { showFilePicker = true }) {
-        Text("Load File")
+    val launcher = rememberFilePickerLauncher(type = FileKitType.File(extensions = listOf("obj"))) { platformFile ->
+        platformFile?.let { onFilePicked(it.file) }
     }
-
-    val fileType = listOf("obj")
-    FilePicker(show = showFilePicker, fileExtensions = fileType) { platformFile ->
-        showFilePicker = false
-        platformFile?.let {
-            onFilePicked(File(platformFile.path))
-        }
+    Button(onClick = { launcher.launch() }) {
+        Text("Load File")
     }
 }
