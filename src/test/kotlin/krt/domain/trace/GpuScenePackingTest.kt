@@ -19,6 +19,7 @@ import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Triangle
+import krt.domain.scene.model.VertexNormals
 import krt.platform.math.Color
 import krt.platform.math.Point3
 import krt.platform.math.Ray
@@ -72,6 +73,17 @@ class GpuScenePackingTest {
             listOf(5.0, 0.9, 0.9, 0.9, 0.1, 1.5, 0.1, 0.1, 0.1, 0.5),
             GpuMaterials.values(checker).take(10),
         )
+    }
+
+    @Test
+    fun `a scene tells the shader whether it has smooth triangles`() {
+        val flat = Triangle(Point3.ZERO, Point3(1.0, 0.0, 0.0), Point3(0.0, 1.0, 0.0), Lambert(Color.ONE))
+        assertEquals(0f, GpuScenePacking.pack(listOf(flat)).smoothNormals)
+        val normals = VertexNormals(Point3(0.0, 0.0, 1.0), Point3(0.0, 0.0, 1.0), Point3(0.0, 0.6, 0.8))
+        val smooth = Triangle(flat.v0, flat.v1, flat.v2, flat.material, normals = normals)
+        val scene = GpuScenePacking.pack(listOf(flat, smooth))
+        assertEquals(1f, scene.smoothNormals)
+        assertEquals(1, scene.lights.normalCount)
     }
 
     @Test
