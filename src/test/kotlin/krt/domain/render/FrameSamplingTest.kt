@@ -98,7 +98,23 @@ class FrameSamplingTest {
     fun `bands of rows cover the frame once, top to bottom`() {
         val bands = (0 until 7).map { GpuSampling.bandRows(100, it, 7) }
         assertEquals((0 until 100).toList(), bands.flatten())
-        assertEquals(listOf(2, 2, 5), (0 until 3).map { GpuSampling.samplesDone(2, 3, it, 3) })
+        assertEquals(listOf(2, 2, 5), listOf(0..32, 33..65, 66..99).map { GpuSampling.samplesDone(2, 3, it, 100) })
+    }
+
+    @Test
+    fun `bands taken one after another cover the frame once, whatever height each is given`() {
+        val rows = mutableListOf<Int>()
+        var row = 0
+        var bands = 128
+        while (row < 100) {
+            val band = GpuSampling.nextRows(row, 100, bands)
+            rows += band
+            row = band.last + 1
+            bands = maxOf(1, bands / 2)
+        }
+        assertEquals((0 until 100).toList(), rows)
+        assertEquals(0..33, GpuSampling.nextRows(0, 100, 3))
+        assertEquals(99..99, GpuSampling.nextRows(99, 100, 1))
     }
 
     @Test

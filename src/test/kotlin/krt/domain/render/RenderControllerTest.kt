@@ -3,6 +3,7 @@ package krt.domain.render
 import java.util.Collections
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import javax.swing.SwingUtilities
 import kotlin.random.Random
 import kotlin.test.Test
@@ -111,16 +112,20 @@ class RenderControllerTest {
     fun `GPU steps follow one another as soon as the window has drawn them`() {
         val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = 5 }
         val done = CountDownLatch(1)
+        val steps = AtomicInteger()
         // A repaint interval of a minute: without the window's word, the second step would come a minute later.
         RenderController(60_000L, 8, Random(1)).use { controller ->
             controller.mode = RenderMode.GPU
             val rayTracer = RayTracer(World.default(Random(2)), 3)
             controller.renderImage(Frame(16, 16), rayTracer, camera, onGpuFrame = { shader, progress ->
+                steps.incrementAndGet()
                 controller.gpuFrameShown(shader, 5.0)
                 if (progress.isDone) done.countDown()
             }) {}
             assertTrue(done.await(10, TimeUnit.SECONDS), "steps waited for the repaint interval")
         }
+        // Quick steps grow out of the cautious start within the first pass: far fewer than 16 bands a pass.
+        assertTrue(steps.get() < 16, "${steps.get()} steps")
     }
 
     @Test

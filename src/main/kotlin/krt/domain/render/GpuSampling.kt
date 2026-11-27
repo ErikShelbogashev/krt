@@ -73,12 +73,16 @@ object GpuSampling {
     /** The step budget for a frame of a scene: [CAUTIOUS][StepBudget.CAUTIOUS] for a scene not drawn before. */
     fun stepBudgetFor(newScene: Boolean, budget: StepBudget): StepBudget = if (newScene) StepBudget.CAUTIOUS else budget
 
-    /** Samples per pixel the whole frame has after band [band] of [bands] of a step of [samples] after [taken]. */
-    fun samplesDone(taken: Int, samples: Int, band: Int, bands: Int): Int =
-        if (band == bands - 1) taken + samples else taken
+    /** Samples per pixel the whole frame [height] rows high has after a band of a step of [samples] after [taken]. */
+    fun samplesDone(taken: Int, samples: Int, band: IntRange, height: Int): Int =
+        if (band.last >= height - 1) taken + samples else taken
 
     /** Bands a pass of a frame [height] rows high takes under [budget]: no more than it has rows. */
     fun bandsOf(budget: StepBudget, height: Int): Int = budget.bands.coerceIn(1, maxOf(1, height))
+
+    /** The next band of a frame [height] rows high, from row [from], one of [bands] in height. */
+    fun nextRows(from: Int, height: Int, bands: Int): IntRange =
+        from until minOf(height, from + (height + bands - 1) / bands)
 
     /** Rows of band [band] of [bands] of a frame [height] rows high, from the top of the window. */
     fun bandRows(height: Int, band: Int, bands: Int): IntRange = height * band / bands until height * (band + 1) / bands
