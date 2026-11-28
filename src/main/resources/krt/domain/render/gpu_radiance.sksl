@@ -1,0 +1,16 @@
+// The window picture is eight-bit premultiplied RGBA. Store sqrt(radiance) at a shared power-of-two scale,
+// leaving at least 239 of the 255 codes per channel even at the maximum finite half-float value.
+half4 packRadiance(float3 color) {
+    float peak = max(color.r, max(color.g, color.b));
+    if (peak <= 1.0) { return half4(half3(color), 1.0); }
+    float exponent = ceil(log2(peak));
+    float alpha = 1.0 - exponent / 255.0;
+    return half4(half3(color * (alpha * exp2(-exponent))), half(alpha));
+}
+
+float3 unpackRadiance(half4 encoded) {
+    float alpha = float(encoded.a);
+    if (alpha >= 1.0 || alpha <= 0.0) { return float3(encoded.rgb); }
+    float exponent = floor((1.0 - alpha) * 255.0 + 0.5);
+    return float3(encoded.rgb) * (exp2(exponent) / alpha);
+}

@@ -27,6 +27,9 @@ class FlightRecordingTest {
     fun `a done watch waits until the frame is done, stopped or timed out`() {
         val watch = DoneWatch(startNanos = 0, timeoutMs = 100.0)
         assertTrue(watch.waiting(50_000_000, moving, stopped = false))
+        val failed = moving.copy(failure = "GPU readback failed")
+        assertEquals(false, watch.waiting(50_000_000, failed, stopped = false))
+        assertNull(watch.result(50_000_000, failed, stopped = false))
         assertEquals(false, watch.waiting(50_000_000, done, stopped = false))
         assertEquals(false, watch.waiting(50_000_000, moving, stopped = true))
         assertEquals(false, watch.waiting(150_000_000, moving, stopped = false))

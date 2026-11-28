@@ -38,7 +38,8 @@ class GpuShaderSourceTest {
     fun `every shader part in the resources is joined, and the whole compiles`() {
         val onDisk = File("src/main/resources").walk().filter { it.extension == "sksl" }
             .map { "/" + it.relativeTo(File("src/main/resources")).invariantSeparatorsPath }.toSet()
-        assertEquals(onDisk, GpuShaderSource.PARTS.toSet())
+        assertEquals(onDisk, (GpuShaderSource.PARTS + GpuShaderSource.DISPLAY_PARTS).toSet())
         RuntimeEffect.makeForShader(GpuShaderSource.assemble(::read)).close()
+        RuntimeEffect.makeForShader(GpuShaderSource.windowDisplay(::read)).close()
     }
 }

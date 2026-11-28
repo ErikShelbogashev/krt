@@ -8,6 +8,7 @@ object RenderStatus {
     private const val MS_PER_SECOND = 1000.0
 
     fun progressText(mode: RenderMode, progress: RenderProgress): String = when {
+        progress.failure != null -> "Render failed · ${progress.failure}"
         mode == RenderMode.WIREFRAME -> "Wireframe · ready"
         progress.isDone -> "Done · ${progress.passes}/${progress.passes} passes"
         progress.isDraft -> "Quick look · ${progress.passes} passes to go"

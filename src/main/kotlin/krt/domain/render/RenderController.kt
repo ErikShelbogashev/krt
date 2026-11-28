@@ -2,6 +2,7 @@ package krt.domain.render
 
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import javax.swing.SwingUtilities
@@ -33,6 +34,7 @@ class RenderController(
     private val gpuTracer: GpuTracer = GpuTracer(),
     private val offscreen: OffscreenGpu? = null,
 ) : AutoCloseable {
+    private val generation = AtomicLong()
     private var renderJob: Job? = null
     private var stillJob: Job? = null
     private val workers = Runtime.getRuntime().availableProcessors()
@@ -94,16 +96,23 @@ class RenderController(
         frame: Frame,
         rayTracer: RayTracer,
         camera: Camera,
-        onGpuFrame: ((Shader, RenderProgress) -> Unit) = { _, _ -> },
+        onGpuFrame: ((Shader, RenderProgress) -> Unit) = { shader, _ -> shader.close() },
         onUpdate: ((RenderProgress) -> Unit),
     ) {
+        val current = generation.incrementAndGet()
         renderJob?.cancel()
-        when (mode) {
-            RenderMode.WIREFRAME -> renderWireframe(frame, rayTracer.world, camera, onUpdate)
+        offscreen?.invalidateFrame()
+        val update: (RenderProgress) -> Unit = { if (generation.get() == current) onUpdate(it) }
+        val drawing = mode
+        val destination = frame.destination(drawing)
+        when (drawing) {
+            RenderMode.WIREFRAME -> renderWireframe(destination, rayTracer.world, camera, update)
             RenderMode.GPU -> offscreen
-                ?.let { renderJob = it.render(frame, rayTracer, camera, random, clock, onUpdate) }
-                ?: renderGpuImage(rayTracer, camera, onGpuFrame)
-            RenderMode.CPU -> renderJob = traceFrame(frame, rayTracer, camera, onUpdate)
+                ?.let { renderJob = it.render(destination, rayTracer, camera, random, clock, update) }
+                ?: renderGpuImage(rayTracer, camera) { shader, progress ->
+                    if (generation.get() == current) onGpuFrame(shader, progress) else shader.close()
+                }
+            RenderMode.CPU -> renderJob = traceFrame(destination, rayTracer, camera, update)
         }
     }
 
@@ -129,29 +138,31 @@ class RenderController(
      * (see [gpuFrameShown]), at most [STEP_WAIT_REPAINTS] repaint intervals later. A newer frame cancels them all.
      */
     private fun renderGpuImage(rayTracer: RayTracer, camera: Camera, onGpuFrame: (Shader, RenderProgress) -> Unit) {
-        val scene = rayTracer.world.gpuScene
+        val sceneForFrame = rayTracer.world.gpuSceneForFrame()
+        val depth = rayTracer.maxDepth
         val view = camera.view()
         val passes = camera.samplesPerPixel
         val startedAt = clock()
         val width = camera.imageWidth
         val height = camera.imageHeight
+        val steps = gpuTracer.WindowSteps()
         renderJob = CoroutineScope(renderDispatcher).launch {
+            val scene = sceneForFrame()
             val scale = GpuSampling.draftScale(width, height, draftPixels)
             val look = GpuFrame(
                 scene, view, GpuSampling.draftSize(width, scale), GpuSampling.draftSize(height, scale),
-                minOf(rayTracer.maxDepth, PREVIEW_DEPTH), samples = 1, seed = random.nextFloat(),
+                minOf(depth, PREVIEW_DEPTH), samples = 1, seed = random.nextFloat(),
                 band = GpuBand(quick = true),
             )
             val newScene = scene !== budgetScene
             stepBudget.updateAndGet { GpuSampling.stepBudgetFor(newScene, it) }
             budgetScene = scene
-            val preview = gpuTracer.shader(look, previous = null, scale = scale)
+            val preview = steps.next(look, scale)
             recentDrafts.keepRecent(preview, RECENT_DRAFTS)
             val previewProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true)
             SwingUtilities.invokeLater { onGpuFrame(preview, previewProgress) }
             delay(REFINE_DELAY)
             // Rows a first pass has not reached yet show the quick look.
-            var frame: Shader? = preview
             var taken = 0
             while (taken < passes && isActive) {
                 val samples = GpuSampling.nextStep(taken, passes, stepBudget.get().samples)
@@ -163,9 +174,8 @@ class RenderController(
                     row = rows.last + 1
                     val band = GpuBand(taken, rows)
                     val seed = random.nextFloat()
-                    val step = GpuFrame(scene, view, width, height, rayTracer.maxDepth, samples, seed, band)
-                    val shader = gpuTracer.shader(step, frame)
-                    frame = shader
+                    val step = GpuFrame(scene, view, width, height, depth, samples, seed, band)
+                    val shader = steps.next(step)
                     val done = GpuSampling.samplesDone(taken, samples, rows, height)
                     val progress = RenderProgress(passes, done, 0.0, clock() - startedAt)
                     // Registered before publishing, so a window that draws the step at once is not missed; a window
@@ -180,7 +190,7 @@ class RenderController(
                 }
                 taken += samples
             }
-        }
+        }.also { job -> job.invokeOnCompletion { steps.close() } }
     }
 
     /**
@@ -340,6 +350,7 @@ class RenderController(
     }
 
     override fun close() {
+        generation.incrementAndGet()
         renderJob?.cancel()
         stillJob?.cancel()
         renderDispatcher.close()

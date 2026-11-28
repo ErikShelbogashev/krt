@@ -5,6 +5,12 @@ import kotlin.test.assertEquals
 
 class RenderStatusTest {
 
+    @Test
+    fun `failed GPU readback is visible in the status`() {
+        val failure = RenderProgress.NONE.copy(failure = "Could not read the GPU frame")
+        assertEquals("Render failed · Could not read the GPU frame", RenderStatus.progressText(RenderMode.GPU, failure))
+    }
+
     private val inWork = RenderProgress(passes = 5, completedPasses = 2, passFraction = 0.4, elapsedMs = 1234)
 
     @Test

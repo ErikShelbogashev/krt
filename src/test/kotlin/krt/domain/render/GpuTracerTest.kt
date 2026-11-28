@@ -39,8 +39,11 @@ import krt.platform.awt.toAWTColor
 import krt.platform.math.Color
 import krt.platform.math.Point3
 import org.jetbrains.skia.Bitmap
+import org.jetbrains.skia.ColorAlphaType
+import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.ImageInfo
 import org.jetbrains.skia.Paint
+import org.jetbrains.skia.Shader
 import org.jetbrains.skia.Surface
 
 /**
@@ -249,6 +252,47 @@ class GpuTracerTest {
     }
 
     @Test
+    fun `a bright sample keeps its radiance when later steps see darkness`() {
+        val view = camera().view()
+        fun step(light: Double, samples: Int, previous: Int): GpuFrame {
+            val color = Color(light, light, light)
+            val scene = World(look = SceneLook.CLASSIC.copy(sky = Sky(color, color)))
+            return GpuFrame(scene.gpuScene, view, SIZE, SIZE, DEPTH, samples, 0.37f, GpuBand(previous))
+        }
+        val bright = step(4.0, 1, 0)
+        val dark = step(0.0, 7, 1)
+        // sqrt((4 + 7 * 0) / 8), expressed in 8-bit display values.
+        val window = windowFrame { draw -> draw(bright); draw(dark) }
+        val hdr = GpuTracer().use { tracer -> hdrPair(tracer, bright, dark) }
+        assertTrue((window.first() and 255) in 178..183, "window expected 180, got ${window.first() and 255}")
+        assertTrue((hdr.first() and 255) in 179..182, "HDR expected 180, got ${hdr.first() and 255}")
+    }
+
+    private fun hdrPair(tracer: GpuTracer, first: GpuFrame, second: GpuFrame): IntArray {
+        val info = ImageInfo(SIZE, SIZE, ColorType.RGBA_F16, ColorAlphaType.OPAQUE)
+        return Surface.makeRaster(info).use { target ->
+            tracer.hdrShader(first).use { shader -> draw(target, shader) }
+            target.makeImageSnapshot().use { image ->
+                image.makeShader().use { previous -> tracer.hdrShader(second, previous).use(::pixels) }
+            }
+        }
+    }
+
+    @Test
+    fun `the readback marker sits outside the displayed pixels`() {
+        val color = Color(0.0, 0.0, 1.0)
+        val scene = World(look = SceneLook.CLASSIC.copy(sky = Sky(color, color))).gpuScene
+        GpuTracer().use { tracer ->
+            listOf(0f to 0x00ff00, 1f to 0xff0000).forEach { (marker, expected) ->
+                val step = GpuFrame(scene, camera().view(), SIZE - 1, SIZE, 1, 1, 0f, GpuBand(marker = marker))
+                val row = tracer.hdrShader(step).use(::pixels)
+                assertTrue(row[SIZE - 2] and 0xffffff == 0x0000ff)
+                assertTrue(row[SIZE - 1] and 0xffffff == expected)
+            }
+        }
+    }
+
+    @Test
     fun `with light sampling and fog the GPU frame matches the CPU frame in brightness`() {
         val camera = camera()
         val gpu = gpuFrame(camera, litFog)
@@ -361,20 +405,18 @@ class GpuTracerTest {
     fun `a GPU frame made in bands of rows matches the one made whole`() {
         val camera = camera()
         val whole = progressiveGpuFrame(camera)
-        val banded = GpuTracer().use { tracer ->
+        val banded = windowFrame { draw ->
             val scene = GpuScenePacking.pack(world.objects)
-            var frame: org.jetbrains.skia.Shader? = null
             var taken = 0
             GpuSampling.steps(SAMPLES).forEachIndexed { index, samples ->
                 (0 until 3).forEach { band ->
                     val rows = GpuSampling.bandRows(SIZE, band, 3)
                     val seed = 0.1f * (index + 1) + band
                     val step = GpuFrame(scene, camera.view(), SIZE, SIZE, DEPTH, samples, seed, GpuBand(taken, rows))
-                    frame = tracer.shader(step, frame)
+                    draw(step)
                 }
                 taken += samples
             }
-            pixels(requireNotNull(frame))
         }
         (0 until QUADRANTS).forEach { q ->
             assertTrue(abs(brightness(whole, q) - brightness(banded, q)) < REGION_TOLERANCE, "quadrant $q")
@@ -521,8 +563,7 @@ class GpuTracerTest {
 
     /** The frame as RenderController makes it under [budget]: steps of its samples, each over its bands of rows. */
     private fun budgetedGpuFrame(camera: Camera, scene: World, budget: GpuSampling.StepBudget): IntArray =
-        GpuTracer().use { tracer ->
-            var frame: org.jetbrains.skia.Shader? = null
+        windowFrame { draw ->
             var taken = 0
             var seed = 0.1f
             while (taken < camera.samplesPerPixel) {
@@ -532,11 +573,10 @@ class GpuTracerTest {
                     seed += 0.37f
                     val band = GpuBand(taken, rows)
                     val step = GpuFrame(scene.gpuScene, camera.view(), SIZE, SIZE, DEPTH, samples, seed, band)
-                    frame = tracer.shader(step, frame)
+                    draw(step)
                 }
                 taken += samples
             }
-            pixels(requireNotNull(frame))
         }
 
     /** Mean difference between neighbouring pixels: how much detail, noise included, a frame keeps. */
@@ -548,24 +588,47 @@ class GpuTracerTest {
     } / (SIZE * (SIZE - 1) * CHANNELS)
 
     /** The frame as RenderController makes it in GPU mode: steps, each blended into the frame of those before. */
-    private fun progressiveGpuFrame(camera: Camera): IntArray = GpuTracer().use { tracer ->
+    private fun progressiveGpuFrame(camera: Camera): IntArray = windowFrame { draw ->
         val scene = GpuScenePacking.pack(world.objects)
-        var frame: org.jetbrains.skia.Shader? = null
         var taken = 0
         GpuSampling.steps(SAMPLES).forEachIndexed { index, samples ->
             val step = GpuFrame(scene, camera.view(), SIZE, SIZE, DEPTH, samples, 0.1f * (index + 1), GpuBand(taken))
-            frame = tracer.shader(step, frame)
+            draw(step)
             taken += samples
         }
-        pixels(requireNotNull(frame))
     }
 
-    private fun pixels(shader: org.jetbrains.skia.Shader): IntArray {
-        val surface = Surface.makeRaster(ImageInfo.makeN32Premul(SIZE, SIZE))
-        surface.canvas.drawPaint(Paint().apply { this.shader = shader })
-        val bitmap = Bitmap.makeFromImage(surface.makeImageSnapshot())
-        return IntArray(SIZE * SIZE) { bitmap.getColor(it % SIZE, it / SIZE) }
+    private fun windowFrame(render: ((GpuFrame) -> Unit) -> Unit): IntArray = GpuTracer().use { tracer ->
+        tracer.WindowSteps().use { steps ->
+            var display: Shader? = null
+            try {
+                render { step ->
+                    display?.close()
+                    display = steps.next(step)
+                }
+                pixels(requireNotNull(display))
+            } finally {
+                display?.close()
+            }
+        }
     }
+
+    private fun draw(surface: Surface, shader: Shader) {
+        Paint().use { paint ->
+            paint.shader = shader
+            surface.canvas.drawPaint(paint)
+        }
+    }
+
+    private fun pixels(shader: Shader): IntArray =
+        Surface.makeRaster(ImageInfo.makeN32Premul(SIZE, SIZE)).use { surface ->
+            draw(surface, shader)
+            surface.makeImageSnapshot().use { image ->
+                Bitmap.makeFromImage(image).use { bitmap ->
+                    IntArray(SIZE * SIZE) { bitmap.getColor(it % SIZE, it / SIZE) }
+                }
+            }
+        }
 
     private fun cpuFrame(camera: Camera, scene: World = world): IntArray {
         val rayTracer = RayTracer(scene, DEPTH)

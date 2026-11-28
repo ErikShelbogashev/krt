@@ -6,6 +6,7 @@ float3 finiteOrBlack(float3 c) {
 }
 
 half4 main(float2 position) {
+    if (position.x >= frameSize.x) { return half4(stepMarker, 1.0 - stepMarker, 0.0, 1.0); }
     if (position.y < bandStart || position.y >= bandEnd) { return previous.eval(position); }
     float i = floor(position.x);
     float j = frameSize.y - 1.0 - floor(position.y);
@@ -24,9 +25,11 @@ half4 main(float2 position) {
         sum += finiteOrBlack(trace(origin, direction));
     }
     // The earlier steps' frame holds the square root of their mean (gamma 2): back to linear, add, average.
-    float3 earlier = float3(previous.eval(position).rgb);
+    half4 prior = previous.eval(position);
+    float3 earlier = packedWindow > 0.5 ? unpackRadiance(prior) : float3(prior.rgb);
     float taken = clamp(samples, 1.0, float(MAX_SAMPLES));
-    float3 mean = (earlier * earlier * previousSamples + clamp(sum, 0.0, taken)) / (previousSamples + taken);
-    float3 color = sqrt(clamp(mean, 0.0, 1.0));
-    return half4(half3(min(color, float3(0.999))), 1.0);
+    float3 mean = (earlier * earlier * previousSamples + sum) / (previousSamples + taken);
+    float3 color = sqrt(max(mean, 0.0));
+    color = min(color, float3(65504.0));
+    return packedWindow > 0.5 ? packRadiance(color) : half4(half3(color), 1.0);
 }

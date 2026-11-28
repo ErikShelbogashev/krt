@@ -35,7 +35,7 @@ data class DoneWatch(val startNanos: Long, val timeoutMs: Double = DONE_TIMEOUT_
 
     /** Whether to keep waiting at the window frame at [nanos], with [progress] on screen. */
     fun waiting(nanos: Long, progress: RenderProgress, stopped: Boolean): Boolean =
-        !stopped && !progress.isDone && elapsedMs(nanos) <= timeoutMs
+        !stopped && progress.failure == null && !progress.isDone && elapsedMs(nanos) <= timeoutMs
 
     /** The time it took, or null when the watch was stopped or gave up. */
     fun result(nanos: Long, progress: RenderProgress, stopped: Boolean): Double? =

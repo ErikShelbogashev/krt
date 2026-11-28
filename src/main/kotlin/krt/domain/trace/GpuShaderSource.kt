@@ -11,9 +11,14 @@ import krt.domain.scene.model.PatternKind
  */
 object GpuShaderSource {
 
+    val DISPLAY_PARTS = listOf("/krt/domain/render/gpu_radiance.sksl", "/krt/domain/render/window_display.sksl")
+
+    fun windowDisplay(read: (String) -> String): String = DISPLAY_PARTS.joinToString("\n", transform = read)
+
     /** The parts of the shader, as resource paths, in the order they are joined; the constants go after the first. */
     val PARTS = listOf(
         "/krt/domain/render/gpu_frame.sksl",
+        "/krt/domain/render/gpu_radiance.sksl",
         "/krt/domain/trace/gpu_scene.sksl",
         "/krt/platform/math/random.sksl",
         "/krt/domain/scene/model/sphere.sksl",

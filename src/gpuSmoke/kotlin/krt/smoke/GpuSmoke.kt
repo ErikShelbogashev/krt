@@ -1,29 +1,24 @@
 package krt.smoke
 
 import java.io.File
-import java.lang.foreign.Arena
-import java.lang.foreign.FunctionDescriptor
-import java.lang.foreign.Linker
-import java.lang.foreign.MemorySegment
-import java.lang.foreign.SymbolLookup
-import java.lang.foreign.ValueLayout.ADDRESS
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
+import kotlin.concurrent.thread
+import kotlin.random.Random
 import kotlin.system.exitProcess
 import krt.domain.camera.Camera
-import krt.domain.render.GpuBand
-import krt.domain.render.GpuFrame
-import krt.domain.render.GpuSampling
-import krt.domain.render.GpuTracer
+import krt.domain.render.Frame
+import krt.domain.render.OffscreenGpu
+import krt.domain.render.RayTracer
+import krt.domain.render.RenderController
+import krt.domain.render.model.RenderMode
 import krt.domain.scene.World
 import krt.domain.scene.model.DemoScene
 import krt.domain.scene.model.SceneDescription
 import krt.i9ns.scenefile.SceneLibrary
 import krt.platform.math.Point3
-import org.jetbrains.skia.Bitmap
-import org.jetbrains.skia.DirectContext
-import org.jetbrains.skia.ImageInfo
-import org.jetbrains.skia.Paint
-import org.jetbrains.skia.Shader
-import org.jetbrains.skia.Surface
+import krt.platform.skia.MetalContext
 
 /**
  * The GPU smoke check (`./gradlew gpuSmoke`): every built-in scene at every benchmark size drawn on the real GPU
@@ -34,19 +29,62 @@ import org.jetbrains.skia.Surface
  * `check`: CI has no GPU. Run it before a PR that touches the GPU mode (ADR 0009, 0010).
  */
 fun main(args: Array<String>) {
-    val device = Metal.defaultDevice()
-    val context = DirectContext.makeMetal(device, Metal.commandQueue(device))
+    // Skia reports rejected command buffers to native stderr even when readPixels and progress indicate success.
+    if (args.firstOrNull() != "--metal-worker") {
+        val java = File(System.getProperty("java.home"), "bin/java").path
+        val worker = ProcessBuilder(
+            listOf(java, "--enable-native-access=ALL-UNNAMED", "-Djava.awt.headless=true", "-cp",
+                System.getProperty("java.class.path"), "krt.smoke.GpuSmokeKt", "--metal-worker") + args,
+        ).redirectErrorStream(true).start()
+        var rejected = false
+        val lastOutput = AtomicLong(System.nanoTime())
+        val output = thread(name = "Metal smoke output", isDaemon = true) {
+            worker.inputStream.bufferedReader().useLines { lines ->
+                lines.forEach { line ->
+                    println(line)
+                    lastOutput.set(System.nanoTime())
+                    if ("MTLCommandBufferErrorDomain" in line || "Error submitting command buffer" in line) rejected = true
+                }
+            }
+        }
+        try {
+            while (!worker.waitFor(1, TimeUnit.SECONDS)) {
+                val silentMs = (System.nanoTime() - lastOutput.get()) / NS_PER_MS
+                check(silentMs < FRAME_CAP_MS + WORKER_GRACE_MS) { "Metal worker stopped reporting frames" }
+            }
+            output.join(WORKER_GRACE_MS)
+            check(!output.isAlive) { "Metal worker output did not close" }
+            check(worker.exitValue() == 0) { "Metal smoke worker failed" }
+            check(!rejected) { "Metal rejected a command buffer during rendering" }
+        } finally {
+            worker.destroyForcibly()
+        }
+        return
+    }
     val scenes = SceneLibrary()
-    // The first draw compiles the shader for Metal, a second or more: done once here, it is no step of a scene.
-    Smoke.run(context, "warm-up", scenes.load(DemoScene.CLASSIC), WARM_UP, WARM_UP)
     val cases = DemoScene.entries.map { it.name to { scenes.load(it) } } +
         (STRESS to { scenes.load(File(STRESS_SCENE)).getOrThrow() })
-    val only = args.firstOrNull()?.let { name -> cases.filter { it.first.equals(name, ignoreCase = true) } }
-    val results = (only ?: cases.filter { it.first != STRESS }).flatMap { (name, load) ->
-        val description = load()
-        SIZES.map { (width, height) -> Smoke.run(context, name, description, width, height) }
+    val selected = args.getOrNull(1)?.let { name -> cases.filter { it.first.equals(name, ignoreCase = true) } }
+        ?: cases.filter { it.first != STRESS }
+    require(selected.isNotEmpty()) { "Unknown scene: ${args.getOrNull(1)}" }
+    val context = requireNotNull(MetalContext.create()) { "Metal is required for gpuSmoke" }
+    val stepMs = mutableListOf<Double>()
+    val results = mutableListOf<SmokeResult>()
+    OffscreenGpu(context) { stepMs.add(it) }.use { gpu ->
+        RenderController(15L, 8, Random(1), offscreen = gpu).use { controller ->
+            controller.mode = RenderMode.GPU
+            Smoke.run(controller, stepMs, "warm-up", scenes.load(DemoScene.CLASSIC), WARM_UP, WARM_UP, SAMPLES)
+            selected.forEach { (name, load) ->
+                val scene = load()
+                SIZES.forEach { (width, height) ->
+                    results += Smoke.run(controller, stepMs, name, scene, width, height, SAMPLES)
+                }
+                if (name == DemoScene.MATERIALS.name) {
+                    results += Smoke.run(controller, stepMs, "MATERIALS 32 spp", scene, 400, 224, 32)
+                }
+            }
+        }
     }
-    context.close()
     val report = Smoke.report(results)
     println(report)
     File("build/reports/gpu-smoke.md").apply { parentFile.mkdirs() }.writeText(report)
@@ -63,10 +101,10 @@ private const val WARM_UP = 16
 private const val STRESS = "STRESS"
 private const val STRESS_SCENE = "src/gpuSmoke/scenes/deploy-stress/03-deploy-button.obj"
 private const val STEP_CAP_MS = 1_000.0
-private const val FRAME_CAP_MS = 60_000.0
+private const val FRAME_CAP_MS = 60_000L
+private const val WORKER_GRACE_MS = 15_000L
 private const val SAMPLES = 5
 private const val DEPTH = 7
-private const val PREVIEW_DEPTH = 3
 private const val MIN_MEAN = 0.02
 private const val MAGENTA = 0xFF00FF
 private const val CHANNEL = 255.0
@@ -86,68 +124,44 @@ private class SmokeResult(
 
 private object Smoke {
 
-    fun run(context: DirectContext, name: String, description: SceneDescription, width: Int, height: Int): SmokeResult {
-        val scene = World(description.objects, description.look).gpuScene
+    fun run(
+        controller: RenderController, stepMs: MutableList<Double>, name: String, description: SceneDescription,
+        width: Int, height: Int, samples: Int,
+    ): SmokeResult {
         val start = requireNotNull(description.look.start)
-        val view = Camera(
+        val camera = Camera(
             start.origin, start.target, Point3(0.0, 1.0, 0.0), description.look.fov, 0.0,
             (start.target - start.origin).length(), width, height,
-        ).view()
-        val surface = Surface.makeRenderTarget(context, false, ImageInfo.makeN32Premul(width, height))
-        val stepMs = mutableListOf<Double>()
+        ).apply { samplesPerPixel = samples }
+        val tracer = RayTracer(World(description.objects, description.look), DEPTH)
+        val frame = Frame(width, height)
+        val done = CountDownLatch(1)
         var failure: String? = null
+        var preview: IntArray? = null
+        stepMs.clear()
         val began = System.nanoTime()
-        GpuTracer().use { tracer ->
-            fun draw(shader: Shader): Double {
-                val drawn = System.nanoTime()
-                surface.canvas.drawPaint(Paint().apply { this.shader = shader })
-                context.flushAndSubmit(surface, syncCpu = true)
-                return ((System.nanoTime() - drawn) / NS_PER_MS).also { stepMs += it }
-            }
-            val scale = GpuSampling.draftScale(width, height)
-            val look = GpuFrame(
-                scene, view, GpuSampling.draftSize(width, scale), GpuSampling.draftSize(height, scale),
-                PREVIEW_DEPTH, 1, 0.1f, GpuBand(quick = true),
-            )
-            var frame = tracer.shader(look, null, scale)
-            draw(frame)
-            var budget = GpuSampling.StepBudget.CAUTIOUS
-            var taken = 0
-            var seed = 0.1f
-            while (taken < SAMPLES && failure == null) {
-                val samples = GpuSampling.nextStep(taken, SAMPLES, budget.samples)
-                var row = 0
-                while (row < height && failure == null) {
-                    val rows = GpuSampling.nextRows(row, height, GpuSampling.bandsOf(budget, height))
-                    seed += 0.37f
-                    // As OffscreenGpu does: each step reads the image the step before drew, not its picture.
-                    val earlier = surface.makeImageSnapshot().makeShader()
-                    val step = GpuFrame(scene, view, width, height, DEPTH, samples, seed, GpuBand(taken, rows))
-                    frame = tracer.shader(step, earlier)
-                    val ms = draw(frame)
-                    budget = budget.after(ms)
-                    row = rows.last + 1
-                    failure = when {
-                        ms > STEP_CAP_MS -> "a step kept the GPU %.0f ms".format(ms)
-                        (System.nanoTime() - began) / NS_PER_MS > FRAME_CAP_MS -> "the frame did not finish in time"
-                        else -> null
-                    }
-                }
-                taken += samples
+        controller.renderImage(frame, tracer, camera) { progress ->
+            if (progress.isDraft) preview = frame.pixels.copyOf()
+            if (progress.isDone || progress.failure != null) {
+                failure = progress.failure
+                done.countDown()
             }
         }
+        check(done.await(FRAME_CAP_MS, TimeUnit.MILLISECONDS)) { "$name ${width}x$height timed out" }
         val frameMs = (System.nanoTime() - began) / NS_PER_MS
-        failure = failure ?: picture(surface)
-        surface.close()
-        return SmokeResult(name, width, height, stepMs.size, stepMs.max(), stepMs.sorted()[stepMs.size / 2], frameMs, failure)
+        val slowest = stepMs.maxOrNull() ?: 0.0
+        failure = failure ?: when {
+            slowest > STEP_CAP_MS -> "a step kept the GPU %.0f ms".format(slowest)
+            preview?.contentEquals(frame.pixels) == true -> "refinement kept the quick look unchanged"
+            else -> picture(frame.pixels)
+        }
+        val result = SmokeResult(name, width, height, stepMs.size, slowest,
+            stepMs.sorted().getOrNull(stepMs.size / 2) ?: 0.0, frameMs, failure)
+        println("$name ${width}×$height: ${failure ?: "ok"} (%.0f ms)".format(frameMs))
+        return result
     }
 
-    /** What is wrong with the frame on [surface]: magenta pixels or black, or nothing. */
-    private fun picture(surface: Surface): String? {
-        val bitmap = Bitmap().apply { allocN32Pixels(surface.width, surface.height) }
-        surface.readPixels(bitmap, 0, 0)
-        val pixels = IntArray(surface.width * surface.height) { bitmap.getColor(it % surface.width, it / surface.width) }
-        bitmap.close()
+    private fun picture(pixels: IntArray): String? {
         val magenta = pixels.count { it and 0xFFFFFF == MAGENTA }
         val mean = pixels.sumOf { p -> ((p shr 16 and 0xFF) + (p shr 8 and 0xFF) + (p and 0xFF)) / (3 * CHANNEL) } /
             pixels.size
@@ -169,31 +183,5 @@ private object Smoke {
                     .format(it.medianStepMs, it.slowestStepMs, it.frameMs, it.failure ?: "ok"),
             )
         }
-    }
-}
-
-/** The system's Metal device and a command queue of it, reached through the foreign function API. */
-private object Metal {
-    private val linker = Linker.nativeLinker()
-    private val objc = SymbolLookup.libraryLookup("/usr/lib/libobjc.A.dylib", Arena.global())
-    private val metal = SymbolLookup.libraryLookup("/System/Library/Frameworks/Metal.framework/Metal", Arena.global())
-    private val selector = linker.downcallHandle(
-        objc.find("sel_registerName").orElseThrow(), FunctionDescriptor.of(ADDRESS, ADDRESS),
-    )
-    private val send = linker.downcallHandle(
-        objc.find("objc_msgSend").orElseThrow(), FunctionDescriptor.of(ADDRESS, ADDRESS, ADDRESS),
-    )
-
-    fun defaultDevice(): Long = (
-        linker.downcallHandle(metal.find("MTLCreateSystemDefaultDevice").orElseThrow(), FunctionDescriptor.of(ADDRESS))
-            .invokeWithArguments() as MemorySegment
-        ).address().also { check(it != 0L) { "no Metal device" } }
-
-    fun commandQueue(device: Long): Long = message(device, "newCommandQueue")
-
-
-    private fun message(receiver: Long, name: String): Long = Arena.ofConfined().use { arena ->
-        val sel = selector.invokeWithArguments(arena.allocateFrom(name)) as MemorySegment
-        (send.invokeWithArguments(MemorySegment.ofAddress(receiver), sel) as MemorySegment).address()
     }
 }

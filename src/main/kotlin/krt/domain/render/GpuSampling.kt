@@ -35,9 +35,7 @@ object GpuSampling {
      * [STEPS_TO_GROW] step frames in a row that would still fit with twice the rows or one more sample, it grows
      * back by that.
      *
-     * Rows before samples: a step clips its mean to 1 before the frame stores it in 8 bits, so steps of one sample
-     * clip every bright sample, and a frame made of them comes out dimmer than the CPU's, which clips only the
-     * mean of all samples.
+     * Narrower bands retain the samples per pixel while reducing the time spent in a single draw.
      */
     data class StepBudget(
         val samples: Int = GPU_STEP_SAMPLES,

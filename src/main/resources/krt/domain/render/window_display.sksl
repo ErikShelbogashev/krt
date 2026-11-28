@@ -1,0 +1,6 @@
+
+uniform shader frame;
+
+half4 main(float2 position) {
+    return half4(half3(min(unpackRadiance(frame.eval(position)), 1.0)), 1.0);
+}

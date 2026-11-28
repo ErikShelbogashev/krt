@@ -109,6 +109,49 @@ class RenderControllerTest {
     }
 
     @Test
+    fun `late CPU block writes cannot change pixels after a mode switch`() {
+        val frame = Frame(2, 1)
+        val worker = frame.destination(RenderMode.CPU)
+        worker.pixels.fill(1)
+        assertTrue(frame.pixels.contentEquals(intArrayOf(1, 1)))
+        val gpu = frame.destination(RenderMode.GPU)
+        gpu.pixels.fill(2)
+        worker.pixels.fill(3)
+        assertTrue(frame.pixels.contentEquals(intArrayOf(2, 2)))
+        val nextWorker = frame.destination(RenderMode.CPU)
+        nextWorker.pixels.fill(4)
+        assertTrue(frame.pixels.contentEquals(intArrayOf(4, 4)))
+    }
+
+    @Test
+    fun `a GPU callback waiting for the event thread cannot replace the new CPU frame`() {
+        val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = 1 }
+        val frame = Frame(16, 16)
+        val tracer = RayTracer(World(), 2)
+        val gpuReady = CountDownLatch(1)
+        val cpuDone = CountDownLatch(1)
+        val stale = AtomicInteger()
+        val clock = {
+            if (!SwingUtilities.isEventDispatchThread()) gpuReady.countDown()
+            System.currentTimeMillis()
+        }
+        RenderController(10L, 8, Random(1), clock).use { controller ->
+            SwingUtilities.invokeAndWait {
+                controller.mode = RenderMode.GPU
+                controller.renderImage(frame, tracer, camera, onGpuFrame = { shader, _ ->
+                    shader.close()
+                    stale.incrementAndGet()
+                }) {}
+                assertTrue(gpuReady.await(5, TimeUnit.SECONDS))
+                controller.mode = RenderMode.CPU
+                controller.renderImage(frame, tracer, camera) { if (it.isDone) cpuDone.countDown() }
+            }
+            assertTrue(cpuDone.await(5, TimeUnit.SECONDS))
+            assertEquals(0, stale.get())
+        }
+    }
+
+    @Test
     fun `GPU steps follow one another as soon as the window has drawn them`() {
         val camera = Camera.default().apply { imageWidth = 16; imageHeight = 16; samplesPerPixel = 5 }
         val done = CountDownLatch(1)

@@ -1,5 +1,6 @@
 package krt.domain.render
 
+import java.util.concurrent.CancellationException
 import krt.domain.camera.CameraView
 import krt.domain.trace.GpuScene
 import krt.domain.trace.GpuShaderSource
@@ -39,6 +40,7 @@ data class GpuBand(
     val previousSamples: Int = 0,
     val rows: IntRange = 0 until Int.MAX_VALUE,
     val quick: Boolean = false,
+    val marker: Float = 0f,
 ) {
     /** The lights a step of [scene] samples: none in a quick look. */
     fun sampledLights(scene: GpuScene): Int = if (quick) 0 else scene.sampledLights
@@ -56,15 +58,54 @@ class GpuTracer : AutoCloseable {
 
     private val effect: RuntimeEffect = RuntimeEffect.makeForShader(GpuShaderSource.assemble(::part))
 
+    private val windowDisplay = RuntimeEffect.makeForShader(GpuShaderSource.windowDisplay(::part))
+
+    /**
+     * The window fallback caches pictures in eight-bit textures. Each pixel keeps its shared exponent in alpha.
+     * The window owns each display shader it receives; the job owns the encoded texture until the next step.
+     */
+    inner class WindowSteps : AutoCloseable {
+        private var previous: Shader? = null
+
+        fun next(frame: GpuFrame, scale: Int = 1): Shader {
+            val texture = step(frame, previous, packed = true).use { shader ->
+                DrawnOnceShader.of(shader, frame.width, frame.height, scale.toFloat())
+            }
+            previous?.close()
+            previous = texture
+            return display(texture)
+        }
+
+        override fun close() {
+            previous?.close()
+        }
+    }
+
+    @Synchronized
+    private fun display(texture: Shader): Shader = builder(windowDisplay).use { builder ->
+        builder.child("frame", texture)
+        builder.makeShader()
+    }
+
     /**
      * The frame after one more step: [previous] (the frame of the earlier steps, null before the first) with
      * [GpuFrame.samples] more samples per pixel. The step runs once on the GPU, at the frame's size, when first drawn;
      * a coarse frame, [scale] times smaller each way, is shown [scale] times larger.
      */
-    fun shader(frame: GpuFrame, previous: Shader? = null, scale: Int = 1): Shader {
-        val builder = RuntimeShaderBuilder(effect)
+    fun shader(frame: GpuFrame, previous: Shader? = null, scale: Int = 1): Shader =
+        hdrShader(frame, previous).use { step ->
+            DrawnOnceShader.of(step, frame.width, frame.height, scale.toFloat())
+        }
+
+    /** Draw this step directly to an RGBA_F16 target to preserve radiance above display white between passes. */
+    fun hdrShader(frame: GpuFrame, previous: Shader? = null): Shader = step(frame, previous, packed = false)
+
+    @Synchronized
+    private fun step(frame: GpuFrame, previous: Shader?, packed: Boolean): Shader = builder(effect).use { builder ->
+        builder.uniform("packedWindow", if (packed) 1f else 0f)
         builder.child("previous", previous ?: noFrame)
         builder.uniform("previousSamples", frame.band.previousSamples.toFloat())
+        builder.uniform("stepMarker", frame.band.marker)
         builder.uniform("bandStart", frame.band.rows.first.toFloat())
         builder.uniform("bandEnd", frame.band.rows.last.toFloat() + 1)
         builder.child("scene", sceneTexture(frame.scene))
@@ -93,16 +134,22 @@ class GpuTracer : AutoCloseable {
         builder.uniform("maxDepth", frame.maxDepth.toFloat())
         builder.uniform("samples", frame.samples.toFloat())
         builder.uniform("seed", frame.seed)
-        // The drawn-once shader holds its own reference to the step's shader, so ours goes at once.
-        return builder.makeShader().use { step ->
-            builder.close()
-            DrawnOnceShader.of(step, frame.width, frame.height, scale.toFloat())
-        }
+        builder.makeShader()
+    }
+
+    /** A cancelled window job may acquire our lock just after the composition root has closed the tracer. */
+    private fun builder(effect: RuntimeEffect): RuntimeShaderBuilder {
+        if (effect.isClosed) throw CancellationException("GPU tracer closed")
+        return RuntimeShaderBuilder(effect)
     }
 
     private val noFrame: Shader = Shader.makeColor(BLACK)
 
+    @Synchronized
     override fun close() {
+        sceneTexture?.second?.close()
+        sceneTexture = null
+        windowDisplay.close()
         noFrame.close()
         effect.close()
     }
@@ -110,17 +157,19 @@ class GpuTracer : AutoCloseable {
     /** The texture of the scene drawn last, so a new frame of the same scene does not upload it again. */
     private var sceneTexture: Pair<GpuScene, Shader>? = null
 
-    @Synchronized
     private fun sceneTexture(scene: GpuScene): Shader =
         sceneTexture?.takeIf { it.first === scene }?.second
-            ?: makeSceneTexture(scene).also { sceneTexture = scene to it }
+            ?: makeSceneTexture(scene).also {
+                sceneTexture?.second?.close()
+                sceneTexture = scene to it
+            }
 
     private fun makeSceneTexture(scene: GpuScene): Shader =
         Image.makeRaster(
             ImageInfo(scene.width, scene.height, ColorType.RGBA_8888, ColorAlphaType.UNPREMUL, null),
             scene.data,
             scene.width * BYTES_PER_TEXEL,
-        ).makeShader(FilterTileMode.CLAMP, FilterTileMode.CLAMP, SamplingMode.DEFAULT, null)
+        ).use { it.makeShader(FilterTileMode.CLAMP, FilterTileMode.CLAMP, SamplingMode.DEFAULT, null) }
 
     private fun part(path: String): String =
         requireNotNull(GpuTracer::class.java.getResource(path)) { "missing $path" }.readText()

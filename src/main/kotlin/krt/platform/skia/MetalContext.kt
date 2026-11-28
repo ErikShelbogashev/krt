@@ -17,6 +17,9 @@ object MetalContext {
     private const val OBJC = "/usr/lib/libobjc.A.dylib"
     private const val METAL = "/System/Library/Frameworks/Metal.framework/Metal"
 
+    private val objc by lazy { SymbolLookup.libraryLookup(OBJC, Arena.global()) }
+    private val metal by lazy { SymbolLookup.libraryLookup(METAL, Arena.global()) }
+
     @Suppress("TooGenericExceptionCaught") // any failure to reach Metal means there is none to use
     fun create(): DirectContext? = try {
         if (System.getProperty("os.name").startsWith("Mac")) make() else null
@@ -27,8 +30,6 @@ object MetalContext {
 
     private fun make(): DirectContext? {
         val linker = Linker.nativeLinker()
-        val objc = SymbolLookup.libraryLookup(OBJC, Arena.global())
-        val metal = SymbolLookup.libraryLookup(METAL, Arena.global())
         val selector = linker.downcallHandle(
             objc.find("sel_registerName").orElseThrow(), FunctionDescriptor.of(ADDRESS, ADDRESS),
         )
@@ -38,12 +39,22 @@ object MetalContext {
         val makeDevice = linker.downcallHandle(
             metal.find("MTLCreateSystemDefaultDevice").orElseThrow(), FunctionDescriptor.of(ADDRESS),
         )
-        val device = (makeDevice.invokeWithArguments() as MemorySegment).address()
-        if (device == 0L) return null
-        val queue = Arena.ofConfined().use { arena ->
-            val name = selector.invokeWithArguments(arena.allocateFrom("newCommandQueue")) as MemorySegment
-            (send.invokeWithArguments(MemorySegment.ofAddress(device), name) as MemorySegment).address()
+        val release = linker.downcallHandle(objc.find("objc_release").orElseThrow(), FunctionDescriptor.ofVoid(ADDRESS))
+        val device = makeDevice.invokeWithArguments() as MemorySegment
+        if (device.address() == 0L) return null
+        return try {
+            val queue = Arena.ofConfined().use { arena ->
+                val name = selector.invokeWithArguments(arena.allocateFrom("newCommandQueue")) as MemorySegment
+                send.invokeWithArguments(device, name) as MemorySegment
+            }
+            // Skiko retains both handles in its GrMtlBackendContext. Balance our Create/new ownership.
+            if (queue.address() == 0L) null else try {
+                DirectContext.makeMetal(device.address(), queue.address())
+            } finally {
+                release.invokeWithArguments(queue)
+            }
+        } finally {
+            release.invokeWithArguments(device)
         }
-        return DirectContext.makeMetal(device, queue)
     }
 }

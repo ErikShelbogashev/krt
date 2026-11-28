@@ -54,6 +54,12 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
     /** The scene for the GPU shader; consistent with [objects] read at the same moment. */
     val gpuScene: GpuScene get() = snapshot.gpuScene
 
+    /** Capture this revision now and pack it on the render thread when the frame actually starts. */
+    fun gpuSceneForFrame(): () -> GpuScene {
+        val captured = snapshot
+        return { captured.gpuScene }
+    }
+
     fun translateObjectById(objectId: String, offset: Point3) {
         snapshot = Snapshot(objects.translateAll(objectId, offset), look, source)
     }

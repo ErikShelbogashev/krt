@@ -11,6 +11,7 @@ data class RenderProgress(
     val passFraction: Double,
     val elapsedMs: Long,
     val isDraft: Boolean = false,
+    val failure: String? = null,
 ) {
     val isDone: Boolean get() = completedPasses >= passes
 
