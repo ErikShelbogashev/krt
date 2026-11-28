@@ -15,7 +15,7 @@ jobs:
           distribution: temurin
           java-version: 25
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew check --no-daemon
+      - run: ./gradlew check --refresh-dependencies --no-daemon
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -35,3 +35,10 @@ jobs:
         env:
           GRADLE_USER_HOME: ${{ runner.temp }}/krt-offline-gradle
         run: ./gradlew --offline --no-daemon classes testClasses jmhJar compileGpuSmokeKotlin hotRunArgfile createDistributable
+
+      - name: Start a normal build with empty caches and an unreachable proxy
+        env:
+          GRADLE_USER_HOME: ${{ runner.temp }}/krt-disconnected-gradle
+          JAVA_TOOL_OPTIONS: -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1 -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=1
+        timeout-minutes: 5
+        run: ./gradlew --no-daemon --no-configuration-cache classes
