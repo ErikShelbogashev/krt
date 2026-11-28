@@ -37,6 +37,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    // The offscreen GPU tests reach Metal through the foreign function API.
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
     // `-Dkrt.writeScenes=true` writes the showcase scene files from their builders (ShowcaseScenesTest).
     systemProperty("krt.writeScenes", System.getProperty("krt.writeScenes") ?: "false")
 }
@@ -85,6 +87,8 @@ detekt {
 compose.desktop {
     application {
         mainClass = "krt.MainKt"
+        // The GPU mode reaches Metal through the foreign function API (MetalContext).
+        jvmArgs("--enable-native-access=ALL-UNNAMED")
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
