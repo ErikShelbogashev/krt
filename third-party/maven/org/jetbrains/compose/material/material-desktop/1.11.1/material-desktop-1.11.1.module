@@ -1,0 +1,214 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../material/1.11.1/material-1.11.1.module",
+    "group": "org.jetbrains.compose.material",
+    "module": "material",
+    "version": "1.11.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.4.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "desktopApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.animation",
+          "module": "animation-core",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.material",
+          "module": "material-ripple",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-text",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "material-desktop-1.11.1.jar",
+          "url": "material-desktop-1.11.1.jar",
+          "size": 1473829,
+          "sha512": "6d5d9567e06fdef7873ab4cc83d0cd56645a93bcf0801dd8c92a17f92e886098f7ad9c9426d519aca93cdc7a9a4f8c163cdf94d44ce08df749def170c1d26f53",
+          "sha256": "fcd881213628bf50b1e278925db892f552c23bd63bc7edb99b968790c9e097f8",
+          "sha1": "02891a6f3a62dc4c367636a521d1b680a7d6ff6d",
+          "md5": "25436e005965088ad39cc6841e571bd6"
+        }
+      ]
+    },
+    {
+      "name": "desktopRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.animation",
+          "module": "animation",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.animation",
+          "module": "animation-core",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation-layout",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.material",
+          "module": "material-ripple",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-text",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-util",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "atomicfu",
+          "version": {
+            "requires": "0.28.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "material-desktop-1.11.1.jar",
+          "url": "material-desktop-1.11.1.jar",
+          "size": 1473829,
+          "sha512": "6d5d9567e06fdef7873ab4cc83d0cd56645a93bcf0801dd8c92a17f92e886098f7ad9c9426d519aca93cdc7a9a4f8c163cdf94d44ce08df749def170c1d26f53",
+          "sha256": "fcd881213628bf50b1e278925db892f552c23bd63bc7edb99b968790c9e097f8",
+          "sha1": "02891a6f3a62dc4c367636a521d1b680a7d6ff6d",
+          "md5": "25436e005965088ad39cc6841e571bd6"
+        }
+      ]
+    },
+    {
+      "name": "desktopSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "material-desktop-1.11.1-sources.jar",
+          "url": "material-desktop-1.11.1-sources.jar",
+          "size": 331989,
+          "sha512": "444ec9f64006476f083aada6c9306ef4dc8a6a58d03c2cca70f5050f283fdea945a27a83a63622daf64a36250ead9a657a03f02eaec7fff7507ef136bff890d2",
+          "sha256": "d86620433e0fab141f5bf861cbd0eb38718abfb310ad09abae40ea27c8f1276c",
+          "sha1": "de7c760d50788f6bf30c1f193271996e8455e28e",
+          "md5": "f8cdb8d1d51d8d231fa923e51f7eb181"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.compose.hot-reload",
+    "module": "hot-reload-agent",
+    "version": "1.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-annotations",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-agent-1.2.0.jar",
+          "url": "hot-reload-agent-1.2.0.jar",
+          "size": 126523,
+          "sha512": "cded74f02268c20cd425dbfa3a7f1cebae07aa748f2eb56322b5d3c653e44d32e09d66afd61f8dab5040012bc0ffdeb4e86a7a494854f6044ec3044cb7e25359",
+          "sha256": "40a9a8118d9bc351c61ed41b7558509c1c61e012350f434219389e91a667677e",
+          "sha1": "ea0a27affaa1e54108a144c72be56fa0fc402889",
+          "md5": "5cca935dd56515355f2215981be577eb"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.1.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-core",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-orchestration",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-analysis",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.javassist",
+          "module": "javassist",
+          "version": {
+            "requires": "3.30.2-GA"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-annotations",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-agent-1.2.0.jar",
+          "url": "hot-reload-agent-1.2.0.jar",
+          "size": 126523,
+          "sha512": "cded74f02268c20cd425dbfa3a7f1cebae07aa748f2eb56322b5d3c653e44d32e09d66afd61f8dab5040012bc0ffdeb4e86a7a494854f6044ec3044cb7e25359",
+          "sha256": "40a9a8118d9bc351c61ed41b7558509c1c61e012350f434219389e91a667677e",
+          "sha1": "ea0a27affaa1e54108a144c72be56fa0fc402889",
+          "md5": "5cca935dd56515355f2215981be577eb"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-agent-1.2.0-sources.jar",
+          "url": "hot-reload-agent-1.2.0-sources.jar",
+          "size": 22928,
+          "sha512": "b8efd93fd82e8e78d83c208254a7d38ae4c88f8bfc039179cac2b5d893265a75b31d7a8bdfc7ac4d5c66eb2fcac87e3415b5590969a07bab186349cb7bf668b5",
+          "sha256": "ecd19f98337b0a93c85b62a8c09c51bef68f6fd5286059cf2032acb578b5df2f",
+          "sha1": "e072394233a7ba8a8879acf1635287536c104132",
+          "md5": "05a283c264fc5c0356e0e2a8fd80faa9"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-agent-1.2.0-javadoc.jar",
+          "url": "hot-reload-agent-1.2.0-javadoc.jar",
+          "size": 350,
+          "sha512": "8f6d48e787acda744955e9acf033b5b05e41203072e2a80944ee79fd01f6c9bd8970c1d871830e7b05a0c66b4026289f199a8a4a2919ac1fb6ae59414be12170",
+          "sha256": "5665099a5ed5c99a345c12dfcd6686ef6243a847010dd6bda108cd705e5c7125",
+          "sha1": "f843894e89b21e070835b7a3a17c664d0471ca89",
+          "md5": "4d6cb5ee61c8c61cd89f71a739105874"
+        }
+      ]
+    },
+    {
+      "name": "standaloneRuntimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "shadowed",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "hot-reload-agent-1.2.0-standalone.jar",
+          "url": "hot-reload-agent-1.2.0-standalone.jar",
+          "size": 2346902,
+          "sha512": "42c13aec833f7b62b693a21d744bb089a6a46d162a9dadf1c5e854a5597eb5e1033cbfa76bb6598816bb9f990c843dd28dc53d8998f6aeff21e56c30dbd1ee49",
+          "sha256": "fc9f50741ecab1df29ba24f788845e5eb441f152c8d24634218869c9a3234554",
+          "sha1": "6404e4de00c7fb671897850a23dfe9c4bdf6c6e8",
+          "md5": "309b7c1f1493271d82d6affbd3fbac38"
+        }
+      ]
+    }
+  ]
+}

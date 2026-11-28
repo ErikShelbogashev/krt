@@ -1,0 +1,198 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../foundation-layout/1.11.1/foundation-layout-1.11.1.module",
+    "group": "org.jetbrains.compose.foundation",
+    "module": "foundation-layout",
+    "version": "1.11.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.4.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "desktopApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.11.1"
+          },
+          "reason": "foundation-layout is in atomic group androidx.compose.foundation"
+        },
+        {
+          "group": "androidx.compose.foundation",
+          "module": "foundation-lint",
+          "version": {
+            "requires": "1.11.0"
+          },
+          "reason": "foundation-layout is in atomic group androidx.compose.foundation"
+        }
+      ],
+      "files": [
+        {
+          "name": "foundation-layout-desktop-1.11.1.jar",
+          "url": "foundation-layout-desktop-1.11.1.jar",
+          "size": 671113,
+          "sha512": "78c1070c0ebbe9a6c58db51c3eb6a07b68e5101b86c277ee36a609016493a746aa62536ea0b587bd3aff252d36833dfc1aacc70a5413c79f25be9693347ab325",
+          "sha256": "d79929b45521dff0c77d3184412007b3b9695755c8b1933d5ff9e4f1e93fa131",
+          "sha1": "853fc5d01388da6515ce40b719798914012f6469",
+          "md5": "283d2ac8235541447bbd8d60ab595201"
+        }
+      ]
+    },
+    {
+      "name": "desktopRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.collection",
+          "module": "collection",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-unit",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-util",
+          "version": {
+            "requires": "1.11.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.11.1"
+          },
+          "reason": "foundation-layout is in atomic group androidx.compose.foundation"
+        },
+        {
+          "group": "androidx.compose.foundation",
+          "module": "foundation-lint",
+          "version": {
+            "requires": "1.11.0"
+          },
+          "reason": "foundation-layout is in atomic group androidx.compose.foundation"
+        }
+      ],
+      "files": [
+        {
+          "name": "foundation-layout-desktop-1.11.1.jar",
+          "url": "foundation-layout-desktop-1.11.1.jar",
+          "size": 671113,
+          "sha512": "78c1070c0ebbe9a6c58db51c3eb6a07b68e5101b86c277ee36a609016493a746aa62536ea0b587bd3aff252d36833dfc1aacc70a5413c79f25be9693347ab325",
+          "sha256": "d79929b45521dff0c77d3184412007b3b9695755c8b1933d5ff9e4f1e93fa131",
+          "sha1": "853fc5d01388da6515ce40b719798914012f6469",
+          "md5": "283d2ac8235541447bbd8d60ab595201"
+        }
+      ]
+    },
+    {
+      "name": "desktopSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.11.1"
+          },
+          "reason": "foundation-layout is in atomic group androidx.compose.foundation"
+        },
+        {
+          "group": "androidx.compose.foundation",
+          "module": "foundation-lint",
+          "version": {
+            "requires": "1.11.0"
+          },
+          "reason": "foundation-layout is in atomic group androidx.compose.foundation"
+        }
+      ],
+      "files": [
+        {
+          "name": "foundation-layout-desktop-1.11.1-sources.jar",
+          "url": "foundation-layout-desktop-1.11.1-sources.jar",
+          "size": 139786,
+          "sha512": "34088a1eb93e087529edc9eaa0730aab93cda04c0a04ad110dbed66e6c8a65940e377ec98edf432ef11832f5c7f4b112e4d32511346c45fe5659bd0a6550aa7d",
+          "sha256": "da5cfbf44e4d4e139403f0303f60bb94b9ee47760c96a0cc11b587396a91b7d2",
+          "sha1": "983428ea1a855b0adf825c9905317b0f0c259527",
+          "md5": "e26ec9e8b644207936c08dbf6197d077"
+        }
+      ]
+    }
+  ]
+}

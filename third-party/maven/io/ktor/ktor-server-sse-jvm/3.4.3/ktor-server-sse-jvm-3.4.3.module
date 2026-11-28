@@ -1,0 +1,158 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../ktor-server-sse/3.4.3/ktor-server-sse-3.4.3.module",
+    "group": "io.ktor",
+    "module": "ktor-server-sse",
+    "version": "3.4.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.4.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-server-core",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-sse",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-server-sse-jvm-3.4.3.jar",
+          "url": "ktor-server-sse-jvm-3.4.3.jar",
+          "size": 36134,
+          "sha512": "9325fcd428a37b79ca5145c98f4e725e1913ab2405232d1936b8a0c94dc4b1fb42f3872c55064066c0452fdf9ad6cb7703f4b2b30d1bac94e6a81eed057b20c9",
+          "sha256": "9242d84b1921a7acdbf243d9d18c217205667b03dcfdc8a4357961f3c9688814",
+          "sha1": "9f577b10e97fd02018a9d71631f6f079784c31db",
+          "md5": "dc24b1bd24f54baba7eddbb8246dcf0d"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-server-core",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-sse",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-server-sse-jvm-3.4.3.jar",
+          "url": "ktor-server-sse-jvm-3.4.3.jar",
+          "size": 36134,
+          "sha512": "9325fcd428a37b79ca5145c98f4e725e1913ab2405232d1936b8a0c94dc4b1fb42f3872c55064066c0452fdf9ad6cb7703f4b2b30d1bac94e6a81eed057b20c9",
+          "sha256": "9242d84b1921a7acdbf243d9d18c217205667b03dcfdc8a4357961f3c9688814",
+          "sha1": "9f577b10e97fd02018a9d71631f6f079784c31db",
+          "md5": "dc24b1bd24f54baba7eddbb8246dcf0d"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "ktor-server-sse-jvm-3.4.3-sources.jar",
+          "url": "ktor-server-sse-jvm-3.4.3-sources.jar",
+          "size": 6994,
+          "sha512": "d95dc2167b34cf67591471d41fd184d00dfb834903dfbf8e49c7b5a345149c42a9a1588ddff3d41ad549be6fee8f963373545790c6bb575e859a9bde67fc078f",
+          "sha256": "70ddbbee82a3d5fcc47ae029bdd7ae5a31714a0fa1e07e92cd6b6c2ebccbe1d9",
+          "sha1": "7bf0e1994364fa81ba91cf55edeefd7893eb5efb",
+          "md5": "af89074977626c572d768463e92b40a0"
+        }
+      ]
+    }
+  ]
+}

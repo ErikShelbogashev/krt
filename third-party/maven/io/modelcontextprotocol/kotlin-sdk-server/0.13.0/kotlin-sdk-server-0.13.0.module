@@ -1,0 +1,420 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.modelcontextprotocol",
+    "module": "kotlin-sdk-server",
+    "version": "0.13.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.5.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadataApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencies": [
+        {
+          "group": "io.modelcontextprotocol",
+          "module": "kotlin-sdk-core",
+          "version": {
+            "requires": "0.13.0"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-server-core",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-server-sse",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.21"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-server-content-negotiation",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-server-websockets",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-serialization-kotlinx-json",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "io.github.oshai",
+          "module": "kotlin-logging",
+          "version": {
+            "requires": "8.0.03"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlin-sdk-server-metadata-0.13.0.jar",
+          "url": "kotlin-sdk-server-0.13.0.jar",
+          "size": 23508,
+          "sha512": "57bee788d4015a7e62ac413fddb7eddd10e2b7f646dd6749acff4e449f32afe4ec5383677280f799be8c18c8437311eb4c5a092628c38097973fa3c0cca200dd",
+          "sha256": "5d34168eab337055640c2b4d0e05e689d0082c9690568315e2c0bbf327b99cdf",
+          "sha1": "53d00a20fa8843a7ffcc9715e32f686a7b834eb1",
+          "md5": "b1b8fd4595d85d13885c05d3c8228869"
+        }
+      ]
+    },
+    {
+      "name": "metadataSourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "files": [
+        {
+          "name": "kotlin-sdk-server-kotlin-0.13.0-sources.jar",
+          "url": "kotlin-sdk-server-0.13.0-sources.jar",
+          "size": 49775,
+          "sha512": "50db8eb07979f95a3637e1b3dd4ffab70d775a0ce1d8172b4dfae958988535b3a26ebc64fa50774e5fd7dbac87f50cdfe238603e135e45f0a5a82a2c1866ff2b",
+          "sha256": "85d539ad8c49cb253b07004ed56293fd3e4892bb88074d5b2f10efd303de99a4",
+          "sha1": "a43f951a4c8acbabbc26ed1c6de2c4adaf0a0068",
+          "md5": "20c757cac1c9aeada5b5a5362e58d53b"
+        }
+      ]
+    },
+    {
+      "name": "jsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-js/0.13.0/kotlin-sdk-server-js-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-js",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "jsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-js/0.13.0/kotlin-sdk-server-js-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-js",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "jsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-js/0.13.0/kotlin-sdk-server-js-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-js",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-jvm/0.13.0/kotlin-sdk-server-jvm-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-jvm",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-jvm/0.13.0/kotlin-sdk-server-jvm-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-jvm",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-jvm/0.13.0/kotlin-sdk-server-jvm-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-jvm",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "linuxArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-linuxarm64/0.13.0/kotlin-sdk-server-linuxarm64-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-linuxarm64",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "linuxArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-linuxarm64/0.13.0/kotlin-sdk-server-linuxarm64-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-linuxarm64",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "linuxX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-linuxx64/0.13.0/kotlin-sdk-server-linuxx64-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-linuxx64",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "linuxX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-linuxx64/0.13.0/kotlin-sdk-server-linuxx64-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-linuxx64",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "macosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-macosarm64/0.13.0/kotlin-sdk-server-macosarm64-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-macosarm64",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "macosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-macosarm64/0.13.0/kotlin-sdk-server-macosarm64-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-macosarm64",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "macosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-macosarm64/0.13.0/kotlin-sdk-server-macosarm64-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-macosarm64",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "mingwX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-mingwx64/0.13.0/kotlin-sdk-server-mingwx64-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-mingwx64",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "mingwX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-mingwx64/0.13.0/kotlin-sdk-server-mingwx64-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-mingwx64",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-wasm-js/0.13.0/kotlin-sdk-server-wasm-js-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-wasm-js",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-wasm-js/0.13.0/kotlin-sdk-server-wasm-js-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-wasm-js",
+        "version": "0.13.0"
+      }
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../kotlin-sdk-server-wasm-js/0.13.0/kotlin-sdk-server-wasm-js-0.13.0.module",
+        "group": "io.modelcontextprotocol",
+        "module": "kotlin-sdk-server-wasm-js",
+        "version": "0.13.0"
+      }
+    }
+  ]
+}

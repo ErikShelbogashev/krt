@@ -1,0 +1,1135 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.ktor",
+    "module": "ktor-serialization-kotlinx-json",
+    "version": "3.4.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.4.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadataApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-serialization-kotlinx",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json-io",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-serialization-kotlinx-json-metadata-3.4.3.jar",
+          "url": "ktor-serialization-kotlinx-json-3.4.3.jar",
+          "size": 7509,
+          "sha512": "2b2fab9f2c115a1c69cec7750e02ded00b53e535f3733c48fb43d9ce3568b7f0a9ba9ce5a1d6c0e136330523e2fffad7a28dd1dcf9f18c199d186727a6a45acd",
+          "sha256": "cb5122f17df0a8bf2a0f1ab9e5adbcbc7c786f180eee9d3cf4153145d8cf03bc",
+          "sha1": "6b3e8bdbe06b181372ff2d613b77a277d30f4d48",
+          "md5": "2fd63226e18acb09a5ac17fd7a8beaae"
+        }
+      ]
+    },
+    {
+      "name": "metadataSourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "files": [
+        {
+          "name": "ktor-serialization-kotlinx-json-kotlin-3.4.3-sources.jar",
+          "url": "ktor-serialization-kotlinx-json-3.4.3-sources.jar",
+          "size": 6301,
+          "sha512": "a16799b45a5171bab70d609bcfb9186e59d2fd84dc936e7c15e9d7915305d4980438d5f187c0bc3ef1176225a728035e84c93dffc412a219757d24d2fd9f19c8",
+          "sha256": "57faaf6271be642712208a19dd8f19c57539474df974f415009306d9d3931ca9",
+          "sha1": "80e22fd12f134f2de3e3717ab10d2e0d57ba51b2",
+          "md5": "42cf9a0b4b708f8c16e6fb8f0a98063f"
+        }
+      ]
+    },
+    {
+      "name": "androidNativeArm32ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "android_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-androidnativearm32/3.4.3/ktor-serialization-kotlinx-json-androidnativearm32-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-androidnativearm32",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeArm32SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "android_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-androidnativearm32/3.4.3/ktor-serialization-kotlinx-json-androidnativearm32-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-androidnativearm32",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "android_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-androidnativearm64/3.4.3/ktor-serialization-kotlinx-json-androidnativearm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-androidnativearm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "android_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-androidnativearm64/3.4.3/ktor-serialization-kotlinx-json-androidnativearm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-androidnativearm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "android_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-androidnativex64/3.4.3/ktor-serialization-kotlinx-json-androidnativex64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-androidnativex64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "android_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-androidnativex64/3.4.3/ktor-serialization-kotlinx-json-androidnativex64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-androidnativex64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeX86ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "android_x86",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-androidnativex86/3.4.3/ktor-serialization-kotlinx-json-androidnativex86-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-androidnativex86",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeX86SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "android_x86",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-androidnativex86/3.4.3/ktor-serialization-kotlinx-json-androidnativex86-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-androidnativex86",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-iosarm64/3.4.3/ktor-serialization-kotlinx-json-iosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-iosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-iosarm64/3.4.3/ktor-serialization-kotlinx-json-iosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-iosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-iosarm64/3.4.3/ktor-serialization-kotlinx-json-iosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-iosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-iossimulatorarm64/3.4.3/ktor-serialization-kotlinx-json-iossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-iossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-iossimulatorarm64/3.4.3/ktor-serialization-kotlinx-json-iossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-iossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-iossimulatorarm64/3.4.3/ktor-serialization-kotlinx-json-iossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-iossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-iosx64/3.4.3/ktor-serialization-kotlinx-json-iosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-iosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-iosx64/3.4.3/ktor-serialization-kotlinx-json-iosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-iosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosX64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-iosx64/3.4.3/ktor-serialization-kotlinx-json-iosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-iosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-js/3.4.3/ktor-serialization-kotlinx-json-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-js/3.4.3/ktor-serialization-kotlinx-json-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-js/3.4.3/ktor-serialization-kotlinx-json-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-jvm/3.4.3/ktor-serialization-kotlinx-json-jvm-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-jvm",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-jvm/3.4.3/ktor-serialization-kotlinx-json-jvm-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-jvm",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-jvm/3.4.3/ktor-serialization-kotlinx-json-jvm-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-jvm",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "linuxArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-linuxarm64/3.4.3/ktor-serialization-kotlinx-json-linuxarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-linuxarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "linuxArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-linuxarm64/3.4.3/ktor-serialization-kotlinx-json-linuxarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-linuxarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "linuxX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-linuxx64/3.4.3/ktor-serialization-kotlinx-json-linuxx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-linuxx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "linuxX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-linuxx64/3.4.3/ktor-serialization-kotlinx-json-linuxx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-linuxx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-macosarm64/3.4.3/ktor-serialization-kotlinx-json-macosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-macosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-macosarm64/3.4.3/ktor-serialization-kotlinx-json-macosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-macosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-macosarm64/3.4.3/ktor-serialization-kotlinx-json-macosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-macosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-macosx64/3.4.3/ktor-serialization-kotlinx-json-macosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-macosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-macosx64/3.4.3/ktor-serialization-kotlinx-json-macosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-macosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosX64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-macosx64/3.4.3/ktor-serialization-kotlinx-json-macosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-macosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "mingwX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-mingwx64/3.4.3/ktor-serialization-kotlinx-json-mingwx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-mingwx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "mingwX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-mingwx64/3.4.3/ktor-serialization-kotlinx-json-mingwx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-mingwx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "tvos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-tvosarm64/3.4.3/ktor-serialization-kotlinx-json-tvosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-tvosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "tvos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-tvosarm64/3.4.3/ktor-serialization-kotlinx-json-tvosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-tvosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "tvos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-tvosarm64/3.4.3/ktor-serialization-kotlinx-json-tvosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-tvosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "tvos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-tvossimulatorarm64/3.4.3/ktor-serialization-kotlinx-json-tvossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-tvossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "tvos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-tvossimulatorarm64/3.4.3/ktor-serialization-kotlinx-json-tvossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-tvossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "tvos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-tvossimulatorarm64/3.4.3/ktor-serialization-kotlinx-json-tvossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-tvossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "tvos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-tvosx64/3.4.3/ktor-serialization-kotlinx-json-tvosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-tvosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "tvos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-tvosx64/3.4.3/ktor-serialization-kotlinx-json-tvosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-tvosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosX64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "tvos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-tvosx64/3.4.3/ktor-serialization-kotlinx-json-tvosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-tvosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-wasm-js/3.4.3/ktor-serialization-kotlinx-json-wasm-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-wasm-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-wasm-js/3.4.3/ktor-serialization-kotlinx-json-wasm-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-wasm-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-wasm-js/3.4.3/ktor-serialization-kotlinx-json-wasm-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-wasm-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm32ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosarm32/3.4.3/ktor-serialization-kotlinx-json-watchosarm32-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosarm32",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm32SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosarm32/3.4.3/ktor-serialization-kotlinx-json-watchosarm32-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosarm32",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm32MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosarm32/3.4.3/ktor-serialization-kotlinx-json-watchosarm32-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosarm32",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosarm64/3.4.3/ktor-serialization-kotlinx-json-watchosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosarm64/3.4.3/ktor-serialization-kotlinx-json-watchosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosarm64/3.4.3/ktor-serialization-kotlinx-json-watchosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosDeviceArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_device_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosdevicearm64/3.4.3/ktor-serialization-kotlinx-json-watchosdevicearm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosdevicearm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosDeviceArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_device_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosdevicearm64/3.4.3/ktor-serialization-kotlinx-json-watchosdevicearm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosdevicearm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosDeviceArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_device_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosdevicearm64/3.4.3/ktor-serialization-kotlinx-json-watchosdevicearm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosdevicearm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchossimulatorarm64/3.4.3/ktor-serialization-kotlinx-json-watchossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchossimulatorarm64/3.4.3/ktor-serialization-kotlinx-json-watchossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchossimulatorarm64/3.4.3/ktor-serialization-kotlinx-json-watchossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosx64/3.4.3/ktor-serialization-kotlinx-json-watchosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosx64/3.4.3/ktor-serialization-kotlinx-json-watchosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosX64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-serialization-kotlinx-json-watchosx64/3.4.3/ktor-serialization-kotlinx-json-watchosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-serialization-kotlinx-json-watchosx64",
+        "version": "3.4.3"
+      }
+    }
+  ]
+}

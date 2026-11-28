@@ -1,0 +1,144 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../ktor-server-content-negotiation/3.4.3/ktor-server-content-negotiation-3.4.3.module",
+    "group": "io.ktor",
+    "module": "ktor-server-content-negotiation",
+    "version": "3.4.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.4.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-server-core",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-server-content-negotiation-jvm-3.4.3.jar",
+          "url": "ktor-server-content-negotiation-jvm-3.4.3.jar",
+          "size": 39542,
+          "sha512": "decda92f557d5502b3f2cc1142183250508ff3f1a81d88578e7834f0f594bf5685071526800f4998a8aac5d84741ed71a65b883063505cdb0c95351adc237d3b",
+          "sha256": "a04b88e2572efc2e7ef396d9de4a43cf075e06dea25e193b992e12478b421c1c",
+          "sha1": "4b7e0c7dac2be1a85e4674867578ae6f97aa34e6",
+          "md5": "0081fdbddba84047ea1e0f77bf61cdf0"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-server-core",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-server-content-negotiation-jvm-3.4.3.jar",
+          "url": "ktor-server-content-negotiation-jvm-3.4.3.jar",
+          "size": 39542,
+          "sha512": "decda92f557d5502b3f2cc1142183250508ff3f1a81d88578e7834f0f594bf5685071526800f4998a8aac5d84741ed71a65b883063505cdb0c95351adc237d3b",
+          "sha256": "a04b88e2572efc2e7ef396d9de4a43cf075e06dea25e193b992e12478b421c1c",
+          "sha1": "4b7e0c7dac2be1a85e4674867578ae6f97aa34e6",
+          "md5": "0081fdbddba84047ea1e0f77bf61cdf0"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "ktor-server-content-negotiation-jvm-3.4.3-sources.jar",
+          "url": "ktor-server-content-negotiation-jvm-3.4.3-sources.jar",
+          "size": 8190,
+          "sha512": "80bd8a60c22c2f0aead7228d8ad010e31e2b48fda4470a95fec29a2dc33eef8b3827b0b6b770f80ea2ab0d1b0f87de005e1fef5171e8d979e62ecfbe2e03fbdb",
+          "sha256": "e75d842a9ec5a7152a88b22e5d10d707afd4e0e1b61a5fcdb08e8e69085be8e7",
+          "sha1": "069e6384db6682be3736a445be29c48f70fed30c",
+          "md5": "4a2da7dc7a31f071bf8b36889d885991"
+        }
+      ]
+    }
+  ]
+}

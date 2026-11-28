@@ -1,0 +1,158 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../ktor-http/3.4.3/ktor-http-3.4.3.module",
+    "group": "io.ktor",
+    "module": "ktor-http",
+    "version": "3.4.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.4.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-utils",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-core",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-http-jvm-3.4.3.jar",
+          "url": "ktor-http-jvm-3.4.3.jar",
+          "size": 421485,
+          "sha512": "31f7269b139bc9552f8e8c5be351db2a6ad9920e43ec91f6512839f7c62b4ce3f92cc15721649ec77b693e3fa3cfcda27dcb216f36ce3c174f4c404073ff1095",
+          "sha256": "b3134c2c6c49bcc9747a424278d0723edba24a253b36450eabcc7fa562e2ada9",
+          "sha1": "1d6f033087f8d270ce06cc8471bc3d805472381f",
+          "md5": "7badd15f58fd57fc9702beb61056c8a0"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-utils",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-core",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-http-jvm-3.4.3.jar",
+          "url": "ktor-http-jvm-3.4.3.jar",
+          "size": 421485,
+          "sha512": "31f7269b139bc9552f8e8c5be351db2a6ad9920e43ec91f6512839f7c62b4ce3f92cc15721649ec77b693e3fa3cfcda27dcb216f36ce3c174f4c404073ff1095",
+          "sha256": "b3134c2c6c49bcc9747a424278d0723edba24a253b36450eabcc7fa562e2ada9",
+          "sha1": "1d6f033087f8d270ce06cc8471bc3d805472381f",
+          "md5": "7badd15f58fd57fc9702beb61056c8a0"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "ktor-http-jvm-3.4.3-sources.jar",
+          "url": "ktor-http-jvm-3.4.3-sources.jar",
+          "size": 99306,
+          "sha512": "e96906d1aa6b174cf8fc715a83c298c3d3e31f9cb0a3fb1121e9df0fb7be1a70d1530279831be728593365ee58e747927bb227fe61319fc0998eea4d9be1445f",
+          "sha256": "0ea5ff3281f9bd4fea0525d6a5e641b51081e9ae3e2985be60e7265c5459f7dc",
+          "sha1": "ed50a05fdb5284e494dea3f403711098b072b733",
+          "md5": "b803832c902e9b24373da63c6b03fa1d"
+        }
+      ]
+    }
+  ]
+}

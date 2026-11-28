@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../kotlin-logging/8.0.03/kotlin-logging-8.0.03.module",
+    "group": "io.github.oshai",
+    "module": "kotlin-logging",
+    "version": "8.0.03",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.1.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlin-logging-jvm-8.0.03.jar",
+          "url": "kotlin-logging-jvm-8.0.03.jar",
+          "size": 119891,
+          "sha512": "e2e4fc48d51a073a6a84eb76646c44c9aaa292d46c570f41e3f08b2bc7b08a94bfd3b2269bace194ddea476fcc65808756cfe7aa8988a8dd32b9618d2e899feb",
+          "sha256": "60be0d1f9f7ac954123bd2ce8bc04bce28cb9582831b698d063b60e6caf7ceb6",
+          "sha1": "6487c35ee0db65dfa06d126617fac7a8d0cc3a14",
+          "md5": "8da1b877035f83fdb4e07b8aa154b380"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.1.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlin-logging-jvm-8.0.03.jar",
+          "url": "kotlin-logging-jvm-8.0.03.jar",
+          "size": 119891,
+          "sha512": "e2e4fc48d51a073a6a84eb76646c44c9aaa292d46c570f41e3f08b2bc7b08a94bfd3b2269bace194ddea476fcc65808756cfe7aa8988a8dd32b9618d2e899feb",
+          "sha256": "60be0d1f9f7ac954123bd2ce8bc04bce28cb9582831b698d063b60e6caf7ceb6",
+          "sha1": "6487c35ee0db65dfa06d126617fac7a8d0cc3a14",
+          "md5": "8da1b877035f83fdb4e07b8aa154b380"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "kotlin-logging-jvm-8.0.03-sources.jar",
+          "url": "kotlin-logging-jvm-8.0.03-sources.jar",
+          "size": 34243,
+          "sha512": "b82c4b01b616694b856ff24c859ac7c10968795d7a5ee25a2c70880c5c7c2d126773d7130c2c5d62369d24ab2f776b620788c68f02acdd153c5d809d12b24c4e",
+          "sha256": "25c844cc9d1d8133c28c81669f98944a58b9040530deb114f31a3cd3c3937396",
+          "sha1": "de4204064881d41946765a34ecd2339cd7723e13",
+          "md5": "c80f0ac3f1731d35448124143492ac0e"
+        }
+      ]
+    }
+  ]
+}

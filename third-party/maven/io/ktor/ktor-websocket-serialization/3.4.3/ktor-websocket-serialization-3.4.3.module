@@ -1,0 +1,1121 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.ktor",
+    "module": "ktor-websocket-serialization",
+    "version": "3.4.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.4.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadataApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-serialization",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-websocket-serialization-metadata-3.4.3.jar",
+          "url": "ktor-websocket-serialization-3.4.3.jar",
+          "size": 3051,
+          "sha512": "54a1379739b85d7b382b3af609b387a9f1623963020bbd4ff7b137360a40a37461a0a6656c036f4629a8e8e01358079930e834d1018735bcaf12b5f22638b736",
+          "sha256": "3d152ce024cc26316e2445371cf84fafe26210241cd77bc5e7c843d7bfe7d33f",
+          "sha1": "66822232dfb5e669d1d47249d34f4b0d0f7195b7",
+          "md5": "cb815df3a5903e58a5b42ef228499d2a"
+        }
+      ]
+    },
+    {
+      "name": "metadataSourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "files": [
+        {
+          "name": "ktor-websocket-serialization-kotlin-3.4.3-sources.jar",
+          "url": "ktor-websocket-serialization-3.4.3-sources.jar",
+          "size": 2326,
+          "sha512": "e7fe8c5d0f1bab74755507fcfc8214bec60935736c0dc1ad54f1076115ca58f63d40702f38503b3b2a3b9d8d02ba55b91d62f5d4e326b9bcb5c454859258e3f8",
+          "sha256": "e186e6ac4d88ce296ef51d91684444ca0002b4b7761a8dcd2fe55ef1dc8a7b75",
+          "sha1": "4a023f031c84e174cfcb56892d01b37de32011e9",
+          "md5": "0dca7e417fd69fd93f87b73d37846741"
+        }
+      ]
+    },
+    {
+      "name": "androidNativeArm32ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "android_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-androidnativearm32/3.4.3/ktor-websocket-serialization-androidnativearm32-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-androidnativearm32",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeArm32SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "android_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-androidnativearm32/3.4.3/ktor-websocket-serialization-androidnativearm32-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-androidnativearm32",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "android_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-androidnativearm64/3.4.3/ktor-websocket-serialization-androidnativearm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-androidnativearm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "android_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-androidnativearm64/3.4.3/ktor-websocket-serialization-androidnativearm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-androidnativearm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "android_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-androidnativex64/3.4.3/ktor-websocket-serialization-androidnativex64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-androidnativex64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "android_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-androidnativex64/3.4.3/ktor-websocket-serialization-androidnativex64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-androidnativex64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeX86ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "android_x86",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-androidnativex86/3.4.3/ktor-websocket-serialization-androidnativex86-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-androidnativex86",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "androidNativeX86SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "android_x86",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-androidnativex86/3.4.3/ktor-websocket-serialization-androidnativex86-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-androidnativex86",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-iosarm64/3.4.3/ktor-websocket-serialization-iosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-iosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-iosarm64/3.4.3/ktor-websocket-serialization-iosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-iosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-iosarm64/3.4.3/ktor-websocket-serialization-iosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-iosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-iossimulatorarm64/3.4.3/ktor-websocket-serialization-iossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-iossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-iossimulatorarm64/3.4.3/ktor-websocket-serialization-iossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-iossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-iossimulatorarm64/3.4.3/ktor-websocket-serialization-iossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-iossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-iosx64/3.4.3/ktor-websocket-serialization-iosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-iosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-iosx64/3.4.3/ktor-websocket-serialization-iosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-iosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "iosX64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-iosx64/3.4.3/ktor-websocket-serialization-iosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-iosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-js/3.4.3/ktor-websocket-serialization-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-js/3.4.3/ktor-websocket-serialization-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-js/3.4.3/ktor-websocket-serialization-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-jvm/3.4.3/ktor-websocket-serialization-jvm-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-jvm",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-jvm/3.4.3/ktor-websocket-serialization-jvm-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-jvm",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-jvm/3.4.3/ktor-websocket-serialization-jvm-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-jvm",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "linuxArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-linuxarm64/3.4.3/ktor-websocket-serialization-linuxarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-linuxarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "linuxArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-linuxarm64/3.4.3/ktor-websocket-serialization-linuxarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-linuxarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "linuxX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-linuxx64/3.4.3/ktor-websocket-serialization-linuxx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-linuxx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "linuxX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-linuxx64/3.4.3/ktor-websocket-serialization-linuxx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-linuxx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-macosarm64/3.4.3/ktor-websocket-serialization-macosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-macosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-macosarm64/3.4.3/ktor-websocket-serialization-macosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-macosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-macosarm64/3.4.3/ktor-websocket-serialization-macosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-macosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-macosx64/3.4.3/ktor-websocket-serialization-macosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-macosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-macosx64/3.4.3/ktor-websocket-serialization-macosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-macosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "macosX64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-macosx64/3.4.3/ktor-websocket-serialization-macosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-macosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "mingwX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-mingwx64/3.4.3/ktor-websocket-serialization-mingwx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-mingwx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "mingwX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-mingwx64/3.4.3/ktor-websocket-serialization-mingwx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-mingwx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "tvos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-tvosarm64/3.4.3/ktor-websocket-serialization-tvosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-tvosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "tvos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-tvosarm64/3.4.3/ktor-websocket-serialization-tvosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-tvosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "tvos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-tvosarm64/3.4.3/ktor-websocket-serialization-tvosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-tvosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "tvos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-tvossimulatorarm64/3.4.3/ktor-websocket-serialization-tvossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-tvossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "tvos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-tvossimulatorarm64/3.4.3/ktor-websocket-serialization-tvossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-tvossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "tvos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-tvossimulatorarm64/3.4.3/ktor-websocket-serialization-tvossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-tvossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "tvos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-tvosx64/3.4.3/ktor-websocket-serialization-tvosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-tvosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "tvos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-tvosx64/3.4.3/ktor-websocket-serialization-tvosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-tvosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "tvosX64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "tvos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-tvosx64/3.4.3/ktor-websocket-serialization-tvosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-tvosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-wasm-js/3.4.3/ktor-websocket-serialization-wasm-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-wasm-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-wasm-js/3.4.3/ktor-websocket-serialization-wasm-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-wasm-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-wasm-js/3.4.3/ktor-websocket-serialization-wasm-js-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-wasm-js",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm32ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosarm32/3.4.3/ktor-websocket-serialization-watchosarm32-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosarm32",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm32SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosarm32/3.4.3/ktor-websocket-serialization-watchosarm32-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosarm32",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm32MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_arm32",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosarm32/3.4.3/ktor-websocket-serialization-watchosarm32-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosarm32",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosarm64/3.4.3/ktor-websocket-serialization-watchosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosarm64/3.4.3/ktor-websocket-serialization-watchosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosarm64/3.4.3/ktor-websocket-serialization-watchosarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosDeviceArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_device_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosdevicearm64/3.4.3/ktor-websocket-serialization-watchosdevicearm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosdevicearm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosDeviceArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_device_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosdevicearm64/3.4.3/ktor-websocket-serialization-watchosdevicearm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosdevicearm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosDeviceArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_device_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosdevicearm64/3.4.3/ktor-websocket-serialization-watchosdevicearm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosdevicearm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchossimulatorarm64/3.4.3/ktor-websocket-serialization-watchossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchossimulatorarm64/3.4.3/ktor-websocket-serialization-watchossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchossimulatorarm64/3.4.3/ktor-websocket-serialization-watchossimulatorarm64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchossimulatorarm64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosx64/3.4.3/ktor-websocket-serialization-watchosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosx64/3.4.3/ktor-websocket-serialization-watchosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosx64",
+        "version": "3.4.3"
+      }
+    },
+    {
+      "name": "watchosX64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../ktor-websocket-serialization-watchosx64/3.4.3/ktor-websocket-serialization-watchosx64-3.4.3.module",
+        "group": "io.ktor",
+        "module": "ktor-websocket-serialization-watchosx64",
+        "version": "3.4.3"
+      }
+    }
+  ]
+}

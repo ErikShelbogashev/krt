@@ -1,0 +1,768 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.compose.hot-reload",
+    "module": "hot-reload-runtime-api",
+    "version": "1.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadataApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-annotations",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.1.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "prefers": "1.10.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.11.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-runtime-api-metadata-1.2.0.jar",
+          "url": "hot-reload-runtime-api-1.2.0.jar",
+          "size": 5105,
+          "sha512": "14ed00cfa8ee887ea774ae9bdb79ea41434479c11851207b7a897583db6354c7fae8eed10098f71dfba65089cdc713a8f005fee5ce55b2202d4ac6bce417b5c6",
+          "sha256": "11bc93d3cac1915c2981ac7aa4100592b5bd0ea003dba0b144787bca48ab4ad6",
+          "sha1": "39bbb3dbb0216158f7aaa88d98ffa7ed5f769000",
+          "md5": "9bf8e315efd86ffb698b4f8276c4da7e"
+        }
+      ]
+    },
+    {
+      "name": "metadataSourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "files": [
+        {
+          "name": "hot-reload-runtime-api-kotlin-1.2.0-sources.jar",
+          "url": "hot-reload-runtime-api-1.2.0-sources.jar",
+          "size": 3857,
+          "sha512": "c61d595621525dfe0070566369a613177699ecf94e7e04d83e2a238558dba5469da745340a480d740fab07bc04ec0d75e79ba21b79c4a66c163669027a9253d7",
+          "sha256": "e058c39dd8e0edb166329db57fa6dc32e3d4fc860021f7cea1134f035e5a0775",
+          "sha1": "ca51adea2eb212a9404932fba95dc51c51ce150b",
+          "md5": "fb138317c30789e556e92c85f548015d"
+        }
+      ]
+    },
+    {
+      "name": "releaseApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-android/1.2.0/hot-reload-runtime-api-android-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-android",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "releaseRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-android/1.2.0/hot-reload-runtime-api-android-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-android",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "releaseSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-android/1.2.0/hot-reload-runtime-api-android-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-android",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iosarm64/1.2.0/hot-reload-runtime-api-iosarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iosarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iosarm64/1.2.0/hot-reload-runtime-api-iosarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iosarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosArm64ResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresources",
+        "org.gradle.usage": "kotlin-multiplatformresources",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iosarm64/1.2.0/hot-reload-runtime-api-iosarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iosarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iosarm64/1.2.0/hot-reload-runtime-api-iosarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iosarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iossimulatorarm64/1.2.0/hot-reload-runtime-api-iossimulatorarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iossimulatorarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iossimulatorarm64/1.2.0/hot-reload-runtime-api-iossimulatorarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iossimulatorarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64ResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresources",
+        "org.gradle.usage": "kotlin-multiplatformresources",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iossimulatorarm64/1.2.0/hot-reload-runtime-api-iossimulatorarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iossimulatorarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iossimulatorarm64/1.2.0/hot-reload-runtime-api-iossimulatorarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iossimulatorarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iosx64/1.2.0/hot-reload-runtime-api-iosx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iosx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iosx64/1.2.0/hot-reload-runtime-api-iosx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iosx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosX64ResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresources",
+        "org.gradle.usage": "kotlin-multiplatformresources",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iosx64/1.2.0/hot-reload-runtime-api-iosx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iosx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "iosX64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-iosx64/1.2.0/hot-reload-runtime-api-iosx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-iosx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "jsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-js/1.2.0/hot-reload-runtime-api-js-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-js",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "jsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-js/1.2.0/hot-reload-runtime-api-js-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-js",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "jsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-js/1.2.0/hot-reload-runtime-api-js-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-js",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "jsResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresourcesjs",
+        "org.gradle.usage": "kotlin-multiplatformresourcesjs",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-js/1.2.0/hot-reload-runtime-api-js-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-js",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-jvm/1.2.0/hot-reload-runtime-api-jvm-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-jvm",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-jvm/1.2.0/hot-reload-runtime-api-jvm-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-jvm",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-jvm/1.2.0/hot-reload-runtime-api-jvm-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-jvm",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "linuxArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-linuxarm64/1.2.0/hot-reload-runtime-api-linuxarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-linuxarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "linuxArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-linuxarm64/1.2.0/hot-reload-runtime-api-linuxarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-linuxarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "linuxArm64ResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresources",
+        "org.gradle.usage": "kotlin-multiplatformresources",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-linuxarm64/1.2.0/hot-reload-runtime-api-linuxarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-linuxarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "linuxX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-linuxx64/1.2.0/hot-reload-runtime-api-linuxx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-linuxx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "linuxX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-linuxx64/1.2.0/hot-reload-runtime-api-linuxx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-linuxx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "linuxX64ResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresources",
+        "org.gradle.usage": "kotlin-multiplatformresources",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-linuxx64/1.2.0/hot-reload-runtime-api-linuxx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-linuxx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "macosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-macosarm64/1.2.0/hot-reload-runtime-api-macosarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-macosarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "macosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-macosarm64/1.2.0/hot-reload-runtime-api-macosarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-macosarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "macosArm64ResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresources",
+        "org.gradle.usage": "kotlin-multiplatformresources",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-macosarm64/1.2.0/hot-reload-runtime-api-macosarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-macosarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "macosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-macosarm64/1.2.0/hot-reload-runtime-api-macosarm64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-macosarm64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "macosX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-macosx64/1.2.0/hot-reload-runtime-api-macosx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-macosx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "macosX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-macosx64/1.2.0/hot-reload-runtime-api-macosx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-macosx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "macosX64ResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresources",
+        "org.gradle.usage": "kotlin-multiplatformresources",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-macosx64/1.2.0/hot-reload-runtime-api-macosx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-macosx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "macosX64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "macos_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-macosx64/1.2.0/hot-reload-runtime-api-macosx64-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-macosx64",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-wasm-js/1.2.0/hot-reload-runtime-api-wasm-js-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-wasm-js",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-wasm-js/1.2.0/hot-reload-runtime-api-wasm-js-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-wasm-js",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-wasm-js/1.2.0/hot-reload-runtime-api-wasm-js-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-wasm-js",
+        "version": "1.2.0"
+      }
+    },
+    {
+      "name": "wasmJsResourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.libraryelements": "kotlin-multiplatformresourcesjs",
+        "org.gradle.usage": "kotlin-multiplatformresourcesjs",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../hot-reload-runtime-api-wasm-js/1.2.0/hot-reload-runtime-api-wasm-js-1.2.0.module",
+        "group": "org.jetbrains.compose.hot-reload",
+        "module": "hot-reload-runtime-api-wasm-js",
+        "version": "1.2.0"
+      }
+    }
+  ]
+}

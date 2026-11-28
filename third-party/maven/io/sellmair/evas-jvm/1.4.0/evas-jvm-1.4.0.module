@@ -1,0 +1,109 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../evas/1.4.0/evas-1.4.0.module",
+    "group": "io.sellmair",
+    "module": "evas",
+    "version": "1.4.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.11.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "evas-jvm-1.4.0.jar",
+          "url": "evas-jvm-1.4.0.jar",
+          "size": 90617,
+          "sha512": "c1b6d8146bb3f670d0700ffa69bfe748ccab160342ffe58e7a01d82ce81965e261b32f327cd18844c5bf30712024dab2956c25192f95cde9b02f4574ae933d5c",
+          "sha256": "fdc3fcdeedd422ad9baabf7d7d5ce4a6c2f26112776e2bd8067e59a780f29b08",
+          "sha1": "3c6955af5c56c65290575b2b998ec166c5079de4",
+          "md5": "ab09bdb22288a2c70411d6978a383c84"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "evas-jvm-1.4.0.jar",
+          "url": "evas-jvm-1.4.0.jar",
+          "size": 90617,
+          "sha512": "c1b6d8146bb3f670d0700ffa69bfe748ccab160342ffe58e7a01d82ce81965e261b32f327cd18844c5bf30712024dab2956c25192f95cde9b02f4574ae933d5c",
+          "sha256": "fdc3fcdeedd422ad9baabf7d7d5ce4a6c2f26112776e2bd8067e59a780f29b08",
+          "sha1": "3c6955af5c56c65290575b2b998ec166c5079de4",
+          "md5": "ab09bdb22288a2c70411d6978a383c84"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "evas-jvm-1.4.0-sources.jar",
+          "url": "evas-jvm-1.4.0-sources.jar",
+          "size": 14341,
+          "sha512": "7ee2acf2eb83ec1bdd907f6a8a80ab750f521c131e8eec35e87456794840d091edd931e754e380fd9e387c0ee4666533b4d49d9abc2a89bb32255dba3b7bf74b",
+          "sha256": "9904e58322d3cb6b741d26ab8149562e0f260ecd92173770736276243924cf1c",
+          "sha1": "8bfedb174935f166ebf1224d17d54fed91c6891e",
+          "md5": "e3b9e758552f740d541d4b56c872d586"
+        }
+      ]
+    }
+  ]
+}
