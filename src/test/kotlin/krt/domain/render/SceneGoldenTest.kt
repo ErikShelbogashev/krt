@@ -23,7 +23,7 @@ import org.junit.jupiter.api.TestFactory
 class SceneGoldenTest {
     @TestFactory
     fun scenes() = DemoScene.entries.flatMap { demo ->
-        val name = "scenes/${demo.path.substringBeforeLast('.')}.png"
+        val name = referenceFor(demo)
         listOf(
             dynamicTest("${demo.title} CPU golden") {
                 val (world, camera) = load(demo)
@@ -46,6 +46,12 @@ class SceneGoldenTest {
                 compareRegions(reference, actual)
             },
         )
+    }
+
+    private fun referenceFor(demo: DemoScene): String {
+        val linuxX64 = System.getProperty("os.name") == "Linux" && System.getProperty("os.arch") in X64
+        val directory = if (demo == DemoScene.CANDLE && linuxX64) "scenes/linux-x64" else "scenes"
+        return "$directory/${demo.path.substringBeforeLast('.')}.png"
     }
 
     private fun load(demo: DemoScene): Pair<World, Camera> {
@@ -108,6 +114,7 @@ class SceneGoldenTest {
     }
 
     private companion object {
+        val X64 = setOf("amd64", "x86_64")
         const val WIDTH = 64
         const val HEIGHT = 40
         const val SAMPLES = 24
