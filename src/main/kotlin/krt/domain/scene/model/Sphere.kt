@@ -33,7 +33,7 @@ class Sphere(
         val oc = ray.origin - center
         val a = ray.direction.dot(ray.direction)
         if (a !in java.lang.Double.MIN_NORMAL..Double.MAX_VALUE) {
-            return Hit.withScaledDirection(this, ray, tMin, tMax)
+            return Traceable.withScaledDirection(this, ray, tMin, tMax)
         }
         val halfB = oc.dot(ray.direction)
         val discriminant = SphereRoots.discriminant(oc, ray.direction, a, halfB, radius)

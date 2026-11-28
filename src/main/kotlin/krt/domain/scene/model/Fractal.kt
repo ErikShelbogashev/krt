@@ -66,7 +66,7 @@ class Fractal(
     override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
         val a = ray.direction.dot(ray.direction)
         return if (a in java.lang.Double.MIN_NORMAL..Double.MAX_VALUE) march(ray, tMin, tMax, a)
-            else Hit.withScaledDirection(this, ray, tMin, tMax)
+            else Traceable.withScaledDirection(this, ray, tMin, tMax)
     }
 
     private fun march(ray: Ray, tMin: Double, tMax: Double, a: Double): Hit? {
