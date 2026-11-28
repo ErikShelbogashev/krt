@@ -1,17 +1,6 @@
-// Packed positive float: eight exponent bits, sixteen fraction bits. The hidden bit is zero for subnormals.
-float emissionChannel(float index) {
-    float bits = code(index) / 65536.0;
-    float exponent = floor(bits);
-    return (fract(bits) + min(1.0, exponent)) * exp2(max(exponent - 127.0, -126.0));
-}
-
-float3 emissionColor(float index) {
-    return float3(emissionChannel(index), emissionChannel(index + 1.0), emissionChannel(index + 2.0));
-}
-
 // Light given off at p: linear RGB at a plain emitter, or between two radiant pattern endpoints.
 float3 emission(float base, float kind, float3 p) {
-    float3 color = emissionColor(base + 1.0);
+    float3 color = positiveVector(base + 1.0);
     if (kind != GLOWING) { return color; }
-    return mix(color, emissionColor(base + 6.0), materialPattern(base, p));
+    return mix(color, positiveVector(base + 6.0), materialPattern(base, p));
 }

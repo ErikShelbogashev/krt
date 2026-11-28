@@ -4,11 +4,14 @@ import kotlin.random.Random
 import krt.domain.scene.model.DemoScene
 import krt.domain.scene.model.DemoScenes
 import krt.domain.scene.model.Hit
+import krt.domain.scene.model.SceneObjectEdits
+import krt.domain.scene.model.ObjectChange
 import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sky
 import krt.domain.scene.model.Traceable
 import krt.domain.trace.GpuScene
 import krt.domain.trace.GpuScenePacking
+import krt.domain.trace.MediumRegions
 import krt.domain.trace.TraceScene
 import krt.platform.math.Point3
 import krt.platform.math.Ray
@@ -29,6 +32,8 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
         /** Packed for the GPU shader on first use (ADR 0009). */
         val gpuScene by lazy { GpuScenePacking.pack(objects, look) }
         val pack: () -> GpuScene = { gpuScene }
+
+        val mediumRegions by lazy { MediumRegions(objects) }
     }
 
     @Volatile
@@ -59,7 +64,14 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
     fun gpuSceneForFrame(): () -> GpuScene = snapshot.pack
 
     fun translateObjectById(objectId: String, offset: Point3) {
-        snapshot = Snapshot(objects.translateAll(objectId, offset), look, source)
+        val before = snapshot
+        snapshot = Snapshot(before.objects.editAll(objectId) { it.translate(offset) }, before.look, before.source)
+    }
+
+    fun editObject(objectId: String, change: ObjectChange) {
+        val before = snapshot
+        val updated = SceneObjectEdits.change(before.objects, objectId, change) { before.mediumRegions.ownerOf(it) }
+        snapshot = Snapshot(updated, before.look, before.source)
     }
 
     fun getObjectIds(): List<String> = objects.map { it.id }
@@ -83,6 +95,6 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
     }
 }
 
-/** Moves every part of object [objectId]: the triangles of a mesh share its id. */
-private fun List<Traceable>.translateAll(objectId: String, offset: Point3): List<Traceable> =
-    map { if (it.id == objectId) it.translate(offset) else it }
+/** Update every part of a mesh sharing its logical object id. */
+private fun List<Traceable>.editAll(objectId: String, edit: (Traceable) -> Traceable): List<Traceable> =
+    map { if (it.id == objectId) edit(it) else it }

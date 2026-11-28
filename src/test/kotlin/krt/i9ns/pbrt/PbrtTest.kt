@@ -30,17 +30,22 @@ class PbrtTest {
     private val overview = StartView(ViewPreset.OVERVIEW.origin, ViewPreset.OVERVIEW.target)
 
     @Test
-    fun `fractal import reports GPU iteration limits and preserves CPU detail`() {
-        for ((kind, limit) in listOf("menger" to 8, "mandelbulb" to 16)) {
+    fun `fractal import reports shared limits and saves the effective detail`() {
+        for ((kind, requested, limit) in listOf(Triple("menger", 24, 8), Triple("mandelbulb", 24, 16),
+            Triple("julia", -3, 1))) {
             val description = PbrtReader.read(
                 """
                 WorldBegin
-                #krt Shape "fractal" "string kind" "$kind" "integer iterations" 24
+                #krt Shape "fractal" "string kind" "$kind" "integer iterations" $requested
                 Shape "sphere"
                 """.trimIndent(),
             )
-            assertEquals(24, assertIs<Fractal>(description.objects.single()).iterations)
-            assertTrue(description.warnings.single().contains("24 iterations on CPU and $limit on GPU"))
+            assertEquals(limit, assertIs<Fractal>(description.objects.single()).iterations)
+            assertTrue(description.warnings.single().contains("$requested iterations, CPU and GPU use $limit"))
+            val saved = PbrtWriter.write(description.objects, description.look, overview, "edited")
+            val restored = PbrtReader.read(saved.text, saved.files)
+            assertEquals(limit, assertIs<Fractal>(restored.objects.single()).iterations)
+            assertTrue(restored.warnings.isEmpty())
         }
     }
 

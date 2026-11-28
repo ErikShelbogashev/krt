@@ -23,7 +23,7 @@ enum class FractalKind(
     val nativeRadius: Double,
     val iterations: Int,
     val parameter: Double,
-    val gpuIterations: Int = 16,
+    maxIterations: Int = 16,
 ) {
     /** The 3D Mandelbrot set of White and Nylander; [Fractal.parameter] is its power. */
     MANDELBULB(1.25, 10, 8.0),
@@ -35,7 +35,10 @@ enum class FractalKind(
     MANDELBOX(10.4, 12, 2.0),
 
     /** A slice through a quaternion Julia set; [Fractal.seed] is its constant c (with w = 0). */
-    JULIA(1.5, 11, 0.0),
+    JULIA(1.5, 11, 0.0);
+
+    /** Levels of the distance estimate supported by both renderers. */
+    val iterationRange: IntRange = 1..maxIterations
 }
 
 /**
@@ -49,10 +52,16 @@ class Fractal(
     val radius: Double,
     val material: Material,
     override val id: String = "Fractal[${UUID.randomUUID()}]",
-    val iterations: Int = kind.iterations,
+    iterations: Int = kind.iterations,
     val parameter: Double = kind.parameter,
     val seed: Point3 = JULIA_SEED,
 ) : Traceable {
+
+    val iterations: Int = iterations.coerceIn(kind.iterationRange)
+
+    fun withIterations(requested: Int): Fractal =
+        if (requested.coerceIn(kind.iterationRange) == iterations) this
+        else Fractal(kind, center, radius, material, id, requested, parameter, seed)
 
     /** World units per unit of the fractal's own space. */
     private val scale = radius / kind.nativeRadius
