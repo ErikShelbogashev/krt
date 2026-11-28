@@ -1,0 +1,151 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../material-ripple/1.12.2/material-ripple-1.12.2.module",
+    "group": "org.jetbrains.compose.material",
+    "module": "material-ripple",
+    "version": "1.12.2",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.5.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "desktopApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "material-ripple-desktop-1.12.2.jar",
+          "url": "material-ripple-desktop-1.12.2.jar",
+          "size": 77289,
+          "sha512": "780da8a3d5494c6eb728cbf6c4a40449d284e258abdec40af1e22d50e2c7619244a11fd980b69685e563ca37224b06341f86716ac674d39c24f1c81ce3d1b6cd",
+          "sha256": "06ac72a5f57b2e724ea129efbc71973a27a9e1ceeb7f568281dcb0d1ef4448fd",
+          "sha1": "b4b34a8be94b8c41526d448a58d7ce2256872df5",
+          "md5": "14de3de9fc704811971a0e5fc7fe212a"
+        }
+      ]
+    },
+    {
+      "name": "desktopRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.collection",
+          "module": "collection",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.animation",
+          "module": "animation",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-util",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "material-ripple-desktop-1.12.2.jar",
+          "url": "material-ripple-desktop-1.12.2.jar",
+          "size": 77289,
+          "sha512": "780da8a3d5494c6eb728cbf6c4a40449d284e258abdec40af1e22d50e2c7619244a11fd980b69685e563ca37224b06341f86716ac674d39c24f1c81ce3d1b6cd",
+          "sha256": "06ac72a5f57b2e724ea129efbc71973a27a9e1ceeb7f568281dcb0d1ef4448fd",
+          "sha1": "b4b34a8be94b8c41526d448a58d7ce2256872df5",
+          "md5": "14de3de9fc704811971a0e5fc7fe212a"
+        }
+      ]
+    },
+    {
+      "name": "desktopSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "material-ripple-desktop-1.12.2-sources.jar",
+          "url": "material-ripple-desktop-1.12.2-sources.jar",
+          "size": 19758,
+          "sha512": "b87457972858ff13023bc61d9114b196dc22e124e5237063746b76e75aca3abb7f12235c4bdaefefa86517debed2e9003a38e86abbac87cfd1abac8c29e27c3f",
+          "sha256": "c5808a38f92dd8732c75c33614b2d2832d5c7bdb881f5ac6ab0c62794d47c13b",
+          "sha1": "9ebe1841653d026d26e75546a984351b5f51a062",
+          "md5": "0358ea7eff685a931276ea7001586550"
+        }
+      ]
+    }
+  ]
+}

@@ -1,15 +1,13 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
-        mavenCentral()
-        google()
+        maven(rootDir.resolve("third-party/maven"))
     }
 }
 
 dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        mavenCentral()
-        google()
+        maven(rootDir.resolve("third-party/maven"))
     }
 }
 

@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-rules-exceptions",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-exceptions-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-exceptions-2.0.0-alpha.6.jar",
+          "size": 101594,
+          "sha512": "d84642daa6f307b0ed274ccf6fc4bd0e8c1faf43468463412ccd7db949b0339df28a1a325166021696e906e5271c62018bfdbd47f694369297a70484a41e30d4",
+          "sha256": "e1db7894d72e7ce3b0cacf595beece178e9427d2550597d17e8c302ea2405850",
+          "sha1": "c06ce747550432295498815510833f6a14bd0740",
+          "md5": "fd11b4b53548f7664094356bd9ee24e0"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-exceptions-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-exceptions-2.0.0-alpha.6.jar",
+          "size": 101594,
+          "sha512": "d84642daa6f307b0ed274ccf6fc4bd0e8c1faf43468463412ccd7db949b0339df28a1a325166021696e906e5271c62018bfdbd47f694369297a70484a41e30d4",
+          "sha256": "e1db7894d72e7ce3b0cacf595beece178e9427d2550597d17e8c302ea2405850",
+          "sha1": "c06ce747550432295498815510833f6a14bd0740",
+          "md5": "fd11b4b53548f7664094356bd9ee24e0"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-rules-exceptions-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-rules-exceptions-2.0.0-alpha.6-sources.jar",
+          "size": 18086,
+          "sha512": "e0ca15854a1fa97b26dda9cf66041aa0bb5d9a6c2141465aac797b8330c06feb77406bea44a8ccb2ab9010a6f9a40efce92fe90f92fa620ad7ae48247607ae9b",
+          "sha256": "14925fbd91eea2430fa20431a18058c9eac28ccadec08a3f59ce4d856f2e4513",
+          "sha1": "1c2a2e2d44fe7681543ed40dda945a66b2090bd9",
+          "md5": "75ca664076e964520a02c7ca709060a1"
+        }
+      ]
+    }
+  ]
+}

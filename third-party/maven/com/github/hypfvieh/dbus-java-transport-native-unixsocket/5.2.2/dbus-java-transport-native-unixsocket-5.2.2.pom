@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+
+    <artifactId>dbus-java-transport-native-unixsocket</artifactId>
+
+    <name>${project.artifactId}</name>
+
+    <description>
+        dbus-java transport providing unixsocket support when using Java 16+.
+    </description>
+
+    <parent>
+        <groupId>com.github.hypfvieh</groupId>
+        <artifactId>dbus-java-parent</artifactId>
+        <version>5.2.2</version>
+    </parent>
+
+    <properties>
+        <project.build.outputTimestamp>2026-09-26T14:28:22Z</project.build.outputTimestamp>
+        <dateFormatTimeZone>UTC</dateFormatTimeZone>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <release>16</release>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.hypfvieh</groupId>
+            <artifactId>dbus-java-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+    
+</project>

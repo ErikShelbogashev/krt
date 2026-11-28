@@ -1,0 +1,130 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.nlopez.compose.rules",
+    "module": "detekt",
+    "version": "0.6.8",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.8.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-core",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "io.nlopez.compose.rules",
+          "module": "common-detekt",
+          "version": {
+            "requires": "0.6.8"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-0.6.8.jar",
+          "url": "detekt-0.6.8.jar",
+          "size": 334137,
+          "sha512": "000fd292af5597d868552c6469b59aa54beb3a50e8311ed056b73206061dab960d5cc2ed905b917cc2a26aa621a079d1025d14424d9a8d28661ea11b649941bb",
+          "sha256": "9119e4517f673bac3f511a489bbb073479dbd5bddd044b331547a9e3b07339fb",
+          "sha1": "563c0d0bfea4fa7cb941030d0b7d605e8d0bc975",
+          "md5": "a3c6031d8cd3284858d54ad49db2a1f7"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-core",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "io.nlopez.compose.rules",
+          "module": "common-detekt",
+          "version": {
+            "requires": "0.6.8"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-0.6.8.jar",
+          "url": "detekt-0.6.8.jar",
+          "size": 334137,
+          "sha512": "000fd292af5597d868552c6469b59aa54beb3a50e8311ed056b73206061dab960d5cc2ed905b917cc2a26aa621a079d1025d14424d9a8d28661ea11b649941bb",
+          "sha256": "9119e4517f673bac3f511a489bbb073479dbd5bddd044b331547a9e3b07339fb",
+          "sha1": "563c0d0bfea4fa7cb941030d0b7d605e8d0bc975",
+          "md5": "a3c6031d8cd3284858d54ad49db2a1f7"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-0.6.8-sources.jar",
+          "url": "detekt-0.6.8-sources.jar",
+          "size": 56550,
+          "sha512": "97c960e52cd765179c03904f33fe0f1769d5a8d6cecdcc6292e7ca9d1f995b9dee8fda93cd9be920e4cecefead06afbe96652af0ed899bf0ed99878ff78cf051",
+          "sha256": "399f2afd3255386544122abb00cb14a1e2d808947956653dc5d79a67a62b18e2",
+          "sha1": "701cb38fb04a9ee32ab0c10a0b50921184059dd9",
+          "md5": "2ef5e2e6a00e1136a982c0f1be95b8a6"
+        }
+      ]
+    }
+  ]
+}

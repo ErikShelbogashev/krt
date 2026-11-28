@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-rules-potential-bugs",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-potential-bugs-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-potential-bugs-2.0.0-alpha.6.jar",
+          "size": 252435,
+          "sha512": "1f38dbece8e53c295836bed8c11a430484cb5410bdd392b3abf889ca832b910dccfef4ff8fb866cc9f097783f010b78e59af2a13c9da2dd157811356e2a7d136",
+          "sha256": "8bbe2dbfeaf395d1eab0c0a4c1c22e9b9b9a3a12bde51ed7544244abc9039afe",
+          "sha1": "26c8a59c0d40c36afcb590546d8a058a85d0c987",
+          "md5": "7f16b468bb7737c8552536df574f89e1"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-potential-bugs-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-potential-bugs-2.0.0-alpha.6.jar",
+          "size": 252435,
+          "sha512": "1f38dbece8e53c295836bed8c11a430484cb5410bdd392b3abf889ca832b910dccfef4ff8fb866cc9f097783f010b78e59af2a13c9da2dd157811356e2a7d136",
+          "sha256": "8bbe2dbfeaf395d1eab0c0a4c1c22e9b9b9a3a12bde51ed7544244abc9039afe",
+          "sha1": "26c8a59c0d40c36afcb590546d8a058a85d0c987",
+          "md5": "7f16b468bb7737c8552536df574f89e1"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-rules-potential-bugs-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-rules-potential-bugs-2.0.0-alpha.6-sources.jar",
+          "size": 48946,
+          "sha512": "a37610897f4f5ee7794e84c452d1132dec5c3ec7601c5e5db82a5d47c66bd1adddbeaf73126730a0886ddc5c3864e585d2cb30c327a875c8d3c77f6926ea29ee",
+          "sha256": "a983bd98eab31b6594992e2478110ef868cae5e956e38fc4d3d7c0b5bf610824",
+          "sha1": "95eed65405b02feb7de964e14dab153cbed39cc1",
+          "md5": "f9fff128cca485f20257bffb5590dbc9"
+        }
+      ]
+    }
+  ]
+}

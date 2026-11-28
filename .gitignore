@@ -41,3 +41,7 @@ bin/
 .DS_Store
 # JVM crash reports include local environment details
 hs_err_pid*.log
+
+# Locally assembled from the checked-in official Gradle distribution
+/gradle/wrapper/distribution/*.zip
+/gradle/wrapper/distribution/*.tmp

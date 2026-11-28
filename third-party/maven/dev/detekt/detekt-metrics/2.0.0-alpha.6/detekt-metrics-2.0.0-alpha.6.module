@@ -1,0 +1,130 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-metrics",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-api",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-compiler",
+          "version": {
+            "requires": "2.4.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-metrics-2.0.0-alpha.6.jar",
+          "url": "detekt-metrics-2.0.0-alpha.6.jar",
+          "size": 90065,
+          "sha512": "65c0d06001226b6ae3ce8685db2736504b38862fae44854fcd413dbb6f750ce480204350d110808d7b821b63be014e7b3a80c843ac1d5b56a1802bacacc732cf",
+          "sha256": "e7966d514b40dabc8f5b485fd75d64b4dd61fd9c2506fc5be6126a6c9ed84761",
+          "sha1": "6692202bb103b00092b65e9b285569706cf1c24b",
+          "md5": "05f6a0a6515fc4953ec85956fe16c9c3"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-api",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-compiler",
+          "version": {
+            "requires": "2.4.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-metrics-2.0.0-alpha.6.jar",
+          "url": "detekt-metrics-2.0.0-alpha.6.jar",
+          "size": 90065,
+          "sha512": "65c0d06001226b6ae3ce8685db2736504b38862fae44854fcd413dbb6f750ce480204350d110808d7b821b63be014e7b3a80c843ac1d5b56a1802bacacc732cf",
+          "sha256": "e7966d514b40dabc8f5b485fd75d64b4dd61fd9c2506fc5be6126a6c9ed84761",
+          "sha1": "6692202bb103b00092b65e9b285569706cf1c24b",
+          "md5": "05f6a0a6515fc4953ec85956fe16c9c3"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-metrics-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-metrics-2.0.0-alpha.6-sources.jar",
+          "size": 13443,
+          "sha512": "5cdd946c90596eddaa2da31371a3e0151b14697db9cd04b2f65012d345f66c096b8c19d65778914b9421a84b5a64b4797021b8b65182664daf519e948e9bfbc1",
+          "sha256": "7b6726f31e03bea1700c86ed1fc6a5edca348489ba752c65ebbd98e4c300b306",
+          "sha1": "93e3f5df64cc2e6ad315dc7ff205c13402c5c381",
+          "md5": "55137a327599758723f61974a98b9278"
+        }
+      ]
+    }
+  ]
+}

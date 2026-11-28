@@ -1,0 +1,699 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.github.vinceglb",
+    "module": "filekit-core",
+    "version": "0.17.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.9.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadataApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-io-core",
+          "version": {
+            "requires": "0.9.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.11.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-core",
+          "version": {
+            "requires": "1.13.0"
+          }
+        },
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.11.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "filekit-core-metadata.jar",
+          "url": "filekit-core-0.17.1.jar",
+          "size": 33172,
+          "sha512": "2d1f540a28ff40cd44fc6577a46e7d2065c69a6407a5806dbdc3062bc6837a28f24b478cd720f23755a80e06e414125da26da72e2b4d05e3c5777e41d50fb303",
+          "sha256": "cf03075d6638d19295cbc87276abb6abb2d84dea1f14509667c9ba01f6dfeaf5",
+          "sha1": "7e4459e86da05deb48e0b76809078424b8f49f9a",
+          "md5": "c906c5025a1fbcaa4e9a959a85a8dfb1"
+        }
+      ]
+    },
+    {
+      "name": "metadataSourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "files": [
+        {
+          "name": "filekit-core-kotlin-sources.jar",
+          "url": "filekit-core-0.17.1-sources.jar",
+          "size": 51464,
+          "sha512": "02a4b4d11263e24223ac2611db2d0db8c6c543c536dcf428a2279dd8ac1523fb4519f1fff5bfc3a75f362c88feba9a17b65e7d336d1fba4b2280cc1be0e3f20b",
+          "sha256": "7fcb6e9820fbc809207a2b43915a6cb85aec5c63b8d802d05e74b99d5efd6160",
+          "sha1": "fe10cd4e96555541b0920d69281c1423ee095033",
+          "md5": "30033dc6458457979d78f30de7d78bf1"
+        }
+      ]
+    },
+    {
+      "name": "androidApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "available-at": {
+        "url": "../../filekit-core-android/0.17.1/filekit-core-android-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-android",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "androidRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "available-at": {
+        "url": "../../filekit-core-android/0.17.1/filekit-core-android-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-android",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "androidSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "android",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "androidJvm"
+      },
+      "available-at": {
+        "url": "../../filekit-core-android/0.17.1/filekit-core-android-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-android",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "iosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-iosarm64/0.17.1/filekit-core-iosarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-iosarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "iosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-iosarm64/0.17.1/filekit-core-iosarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-iosarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "iosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-iosarm64/0.17.1/filekit-core-iosarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-iosarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-iossimulatorarm64/0.17.1/filekit-core-iossimulatorarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-iossimulatorarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-iossimulatorarm64/0.17.1/filekit-core-iossimulatorarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-iossimulatorarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "iosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "ios_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-iossimulatorarm64/0.17.1/filekit-core-iossimulatorarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-iossimulatorarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "jsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../filekit-core-js/0.17.1/filekit-core-js-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-js",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "jsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../filekit-core-js/0.17.1/filekit-core-js-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-js",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "jsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.js.compiler": "ir",
+        "org.jetbrains.kotlin.platform.type": "js"
+      },
+      "available-at": {
+        "url": "../../filekit-core-js/0.17.1/filekit-core-js-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-js",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../filekit-core-jvm/0.17.1/filekit-core-jvm-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-jvm",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../filekit-core-jvm/0.17.1/filekit-core-jvm-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-jvm",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../filekit-core-jvm/0.17.1/filekit-core-jvm-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-jvm",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "linuxArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-linuxarm64/0.17.1/filekit-core-linuxarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-linuxarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "linuxArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-linuxarm64/0.17.1/filekit-core-linuxarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-linuxarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "linuxX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-linuxx64/0.17.1/filekit-core-linuxx64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-linuxx64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "linuxX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "linux_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-linuxx64/0.17.1/filekit-core-linuxx64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-linuxx64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "macosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-macosarm64/0.17.1/filekit-core-macosarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-macosarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "macosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-macosarm64/0.17.1/filekit-core-macosarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-macosarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "macosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "macos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-macosarm64/0.17.1/filekit-core-macosarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-macosarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "mingwX64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-mingwx64/0.17.1/filekit-core-mingwx64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-mingwx64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "mingwX64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "mingw_x64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-mingwx64/0.17.1/filekit-core-mingwx64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-mingwx64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "wasmJsApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../filekit-core-wasm-js/0.17.1/filekit-core-wasm-js-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-wasm-js",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "wasmJsRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../filekit-core-wasm-js/0.17.1/filekit-core-wasm-js-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-wasm-js",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "wasmJsSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "wasm",
+        "org.jetbrains.kotlin.wasm.target": "js"
+      },
+      "available-at": {
+        "url": "../../filekit-core-wasm-js/0.17.1/filekit-core-wasm-js-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-wasm-js",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "watchosArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-watchosarm64/0.17.1/filekit-core-watchosarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-watchosarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "watchosArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-watchosarm64/0.17.1/filekit-core-watchosarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-watchosarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "watchosArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-watchosarm64/0.17.1/filekit-core-watchosarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-watchosarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "watchosDeviceArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_device_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-watchosdevicearm64/0.17.1/filekit-core-watchosdevicearm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-watchosdevicearm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "watchosDeviceArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_device_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-watchosdevicearm64/0.17.1/filekit-core-watchosdevicearm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-watchosdevicearm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "watchosDeviceArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_device_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-watchosdevicearm64/0.17.1/filekit-core-watchosdevicearm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-watchosdevicearm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "watchosSimulatorArm64ApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-api",
+        "org.jetbrains.kotlin.native.target": "watchos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-watchossimulatorarm64/0.17.1/filekit-core-watchossimulatorarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-watchossimulatorarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "watchosSimulatorArm64SourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.native.target": "watchos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-watchossimulatorarm64/0.17.1/filekit-core-watchossimulatorarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-watchossimulatorarm64",
+        "version": "0.17.1"
+      }
+    },
+    {
+      "name": "watchosSimulatorArm64MetadataElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.native.target": "watchos_simulator_arm64",
+        "org.jetbrains.kotlin.platform.type": "native"
+      },
+      "available-at": {
+        "url": "../../filekit-core-watchossimulatorarm64/0.17.1/filekit-core-watchossimulatorarm64-0.17.1.module",
+        "group": "io.github.vinceglb",
+        "module": "filekit-core-watchossimulatorarm64",
+        "version": "0.17.1"
+      }
+    }
+  ]
+}

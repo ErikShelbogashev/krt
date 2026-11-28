@@ -1,0 +1,234 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../skiko/0.150.2/skiko-0.150.2.module",
+    "group": "org.jetbrains.skiko",
+    "module": "skiko",
+    "version": "0.150.2",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.5.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "awtApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-macos-x64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-macos-arm64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-linux-x64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-linux-arm64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-windows-x64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-windows-arm64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "skiko-awt-0.150.2.jar",
+          "url": "skiko-awt-0.150.2.jar",
+          "size": 1261677,
+          "sha512": "cee02b989e508be04046bfad85903186e9317720e287973e075230e3c653e46c7f9ea61bd6c304354d8d61887b76edefc3c0a44af7073a32f5983650a182fb92",
+          "sha256": "6b36a9d9a931f5b4aedc3722ae9e769d13e945a8f18bd480340e625ea10e0171",
+          "sha1": "21a6d7f0748ab032669bf0c031b319100fce258e",
+          "md5": "99a01d54f821b0ddb807ef3bbaec6f38"
+        }
+      ]
+    },
+    {
+      "name": "awtRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.runtime",
+          "module": "jbr-api",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib"
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core-jvm",
+          "version": {
+            "requires": "1.8.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.8.0"
+          }
+        }
+      ],
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-macos-x64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-macos-arm64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-linux-x64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-linux-arm64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-windows-x64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.skiko",
+          "module": "skiko-awt-runtime-windows-arm64",
+          "version": {
+            "strictly": "0.150.2",
+            "requires": "0.150.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "skiko-awt-0.150.2.jar",
+          "url": "skiko-awt-0.150.2.jar",
+          "size": 1261677,
+          "sha512": "cee02b989e508be04046bfad85903186e9317720e287973e075230e3c653e46c7f9ea61bd6c304354d8d61887b76edefc3c0a44af7073a32f5983650a182fb92",
+          "sha256": "6b36a9d9a931f5b4aedc3722ae9e769d13e945a8f18bd480340e625ea10e0171",
+          "sha1": "21a6d7f0748ab032669bf0c031b319100fce258e",
+          "md5": "99a01d54f821b0ddb807ef3bbaec6f38"
+        }
+      ]
+    },
+    {
+      "name": "awtSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "skiko-awt-0.150.2-sources.jar",
+          "url": "skiko-awt-0.150.2-sources.jar",
+          "size": 334240,
+          "sha512": "1f2de749c6c2a61544a45c7b1b0bb92e392ba1abdd68a198027ab466cf5932e0a664fadd8d71f5b09989d6219fe32f0c9552a7bcbe96e101324afb21cb5e1412",
+          "sha256": "7a10e5e7ec5363ed6ea3b089fd5d619d0088e9e6c05459a33da256a95f9b1d4b",
+          "sha1": "adf49ec17de54ff19cc37ee1d8e797d9c3c51a9f",
+          "md5": "633edb4b1c0bda3eaebcd19b2362ecbe"
+        }
+      ]
+    }
+  ]
+}

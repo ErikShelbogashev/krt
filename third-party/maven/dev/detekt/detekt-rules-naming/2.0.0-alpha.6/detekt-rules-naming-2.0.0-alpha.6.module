@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-rules-naming",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-naming-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-naming-2.0.0-alpha.6.jar",
+          "size": 115429,
+          "sha512": "8ce04b8fb0456a1420dc26cf24766e0e1db799ee170bae0ce967bde480764d233298fe535f89b1cf9319ff2edf8622e1849cce64ca4b455c965eb4f285b3e250",
+          "sha256": "2fdac9546984ed686455632d353807dce8b80dbafd63581e998217d9d8d25e75",
+          "sha1": "b15d99733e541dedebe4f260a7056382f2d5a861",
+          "md5": "60d5dbfe6ba7d5e5ba2b6bd412b04159"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-naming-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-naming-2.0.0-alpha.6.jar",
+          "size": 115429,
+          "sha512": "8ce04b8fb0456a1420dc26cf24766e0e1db799ee170bae0ce967bde480764d233298fe535f89b1cf9319ff2edf8622e1849cce64ca4b455c965eb4f285b3e250",
+          "sha256": "2fdac9546984ed686455632d353807dce8b80dbafd63581e998217d9d8d25e75",
+          "sha1": "b15d99733e541dedebe4f260a7056382f2d5a861",
+          "md5": "60d5dbfe6ba7d5e5ba2b6bd412b04159"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-rules-naming-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-rules-naming-2.0.0-alpha.6-sources.jar",
+          "size": 22506,
+          "sha512": "9e327da6944c3193561373d9894c32a0fae108f71b2b4beb26efde87a1d00aaba84221b34aff2f5928cba02f17a6cf38bd84e263fe772e5c1cd8ef0fba8d277d",
+          "sha256": "cc84354fb35660c29975a9b8d47376718a75b20613c5bb56497a7cc2051accf4",
+          "sha1": "e2d1703c330ac211a564b8187e53751819b77e82",
+          "md5": "0ecb72d420dda105cca7a874b71a0e00"
+        }
+      ]
+    }
+  ]
+}

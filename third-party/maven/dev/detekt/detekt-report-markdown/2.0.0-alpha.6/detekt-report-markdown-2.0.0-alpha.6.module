@@ -1,0 +1,116 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-report-markdown",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-report-markdown-2.0.0-alpha.6.jar",
+          "url": "detekt-report-markdown-2.0.0-alpha.6.jar",
+          "size": 15821,
+          "sha512": "1249a7633f8266d870724cf25111f0f9e5fd0fa908ababeb0c8f3b96d3ac6e54959fd5bfc39f1934e4af36cb3c26c866a7229f4dec885495a409f5ef7a0de6a7",
+          "sha256": "72caa38a2817a861bb835b418e4d0a1a4010293dad978e78f90ac76ac87476a2",
+          "sha1": "fdb3dbda830130ebbbeb11b3810427e0e5be92bd",
+          "md5": "c78f3e561f3074fd7a9b60b8ab1838f2"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-metrics",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-utils",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-report-markdown-2.0.0-alpha.6.jar",
+          "url": "detekt-report-markdown-2.0.0-alpha.6.jar",
+          "size": 15821,
+          "sha512": "1249a7633f8266d870724cf25111f0f9e5fd0fa908ababeb0c8f3b96d3ac6e54959fd5bfc39f1934e4af36cb3c26c866a7229f4dec885495a409f5ef7a0de6a7",
+          "sha256": "72caa38a2817a861bb835b418e4d0a1a4010293dad978e78f90ac76ac87476a2",
+          "sha1": "fdb3dbda830130ebbbeb11b3810427e0e5be92bd",
+          "md5": "c78f3e561f3074fd7a9b60b8ab1838f2"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-report-markdown-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-report-markdown-2.0.0-alpha.6-sources.jar",
+          "size": 3022,
+          "sha512": "320d69347f6662f8364d13c1b869ed140b087d16964cec28d27c49a45655a7f6432b69546cb5f01ed54d34605211cc93573cdcc7b2c6f5e1276d783bedd06f15",
+          "sha256": "ec96795f37150728c609052b239879fc198f4ddc1b536207783d45c500c5f3d5",
+          "sha1": "804abbf731d355cf51de77570678dfe0afd658e9",
+          "md5": "ca1f206c4d75f0f9aa79f7940113b735"
+        }
+      ]
+    }
+  ]
+}

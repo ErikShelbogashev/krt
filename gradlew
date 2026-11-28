@@ -245,4 +245,7 @@ eval "set -- $(
         tr '\n' ' '
     )" '"$@"'
 
+if [ ! -f "$APP_HOME/gradle/wrapper/distribution/gradle-9.9.2-bin.zip" ]; then
+    "$JAVACMD" "$APP_HOME/gradle/wrapper/AssembleDistribution.java" "$APP_HOME/gradle/wrapper" || exit 1
+fi
 exec "$JAVACMD" "$@"

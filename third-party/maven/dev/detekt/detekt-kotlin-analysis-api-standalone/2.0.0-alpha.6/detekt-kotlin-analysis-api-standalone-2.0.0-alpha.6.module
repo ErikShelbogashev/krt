@@ -1,0 +1,80 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-kotlin-analysis-api-standalone",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "detekt-kotlin-analysis-api-standalone-2.0.0-alpha.6.jar",
+          "url": "detekt-kotlin-analysis-api-standalone-2.0.0-alpha.6.jar",
+          "size": 237504,
+          "sha512": "d61ab5e5d99d3882f7c810ee24e95e6ca9685930a49c772104ae67ce8e5da0885564690c550b51c16e4a6931557c4d23a7f7a9bb5d0f445a0e1ad3accce37873",
+          "sha256": "08fe542ba4b1552af778549035589e55540b5d167072c3c26b33918fbcfe349b",
+          "sha1": "5208fca84fd11e6cdfbc7d7a408703e221fe9480",
+          "md5": "bc81482ef0cecd42b5d1b0e730a9837c"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-kotlin-analysis-api-standalone-2.0.0-alpha.6.jar",
+          "url": "detekt-kotlin-analysis-api-standalone-2.0.0-alpha.6.jar",
+          "size": 237504,
+          "sha512": "d61ab5e5d99d3882f7c810ee24e95e6ca9685930a49c772104ae67ce8e5da0885564690c550b51c16e4a6931557c4d23a7f7a9bb5d0f445a0e1ad3accce37873",
+          "sha256": "08fe542ba4b1552af778549035589e55540b5d167072c3c26b33918fbcfe349b",
+          "sha1": "5208fca84fd11e6cdfbc7d7a408703e221fe9480",
+          "md5": "bc81482ef0cecd42b5d1b0e730a9837c"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-kotlin-analysis-api-standalone-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-kotlin-analysis-api-standalone-2.0.0-alpha.6-sources.jar",
+          "size": 67884,
+          "sha512": "ac1e923a4c00b03fca659672b73a25682728689818204696988976e149f6eecc873d6176a5338911cd5573d7a469aa996a563c03501a67240b5b30da38f206fc",
+          "sha256": "0208eaff9aa39d3a128c7615bfc7abee4c8d8090847ffc1a3e8a5f331b6eca69",
+          "sha1": "46c0f7572615855e071ce2202f43059217c0f29a",
+          "md5": "98e18d24837716ee2dc523d75a1adadc"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.compose.desktop",
+    "module": "desktop",
+    "version": "1.12.2",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.5.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "metadataApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-metadata",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.foundation",
+          "module": "foundation",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.material",
+          "module": "material",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.runtime",
+          "module": "runtime",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.ui",
+          "module": "ui-tooling-preview",
+          "version": {
+            "requires": "1.12.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "desktop-metadata-1.12.2.jar",
+          "url": "desktop-1.12.2.jar",
+          "size": 5098,
+          "sha512": "871c83336da70b8df0f00f261cd598c1a44b1f5eadc3b26bf7e0e78526a04328fd793caba72a8b488f1be88ae9e99342bbc9068d8d02100458741c541c5cec9d",
+          "sha256": "1586dc88ec1a177d398831772278be635b3fd50506c4e6781e3265b859b28bc5",
+          "sha1": "3617746800e66c43fbc4fda34e6afd799caafdec",
+          "md5": "c952ea6eebe9d8d87740a41953e4c428"
+        }
+      ]
+    },
+    {
+      "name": "metadataSourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "non-jvm",
+        "org.gradle.usage": "kotlin-runtime",
+        "org.jetbrains.kotlin.platform.type": "common"
+      },
+      "files": [
+        {
+          "name": "desktop-kotlin-1.12.2-sources.jar",
+          "url": "desktop-1.12.2-sources.jar",
+          "size": 4712,
+          "sha512": "ba125fdf1693c27d2a63dbd50c1d1d057b2679129c78d6a4493ddc716c93706ee865394d4e9c913264fcd92011310905795415f17c3c13c5a7900cc2915b171c",
+          "sha256": "98cc54287da7fc323f39f5395549636f6a9bdc84adeaeaebeb153ce9c6061b77",
+          "sha1": "bb90d87d14d92597711648b6b4a36a86cf263f7f",
+          "md5": "812bf76efa4a1dfcd0ade2f2ea7bf9fd"
+        }
+      ]
+    },
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../desktop-jvm/1.12.2/desktop-jvm-1.12.2.module",
+        "group": "org.jetbrains.compose.desktop",
+        "module": "desktop-jvm",
+        "version": "1.12.2"
+      }
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../desktop-jvm/1.12.2/desktop-jvm-1.12.2.module",
+        "group": "org.jetbrains.compose.desktop",
+        "module": "desktop-jvm",
+        "version": "1.12.2"
+      }
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "available-at": {
+        "url": "../../desktop-jvm/1.12.2/desktop-jvm-1.12.2.module",
+        "group": "org.jetbrains.compose.desktop",
+        "module": "desktop-jvm",
+        "version": "1.12.2"
+      }
+    }
+  ]
+}
