@@ -34,14 +34,14 @@ object FrameSampling {
 
     /** A random generator for one pixel, derived from the frame seed so the frame does not depend on scheduling. */
     fun pixelRandom(frameSeed: Long, pixel: Pixel, width: Int): Random =
-        Random(frameSeed + pixel.j.toLong() * width + pixel.i)
+        Random(mixSeed(frameSeed + pixel.j.toLong() * width + pixel.i))
 
     /**
      * A random generator for one pixel in one pass of a progressive frame: every (pass, pixel) pair gets
      * its own seed, so the frame does not depend on scheduling. Pass 0 matches [pixelRandom].
      */
     fun passRandom(frameSeed: Long, pixel: Pixel, width: Int, height: Int, pass: Int): Random =
-        Random(frameSeed + pass.toLong() * width * height + pixel.j.toLong() * width + pixel.i)
+        Random(mixSeed(frameSeed + pass.toLong() * width * height + pixel.j.toLong() * width + pixel.i))
 
     /** One jittered sample of [pixel]. */
     fun sampleOnce(
@@ -89,4 +89,12 @@ object FrameSampling {
         }
 
     private const val WIREFRAME_DETAIL = 1.0
+}
+
+// The SplitMix64 finalizer avalanches consecutive pixel/pass keys before they seed Kotlin's XorWow.
+@Suppress("MagicNumber") // SplitMix64 finalizer constants and shifts.
+private fun mixSeed(key: Long): Long {
+    val first = (key xor (key ushr 30)) * -4658895280553007687L
+    val second = (first xor (first ushr 27)) * -7723592293110705685L
+    return second xor (second ushr 31)
 }
