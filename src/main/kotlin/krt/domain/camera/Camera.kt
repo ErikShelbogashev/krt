@@ -12,6 +12,7 @@ import krt.domain.camera.model.CameraSnapshot
 import krt.domain.camera.model.ViewPreset
 import krt.domain.camera.model.Lens
 import krt.domain.scene.model.SceneLook
+import krt.platform.math.PixelDifferentials
 import krt.platform.math.Point3
 import krt.platform.math.Ray
 
@@ -62,6 +63,8 @@ class Camera(
             updateProjection()
         }
 
+    var filterWood = false
+    var stratifiedPixels = false
     var samplesPerPixel = 5
     val aspectRatio: Double get() = imageWidth.toDouble() / imageHeight.toDouble()
     val lensRadius: Double get() = aperture / 2
@@ -73,6 +76,7 @@ class Camera(
     private var lowerLeftCorner: Point3 = Point3.ZERO
     private var horizontal: Point3 = Point3.ZERO
     private var vertical: Point3 = Point3.ZERO
+    private lateinit var pixel: PixelDifferentials
 
     private var yaw = 0.0
     private var pitch = 0.0
@@ -88,7 +92,10 @@ class Camera(
     /** The point one unit ahead of the camera, along its view. */
     val lookAt: Point3 get() = _target
 
-    fun snapshot(): CameraSnapshot = CameraSnapshot(origin, lookAt, fov, aperture, focusDist, movementSpeed)
+    fun snapshot(): CameraSnapshot = CameraSnapshot(
+        origin, lookAt, fov, aperture, focusDist, movementSpeed,
+        stratifiedPixels = stratifiedPixels, filterWood = filterWood,
+    )
 
     /** Stands the camera at [origin] looking at [target]; the pitch keeps clear of the poles. */
     fun lookFrom(origin: Point3, target: Point3) {
@@ -189,19 +196,24 @@ class Camera(
         lowerLeftCorner = _origin - (u * halfWidth + v * halfHeight + w) * focusDist
         horizontal = u * 2.0 * halfWidth * focusDist
         vertical = v * 2.0 * halfHeight * focusDist
+        pixel = PixelDifferentials(horizontal / imageWidth.toDouble(), vertical / imageHeight.toDouble())
     }
 
-    fun ray(s: Double, t: Double, random: Random): Ray {
+    fun ray(s: Double, t: Double, random: Random, blockSize: Int = 1): Ray {
         val rd = Point3.randomInUnitDisk(random) * lensRadius
         val offset = u * rd.x + v * rd.y
         return Ray(
             _origin + offset,
-            lowerLeftCorner + horizontal * s + vertical * t - _origin - offset
+            lowerLeftCorner + horizontal * s + vertical * t - _origin - offset,
+            pixel = if (filterWood) pixel.forBlock(blockSize) else null,
         )
     }
 
     /** The projection that [ray] uses, as plain values, for renderers that build rays elsewhere. */
-    fun view(): CameraView = CameraView(_origin, lowerLeftCorner, horizontal, vertical, u, v, lensRadius)
+    fun view(): CameraView = CameraView(
+        _origin, lowerLeftCorner, horizontal, vertical, u, v, lensRadius,
+        sampling = PixelSampling(filterWood, stratifiedPixels),
+    )
 
     fun project(point: Point3): Point? {
         val cameraSpacePoint = point - _origin
@@ -265,6 +277,9 @@ data class CameraView(
     val u: Point3,
     val v: Point3,
     val lensRadius: Double,
+    val sampling: PixelSampling = PixelSampling(),
 )
+
+data class PixelSampling(val filterWood: Boolean = false, val stratifiedPixels: Boolean = false)
 
 enum class CameraMove { FORWARD, BACKWARD, LEFT, RIGHT, UP, DOWN, NONE }

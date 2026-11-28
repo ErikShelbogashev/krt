@@ -105,6 +105,7 @@ class GpuTracer : AutoCloseable {
     private fun step(frame: GpuFrame, previous: Shader?, packed: Boolean): Shader = builder(effect).use { builder ->
         builder.uniform("packedWindow", if (packed) 1f else 0f)
         builder.child("previous", previous ?: noFrame)
+        builder.uniform("filterWood", if (frame.view.sampling.filterWood) 1f else 0f)
         builder.uniform("previousSamples", frame.band.previousSamples.toFloat())
         val stamp = Color4f(frame.band.marker)
         builder.uniform("stepMarker", stamp.r, stamp.g, stamp.b)
@@ -132,6 +133,7 @@ class GpuTracer : AutoCloseable {
         builder.vector("camVertical", frame.view.vertical)
         builder.vector("camU", frame.view.u)
         builder.vector("camV", frame.view.v)
+        builder.uniform("stratifiedPixels", if (frame.view.sampling.stratifiedPixels && !frame.band.quick) 1f else 0f)
         builder.uniform("lensRadius", frame.view.lensRadius.toFloat())
         builder.uniform("maxDepth", frame.maxDepth.toFloat())
         builder.uniform("samples", frame.samples.toFloat())

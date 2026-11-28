@@ -65,6 +65,10 @@ fun main(args: Array<String>) {
         }
         return
     }
+    when (args.getOrNull(1)) {
+        "pixel-sampling" -> return PixelSamplingBenchmark.run(filtered = false)
+        "pixel-sampling-wood" -> return PixelSamplingBenchmark.run(filtered = true)
+    }
     val scenes = SceneLibrary()
     val cases = DemoScene.entries.map { it.name to { scenes.load(it) } } +
         (STRESS to { scenes.load(File(STRESS_SCENE)).getOrThrow() })
@@ -88,6 +92,8 @@ fun main(args: Array<String>) {
                 if (name == DemoScene.MATERIALS.name) {
                     results += Smoke.run(controller, stepMs, name, scene, 2048, 2048, SAMPLES)
                     results += Smoke.run(controller, stepMs, "MATERIALS 32 spp", scene, 400, 224, 32)
+                    results += Smoke.run(controller, stepMs, "MATERIALS filtered wood", scene, 400, 224, 8,
+                        filterWood = true)
                 }
             }
         }
@@ -169,13 +175,16 @@ private object Smoke {
     fun run(
         controller: RenderController, stepMs: MutableList<Double>, name: String, description: SceneDescription,
         width: Int, height: Int, samples: Int, frame: Frame = Frame(width, height),
-        depth: Int = DEPTH, aperture: Double = 0.0, timeout: Long = FRAME_CAP_MS,
+        depth: Int = DEPTH, aperture: Double = 0.0, timeout: Long = FRAME_CAP_MS, filterWood: Boolean = false,
     ): SmokeResult {
         val start = requireNotNull(description.look.start)
         val camera = Camera(
             start.origin, start.target, Point3(0.0, 1.0, 0.0), description.look.fov, aperture,
             (start.target - start.origin).length(), width, height,
-        ).apply { samplesPerPixel = samples }
+        ).apply {
+            samplesPerPixel = samples
+            this.filterWood = filterWood
+        }
         val tracer = RayTracer(World(description.objects, description.look), depth)
         val done = CountDownLatch(1)
         var failure: String? = null

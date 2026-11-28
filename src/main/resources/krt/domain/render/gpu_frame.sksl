@@ -24,6 +24,7 @@ uniform float quickLook;            // 1 for the quick look of a frame: no media
 uniform float motionBlur;           // 1 when rays go at random moments of the shutter and balls move (ADR 0013)
 uniform float3 skyHorizon;          // Sky: the gradient from the horizon to the zenith
 uniform float3 skyZenith;
+uniform float filterWood;           // tangent-plane filter of primary-ray wood colour and bump
 uniform float2 frameSize;
 uniform float3 camOrigin;
 uniform float3 camLowerLeft;
@@ -32,6 +33,7 @@ uniform float3 camVertical;
 uniform float3 camU;
 uniform float3 camV;
 uniform float lensRadius;
+uniform float stratifiedPixels;
 uniform float maxDepth;
 uniform float samples;
 uniform float seed;

@@ -15,6 +15,8 @@ data class Hit(
     val material: Material,
     val media: MediumInterface? = null,
     val lightSampled: Boolean = true,
+    /** Tangent-plane normal facing the incoming ray, before interpolation and bump mapping. */
+    val geometricNormal: Point3 = normal,
 ) {
     companion object {
         fun create(

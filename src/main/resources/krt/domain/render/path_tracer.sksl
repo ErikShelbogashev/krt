@@ -7,6 +7,12 @@ float finiteRadiance(float channel) {
     return channel >= 0.0 && channel <= FLOAT_MAX ? min(channel, STORE_MAX) : 0.0;
 }
 
+// Reverse four base-4 digits, selecting one bit from each digit for this axis (PixelStrata).
+float stratum(float index) {
+    return 8.0 * mod(index, 2.0) + 4.0 * mod(floor(index / 4.0), 2.0)
+         + 2.0 * mod(floor(index / 16.0), 2.0) + mod(floor(index / 64.0), 2.0);
+}
+
 half4 main(float2 position) {
     if (position.x >= frameSize.x) { return half4(half3(stepMarker), 1.0); }
     if (position.y < bandStart || position.y >= bandEnd) { return previous.eval(position); }
@@ -14,14 +20,23 @@ half4 main(float2 position) {
     float j = frameSize.y - 1.0 - floor(position.y);
     pixelId = float2(i, j);
 
+    float shift = stratifiedPixels > 0.5 ? floor(hash13(float3(pixelId + 0.5, seed)) * 256.0) : 0.0;
     float3 sum = float3(0.0);
     for (int n = 0; n < MAX_SAMPLES; n++) {
         if (float(n) >= samples) { break; }
         // Each (pixel, sample) owns its random stream regardless of how the scheduler cut the pass.
         sampleKey = seed * 31.0 + (previousSamples + float(n)) * 0.754877666;
         counter = 0.0;
-        float s = (i + rnd()) / frameSize.x;
-        float t = (j + rnd()) / frameSize.y;
+        float jitterX = rnd();
+        float jitterY = rnd();
+        if (stratifiedPixels > 0.5) {
+            float pass = previousSamples + float(n);
+            float cell = mod(mod(pass, 256.0) * 181.0 + shift, 256.0);
+            jitterX = (stratum(cell) + jitterX) / 16.0;
+            jitterY = (stratum(floor(cell / 2.0)) + jitterY) / 16.0;
+        }
+        float s = (i + jitterX) / frameSize.x;
+        float t = (j + jitterY) / frameSize.y;
         float2 rd = randomInUnitDisk() * lensRadius;
         float3 offset = camU * rd.x + camV * rd.y;
         float3 origin = camOrigin + offset;
