@@ -70,5 +70,10 @@ internal fun assertMatchesGolden(name: String, frame: Frame) {
     for (y in 0 until actual.height) for (x in 0 until actual.width) {
         if (expected.getRGB(x, y) != actual.getRGB(x, y)) differing++
     }
-    assertEquals(0, differing, "pixels differing from $golden")
+    if (differing > 0) {
+        val output = File("build/reports/golden/$name")
+        output.parentFile.mkdirs()
+        ImageIO.write(actual, "png", output)
+        fail("$differing pixels differ from $golden; actual image: $output")
+    }
 }

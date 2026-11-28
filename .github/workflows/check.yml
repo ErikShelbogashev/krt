@@ -16,3 +16,9 @@ jobs:
           java-version: 25
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew check --no-daemon
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: golden-mismatches
+          path: build/reports/golden/**/*.png
+          if-no-files-found: ignore
