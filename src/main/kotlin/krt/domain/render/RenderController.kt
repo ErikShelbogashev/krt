@@ -123,7 +123,7 @@ class RenderController(
      * rested for [REFINE_DELAY], steps of [GpuSampling.nextStep] samples at full resolution and depth follow, no
      * larger than the step budget lets them ([GpuSampling.StepBudget]),
      * each blended into the frame of the steps before, the next as soon as the window has drawn the one before
-     * (see [gpuFrameShown]), at most [repaintIntervalMs] later. A newer frame cancels them all.
+     * (see [gpuFrameShown]), at most [STEP_WAIT_REPAINTS] repaint intervals later. A newer frame cancels them all.
      */
     private fun renderGpuImage(rayTracer: RayTracer, camera: Camera, onGpuFrame: (Shader, RenderProgress) -> Unit) {
         val scene = rayTracer.world.gpuScene
@@ -170,7 +170,10 @@ class RenderController(
                     val drawn = CompletableDeferred<Unit>()
                     recentSteps.keepRecent(shader to drawn, RECENT_DRAFTS)
                     SwingUtilities.invokeLater { onGpuFrame(shader, progress) }
-                    withTimeoutOrNull(repaintIntervalMs.milliseconds) { drawn.await() }
+                    // One step in flight. Each step is the one before plus its band, so a step the window never drew
+                    // is drawn inside the next, and a run of them inside the last: a step published before the window
+                    // drew the one before chains them into one draw the GPU stalls on, until Metal drops the window.
+                    withTimeoutOrNull((repaintIntervalMs * STEP_WAIT_REPAINTS).milliseconds) { drawn.await() }
                 }
                 taken += samples
             }
@@ -352,6 +355,9 @@ class RenderController(
 
         /** Sums per pixel: r, g and b. */
         private const val CHANNELS = 3
+
+        /** Repaint intervals a GPU step waits at most for the window to draw the one before. */
+        private const val STEP_WAIT_REPAINTS = 20
 
         fun default(): RenderController = RenderController(50L, 50)
     }
