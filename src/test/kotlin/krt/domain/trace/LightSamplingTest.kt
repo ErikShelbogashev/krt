@@ -191,8 +191,12 @@ class LightSamplingTest {
             Sphere(Point3(0.0, 3.0, 0.0), 0.5, Emissive(Color.ONE, 10.0)),
             Fog(Point3(0.0, 1.0, 0.0), 2.5, Medium(Color(0.1, 0.25, 0.4), Color(0.9, 0.9, 0.9))),
         )
-        val plain = floorBrightness(TraceScene(objects, NIGHT), Random(21))
-        val sampled = floorBrightness(TraceScene(objects, NIGHT.copy(sampleLights = true)), Random(22))
+        val plainScene = TraceScene(objects, NIGHT)
+        val sampledScene = TraceScene(objects, NIGHT.copy(sampleLights = true))
+        // Independent batches reduce the influence of rare bright paths in the reference estimator.
+        val batches = 1..12
+        val plain = batches.map { floorBrightness(plainScene, Random(19 + 2 * it)) }.average()
+        val sampled = batches.map { floorBrightness(sampledScene, Random(20 + 2 * it)) }.average()
         assertTrue(abs(plain - sampled) < plain * 0.04, "plain $plain vs sampled $sampled")
     }
 

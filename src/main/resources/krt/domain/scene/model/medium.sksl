@@ -2,20 +2,31 @@ float3 mediumDensity(float medium) { return vector(mediaStart + medium * MEDIUM_
 
 float3 mediumAlbedo(float medium) { return vector(mediaStart + medium * MEDIUM_VALUES + 3.0); }
 
-float mediumG(float medium) { return number(mediaStart + medium * MEDIUM_VALUES + 6.0); }
+float mediumG(float medium) { return number(mediaStart + medium * MEDIUM_VALUES + 6.0) / RANGE; }
 
 // HenyeyGreenstein.density: the share of scattered light per steradian at [cosine] from the incoming direction.
 float phaseDensity(float cosine, float g) {
-    float d = 1.0 + g * g - 2.0 * g * cosine;
-    return (1.0 - g * g) / (4.0 * PI * d * sqrt(d));
+    float magnitude = abs(g);
+    float angle = clamp(cosine, -1.0, 1.0);
+    float separation = g < 0.0 ? 1.0 + angle : 1.0 - angle;
+    float gap = 1.0 - magnitude;
+    float d = gap * gap + 2.0 * magnitude * separation;
+    return gap * (1.0 + magnitude) / (4.0 * PI * d * sqrt(d));
 }
 
 // HenyeyGreenstein.sample: a direction scattered from the unit [incoming] direction, drawn in proportion to it.
 float3 phaseSample(float3 incoming, float g) {
     float u = rnd();
     float v = rnd();
-    float s = (1.0 - g * g) / (1.0 - g + 2.0 * g * u);
-    float cosine = abs(g) < 0.001 ? 1.0 - 2.0 * u : clamp((1.0 + g * g - s * s) / (2.0 * g), -1.0, 1.0);
+    float cosine;
+    if (abs(g) < 0.001) {
+        float t = 2.0 * u - 1.0;
+        float d = 1.0 + g * t;
+        cosine = (t * (1.0 + g * g) + 0.5 * g * (3.0 + t * t + g * g * (t * t - 1.0))) / (d * d);
+    } else {
+        float s = (1.0 - g * g) / (1.0 - g + 2.0 * g * u);
+        cosine = clamp((1.0 + g * g - s * s) / (2.0 * g), -1.0, 1.0);
+    }
     float sine = sqrt(max(0.0, 1.0 - cosine * cosine));
     float phi = 2.0 * PI * v;
     float3 axis = abs(incoming.y) < 0.999 ? float3(0.0, 1.0, 0.0) : float3(1.0, 0.0, 0.0);
@@ -44,17 +55,37 @@ float freeDistance(float3 density) {
     return channel > 0.0 ? -log(1.0 - u) / channel : FAR;
 }
 
+// FreeFlight weights are relative channel probabilities. Cancel the common exponential if the
+// individual probabilities approach the float subnormal range (some devices flush it to zero).
+float3 mixtureWeight(float3 density, float distance, bool scatter) {
+    float3 coefficient = scatter ? density : float3(1.0);
+    float3 rates = coefficient * exp(-density * distance);
+    float sum = rates.x + rates.y + rates.z;
+    if (sum < 1.0e-36) {
+        float3 active = scatter ? float3(
+            density.x > 0.0 ? density.x : FAR,
+            density.y > 0.0 ? density.y : FAR,
+            density.z > 0.0 ? density.z : FAR) : density;
+        float lowest = min(active.x, min(active.y, active.z));
+        rates = coefficient * exp(-(active - lowest) * distance);
+        sum = rates.x + rates.y + rates.z;
+    }
+    return sum > 0.0 ? rates / (sum / 3.0) : float3(0.0);
+}
+
 // PathTracing.transmittance: the share of light along a unit [direction] over [distance] from [origin] in [medium]:
 // none past a solid surface; through media and their interfaces, what the media let through.
 float3 transmittance(float3 origin, float3 direction, float distance, float medium) {
     float3 share = float3(1.0);
     float remaining = distance;
-    for (int crossing = 0; crossing < 8; crossing++) {
+    for (int crossing = 0; crossing <= MAX_SHADOW_CROSSINGS; crossing++) {
         float slot = closestHit(origin, direction, remaining);
         if (slot < 0.0) {
             return medium >= 0.0 ? share * exp(-mediumDensity(medium) * remaining) : share;
         }
-        if (code(materialStart + slot * MATERIAL_VALUES) != INTERFACE) { return float3(0.0); }
+        if (crossing == MAX_SHADOW_CROSSINGS || code(materialStart + slot * MATERIAL_VALUES) != INTERFACE) {
+            return float3(0.0);
+        }
         if (medium >= 0.0) { share *= exp(-mediumDensity(medium) * hitT); }
         float3 p = origin + direction * hitT;
         medium = mediumBeyond(slot, dot(direction, outwardNormal(slot, p)) < 0.0);

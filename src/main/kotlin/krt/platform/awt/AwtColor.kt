@@ -3,14 +3,11 @@ package krt.platform.awt
 import kotlin.math.sqrt
 import krt.platform.math.Color
 
-fun Color.toAWTColor(samplesPerPixel: Int): Int {
-    fun Double.clamp(min: Double, max: Double): Double = when {
-        this < min -> min
-        this > max -> max
-        else -> this
-    }
+private const val MAX_CHANNEL = 255.0
+private const val HALF_STEP = 0.5
 
-    fun scaleTo255(x: Double) = (256 * sqrt(x).clamp(0.0, 0.990)).toInt()
+fun Color.toAWTColor(samplesPerPixel: Int): Int {
+    fun scaleTo255(x: Double) = (MAX_CHANNEL * sqrt(x.coerceIn(0.0, 1.0)) + HALF_STEP).toInt()
 
     val scale = 1.0 / samplesPerPixel
     val r = scaleTo255(x * scale)

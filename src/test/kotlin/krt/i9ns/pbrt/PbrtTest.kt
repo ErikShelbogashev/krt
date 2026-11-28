@@ -30,6 +30,21 @@ class PbrtTest {
     private val overview = StartView(ViewPreset.OVERVIEW.origin, ViewPreset.OVERVIEW.target)
 
     @Test
+    fun `fractal import reports GPU iteration limits and preserves CPU detail`() {
+        for ((kind, limit) in listOf("menger" to 8, "mandelbulb" to 16)) {
+            val description = PbrtReader.read(
+                """
+                WorldBegin
+                #krt Shape "fractal" "string kind" "$kind" "integer iterations" 24
+                Shape "sphere"
+                """.trimIndent(),
+            )
+            assertEquals(24, assertIs<Fractal>(description.objects.single()).iterations)
+            assertTrue(description.warnings.single().contains("24 iterations on CPU and $limit on GPU"))
+        }
+    }
+
+    @Test
     fun `the classic scene comes back from its file exactly`() {
         val classic = DemoScenes.classic(Random(1))
         val written = PbrtWriter.write(classic, SceneLook.CLASSIC, overview, "classic")

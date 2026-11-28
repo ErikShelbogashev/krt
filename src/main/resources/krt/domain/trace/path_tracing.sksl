@@ -18,13 +18,10 @@ float3 trace(float3 origin, float3 direction) {
             float flight = freeDistance(density);
             float surfaceDistance = slot < 0.0 ? FAR : hitT * speed;
             if (flight < surfaceDistance) {
-                float3 passed = exp(-density * flight);
-                float pdf = dot(density * passed, float3(1.0 / 3.0));
-                if (pdf <= 0.0) { return radiance; }
-                throughput *= mediumAlbedo(medium) * density * passed / pdf;
+                throughput *= mediumAlbedo(medium) * mixtureWeight(density, flight, true);
                 float3 at = origin + direction * (flight / speed);
                 float particleLobe = enclosed ? SPECULAR : VOLUME;
-                countEmission = lightCount < 1.0 || particleLobe == SPECULAR;
+                countEmission = bounces + 1.0 >= maxDepth || lightCount < 1.0 || particleLobe == SPECULAR;
                 // For a particle, directLight takes the direction the ray came in where a surface's normal goes.
                 float3 incoming = normalize(direction);
                 if (!countEmission) { radiance += throughput * directLight(at, incoming, VOLUME, medium); }
@@ -34,11 +31,8 @@ float3 trace(float3 origin, float3 direction) {
                 bounces += 1.0;
                 continue;
             }
-            if (slot < 0.0) { return radiance; }
-            float3 through = exp(-density * surfaceDistance);
-            float chance = dot(through, float3(1.0 / 3.0));
-            if (chance <= 0.0) { return radiance; }
-            throughput *= through / chance;
+            if (slot < 0.0 && min(density.x, min(density.y, density.z)) > 0.0) { return radiance; }
+            throughput *= mixtureWeight(density, surfaceDistance, false);
         }
         if (slot < 0.0) { return radiance + throughput * sky(direction); }
 
@@ -80,8 +74,7 @@ float3 trace(float3 origin, float3 direction) {
                 if (dot(scattered, normal) <= 0.0) { return radiance; }
                 attenuation = float3(1.0);
             } else {
-                scattered = normal + randomInUnitSphere();
-                if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+                scattered = cosineHemisphere(normal);
                 lobe = DIFFUSE;
                 if (kind == CHECKER) {
                     float cell = number(base + 9.0);
@@ -135,9 +128,7 @@ float3 trace(float3 origin, float3 direction) {
             // Velvet: the diffuse bounce, lit by light sampling, or the sheen one, as Velvet.scatter.
             float diffuseChance = number(base + 5.0);
             bool diffuse = rnd() < diffuseChance;
-            float3 offset = randomInUnitSphere();
-            scattered = normal + (diffuse ? offset : normalize(offset));
-            if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+            scattered = cosineHemisphere(normal);
             if (diffuse) {
                 attenuation = color / diffuseChance;
                 lobe = DIFFUSE;
@@ -173,8 +164,7 @@ float3 trace(float3 origin, float3 direction) {
                 scattered = unitDirection;
                 attenuation = (float3(1.0) - reflectance) / (1.0 - chance);
             } else {
-                scattered = normal + randomInUnitSphere();
-                if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+                scattered = cosineHemisphere(normal);
                 attenuation = color * (float3(1.0) - reflectance) / (1.0 - chance);
                 lobe = DIFFUSE;
             }
@@ -185,12 +175,11 @@ float3 trace(float3 origin, float3 direction) {
             origin = p;
             continue;
         } else {
-            scattered = normal + randomInUnitSphere();
-            if (dot(scattered, scattered) < 1.0e-8) { scattered = normal; }
+            scattered = cosineHemisphere(normal);
             lobe = DIFFUSE;
         }
         throughput *= attenuation;
-        countEmission = lightCount < 1.0 || lobe == SPECULAR;
+        countEmission = bounces + 1.0 >= maxDepth || lightCount < 1.0 || lobe == SPECULAR;
         if (!countEmission) { radiance += throughput * directLight(p, normal, lobe, medium); }
         if (quickLook < 0.5 && boundsMedia(slot) && dot(scattered, normal) < 0.0) {
             // Through a surface that bounds media, as PathTracing.after: into the medium beyond, closed by it.

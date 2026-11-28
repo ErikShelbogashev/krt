@@ -21,12 +21,10 @@ class Velvet(val base: Color, val sheen: Color, val roughness: Double) : Materia
 
     override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered {
         val diffuse = random.nextDouble() < diffuseChance
-        val offset = Point3.randomInUnitSphere(random)
+        val direction = hit.normal.cosineHemisphere(random)
         if (diffuse) {
-            val direction = (hit.normal + offset).takeIf { !it.isNearZero() } ?: hit.normal
             return Scattered(ray.next(hit.p, direction), base / diffuseChance, Lobe.DIFFUSE)
         }
-        val direction = (hit.normal + offset.unit()).takeIf { !it.isNearZero() } ?: hit.normal
         val weight = Sheen.weight(-ray.direction.unit(), direction.unit(), hit.normal, roughness)
         return Scattered(ray.next(hit.p, direction), sheen * (weight / (1 - diffuseChance)))
     }

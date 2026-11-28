@@ -15,15 +15,21 @@ import kotlin.math.sqrt
 import krt.platform.math.Aabb
 import krt.platform.math.Point3
 import krt.platform.math.Ray
+import krt.platform.math.SphereRoots
 
 /** The fractals krt draws by their distance estimates (ADR 0015), each with the radius it fits in natively. */
 @Suppress("MagicNumber") // the shapes' own sizes and defaults
-enum class FractalKind(val nativeRadius: Double, val iterations: Int, val parameter: Double) {
+enum class FractalKind(
+    val nativeRadius: Double,
+    val iterations: Int,
+    val parameter: Double,
+    val gpuIterations: Int = 16,
+) {
     /** The 3D Mandelbrot set of White and Nylander; [Fractal.parameter] is its power. */
     MANDELBULB(1.25, 10, 8.0),
 
     /** Menger's sponge: a cube with holes, holes in the holes, [Fractal.iterations] deep. */
-    MENGER(1.75, 4, 0.0),
+    MENGER(1.75, 4, 0.0, 8),
 
     /** Lowe's Mandelbox; [Fractal.parameter] is its scale, 2 for the classic box. */
     MANDELBOX(10.4, 12, 2.0),
@@ -61,8 +67,8 @@ class Fractal(
         val oc = ray.origin - center
         val a = ray.direction.dot(ray.direction)
         val halfB = oc.dot(ray.direction)
-        val discriminant = halfB * halfB - a * (oc.dot(oc) - radius * radius)
-        if (discriminant < 0) return null
+        val discriminant = SphereRoots.discriminant(oc, ray.direction, a, halfB, radius)
+        if (a == 0.0 || discriminant < 0) return null
         val root = sqrt(discriminant)
         val speed = sqrt(a)
         var t = maxOf((-halfB - root) / a, tMin)
@@ -158,6 +164,7 @@ object FractalDistance {
         var r = sqrt(x * x + y * y + z * z)
         var i = 0
         while (i < iterations && r <= BAILOUT) {
+            if (r == 0.0) return 0.0 // The critical orbit returned to its origin and repeats.
             val theta = acos((z / r).coerceIn(-1.0, 1.0)) * power
             val phi = atan2(y, x) * power
             dr = power * r.pow(power - 1) * dr + 1
@@ -169,7 +176,7 @@ object FractalDistance {
             r = sqrt(x * x + y * y + z * z)
             i++
         }
-        return HALF * ln(r) * r / dr
+        return if (r == 0.0) 0.0 else HALF * ln(r) * r / dr
     }
 
     fun menger(px: Double, py: Double, pz: Double, iterations: Int): Double {
@@ -213,6 +220,8 @@ object FractalDistance {
     }
 
     fun julia(px: Double, py: Double, pz: Double, iterations: Int, c: Point3): Double {
+        // For c = 0 the quaternion norm squares each iteration; its filled Julia set is the unit ball.
+        if (c == Point3.ZERO) return sqrt(px * px + py * py + pz * pz) - 1.0
         var qx = px
         var qy = py
         var qz = pz

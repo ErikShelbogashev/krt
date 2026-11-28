@@ -44,8 +44,8 @@ object FrameSampling {
 
     /** One jittered sample of [pixel]. */
     fun sampleOnce(pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random): Color {
-        val u = (pixel.i.toDouble() + random.nextDouble()) / (camera.imageWidth - 1)
-        val v = (pixel.j.toDouble() + random.nextDouble()) / (camera.imageHeight - 1)
+        val u = (pixel.i.toDouble() + random.nextDouble()) / camera.imageWidth
+        val v = (pixel.j.toDouble() + random.nextDouble()) / camera.imageHeight
         return rayTracer.color(camera.ray(u, v, random), random)
     }
 

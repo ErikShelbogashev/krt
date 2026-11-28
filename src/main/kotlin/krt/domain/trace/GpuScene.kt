@@ -28,7 +28,7 @@ import krt.platform.math.Point3
  *   vertex and the two edges from it of a triangle or the centre, radius, kind, iterations, parameter and seed of
  *   a fractal (ADR 0015); then, for a triangle with vertex normals, 1 + the number of its record in the normals
  *   section, 0 for a flat one; last 1 + the numbers of the media inside and outside the surface, 0 for none
- *   (ADR 0014);
+ *   (ADR 0014); the last texel gives the original scene index for equal-distance hits;
  * - their materials from [materialStart], [GpuScenePacking.MATERIAL_VALUES] each: material code, then a colour,
  *   two parameters, a second colour and a third parameter, as [GpuMaterials.values] lays them out;
  * - [GpuSections.lightCount] lights from [GpuSections.lightStart], [GpuScenePacking.LIGHT_VALUES] each: the
@@ -91,7 +91,7 @@ data class GpuFog(val center: Point3, val radius: Double, val medium: Int)
 object GpuScenePacking {
 
     const val NODE_VALUES = 9
-    const val PRIMITIVE_VALUES = 14
+    const val PRIMITIVE_VALUES = 15
     const val MEDIUM_VALUES = 7
     const val LIGHT_VALUES = 4
     const val MEMBER_VALUES = 2
@@ -131,6 +131,9 @@ object GpuScenePacking {
     private const val ALPHA = 3
     private const val BOX_VALUES = 6
 
+    // A moving sphere sums three independently rounded values (centre, velocity, radius).
+    private const val BOX_MARGIN_CODES = 2
+
     fun pack(objects: List<Traceable>, look: SceneLook = SceneLook.CLASSIC): GpuScene {
         val primitives = objects.mapNotNull(::primitiveOf).toTypedArray()
         val media = primitives.flatMap { listOfNotNull(mediaOf(it)?.inside, mediaOf(it)?.outside) }.distinct()
@@ -150,7 +153,7 @@ object GpuScenePacking {
             val record = smooth[slot]?.let { records[slot] + 1 } ?: 0
             val numbers = mediaOf(primitives[index])?.let { listOf(it.inside, it.outside) }
                 ?.map { medium -> media.indexOf(medium) + 1 } ?: listOf(0, 0)
-            primitiveCodes(primitives[index], intArrayOf(record) + numbers)
+            primitiveCodes(primitives[index], intArrayOf(record) + numbers + index)
                 .copyInto(codes, primitiveStart + slot * PRIMITIVE_VALUES)
             materialCodes(primitives[index]).copyInto(codes, materialStart + slot * MATERIAL_VALUES)
             smooth[slot]?.let { normalCodes(it).copyInto(codes, normalStart + records[slot] * NORMAL_VALUES) }
@@ -179,7 +182,11 @@ object GpuScenePacking {
     fun decode(code: Int): Double = code.toDouble() / FIXED_ONE * (2 * RANGE) - RANGE
 
     private fun nodeCodes(bvh: FlatBvh, node: Int): IntArray {
-        val box = IntArray(BOX_VALUES) { encode(bvh.boxes[node * BOX_VALUES + it]) }
+        val box = IntArray(BOX_VALUES) { index ->
+            val endpoint = encode(bvh.boxes[node * BOX_VALUES + index])
+            val margin = if (index < BOX_VALUES / 2) -BOX_MARGIN_CODES else BOX_MARGIN_CODES
+            (endpoint + margin).coerceIn(0, FIXED_ONE - 1)
+        }
         return box + intArrayOf(bvh.skip[node], bvh.first[node], bvh.count[node])
     }
 
@@ -200,8 +207,10 @@ object GpuScenePacking {
     }
 
     private fun mediumCodes(medium: Medium): IntArray {
-        val values = listOf(medium.density, medium.albedo).flatMap { listOf(it.x, it.y, it.z) } + medium.g
-        return IntArray(MEDIUM_VALUES) { encode(values[it]) }
+        val values = listOf(medium.density, medium.albedo).flatMap { listOf(it.x, it.y, it.z) }
+        // g has its own open interval (−1,1). A coordinate-scale code can round a finite phase peak to a pole.
+        val phase = encode(medium.g * RANGE).coerceAtLeast(1)
+        return values.map(::encode).toIntArray() + phase
     }
 
     private fun sphereGeometry(sphere: Sphere): DoubleArray = doubleArrayOf(

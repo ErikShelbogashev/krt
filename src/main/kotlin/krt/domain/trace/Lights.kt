@@ -102,7 +102,7 @@ class Lights(objects: List<Traceable>) {
         val direction = toLight / distance
         val facing = -direction.dot(normal)
         val cosine = if (twoSided) abs(facing) else facing
-        if (cosine <= MIN_COSINE) return null
+        if (distanceSquared == 0.0 || cosine <= MIN_COSINE) return null
         val pdf = distanceSquared / cosine * chance
         return LightSample(direction, distance, light.emitted(0.0, 0.0, target), pdf)
     }

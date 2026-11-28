@@ -23,7 +23,10 @@ data class Medium(val density: Color, val albedo: Color, val g: Double = 0.0) {
 
     /** Share of light left after [distance] through the medium, per channel. */
     fun transmittance(distance: Double): Color =
-        Color(exp(-density.x * distance), exp(-density.y * distance), exp(-density.z * distance))
+        Color(beer(density.x, distance), beer(density.y, distance), beer(density.z, distance))
+
+    private fun beer(extinction: Double, distance: Double): Double =
+        if (extinction == 0.0) 1.0 else exp(-extinction * distance)
 
     companion object {
         /** A grey medium of one [density] for every channel. */
@@ -42,14 +45,21 @@ object HenyeyGreenstein {
 
     /** Share of the light per steradian scattered at [cosine] from the direction it came, for the mean cosine [g]. */
     fun density(cosine: Double, g: Double): Double {
-        val d = 1 + g * g - 2 * g * cosine
-        return (1 - g * g) / (FOUR_PI * d * sqrt(d))
+        val magnitude = abs(g)
+        val angle = cosine.coerceIn(-1.0, 1.0)
+        val separation = if (g < 0.0) 1 + angle else 1 - angle
+        val gap = 1 - magnitude
+        val d = gap * gap + 2 * magnitude * separation
+        return gap * (1 + magnitude) / (FOUR_PI * d * sqrt(d))
     }
 
     /** A direction scattered from the unit [incoming] direction, drawn in proportion to [density] from [u] and [v]. */
     fun sample(incoming: Point3, g: Double, u: Double, v: Double): Point3 {
         val cosine = if (abs(g) < ISOTROPIC) {
-            1 - 2 * u
+            // Expand the inverse CDF before division by g. This keeps the first moment even near isotropy.
+            val t = 2 * u - 1
+            val d = 1 + g * t
+            (t * (1 + g * g) + 0.5 * g * (3 + t * t + g * g * (t * t - 1))) / (d * d)
         } else {
             val s = (1 - g * g) / (1 - g + 2 * g * u)
             ((1 + g * g - s * s) / (2 * g)).coerceIn(-1.0, 1.0)
@@ -91,20 +101,41 @@ object FreeFlight {
         return if (density > 0) -ln(1 - u) / density else Double.POSITIVE_INFINITY
     }
 
-    /**
-     * Weight of a scattering at [distance]: scattering density × transmittance / pdf of the distance; none where
-     * the pdf underflows, so a long flight through a dense medium cannot divide by zero.
-     */
+    /** Weight of a scattering at [distance], normalized by the mixture of the three distance densities. */
     fun scatterWeight(medium: Medium, distance: Double): Color {
-        val transmittance = medium.transmittance(distance)
-        val pdf = (medium.density * transmittance).let { (it.x + it.y + it.z) / CHANNELS }
-        return if (pdf > 0) medium.albedo * medium.density * transmittance / pdf else Point3.ZERO
+        val density = medium.density
+        val rates = density * medium.transmittance(distance)
+        val sum = rates.x + rates.y + rates.z
+        val weights = if (sum >= java.lang.Double.MIN_NORMAL * CHANNELS && sum.isFinite()) {
+            rates / (sum / CHANNELS)
+        } else {
+            // The normalized probabilities can be ordinary even when all three products round to zero.
+            val lowest = minOf(positive(density.x), positive(density.y), positive(density.z))
+            if (!lowest.isFinite() || !distance.isFinite()) return Color.ZERO
+            fun logRate(rate: Double) =
+                if (rate > 0.0) ln(rate) - (rate - lowest) * distance else Double.NEGATIVE_INFINITY
+            val logs = Color(logRate(density.x), logRate(density.y), logRate(density.z))
+            val largest = maxOf(logs.x, logs.y, logs.z)
+            normalize(Color(exp(logs.x - largest), exp(logs.y - largest), exp(logs.z - largest)))
+        }
+        return medium.albedo * weights
     }
 
-    /** Weight of passing [distance] through the medium untouched: transmittance / the chance of it; none at 0. */
+    /** Weight of passing [distance] through the medium untouched, normalized by its mixture probability. */
     fun passWeight(medium: Medium, distance: Double): Color {
-        val transmittance = medium.transmittance(distance)
-        val chance = (transmittance.x + transmittance.y + transmittance.z) / CHANNELS
-        return if (chance > 0) transmittance / chance else Point3.ZERO
+        val transmission = medium.transmittance(distance)
+        val sum = transmission.x + transmission.y + transmission.z
+        if (sum >= java.lang.Double.MIN_NORMAL * CHANNELS) return transmission / (sum / CHANNELS)
+        // Cancel the common extinction before exp when absolute channel probabilities lose precision.
+        val density = medium.density
+        val lowest = minOf(density.x, density.y, density.z)
+        return if (distance.isFinite()) {
+            normalize(Medium(density - lowest, Color.ZERO).transmittance(distance))
+        } else Color.ZERO
     }
+
+    private fun positive(rate: Double) = if (rate > 0.0) rate else Double.POSITIVE_INFINITY
+
+    private fun normalize(values: Color): Color =
+        values / ((values.x + values.y + values.z) / CHANNELS)
 }

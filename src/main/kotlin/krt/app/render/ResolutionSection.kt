@@ -21,7 +21,8 @@ import krt.domain.camera.Camera
 
 private val SIZE_HINT = "From ${Camera.IMAGE_SIZE_RANGE.first} to ${Camera.IMAGE_SIZE_RANGE.last}"
 
-private val PRESETS = listOf(IntSize(400, 400), IntSize(640, 360), IntSize(800, 600), IntSize(1024, 1024))
+private val PRESETS = listOf(IntSize(400, 400), IntSize(640, 360), IntSize(800, 600), IntSize(1024, 1024),
+    IntSize(1920, 1080))
 
 /**
  * Size of the rendered frame, independent from the window: presets and two fields. A field keeps a value

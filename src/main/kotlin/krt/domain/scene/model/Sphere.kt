@@ -7,6 +7,7 @@ import kotlin.math.sqrt
 import krt.platform.math.Aabb
 import krt.platform.math.Point3
 import krt.platform.math.Ray
+import krt.platform.math.SphereRoots
 
 /**
  * A ball of [radius] around [center]. A ball with a [velocity] moves by it over the shutter's open time: at moment
@@ -32,8 +33,8 @@ class Sphere(
         val oc = ray.origin - center
         val a = ray.direction.dot(ray.direction)
         val halfB = oc.dot(ray.direction)
-        val c = oc.dot(oc) - radius * radius
-        val discriminant = halfB * halfB - a * c
+        if (a == 0.0) return null
+        val discriminant = SphereRoots.discriminant(oc, ray.direction, a, halfB, radius)
 
         if (discriminant < 0) {
             return null

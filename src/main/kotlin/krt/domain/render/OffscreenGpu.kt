@@ -109,16 +109,16 @@ class OffscreenGpu(
             if (latest !== current) return@launch
             val target = surfaceOf(surface, width, height).also { surface = it }
             var published = 0L
+            val seed = random.nextFloat()
             var taken = 0
             while (taken < passes && isActive) {
                 val samples = GpuSampling.nextStep(taken, passes, stepBudget.samples)
                 var row = 0
                 while (row < height && isActive) {
-                    val rows = GpuSampling.nextRows(row, height, GpuSampling.bandsOf(stepBudget, height))
+                    val rows = GpuSampling.nextRows(row, height, GpuSampling.bandsOf(stepBudget, width, height))
                     row = rows.last + 1
                     val marker = 1f - lastMarker
                     val band = GpuBand(taken, rows, marker = marker)
-                    val seed = random.nextFloat()
                     val step = GpuFrame(scene, view, width, height, depth, samples, seed, band)
                     stepBudget = stepBudget.after(measureStep {
                         drawStep(target, step)

@@ -101,8 +101,8 @@ object ShowcaseScenes {
     // ---------------------------------------------------------------------------------------------------------------
 
     /**
-     * Prism: a dark room, a lamp behind a vertical slit, a dispersive glass prism that fans the beam into a
-     * rainbow on the back wall, and a thin haze only around the beam, so the beam shows.
+     * Prism: a dark room, a lamp behind a vertical slit, a dispersive glass prism, and a camera viewing the slit
+     * through the prism. The source spans the directions required for the red through blue images of the slit.
      */
     fun prism(): BuiltScene {
         val black = Lambert(c(0.02, 0.02, 0.02))
@@ -123,8 +123,8 @@ object ShowcaseScenes {
                 Triangle(low[i], high[i], high[j], glass),
             )
         } + listOf(Triangle(low[0], low[1], low[2], glass), Triangle(high[0], high[2], high[1], glass))
-        // A slit narrow across and tall: the narrow way keeps the rainbow sharp, the tall way lets light through
-        // over a wide angle, so paths from the screen find the lamp through the prism often and the rainbow settles.
+        // The narrow slit keeps the rainbow sharp across the frame. The wider lamp behind the slit illuminates
+        // the incident directions that refract towards the camera at different wavelengths.
         val slitX = -1.6
         val house = listOf(
             Meshes.box(Pose(p(slitX, 0.95, -0.595)), p(0.03, 0.95, 0.575), black),
@@ -135,8 +135,8 @@ object ShowcaseScenes {
             Meshes.box(Pose(p(-2.0, 0.95, 1.15)), p(0.43, 0.95, 0.03), black),
         ).flatten()
         val lamp = Meshes.panel(
-            Pose(p(-2.3, 1.0, 0.0), x = p(0.0, 0.0, -1.0), y = p(0.0, 1.0, 0.0), z = p(1.0, 0.0, 0.0)), 0.05, 0.5,
-            Emissive.kelvin(6500.0, 400.0),
+            Pose(p(-2.3, 1.0, 0.0), x = p(0.0, 0.0, -1.0), y = p(0.0, 1.0, 0.0), z = p(1.0, 0.0, 0.0)), 0.18, 0.5,
+            Emissive.kelvin(6500.0, 5.0),
         )
         val objects = buildList {
             addAll(named("Floor", Meshes.panel(GROUND, 5.0, 4.0, floor)))
@@ -240,7 +240,7 @@ object ShowcaseScenes {
     /**
      * Fractal temple: a Menger sponge of three levels in a ball of haze that scatters onwards, a low sun at 3000 K
      * behind it whose light falls through the holes in shafts towards the camera, and sand underfoot; the camera
-     * stands inside the haze.
+     * looks through the haze towards the backlit openings.
      */
     fun temple(): BuiltScene {
         val stone = Lambert(c(0.62, 0.5, 0.38))
@@ -250,7 +250,7 @@ object ShowcaseScenes {
         val objects = listOf(
             Sphere(p(0.0, -1000.0, 0.0), 1000.0, sand, "Sand"),
             Fractal(FractalKind.MENGER, p(0.0, 1.45, 0.0), 1.45, stone, "Menger temple", iterations = 3),
-            // The camera stands inside the haze, so its edge never shows as a ball.
+            // The camera stands just outside the haze and looks through it towards the openings.
             Fog(p(0.0, 1.2, 0.0), 4.5, haze, "Haze"),
             Sphere(p(-44.3, 1.6, -8.0), 1.6, Emissive.kelvin(3000.0, 1400.0), "Sun"),
         )

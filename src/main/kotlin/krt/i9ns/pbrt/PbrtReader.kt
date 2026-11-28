@@ -199,7 +199,7 @@ private class ReadState(val files: Map<String, ByteArray>) {
         val krtShape = pending.remove("Shape")
         val shape = if (krtShape != null) "krt" else d.string(0)
         objects += when (shape) {
-            "krt" -> listOf(PbrtGeometry.fractal(krtShape!!, placement, covering, objects.size))
+            "krt" -> listOf(PbrtGeometry.fractal(krtShape!!, placement, covering, objects.size, warnings))
             "sphere" -> listOf(PbrtGeometry.sphere(d, placement, covering, objects.size))
             "plymesh" -> mesh(d, Ply.read(files[d.text("filename", "")] ?: d.fail("PLY file not given")), covering)
             "trianglemesh", "loopsubdiv" -> mesh(d, PbrtGeometry.meshOf(d), covering)

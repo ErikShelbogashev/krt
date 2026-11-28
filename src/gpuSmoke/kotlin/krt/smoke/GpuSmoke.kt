@@ -80,6 +80,7 @@ fun main(args: Array<String>) {
                     results += Smoke.run(controller, stepMs, name, scene, width, height, SAMPLES)
                 }
                 if (name == DemoScene.MATERIALS.name) {
+                    results += Smoke.run(controller, stepMs, name, scene, 2048, 2048, SAMPLES)
                     results += Smoke.run(controller, stepMs, "MATERIALS 32 spp", scene, 400, 224, 32)
                 }
             }

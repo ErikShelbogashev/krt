@@ -6,20 +6,30 @@ float hash13(float3 p3) {
 }
 
 float2 pixelId;
+float sampleKey;
 float counter;
 float rayTime;                      // the moment of the shutter of the path being traced, as Ray.time
 
 float rnd() {
     counter += 1.0;
-    return hash13(float3(pixelId.x + seed * 17.0, pixelId.y + seed * 31.0, counter));
+    return hash13(float3(pixelId.x + seed * 17.0, pixelId.y + sampleKey, counter));
 }
 
-float3 randomInUnitSphere() {
+float3 randomOnUnitSphere() {
     float z = 2.0 * rnd() - 1.0;
     float phi = 2.0 * PI * rnd();
     float r = sqrt(max(0.0, 1.0 - z * z));
-    float scale = pow(rnd(), 1.0 / 3.0);
-    return float3(r * cos(phi), r * sin(phi), z) * scale;
+    return float3(r * cos(phi), r * sin(phi), z);
+}
+
+float3 randomInUnitSphere() {
+    float3 unit = randomOnUnitSphere();
+    return unit * pow(rnd(), 1.0 / 3.0);
+}
+
+float3 cosineHemisphere(float3 normal) {
+    float3 direction = normal + randomOnUnitSphere();
+    return dot(direction, direction) < 1e-8 ? normal : direction;
 }
 
 float2 randomInUnitDisk() {
