@@ -2,6 +2,7 @@ package krt.app.camera
 
 import krt.domain.camera.Camera
 import krt.domain.camera.CameraMove
+import krt.domain.camera.model.CameraSnapshot
 import krt.domain.camera.model.Lens
 import krt.domain.camera.model.ViewPreset
 import krt.domain.render.FrameBuffer
@@ -40,11 +41,13 @@ class ChangeCameraSettingsOp(
     private val rayTracer: RayTracer,
     private val frameBuffer: FrameBuffer,
 ) {
-    operator fun invoke(change: Camera.() -> Unit) {
+    operator fun invoke(change: Camera.() -> Unit): CameraSnapshot {
         camera.change()
-        if (!camera.hasRenderableSize()) return
+        val settings = camera.snapshot()
+        if (!camera.hasRenderableSize()) return settings
         frameBuffer.resizeTo(camera.imageWidth, camera.imageHeight)
         renderFrame(renderController, rayTracer, camera, frameBuffer)
+        return settings
     }
 }
 

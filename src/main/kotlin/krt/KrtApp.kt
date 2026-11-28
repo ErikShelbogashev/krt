@@ -31,6 +31,7 @@ import krt.app.scene.SceneTab
 import krt.app.shell.Inspector
 import krt.app.shell.KrtTheme
 import krt.app.shell.TopBar
+import krt.domain.camera.Camera
 import krt.domain.camera.CameraMove
 import krt.domain.camera.model.CameraSnapshot
 import krt.domain.render.Frame
@@ -96,7 +97,9 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
                             onGpuFrameDraw = { shader, ms -> app.reportGpuFrame(shader, ms) },
                             modifier = Modifier.weight(1f),
                         )
-                        AppInspector(app, shown.objects, shown.camera)
+                        AppInspector(app, shown.objects, shown.camera,
+                            onCameraChange = { shown.camera = app.changeCameraSettings(it) },
+                        )
                     }
                     StatusBar(mode, shown.progress, app.renderController.threads, app.rayTracer.maxDepth)
                 }
@@ -107,7 +110,9 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun AppInspector(app: AppContext, objects: List<Traceable>, camera: CameraSnapshot) {
+private fun AppInspector(
+    app: AppContext, objects: List<Traceable>, camera: CameraSnapshot, onCameraChange: (Camera.() -> Unit) -> Unit,
+) {
     val catalog = remember(objects) { SceneCatalog.of(objects) }
     var selectedId by remember { mutableStateOf<String?>(null) }
     Inspector(
@@ -116,7 +121,7 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>, camera: Came
                 app.camera,
                 app.rayTracer,
                 app.renderController,
-                onCameraChange = { app.changeCameraSettings(it) },
+                onCameraChange = onCameraChange,
                 onRayTracerChange = { app.changeRayTracerSettings(it) },
                 onRenderChange = { app.changeRenderSettings(it) },
             )
@@ -125,7 +130,7 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>, camera: Came
             CameraTab(
                 camera,
                 catalog.selected(selectedId),
-                onChange = { app.changeCameraSettings(it) },
+                onChange = onCameraChange,
                 onPreset = { app.setCameraView(it) },
                 onReset = { app.resetCameraView() },
                 onFocusOn = { app.focusOnObject(it) },
@@ -140,8 +145,8 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>, camera: Came
                 onSelect = { selectedId = it },
                 sampling = {
                     SamplingControls(camera.filterWood, camera.stratifiedPixels,
-                        onFilter = { enabled -> app.changeCameraSettings { filterWood = enabled } },
-                        onStratify = { enabled -> app.changeCameraSettings { stratifiedPixels = enabled } },
+                        onFilter = { onCameraChange { filterWood = !filterWood } },
+                        onStratify = { onCameraChange { stratifiedPixels = !stratifiedPixels } },
                     )
                 },
                 properties = { id ->
