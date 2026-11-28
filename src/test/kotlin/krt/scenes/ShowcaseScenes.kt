@@ -238,23 +238,26 @@ object ShowcaseScenes {
     }
 
     /**
-     * Fractal temple: a Menger sponge of three levels in a ball of thin haze, a low sun at 3000 K behind it whose
-     * light falls through the holes, and sand underfoot; the camera stands inside the haze.
+     * Fractal temple: a Menger sponge of three levels in a ball of haze that scatters onwards, a low sun at 3000 K
+     * behind it whose light falls through the holes in shafts towards the camera, and sand underfoot; the camera
+     * stands inside the haze.
      */
     fun temple(): BuiltScene {
         val stone = Lambert(c(0.62, 0.5, 0.38))
         val sand = Lambert(c(0.66, 0.52, 0.36))
-        val haze = Medium.grey(0.11, c(0.7, 0.68, 0.64))
+        // Haze that scatters onwards, as real haze does: looking towards the sun, the shafts through the holes shine.
+        val haze = Medium(c(0.07, 0.07, 0.07), c(0.85, 0.83, 0.8), g = 0.75)
         val objects = listOf(
             Sphere(p(0.0, -1000.0, 0.0), 1000.0, sand, "Sand"),
             Fractal(FractalKind.MENGER, p(0.0, 1.45, 0.0), 1.45, stone, "Menger temple", iterations = 3),
             // The camera stands inside the haze, so its edge never shows as a ball.
             Fog(p(0.0, 1.2, 0.0), 4.5, haze, "Haze"),
-            Sphere(p(-30.0, 2.2, 45.0), 1.6, Emissive.kelvin(3000.0, 1400.0), "Sun"),
+            Sphere(p(-44.3, 1.6, -8.0), 1.6, Emissive.kelvin(3000.0, 1400.0), "Sun"),
         )
         val look = SceneLook(
             Sky(c(0.03, 0.017, 0.012), c(0.002, 0.003, 0.008)), fov = 42.0, aperture = 0.0, sampleLights = true,
-            start = StartView(p(3.4, 1.3, 2.3), p(-0.2, 1.5, -0.3)),
+            // Straight at a face, the sun behind the sponge: light comes out of the tunnels towards the camera.
+            start = StartView(p(4.6, 2.3, 1.2), p(0.0, 1.4, 0.0)),
         )
         return BuiltScene("temple", objects, look)
     }
