@@ -1,3 +1,7 @@
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+import org.gradle.api.services.BuildService
+import org.gradle.api.services.BuildServiceParameters
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -95,5 +99,32 @@ compose.desktop {
             packageName = "krt"
             packageVersion = "1.0.0"
         }
+    }
+}
+
+// Keep lazy class and resource loads in an open window on the version it started with.
+abstract class RunningApplicationJar : BuildService<BuildServiceParameters.None>, AutoCloseable {
+    @get:javax.inject.Inject abstract val objects: ObjectFactory
+    private val snapshot = Files.createTempFile("krt-run-", ".jar")
+
+    fun classpath(original: FileCollection, appJar: File): FileCollection {
+        check(appJar in original.files) { "Missing application jar on the run classpath" }
+        Files.copy(appJar.toPath(), snapshot, StandardCopyOption.REPLACE_EXISTING)
+        return objects.fileCollection().from(original.files.map { if (it == appJar) snapshot.toFile() else it })
+    }
+
+    override fun close() {
+        Files.deleteIfExists(snapshot)
+    }
+}
+
+val runningJar = gradle.sharedServices.registerIfAbsent("krtRunningJar", RunningApplicationJar::class) {}
+tasks.withType<JavaExec>().matching { it.name == "run" }.configureEach {
+    val appJar = tasks.jar.flatMap { it.archiveFile }
+    val snapshot = runningJar
+    usesService(snapshot)
+    doFirst {
+        val launch = this as JavaExec
+        launch.classpath = snapshot.get().classpath(launch.classpath, appJar.get().asFile)
     }
 }
