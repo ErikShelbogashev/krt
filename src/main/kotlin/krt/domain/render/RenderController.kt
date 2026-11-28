@@ -318,7 +318,10 @@ class RenderController(
             val pixel = FrameSampling.Pixel(batch.order[k] % batch.width, batch.order[k] / batch.width)
             val random =
                 FrameSampling.passRandom(pass.frameSeed, pixel, camera.imageWidth, camera.imageHeight, pass.index)
-            val color = FrameSampling.sampleOnce(pixel, camera, work.rayTracer, random)
+            val color = if (camera.stratifiedPixels) {
+                val shift = PixelStrata.shift(pass.frameSeed, batch.order[k])
+                FrameSampling.stratifiedSample(pixel, camera, work.rayTracer, random, pass.index, shift)
+            } else FrameSampling.sampleOnce(pixel, camera, work.rayTracer, random)
             if (!isActive) return
             val index = FrameSampling.imageY(pixel, camera.imageHeight) * camera.imageWidth + pixel.i
             work.frame.pixels[index] = work.accumulated.add(index, color).toAWTColor(pass.index + 1)

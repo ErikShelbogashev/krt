@@ -40,7 +40,7 @@ object PathTracing {
      */
     fun color(scene: TraceScene, ray: Ray, depth: Int, random: Random): Color {
         val timed = if (scene.look.motionBlur) {
-            Ray(ray.origin, ray.direction, random.nextDouble(), ray.wavelength)
+            Ray(ray.origin, ray.direction, random.nextDouble(), ray.wavelength, ray.pixel)
         } else {
             ray
         }

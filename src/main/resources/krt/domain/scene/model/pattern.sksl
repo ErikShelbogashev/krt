@@ -1,5 +1,42 @@
+// Integrate the cubic latewood profile over a box with the projected pixel's phase variance.
+float woodPrimitive(float x) { return x * x * x * (1.0 - 0.5 * x); }
+
+float woodIntegral(float x) {
+    float phase = fract(x);
+    float up = clamp((phase - 0.72) / 0.18, 0.0, 1.0);
+    float down = clamp((phase - 0.9) / 0.1, 0.0, 1.0);
+    return floor(x) * 0.14 + 0.18 * woodPrimitive(up) + 0.1 * (down - woodPrimitive(down));
+}
+
+float woodPhaseVariance(float3 q, float3 d, float frequency, float turbulence) {
+    float radius = length(q.yz);
+    float radial = radius > 0.0 ? dot(q.yz / radius, d.yz) : length(d.yz);
+    float ring = frequency * radial;
+    float warp = turbulence * min(1.0, length(d * float3(0.25, 2.0, 2.0)));
+    return ring * ring + warp * warp;
+}
+
+float2 woodFilter(float3 q, float3 dx, float3 dy, float frequency, float turbulence) {
+    float variance = woodPhaseVariance(q, dx, frequency, turbulence) + woodPhaseVariance(q, dy, frequency, turbulence);
+    float3 fibreScale = float3(0.5, 24.0, 24.0);
+    float span = max(length(dx * fibreScale), length(dy * fibreScale));
+    return float2(sqrt(variance), 1.0 - smoothstep(0.25, 2.0, span));
+}
+
+float2 projectedWood(float base, float3 p, float3 direction, float3 normal, float distance) {
+    float incidence = dot(normal, direction);
+    float limit = length(direction) * 1.0e-7;
+    float denom = incidence < 0.0 ? min(incidence, -limit) : max(incidence, limit);
+    float3 x = camHorizontal / frameSize.x;
+    float3 y = camVertical / frameSize.y;
+    float scale = number(base + 5.0);
+    float3 dx = (x - direction * (dot(x, normal) / denom)) * (distance * scale);
+    float3 dy = (y - direction * (dot(y, normal) / denom)) * (distance * scale);
+    return woodFilter(p * scale, dx, dy, number(base + 12.0), number(base + 11.0));
+}
+
 // Pattern.valueAt: the blend of the two colours at [p], in [0, 1].
-float patternValue(float kind, float3 p, float scale, float turbulence, float frequency, float octaves) {
+float patternValue(float kind, float3 p, float scale, float turbulence, float frequency, float octaves, float2 filter) {
     float3 q = p * scale;
     float value;
     if (kind == MARBLE) {
@@ -10,7 +47,13 @@ float patternValue(float kind, float3 p, float scale, float turbulence, float fr
         float rings = sqrt(q.y * q.y + q.z * q.z) * frequency + turbulence * perlin(q * float3(0.25, 2.0, 2.0));
         float ring = rings - floor(rings);
         float latewood = smoothstep(0.72, 0.9, ring) * (1.0 - smoothstep(0.9, 1.0, ring));
-        float fibres = 0.5 + 0.5 * perlin(q * float3(0.5, 24.0, 24.0));
+        if (filter.x >= 32.0) {
+            latewood = 0.14;
+        } else if (filter.x > 0.001) {
+            latewood = (woodIntegral(ring + filter.x / 2.0) - woodIntegral(ring - filter.x / 2.0)) / filter.x;
+        }
+        float fibres = 0.5;
+        if (filter.y > 0.0) { fibres += 0.5 * filter.y * perlin(q * float3(0.5, 24.0, 24.0)); }
         value = 0.75 * latewood + 0.25 * fibres;
     } else if (kind == CLOUDS) {
         value = smoothstep(0.45, 0.75, 0.5 + 0.5 * fractal(q, false, octaves));
@@ -26,19 +69,20 @@ float patternValue(float kind, float3 p, float scale, float turbulence, float fr
 }
 
 // The pattern of the material at [base]: its blend at [p].
-float materialPattern(float base, float3 p) {
+float materialPattern(float base, float3 p, float2 filter) {
     return patternValue(number(base + 10.0), p, number(base + 5.0), number(base + 11.0), number(base + 12.0),
-        number(base + 13.0));
+        number(base + 13.0), filter);
 }
 
+float materialPattern(float base, float3 p) { return materialPattern(base, p, float2(0.0, 1.0)); }
+
 // Bump.normal: [normal] tilted against the slope of the pattern times [strength].
-float3 bumpNormal(float base, float3 p, float3 normal, float strength) {
+float3 bumpNormal(float base, float3 p, float3 normal, float strength, float2 filter, float here) {
     float scale = number(base + 5.0);
     float step = 1.0e-3 / scale;
-    float here = materialPattern(base, p);
-    float3 slope = float3(materialPattern(base, p + float3(step, 0.0, 0.0)) - here,
-        materialPattern(base, p + float3(0.0, step, 0.0)) - here,
-        materialPattern(base, p + float3(0.0, 0.0, step)) - here) / step;
+    float3 slope = float3(materialPattern(base, p + float3(step, 0.0, 0.0), filter) - here,
+        materialPattern(base, p + float3(0.0, step, 0.0), filter) - here,
+        materialPattern(base, p + float3(0.0, 0.0, step), filter) - here) / step;
     float3 along = slope - normal * dot(slope, normal);
     return normalize(normal - along * (strength / scale));
 }

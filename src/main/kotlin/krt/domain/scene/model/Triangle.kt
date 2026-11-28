@@ -68,7 +68,8 @@ class Triangle(
         val blended = smooth.at(u, v, outwardNormal)
         // Vertex normals given against the winding still shade the face's own side.
         val shading = if (blended.dot(outwardNormal) < 0) -blended else blended
-        return Hit(hitPoint, t, if (isFrontFace) shading else -shading, isFrontFace, material, media)
+        return Hit(hitPoint, t, if (isFrontFace) shading else -shading, isFrontFace, material, media,
+            geometricNormal = if (isFrontFace) outwardNormal else -outwardNormal)
     }
 
     override fun bounds(): Aabb = Aabb(

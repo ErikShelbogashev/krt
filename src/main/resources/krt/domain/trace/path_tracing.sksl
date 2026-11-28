@@ -8,6 +8,7 @@ float3 trace(float3 origin, float3 direction) {
     bool enclosed = false;          // whether a solid surface closes that medium, so its particles sample no lights
     float bounces = 0.0;            // crossings of interfaces between media do not count
     int crossings = 0;
+    float travelled = 0.0;          // primary-ray parameter from the lens through unchanged medium interfaces
     for (int step = 0; step < MAX_SCATTER_STEPS + MAX_PATH_CROSSINGS; step++) {
         if (bounces >= min(maxDepth, float(MAX_SCATTER_STEPS))) { break; }
 
@@ -60,11 +61,15 @@ float3 trace(float3 origin, float3 direction) {
         float lobe = SPECULAR;
         if (kind == PATTERNED) {
             // A pattern under a clear coat, as Patterned: the colour, and the bump of the normal.
-            float t = materialPattern(base, p);
+            float2 filter = float2(0.0, 1.0);
+            if (filterWood > 0.5 && bounces == 0.0 && number(base + 10.0) == WOOD) {
+                filter = projectedWood(base, p, direction, outward, travelled + hitT);
+            }
+            float t = materialPattern(base, p, filter);
             color = mix(color, vector(base + 6.0), t);
             attenuation = color;
             float bump = number(base + 9.0);
-            if (bump > 0.0) { normal = bumpNormal(base, p, normal, bump); }
+            if (bump > 0.0) { normal = bumpNormal(base, p, normal, bump, filter, t); }
         }
         if (kind == PLASTIC || kind == CHECKER || kind == PATTERNED) {
             // Clear coat over a diffuse base, as ClearCoat.scatter.
@@ -173,6 +178,7 @@ float3 trace(float3 origin, float3 direction) {
         } else if (kind == INTERFACE) {
             if (crossings >= MAX_PATH_CROSSINGS) { return radiance; }
             crossings++;
+            travelled += hitT;
             // The edge of a medium: light passes unchanged and only the medium changes; no bounce, no new lobe.
             medium = quickLook > 0.5 ? -1.0 : mediumBeyond(slot, frontFace);
             enclosed = false;

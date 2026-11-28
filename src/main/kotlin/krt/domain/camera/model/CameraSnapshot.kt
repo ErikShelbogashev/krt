@@ -10,6 +10,8 @@ data class CameraSnapshot(
     val aperture: Double,
     val focusDistance: Double,
     val movementSpeed: Double,
+    val stratifiedPixels: Boolean = false,
+    val filterWood: Boolean = false,
 ) {
     val preset: ViewPreset? get() = ViewPreset.matching(origin, lookAt)
 }

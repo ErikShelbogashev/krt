@@ -43,17 +43,32 @@ object FrameSampling {
         Random(frameSeed + pass.toLong() * width * height + pixel.j.toLong() * width + pixel.i)
 
     /** One jittered sample of [pixel]. */
-    fun sampleOnce(pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random): Color {
+    fun sampleOnce(pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random, blockSize: Int = 1): Color {
         val u = (pixel.i.toDouble() + random.nextDouble()) / camera.imageWidth
         val v = (pixel.j.toDouble() + random.nextDouble()) / camera.imageHeight
+        return rayTracer.color(camera.ray(u, v, random, blockSize), random)
+    }
+
+    /** The same number of path and lens draws as independent jitter, with a stratified film location. */
+    fun stratifiedSample(
+        pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random, pass: Int, shift: Int,
+    ): Color {
+        val cell = PixelStrata.cell(pass, shift)
+        val u = (pixel.i + PixelStrata.offset(cell, random.nextDouble())) / camera.imageWidth
+        val v = (pixel.j + PixelStrata.offset(cell ushr 1, random.nextDouble())) / camera.imageHeight
         return rayTracer.color(camera.ray(u, v, random), random)
     }
 
-    /** Sum of [Camera.samplesPerPixel] jittered samples for [pixel]; divide by the sample count when converting. */
-    fun samplePixel(pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random): Color =
-        (0 until camera.samplesPerPixel).fold(Point3.ZERO) { acc, _ ->
+    /** Sum of [Camera.samplesPerPixel] samples; divide by the sample count when converting. */
+    fun samplePixel(pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random): Color {
+        if (!camera.stratifiedPixels) return (0 until camera.samplesPerPixel).fold(Point3.ZERO) { acc, _ ->
             acc + sampleOnce(pixel, camera, rayTracer, random)
         }
+        val shift = random.nextInt(PixelStrata.CELLS)
+        return (0 until camera.samplesPerPixel).fold(Point3.ZERO) { acc, pass ->
+            acc + stratifiedSample(pixel, camera, rayTracer, random, pass, shift)
+        }
+    }
 
     /** Image row of a pixel: the image's y axis points down, the camera's v axis points up. */
     fun imageY(pixel: Pixel, imageHeight: Int): Int = imageHeight - 1 - pixel.j

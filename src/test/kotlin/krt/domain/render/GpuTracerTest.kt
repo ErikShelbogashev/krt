@@ -39,8 +39,6 @@ import krt.platform.awt.toAWTColor
 import krt.platform.math.Color
 import krt.platform.math.Point3
 import org.jetbrains.skia.Bitmap
-import org.jetbrains.skia.ColorAlphaType
-import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.ImageInfo
 import org.jetbrains.skia.Paint
 import org.jetbrains.skia.Shader
@@ -263,19 +261,9 @@ class GpuTracerTest {
         val dark = step(0.0, 7, 1)
         // sqrt((4 + 7 * 0) / 8), expressed in 8-bit display values.
         val window = windowFrame { draw -> draw(bright); draw(dark) }
-        val hdr = GpuTracer().use { tracer -> hdrPair(tracer, bright, dark) }
+        val hdr = rasterPixels(bright, dark)
         assertTrue((window.first() and 255) in 178..183, "window expected 180, got ${window.first() and 255}")
         assertTrue((hdr.first() and 255) in 179..182, "HDR expected 180, got ${hdr.first() and 255}")
-    }
-
-    private fun hdrPair(tracer: GpuTracer, first: GpuFrame, second: GpuFrame): IntArray {
-        val info = ImageInfo(SIZE, SIZE, ColorType.RGBA_F16, ColorAlphaType.OPAQUE)
-        return Surface.makeRaster(info).use { target ->
-            tracer.hdrShader(first).use { shader -> draw(target, shader) }
-            target.makeImageSnapshot().use { image ->
-                image.makeShader().use { previous -> tracer.hdrShader(second, previous).use(::pixels) }
-            }
-        }
     }
 
     @Test

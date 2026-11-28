@@ -79,8 +79,10 @@ data class MediumInterface(val inside: Medium?, val outside: Medium? = null)
  * and only the medium it travels in changes.
  */
 object Interface : Material {
-    override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered =
-        Scattered(ray.next(hit.p, ray.direction), Point3.ONE, Lobe.SPECULAR)
+    override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered {
+        val through = Ray(hit.p, ray.direction, ray.time, ray.wavelength, ray.pixel?.advanced(hit.t))
+        return Scattered(through, Point3.ONE, Lobe.SPECULAR)
+    }
 }
 
 /**

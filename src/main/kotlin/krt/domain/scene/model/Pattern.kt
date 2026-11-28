@@ -54,12 +54,14 @@ data class Pattern(
     }
 
     /** The blend at [p], in [0, 1]: 0 for [first], 1 for [second]; also the height for bumps. */
-    fun valueAt(p: Point3): Double {
+    fun valueAt(p: Point3): Double = valueAt(p, null)
+
+    internal fun valueAt(p: Point3, filter: WoodFilter?): Double {
         val q = p * scale
         val value = when (kind) {
             PatternKind.NOISE -> HALF + HALF * Noise.fbm(q, octaves)
             PatternKind.MARBLE -> marble(q)
-            PatternKind.WOOD -> wood(q)
+            PatternKind.WOOD -> WoodGrain.value(q, frequency, turbulence, filter)
             PatternKind.CLOUDS -> smoothstep(CLOUD_LOW, CLOUD_HIGH, HALF + HALF * Noise.fbm(q, octaves))
             PatternKind.GRID -> grid(q)
             PatternKind.STRIPES -> smoothstep(STRIPE_LOW, STRIPE_HIGH, HALF + HALF * sin(2 * PI * frequency * q.y))
@@ -71,15 +73,6 @@ data class Pattern(
         val veins = q.x * MARBLE_FREQUENCY * frequency + turbulence * MARBLE_SPREAD * Noise.turbulence(q, octaves)
         val wave = HALF + HALF * sin(veins)
         return 1 - sqrt(wave)
-    }
-
-    private fun wood(q: Point3): Double {
-        val along = Point3(q.x * GRAIN_STRETCH, q.y * GRAIN_WAVE, q.z * GRAIN_WAVE)
-        val rings = sqrt(q.y * q.y + q.z * q.z) * frequency + turbulence * Noise.perlin(along)
-        val ring = rings - floor(rings)
-        val latewood = smoothstep(LATEWOOD_START, LATEWOOD_PEAK, ring) * (1 - smoothstep(LATEWOOD_PEAK, 1.0, ring))
-        val fibres = HALF + HALF * Noise.perlin(Point3(q.x * FIBRE_STRETCH, q.y * FIBRES, q.z * FIBRES))
-        return LATEWOOD_SHARE * latewood + (1 - LATEWOOD_SHARE) * fibres
     }
 
     /** 1 on the lines between unit cells, [frequency] of a cell wide, along any of the three axes. */
@@ -104,13 +97,6 @@ data class Pattern(
         private const val STRIPE_HIGH = 0.65
         private const val MARBLE_FREQUENCY = 2 * PI
         private const val MARBLE_SPREAD = 4.0
-        private const val GRAIN_STRETCH = 0.25
-        private const val GRAIN_WAVE = 2.0
-        private const val LATEWOOD_START = 0.72
-        private const val LATEWOOD_PEAK = 0.9
-        private const val LATEWOOD_SHARE = 0.75
-        private const val FIBRE_STRETCH = 0.5
-        private const val FIBRES = 24.0
     }
 }
 
@@ -121,8 +107,15 @@ data class Pattern(
  */
 class Patterned(val pattern: Pattern, val roughness: Double, val bump: Double = 0.0) : Material {
     override fun scatter(ray: Ray, hit: Hit, random: Random): Scattered? {
-        val surface = if (bump > 0) hit.copy(normal = Bump.normal(pattern, hit.p, hit.normal, bump)) else hit
-        return ClearCoat.scatter(ray, surface, pattern.colorAt(hit.p), roughness, Plastic.COAT_IOR, random)
+        val filter = if (pattern.kind == PatternKind.WOOD && ray.pixel != null) {
+            WoodGrain.filter(pattern, hit.p, ray.pixel.onSurface(ray.direction, hit.geometricNormal, hit.t))
+        } else null
+        val value = pattern.valueAt(hit.p, filter)
+        val color = pattern.first * (1 - value) + pattern.second * value
+        val surface = if (bump > 0) {
+            hit.copy(normal = Bump.normal(pattern, hit.p, hit.normal, bump, filter, value))
+        } else hit
+        return ClearCoat.scatter(ray, surface, color, roughness, Plastic.COAT_IOR, random)
             ?.copy(normal = surface.normal)
     }
 }
@@ -133,13 +126,17 @@ object Bump {
     private const val STEP = 1e-3
 
     /** [normal] tilted against the slope of [Pattern.valueAt] × [strength] along the surface at [p]. */
-    fun normal(pattern: Pattern, p: Point3, normal: Point3, strength: Double): Point3 {
+    fun normal(pattern: Pattern, p: Point3, normal: Point3, strength: Double): Point3 =
+        normal(pattern, p, normal, strength, null, pattern.valueAt(p))
+
+    internal fun normal(
+        pattern: Pattern, p: Point3, normal: Point3, strength: Double, filter: WoodFilter?, here: Double,
+    ): Point3 {
         val step = STEP / pattern.scale
-        val here = pattern.valueAt(p)
         val gradient = Point3(
-            pattern.valueAt(p + Point3(step, 0.0, 0.0)) - here,
-            pattern.valueAt(p + Point3(0.0, step, 0.0)) - here,
-            pattern.valueAt(p + Point3(0.0, 0.0, step)) - here,
+            pattern.valueAt(p + Point3(step, 0.0, 0.0), filter) - here,
+            pattern.valueAt(p + Point3(0.0, step, 0.0), filter) - here,
+            pattern.valueAt(p + Point3(0.0, 0.0, step), filter) - here,
         ) / step
         val along = gradient - normal * gradient.dot(normal)
         return (normal - along * (strength / pattern.scale)).unit()
