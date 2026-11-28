@@ -2,20 +2,20 @@
 #krt Look "bool sampleLights" true "bool motionBlur" false
 # pbrt's camera space is left-handed, krt's right-handed: the mirror keeps the picture the same.
 Scale -1 1 1
-LookAt 5.2 1.4 3.4  -0.3 1.5 -0.2  0 1 0
-Camera "perspective" "float fov" 42.0 "float lensradius" 0.0 "float focaldistance" 6.57419196555744
+LookAt 3.4 1.3 2.3  -0.2 1.5 -0.3  0 1 0
+Camera "perspective" "float fov" 42.0 "float lensradius" 0.0 "float focaldistance" 4.445222154178573
 Film "rgb" "integer xresolution" 800 "integer yresolution" 600
 Sampler "zsobol" "integer pixelsamples" 64
 Integrator "volpath" "integer maxdepth" 12
 
 WorldBegin
-#krt Sky "rgb horizon" [0.09 0.05 0.035] "rgb zenith" [0.01 0.012 0.03]
-LightSource "infinite" "rgb L" [0.049999999999999996 0.031 0.0325]
-MakeNamedMedium "medium_0" "string type" "homogeneous" "rgb sigma_a" [0.013600000000000001 0.016999999999999987 0.023800000000000016] "rgb sigma_s" [0.1564 0.15300000000000002 0.1462] "float scale" 1
+#krt Sky "rgb horizon" [0.03 0.017 0.012] "rgb zenith" [0.002 0.003 0.008]
+LightSource "infinite" "rgb L" [0.016 0.01 0.01]
+MakeNamedMedium "medium_0" "string type" "homogeneous" "rgb sigma_a" [0.033 0.035199999999999995 0.039599999999999996] "rgb sigma_s" [0.077 0.0748 0.0704] "float scale" 1
 
 AttributeBegin
   #krt Name "Sand"
-  Material "diffuse" "rgb reflectance" [0.5 0.38 0.25]
+  Material "diffuse" "rgb reflectance" [0.66 0.52 0.36]
   Translate 0.0 -1000.0 0.0
   Shape "sphere" "float radius" 1000.0
 AttributeEnd
@@ -31,12 +31,12 @@ AttributeBegin
   MediumInterface "medium_0" ""
   Material "interface"
   Translate 0.0 1.2 0.0
-  Shape "sphere" "float radius" 4.2
+  Shape "sphere" "float radius" 4.5
 AttributeEnd
 AttributeBegin
   #krt Name "Sun"
-  AreaLightSource "diffuse" "rgb L" [1.317236215527097 0.9661387746721991 0.4012898744235792] "float scale" 170.0
+  AreaLightSource "diffuse" "rgb L" [1.317236215527097 0.9661387746721991 0.4012898744235792] "float scale" 1400.0
   Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
-  Translate -30.0 3.5 45.0
-  Shape "sphere" "float radius" 4.0
+  Translate -30.0 2.2 45.0
+  Shape "sphere" "float radius" 1.6
 AttributeEnd

@@ -101,7 +101,7 @@ object Flights {
     private val PRISM = swing(Point3(2.0, 1.15, 1.95), Point3(0.0, 1.0, 0.0))
     private val BUBBLES = swing(Point3(0.6, 1.9, 5.2), Point3(0.0, 1.2, 0.0))
     private val CANDLE = swing(Point3(0.2, 1.0, 2.6), Point3(0.0, 0.5, 0.0))
-    private val TEMPLE = swing(Point3(5.2, 1.4, 3.4), Point3(-0.3, 1.5, -0.2))
+    private val TEMPLE = swing(Point3(3.4, 1.3, 2.3), Point3(-0.2, 1.5, -0.3))
     private val METALS = swing(Point3(0.2, 2.0, 5.6), Point3(0.0, 0.45, 0.0))
 
     fun of(scene: DemoScene): FlightPath = when (scene) {
