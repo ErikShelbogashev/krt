@@ -101,9 +101,9 @@ class RenderController(
     ) {
         val current = generation.incrementAndGet()
         renderJob?.cancel()
-        offscreen?.invalidateFrame()
         val update: (RenderProgress) -> Unit = { if (generation.get() == current) onUpdate(it) }
         val drawing = mode
+        if (drawing != RenderMode.GPU) offscreen?.invalidateFrame()
         val destination = frame.destination(drawing)
         when (drawing) {
             RenderMode.WIREFRAME -> renderWireframe(destination, rayTracer.world, camera, update)

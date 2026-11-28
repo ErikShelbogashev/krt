@@ -13,7 +13,7 @@ class FrameBuffer(width: Int, height: Int) {
     var frame: Frame = Frame(width, height)
         private set
 
-    /** Progress of the frame last published. */
+    /** Progress of the current request, including the interval before its first preview. */
     @Volatile
     var progress: RenderProgress = RenderProgress.NONE
         private set
@@ -36,6 +36,11 @@ class FrameBuffer(width: Int, height: Int) {
     fun resizeTo(width: Int, height: Int) {
         if (width == frame.width && height == frame.height) return
         frame = Frame(width, height)
+    }
+
+    fun beginFrame(): Frame {
+        progress = RenderProgress.NONE
+        return frame
     }
 
     fun publish(frame: Frame, progress: RenderProgress) {

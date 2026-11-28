@@ -97,7 +97,7 @@ fun KrtApp(app: AppContext, modifier: Modifier = Modifier) {
                     }
                     StatusBar(mode, shown.progress, app.renderController.threads, app.rayTracer.maxDepth)
                 }
-                BenchmarkHost(app, benchmark, progress = { shown.progress })
+                BenchmarkHost(app, benchmark, progress = { app.frameBuffer.progress })
             }
         }
     }

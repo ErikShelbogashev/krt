@@ -4,7 +4,6 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicLong
 import javax.swing.SwingUtilities
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
@@ -48,7 +47,8 @@ class OffscreenGpu(
     }
     private val dispatcher = executor.asCoroutineDispatcher()
     private val scope = CoroutineScope(dispatcher + SupervisorJob())
-    private val generation = AtomicLong()
+    @Volatile
+    private var latest: GpuRequest? = null
     private val copyLock = Any()
     private val updates = FrameUpdates()
     private val tracer = GpuTracer()
@@ -83,9 +83,9 @@ class OffscreenGpu(
         val passes = camera.samplesPerPixel
         val startedAt = clock()
         val (width, height) = frame.width to frame.height
-        val current = generation.incrementAndGet()
+        val current = begin(DraftGroup(sceneForFrame, frame, depth, passes), onUpdate)
         val failure = CoroutineExceptionHandler { _, cause ->
-            publish(current, onUpdate, RenderProgress(passes, 0, 0.0, clock() - startedAt, failure = cause.toString()))
+            publish(current, RenderProgress(passes, 0, 0.0, clock() - startedAt, failure = cause.toString()))
         }
         return scope.launch(failure) {
             val scene = sceneForFrame()
@@ -104,8 +104,9 @@ class OffscreenGpu(
                 readDraft(draft, frame, current, draftMarker)
                 lastDraftMarker = draftMarker
             })
-            publish(current, onUpdate, RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true))
+            publish(current, RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true))
             delay(REFINE_DELAY)
+            if (latest !== current) return@launch
             val target = surfaceOf(surface, width, height).also { surface = it }
             var published = 0L
             var taken = 0
@@ -121,7 +122,7 @@ class OffscreenGpu(
                     val step = GpuFrame(scene, view, width, height, depth, samples, seed, band)
                     stepBudget = stepBudget.after(measureStep {
                         drawStep(target, step)
-                        read(target, frame, rows, current, marker)
+                        readBand(target, rows, marker) { copy(it, frame, rows, current) }
                         lastMarker = marker
                     })
                     val done = GpuSampling.samplesDone(taken, samples, rows, height)
@@ -129,12 +130,17 @@ class OffscreenGpu(
                     // The window takes a frame at most every few milliseconds; the last step of a frame always.
                     if (now - published >= PUBLISH_INTERVAL_MS || done == passes) {
                         published = now
-                        publish(current, onUpdate, RenderProgress(passes, done, 0.0, now - startedAt))
+                        publish(current, RenderProgress(passes, done, 0.0, now - startedAt))
                     }
                 }
                 taken += samples
             }
         }
+    }
+
+    private fun begin(group: DraftGroup, onUpdate: (RenderProgress) -> Unit): GpuRequest = synchronized(copyLock) {
+        // Reuse the group only across consecutive poses. Returning to a scene starts a new group.
+        GpuRequest(latest?.group?.takeIf { it == group } ?: group, onUpdate).also { latest = it }
     }
 
     private fun surfaceOf(previous: Surface?, width: Int, height: Int): Surface =
@@ -167,47 +173,44 @@ class OffscreenGpu(
         context.flushAndSubmit(target, syncCpu = true)
     }
 
-    private fun read(target: Surface, frame: Frame, rows: IntRange, current: Long, marker: Float) {
-        readBand(target, rows, marker) { bitmap -> copy(bitmap, frame, rows, current) }
-    }
-
     /** Validate the draw at its actual resolution, then enlarge the verified pixels for display. */
-    private fun readDraft(target: Surface, frame: Frame, current: Long, marker: Float) {
+    private fun readDraft(target: Surface, frame: Frame, current: GpuRequest, marker: Float) {
         val rows = 0 until frame.height
         readBand(target, 0 until target.height, marker) { bitmap ->
             if (target.width == frame.width + 1 && target.height == frame.height) {
-                return copy(bitmap, frame, rows, current)
+                return copy(bitmap, frame, rows, current, draft = true)
             }
             Bitmap().use { visible ->
                 check(bitmap.extractSubset(visible, IRect.makeWH(target.width - 1, target.height)))
                 Bitmap().use { scaled ->
                     scaled.allocPixels(ImageInfo(frame.width, frame.height, ColorType.BGRA_8888, ColorAlphaType.OPAQUE))
                     scalePixels(visible, scaled)
-                    copy(scaled, frame, rows, current)
+                    copy(scaled, frame, rows, current, draft = true)
                 }
             }
         }
     }
 
-    private fun copy(bitmap: Bitmap, frame: Frame, rows: IntRange, current: Long) {
+    private fun copy(bitmap: Bitmap, frame: Frame, rows: IntRange, current: GpuRequest, draft: Boolean = false) {
         // Skia omits the proof column while copying into a tightly packed visible rectangle.
         val info = ImageInfo(frame.width, rows.count(), ColorType.BGRA_8888, ColorAlphaType.OPAQUE)
         val bytes = bitmap.readPixels(info, frame.width * BYTES_PER_PIXEL, 0, 0)
             ?: error("Could not copy the GPU frame")
         val pixels = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer()
         synchronized(copyLock) {
-            if (generation.get() == current) {
+            if (latest?.accepts(current, draft) == true) {
                 pixels.get(frame.pixels, rows.first * frame.width, rows.count() * frame.width)
             }
         }
     }
 
-    private fun publish(current: Long, onUpdate: (RenderProgress) -> Unit, progress: RenderProgress) =
-        updates.offer { if (generation.get() == current) onUpdate(progress) }
+    private fun publish(current: GpuRequest, progress: RenderProgress) = updates.offer {
+        latest?.takeIf { it.accepts(current, progress.isDraft) }?.onUpdate?.invoke(progress)
+    }
 
     /** Once a new renderer takes the frame, an earlier in-flight GPU draw may no longer write into it. */
     fun invalidateFrame() {
-        synchronized(copyLock) { generation.incrementAndGet() }
+        synchronized(copyLock) { latest = null }
     }
 
     /** Waits for the step on the GPU thread to finish before it frees the context the step draws with. */
@@ -234,6 +237,14 @@ class OffscreenGpu(
     }
 }
 
+
+/** Only motion of the camera may overlap a quick look. Scene edits, resizing and render settings start a new group. */
+private data class DraftGroup(val scene: () -> GpuScene, val frame: Frame, val depth: Int, val samples: Int)
+
+private class GpuRequest(val group: DraftGroup, val onUpdate: (RenderProgress) -> Unit) {
+    fun accepts(completed: GpuRequest, draft: Boolean): Boolean =
+        this === completed || (draft && group === completed.group)
+}
 
 /** A busy window takes the newest available progress when it can draw again. */
 private class FrameUpdates {
