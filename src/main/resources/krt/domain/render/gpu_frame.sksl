@@ -36,7 +36,7 @@ uniform float maxDepth;
 uniform float samples;
 uniform float seed;
 
-const int MAX_STEPS_PER_PATH = 48;  // bounces up to MAX_DEPTH and crossings of interfaces between media
+const int MAX_SCATTER_STEPS = 48;   // separate from the medium boundary budget
 const int MAX_SAMPLES = 64;
 const int MAX_STEPS = 65536;        // nodes one ray may visit
 const float T_MIN = 0.001;

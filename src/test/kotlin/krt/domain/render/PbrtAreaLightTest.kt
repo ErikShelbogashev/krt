@@ -1,5 +1,7 @@
 package krt.domain.render
 
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 import kotlin.math.abs
 import kotlin.math.pow
@@ -10,6 +12,8 @@ import krt.domain.camera.Camera
 import krt.domain.scene.World
 import krt.i9ns.pbrt.PbrtReader
 import krt.platform.math.Color
+import krt.platform.skia.MetalContext
+import org.junit.jupiter.api.Assumptions.assumeTrue
 
 /** Compare a common PBRT input against an independent path integrator, in linear light. */
 class PbrtAreaLightTest {
@@ -40,6 +44,21 @@ class PbrtAreaLightTest {
         compare { x, y ->
             decode(pixels[y * SIZE + x]) { it * it }
         }
+    }
+
+    @Test
+    fun `a completed Metal frame matches PBRT after progressive accumulation and readback`() {
+        val context = MetalContext.create()
+        assumeTrue(context != null, "Metal is required")
+        val frame = Frame(SIZE, SIZE)
+        val done = CountDownLatch(1)
+        OffscreenGpu(requireNotNull(context)).use { gpu ->
+            gpu.render(frame, RayTracer(world, 2), camera, Random(43), System::currentTimeMillis) {
+                if (it.isDone) done.countDown()
+            }
+            assertTrue(done.await(9, TimeUnit.SECONDS), "Metal did not complete the frame")
+        }
+        compare { x, y -> decode(frame.pixels[y * SIZE + x]) { it * it } }
     }
 
     @Test

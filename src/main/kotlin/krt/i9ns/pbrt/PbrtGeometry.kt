@@ -3,6 +3,7 @@ package krt.i9ns.pbrt
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
 import krt.domain.scene.model.Fractal
 import krt.domain.scene.model.FractalKind
@@ -50,7 +51,9 @@ object PbrtGeometry {
         return if (covering.material === Interface && inside != null) {
             Fog(center, radius, inside, id, covering.media.outside)
         } else {
-            Sphere(center, radius, covering.material, id, velocity, covering.media)
+            val material = covering.material
+            val oriented = if (placement.reverse && material is Emissive) material.reversed() else material
+            Sphere(center, radius, oriented, id, velocity, covering.media)
         }
     }
 

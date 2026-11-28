@@ -64,11 +64,16 @@ class Fractal(
     }
 
     override fun hit(ray: Ray, tMin: Double, tMax: Double): Hit? {
-        val oc = ray.origin - center
         val a = ray.direction.dot(ray.direction)
+        return if (a in java.lang.Double.MIN_NORMAL..Double.MAX_VALUE) march(ray, tMin, tMax, a)
+            else Hit.withScaledDirection(this, ray, tMin, tMax)
+    }
+
+    private fun march(ray: Ray, tMin: Double, tMax: Double, a: Double): Hit? {
+        val oc = ray.origin - center
         val halfB = oc.dot(ray.direction)
         val discriminant = SphereRoots.discriminant(oc, ray.direction, a, halfB, radius)
-        if (a == 0.0 || discriminant < 0) return null
+        if (!(discriminant >= 0.0) || !discriminant.isFinite()) return null
         val root = sqrt(discriminant)
         val speed = sqrt(a)
         var t = maxOf((-halfB - root) / a, tMin)

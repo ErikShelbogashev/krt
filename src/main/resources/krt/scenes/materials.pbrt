@@ -57,7 +57,7 @@ AttributeBegin
 AttributeEnd
 AttributeBegin
   #krt Name "Candle flame"
-  AreaLightSource "diffuse" "rgb L" [1.8686807831037073 0.8302768666114065 0.12333033949687035] "float scale" 30.0
+  AreaLightSource "diffuse" "rgb L" [1.8686807831037073 0.8302768666114065 0.12333033949687035] "float scale" 30.0 "bool twosided" true
   Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
   Translate 1.904026665996873 1.05 1.9793444606897546
   Shape "sphere" "float radius" 0.07
@@ -79,7 +79,7 @@ AttributeEnd
 AttributeBegin
   #krt Name "Lava"
   #krt AreaLightSource "pattern" "string kind" "noise" "rgb first" [1.0 0.32 0.02] "rgb second" [0.12 0.01 0.0] "float scale" 2.2 "float turbulence" 1.0 "float frequency" 1.0 "integer octaves" 5 "float intensity" 4.0
-  AreaLightSource "diffuse" "rgb L" [0.56 0.165 0.01] "float scale" 4.0
+  AreaLightSource "diffuse" "rgb L" [0.56 0.165 0.01] "float scale" 4.0 "bool twosided" true
   Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
   Translate -1.4174024545067503 0.5 -4.535402394478013
   Shape "sphere" "float radius" 0.5
@@ -123,17 +123,17 @@ AttributeBegin
   Shape "sphere" "float radius" 0.25
 AttributeEnd
 AttributeBegin
-  AreaLightSource "diffuse" "rgb L" [1.4165523860440883 0.9446607388944502 0.321601139469749] "float scale" 2.0
+  AreaLightSource "diffuse" "rgb L" [1.4165523860440883 0.9446607388944502 0.321601139469749] "float scale" 2.0 "bool twosided" true
   Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
   Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [-4.867263522577862 1.5999999999999999 3.3785736657810337 -5.714062053923526 1.5999999999999999 1.5666872876350904 -5.714062053923526 3.2 1.5666872876350904 -4.867263522577862 1.5999999999999999 3.3785736657810337 -5.714062053923526 3.2 1.5666872876350904 -4.867263522577862 3.2 3.3785736657810337]
 AttributeEnd
 AttributeBegin
-  AreaLightSource "diffuse" "rgb L" [0.8493710009871481 1.0074526770225407 1.3697170440943385] "float scale" 2.0
+  AreaLightSource "diffuse" "rgb L" [0.8493710009871481 1.0074526770225407 1.3697170440943385] "float scale" 2.0 "bool twosided" true
   Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
   Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [-4.1347572388720035 1.8 -4.197494300105631 -2.4923970366515467 1.8 -5.338832534881974 -2.4923970366515467 3.4000000000000004 -5.338832534881974 -4.1347572388720035 1.8 -4.197494300105631 -2.4923970366515467 3.4000000000000004 -5.338832534881974 -4.1347572388720035 3.4000000000000004 -4.197494300105631]
 AttributeEnd
 AttributeBegin
-  AreaLightSource "diffuse" "rgb L" [0.9665927621961551 1.0145687323639756 0.954055697650721] "float scale" 5.0
+  AreaLightSource "diffuse" "rgb L" [0.9665927621961551 1.0145687323639756 0.954055697650721] "float scale" 5.0 "bool twosided" true
   Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
   Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [0.30042720235782894 7.0 3.1484056778804526 1.6482539807732361 7.0 -2.6982483203809764 5.5456163470353665 7.0 -1.797933605382024 0.30042720235782894 7.0 3.1484056778804526 5.5456163470353665 7.0 -1.797933605382024 4.197789568619959 7.0 4.048720392879405]
 AttributeEnd

@@ -18,7 +18,7 @@ import krt.platform.math.Point3
 /**
  * Scene packed for the GPU shader (ADR 0009): one RGBA_8888 texture [width] texels wide, one number per texel.
  * A number is 24 bits in the R, G, B channels, alpha is always 255: a coordinate in fixed point
- * (see [GpuScenePacking.encode]) or a whole number (an index, a count, a code) as is.
+ * (see [GpuScenePacking.encode]), a nonnegative 24-bit float for emission, or an integer code.
  *
  * Six sections follow each other:
  * - [nodeCount] BVH nodes from texel 0, [GpuScenePacking.NODE_VALUES] each: box min x, y, z, max x, y, z,
@@ -130,6 +130,9 @@ object GpuScenePacking {
     private const val BLUE = 2
     private const val ALPHA = 3
     private const val BOX_VALUES = 6
+    private val FIRST_COLOR = 1..3
+    private val SECOND_COLOR = 6..8
+
 
     // A moving sphere sums three independently rounded values (centre, velocity, radius).
     private const val BOX_MARGIN_CODES = 2
@@ -238,7 +241,16 @@ object GpuScenePacking {
 
     private fun materialCodes(primitive: Traceable): IntArray {
         val values = GpuMaterials.values(materialOf(primitive))
-        return IntArray(MATERIAL_VALUES) { if (it == 0) values[0].toInt() else encode(values[it]) }
+        val kind = values[0].toInt()
+        val emissive = kind == EMISSIVE || kind == GLOWING
+        return IntArray(MATERIAL_VALUES) { field ->
+            when {
+                field == 0 -> kind
+                emissive && field in FIRST_COLOR -> encodeRadiance(values[field])
+                kind == GLOWING && field in SECOND_COLOR -> encodeRadiance(values[field])
+                else -> encode(values[field])
+            }
+        }
     }
 
     private fun texture(codes: IntArray, height: Int): ByteArray {
@@ -253,6 +265,15 @@ object GpuScenePacking {
         return bytes
     }
 
+}
+
+// One texel carries the 8 exponent bits and the top 16 fraction bits of a nonnegative IEEE float.
+private const val UNUSED_FRACTION_BITS = 7
+
+private fun encodeRadiance(value: Double): Int {
+    if (!(value > 0.0)) return 0
+    val finite = value.coerceAtMost(Float.MAX_VALUE.toDouble()).toFloat()
+    return finite.toRawBits() ushr UNUSED_FRACTION_BITS
 }
 
 /** The sphere or triangle the shader draws for [obj]: fog and translucent balls are spheres bounding media. */

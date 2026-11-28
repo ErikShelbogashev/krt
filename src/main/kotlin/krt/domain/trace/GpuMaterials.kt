@@ -39,7 +39,7 @@ object GpuMaterials {
      * - Metal: albedo, fuzz;
      * - Dielectric: absorption per unit of distance (Beer–Lambert), refraction index, dispersion, none, GGX α of
      *   frosted glass (0 for clear glass);
-     * - Emissive: emitted light;
+     * - Emissive: emitted light, side (0 both, +1 front, -1 back);
      * - Plastic: albedo, coat roughness, coat refraction index;
      * - Checker: even cells, coat roughness, coat refraction index, odd cells, cell size;
      * - Interface (the edge of a medium, which light crosses unchanged): nothing;
@@ -49,7 +49,7 @@ object GpuMaterials {
      * - Velvet: base, roughness, chance of the diffuse bounce, sheen;
      * - Patterned: first colour, coat roughness, pattern scale, second colour, bump, pattern kind, turbulence,
      *   frequency, octaves;
-     * - Glowing pattern: first colour, intensity, pattern scale, second colour, none, pattern kind, turbulence,
+     * - Glowing pattern: first emitted RGB, none, pattern scale, second emitted RGB, none, pattern kind, turbulence,
      *   frequency, octaves.
      */
     fun values(material: Material): DoubleArray = surface(material) ?: physical(material)
@@ -67,7 +67,7 @@ object GpuMaterials {
             third = material.brushing?.x ?: 0.0, fourth = material.brushing?.y ?: 0.0,
             fifth = material.brushing?.z ?: 0.0,
         )
-        is Emissive -> values(EMISSIVE, material.emitColor * material.intensity)
+        is Emissive -> values(EMISSIVE, material.emitColor * material.intensity, material.emissionSide.sign)
         is Plastic -> values(PLASTIC, material.albedo, material.roughness, material.ior)
         is Checker -> values(
             CHECKER, material.even, material.roughness, material.ior, odd = material.odd, third = material.cellSize,
@@ -79,12 +79,21 @@ object GpuMaterials {
         is Interface -> values(INTERFACE, Point3.ZERO)
         is Velvet -> values(VELVET, material.base, material.roughness, material.diffuseChance, odd = material.sheen)
         is Patterned -> patterned(PATTERNED, material.pattern, material.roughness, material.bump)
-        is GlowingPattern -> patterned(GLOWING, material.pattern, material.intensity, 0.0)
+        is GlowingPattern -> glowing(material)
         is SoapBubble -> values(BUBBLE, Point3.ZERO, material.thickness, material.filmIor)
         is Iridescent -> values(
             IRIDESCENT, material.base, material.thickness, material.filmIor, third = material.roughness,
         )
         else -> null
+    }
+
+    /** Linear emission commutes with interpolating the pattern. Bake intensity before quantizing either endpoint. */
+    private fun glowing(material: GlowingPattern): DoubleArray {
+        val pattern = material.pattern
+        val emitted = pattern.copy(
+            first = pattern.first * material.intensity, second = pattern.second * material.intensity,
+        )
+        return patterned(GLOWING, emitted, 0.0, 0.0)
     }
 
     @Suppress("LongParameterList")
