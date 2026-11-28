@@ -23,8 +23,8 @@ class ArgbBitmapConverter {
         if (bytes.size != size) bytes = ByteArray(size)
         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().put(pixels)
         val bitmap = Bitmap()
-        bitmap.allocPixels(ImageInfo(width, height, ColorType.BGRA_8888, ColorAlphaType.UNPREMUL))
-        bitmap.installPixels(bytes)
+        val info = ImageInfo(width, height, ColorType.BGRA_8888, ColorAlphaType.UNPREMUL)
+        check(bitmap.installPixels(info, bytes, width * Int.SIZE_BYTES)) { "Could not install display pixels" }
         bitmap.setImmutable()
         return bitmap.asComposeImageBitmap()
     }

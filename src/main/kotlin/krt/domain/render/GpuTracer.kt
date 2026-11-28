@@ -6,6 +6,7 @@ import krt.domain.trace.GpuScene
 import krt.domain.trace.GpuShaderSource
 import krt.platform.math.Point3
 import krt.platform.skia.DrawnOnceShader
+import org.jetbrains.skia.Color4f
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.FilterTileMode
@@ -40,7 +41,7 @@ data class GpuBand(
     val previousSamples: Int = 0,
     val rows: IntRange = 0 until Int.MAX_VALUE,
     val quick: Boolean = false,
-    val marker: Float = 0f,
+    val marker: Int = 0,
 ) {
     /** The lights a step of [scene] samples: none in a quick look. */
     fun sampledLights(scene: GpuScene): Int = if (quick) 0 else scene.sampledLights
@@ -105,7 +106,8 @@ class GpuTracer : AutoCloseable {
         builder.uniform("packedWindow", if (packed) 1f else 0f)
         builder.child("previous", previous ?: noFrame)
         builder.uniform("previousSamples", frame.band.previousSamples.toFloat())
-        builder.uniform("stepMarker", frame.band.marker)
+        val stamp = Color4f(frame.band.marker)
+        builder.uniform("stepMarker", stamp.r, stamp.g, stamp.b)
         builder.uniform("bandStart", frame.band.rows.first.toFloat())
         builder.uniform("bandEnd", frame.band.rows.last.toFloat() + 1)
         builder.child("scene", sceneTexture(frame.scene))
