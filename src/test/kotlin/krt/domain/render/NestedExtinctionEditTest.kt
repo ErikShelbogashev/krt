@@ -74,6 +74,25 @@ class NestedExtinctionEditTest {
     }
 
     @Test
+    fun `mirrored octahedron faces with different signed zeros bound one optical volume`() {
+        fun face(octant: Int): Triangle {
+            fun sign(mask: Int) = if (octant and mask == 0) 1.0 else -1.0
+            val mirror = Point3(sign(1), sign(2), sign(4))
+            val x = Point3(1, 0, 0) * mirror
+            val y = Point3(0, 1, 0) * mirror
+            val z = Point3(0, 0, 1) * mirror
+            val reversed = mirror.x * mirror.y * mirror.z < 0
+            return Triangle(x, if (reversed) z else y, if (reversed) y else z,
+                Interface, "octahedron", media = MediumInterface(old))
+        }
+        val cavity = Sphere(Point3(-0.1, -0.1, -0.1), 0.025, Interface, "cavity",
+            media = MediumInterface(null, old))
+        val world = World((0..7).map(::face) + cavity)
+        world.editObject("octahedron", edit)
+        assertEquals(0.25, (world.objects.last() as Sphere).media?.outside?.density?.y)
+    }
+
+    @Test
     fun `aligned cavities in a fog bank all restore their enclosing medium`() {
         val direction = Point3(1.125, kotlin.math.sqrt(2.0) / 8.0, kotlin.math.sqrt(3.0) / 8.0)
         val count = 4096
