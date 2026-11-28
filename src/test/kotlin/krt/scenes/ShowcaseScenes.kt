@@ -201,14 +201,14 @@ object ShowcaseScenes {
      * ring beside it, both lit through from inside; nothing else lights the room.
      */
     fun candle(): BuiltScene {
-        val wax = MediumInterface(Medium(c(2.2, 2.4, 3.0), c(0.995, 0.97, 0.9)), null)
-        val jade = Medium(c(8.0, 1.6, 5.0), c(0.3, 0.96, 0.55))
+        val wax = MediumInterface(Medium(c(2.2, 2.4, 3.0), c(0.97, 0.94, 0.86)), null)
+        val jade = Medium(c(4.5, 0.9, 2.8), c(0.25, 0.9, 0.5))
         val table = Patterned(
             Pattern(PatternKind.WOOD, c(0.16, 0.08, 0.04), c(0.05, 0.025, 0.012), 1.0, 0.4, 2.0, 5), 0.15, 0.01,
         )
         val flameColour = Emissive.kelvin(1800.0, 1.0).emitColor
         val flame = GlowingPattern(
-            Pattern(PatternKind.CLOUDS, flameColour * 0.35, flameColour, 6.0, 0.8, 1.0, 4), 30.0,
+            Pattern(PatternKind.CLOUDS, flameColour * 0.35, flameColour, 6.0, 0.8, 1.0, 2), 30.0,
         )
         val flameProfile = listOf(0.0 to 0.0, 0.045 to 0.04, 0.065 to 0.1, 0.058 to 0.18, 0.035 to 0.26, 0.0 to 0.34)
         val objects = buildList {
