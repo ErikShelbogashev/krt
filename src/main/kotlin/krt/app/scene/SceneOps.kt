@@ -8,6 +8,7 @@ import krt.domain.render.RenderController
 import krt.domain.render.renderFrame
 import krt.domain.scene.World
 import krt.domain.scene.model.DemoScene
+import krt.domain.scene.model.ObjectChange
 import krt.domain.scene.model.SceneOpening
 import krt.i9ns.scenefile.SceneLibrary
 import krt.platform.math.Point3
@@ -60,5 +61,18 @@ class LoadSceneOp(
         world.load(description.objects, description.look, scene)
         camera.resetView(description.look)
         renderFrame(renderController, rayTracer, camera, frameBuffer)
+    }
+}
+
+class EditObjectOp(
+    private val world: World,
+    private val renderer: RenderController,
+    private val tracer: RayTracer,
+    private val camera: Camera,
+    private val buffer: FrameBuffer,
+) {
+    operator fun invoke(id: String, edit: ObjectChange) {
+        world.editObject(id, edit)
+        renderFrame(renderer, tracer, camera, buffer)
     }
 }

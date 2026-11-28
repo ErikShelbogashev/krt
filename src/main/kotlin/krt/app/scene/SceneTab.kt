@@ -54,25 +54,34 @@ fun SceneTab(
     onSelect: (String) -> Unit,
     speed: Double,
     onMove: (String, Point3) -> Unit,
+    sampling: @Composable () -> Unit,
+    properties: @Composable (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val selected = catalog.selected(selectedId)
     var openGroups by remember { mutableStateOf(emptySet<String>()) }
-    Column(modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SectionHeader("Scene")
-        SceneSwitcher(scene, onScene)
-        SectionHeader("Objects · ${catalog.size}")
-        LazyColumn(Modifier.weight(1f).fillMaxWidth()) {
-            objectRows(catalog.featured, selected?.id, onSelect)
-            catalog.groups.forEach { group ->
-                val open = group.title in openGroups
-                item(key = "group:${group.title}") {
-                    GroupRow(group, open, onToggle = { openGroups = openGroups.toggled(group.title) })
-                }
-                if (open) objectRows(group.objects, selected?.id, onSelect)
-            }
+    val editor: @Composable (ObjectSummary) -> Unit = { summary ->
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            properties(summary.id)
+            MoveCard(summary, speed, onMove)
         }
-        selected?.let { MoveCard(it, speed, onMove) }
+    }
+    LazyColumn(
+        modifier.fillMaxSize().padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        item { SectionHeader("Scene") }
+        item { SceneSwitcher(scene, onScene) }
+        item { sampling() }
+        item { SectionHeader("Objects · ${catalog.size}") }
+        objectRows(catalog.featured, selected?.id, onSelect, editor)
+        catalog.groups.forEach { group ->
+            val open = group.title in openGroups
+            item(key = "group:${group.title}") {
+                GroupRow(group, open, onToggle = { openGroups = openGroups.toggled(group.title) })
+            }
+            if (open) objectRows(group.objects, selected?.id, onSelect, editor)
+        }
     }
 }
 
@@ -93,9 +102,13 @@ private fun SceneSwitcher(scene: DemoScene?, onScene: (DemoScene) -> Unit) {
     }
 }
 
-private fun LazyListScope.objectRows(objects: List<ObjectSummary>, selectedId: String?, onSelect: (String) -> Unit) {
+private fun LazyListScope.objectRows(
+    objects: List<ObjectSummary>, selectedId: String?, onSelect: (String) -> Unit,
+    editor: @Composable (ObjectSummary) -> Unit,
+) {
     items(objects, key = { it.id }) { summary ->
         ObjectRow(summary, selected = summary.id == selectedId, onClick = { onSelect(summary.id) })
+        if (summary.id == selectedId) editor(summary)
     }
 }
 

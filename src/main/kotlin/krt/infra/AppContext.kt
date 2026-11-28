@@ -17,6 +17,7 @@ import krt.app.render.SaveBenchmarkReportOp
 import krt.app.render.StartBenchmarkRunOp
 import krt.app.render.SaveImageOp
 import krt.app.render.SetRenderModeOp
+import krt.app.scene.EditObjectOp
 import krt.app.scene.LoadSceneOp
 import krt.app.scene.MoveObjectOp
 import krt.app.scene.OpenSceneOp
@@ -61,6 +62,7 @@ class AppContext(
     val saveBenchmarkReport = SaveBenchmarkReportOp(textFiles)
     val focusOnObject = FocusOnObjectOp(world, camera, renderController, rayTracer, frameBuffer)
     val openScene = OpenSceneOp(world, scenes, camera, renderController, rayTracer, frameBuffer)
+    val editObject = EditObjectOp(world, renderController, rayTracer, camera, frameBuffer)
     val moveObject = MoveObjectOp(world, renderController, rayTracer, camera, frameBuffer)
     val setRenderMode = SetRenderModeOp(renderController, rayTracer, camera, frameBuffer)
     val reportGpuFrame = ReportGpuFrameOp(renderController)
@@ -81,7 +83,10 @@ class AppContext(
             val scenes = SceneLibrary()
             val description = scenes.load(scene)
             val world = World(description.objects, description.look, scene)
-            val camera = Camera.default().apply { resetView(description.look) }
+            val camera = Camera.default().apply {
+                resetView(description.look)
+                filterWood = true
+            }
             val offscreen = MetalContext.create()?.let(::OffscreenGpu)
             return AppContext(
                 offscreen = offscreen,
