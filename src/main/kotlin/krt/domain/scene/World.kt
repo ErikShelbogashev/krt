@@ -23,7 +23,10 @@ import krt.platform.math.Ray
  */
 class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.CLASSIC, source: DemoScene? = null) {
 
-    private class Snapshot(val objects: List<Traceable>, val look: SceneLook, val source: DemoScene?) {
+    private class Snapshot(
+        val objects: List<Traceable>, val look: SceneLook, val source: DemoScene?,
+        val mediumRegions: Lazy<MediumRegions> = lazy { MediumRegions(objects) },
+    ) {
         val sky: Sky get() = look.sky
 
         /** Compiled on first use, so a burst of edits compiles the scene once. */
@@ -32,8 +35,6 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
         /** Packed for the GPU shader on first use (ADR 0009). */
         val gpuScene by lazy { GpuScenePacking.pack(objects, look) }
         val pack: () -> GpuScene = { gpuScene }
-
-        val mediumRegions by lazy { MediumRegions(objects) }
     }
 
     @Volatile
@@ -70,8 +71,10 @@ class World(objects: List<Traceable> = emptyList(), look: SceneLook = SceneLook.
 
     fun editObject(objectId: String, change: ObjectChange) {
         val before = snapshot
-        val updated = SceneObjectEdits.change(before.objects, objectId, change) { before.mediumRegions.ownerOf(it) }
-        snapshot = Snapshot(updated, before.look, before.source)
+        val updated = SceneObjectEdits.change(before.objects, objectId, change) {
+            before.mediumRegions.value.ownerOf(it)
+        }
+        snapshot = Snapshot(updated, before.look, before.source, before.mediumRegions)
     }
 
     fun getObjectIds(): List<String> = objects.map { it.id }
