@@ -196,6 +196,18 @@ class LightSamplingTest {
         assertTrue(abs(plain - sampled) < plain * 0.04, "plain $plain vs sampled $sampled")
     }
 
+    @Test
+    fun `light sampling through haze that scatters onwards keeps the brightness of the floor beneath it`() {
+        val objects = listOf(
+            Sphere(Point3(0.0, -100.0, 0.0), 100.0, Lambert(Color(0.7, 0.7, 0.7))),
+            Sphere(Point3(0.0, 3.0, 0.0), 0.5, Emissive(Color.ONE, 10.0)),
+            Fog(Point3(0.0, 1.0, 0.0), 2.5, Medium(Color(0.3, 0.3, 0.3), Color(0.9, 0.9, 0.9), g = 0.8)),
+        )
+        val plain = floorBrightness(TraceScene(objects, NIGHT), Random(23))
+        val sampled = floorBrightness(TraceScene(objects, NIGHT.copy(sampleLights = true)), Random(24))
+        assertTrue(abs(plain - sampled) < plain * 0.04, "plain $plain vs sampled $sampled")
+    }
+
     /** Mean brightness of rays from above, down at the floor, through the fog and past the light. */
     private fun meanBrightness(scene: TraceScene, random: Random): Double = (0 until RAYS).sumOf {
         val origin = Point3(random.nextDouble(-3.0, 3.0), 6.0, random.nextDouble(-3.0, 3.0))

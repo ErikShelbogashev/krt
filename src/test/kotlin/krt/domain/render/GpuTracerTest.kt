@@ -411,6 +411,25 @@ class GpuTracerTest {
     }
 
     @Test
+    fun `haze that scatters onwards looks the same on the GPU as on the CPU`() {
+        val haze = Medium(Color(0.25, 0.25, 0.25), Color(0.9, 0.9, 0.9), g = 0.8)
+        val scene = World(
+            listOf(
+                Sphere(Point3(0.0, -1000.0, 0.0), 1000.0, Lambert(Color(0.6, 0.6, 0.6))),
+                Fog(Point3(0.0, 1.0, 0.0), 4.0, haze),
+                Sphere(Point3(-1.0, 2.5, -3.0), 0.5, Emissive(Color(1.0, 0.9, 0.8), 12.0)),
+            ),
+            SceneLook(Sky(Color(0.02, 0.02, 0.03), Color(0.0, 0.0, 0.01)), 60.0, 0.0, sampleLights = true),
+        )
+        val camera = camera()
+        val (gpu, cpu) = gpuFrame(camera, scene) to cpuFrame(camera, scene)
+        (0 until CHANNELS).forEach { channel ->
+            val (onGpu, onCpu) = channelMean(gpu, channel) to channelMean(cpu, channel)
+            assertTrue(abs(onGpu - onCpu) < TOLERANCE, "channel $channel: GPU $onGpu vs CPU $onCpu")
+        }
+    }
+
+    @Test
     fun `a sign of many small lights of uneven brightness looks the same on the GPU as on the CPU`() {
         val camera = camera()
         val gpu = gpuFrame(camera, sign)

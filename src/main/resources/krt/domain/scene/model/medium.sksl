@@ -2,6 +2,28 @@ float3 mediumDensity(float medium) { return vector(mediaStart + medium * MEDIUM_
 
 float3 mediumAlbedo(float medium) { return vector(mediaStart + medium * MEDIUM_VALUES + 3.0); }
 
+float mediumG(float medium) { return number(mediaStart + medium * MEDIUM_VALUES + 6.0); }
+
+// HenyeyGreenstein.density: the share of scattered light per steradian at [cosine] from the incoming direction.
+float phaseDensity(float cosine, float g) {
+    float d = 1.0 + g * g - 2.0 * g * cosine;
+    return (1.0 - g * g) / (4.0 * PI * d * sqrt(d));
+}
+
+// HenyeyGreenstein.sample: a direction scattered from the unit [incoming] direction, drawn in proportion to it.
+float3 phaseSample(float3 incoming, float g) {
+    float u = rnd();
+    float v = rnd();
+    float s = (1.0 - g * g) / (1.0 - g + 2.0 * g * u);
+    float cosine = abs(g) < 0.001 ? 1.0 - 2.0 * u : clamp((1.0 + g * g - s * s) / (2.0 * g), -1.0, 1.0);
+    float sine = sqrt(max(0.0, 1.0 - cosine * cosine));
+    float phi = 2.0 * PI * v;
+    float3 axis = abs(incoming.y) < 0.999 ? float3(0.0, 1.0, 0.0) : float3(1.0, 0.0, 0.0);
+    float3 tangent = normalize(cross(axis, incoming));
+    float3 bitangent = cross(incoming, tangent);
+    return incoming * cosine + (tangent * cos(phi) + bitangent * sin(phi)) * sine;
+}
+
 // The medium beyond the surface of primitive [slot] for a ray that passes it [frontFace] first, as PathTracing.after:
 // 1 + its number in the primitive's record, the inside one through the front, the outside one through the back.
 float mediumBeyond(float slot, bool frontFace) {

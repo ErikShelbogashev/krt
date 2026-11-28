@@ -1,7 +1,12 @@
 package krt.domain.scene.model
 
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.exp
 import kotlin.math.ln
+import kotlin.math.sin
+import kotlin.math.sqrt
 import kotlin.random.Random
 import krt.platform.math.Color
 import krt.platform.math.Point3
@@ -10,10 +15,11 @@ import krt.platform.math.Ray
 /**
  * A homogeneous participating medium (ADR 0014): light travelling a unit of distance through it scatters or is
  * absorbed with the chance [density] per colour channel (the extinction σt), and of what it meets the share
- * [albedo] scatters, equally in every direction; the rest is absorbed. Fog, smoke and the inside of wax, jade or
- * skin are media.
+ * [albedo] scatters; the rest is absorbed. Fog, smoke and the inside of wax, jade or skin are media. A particle
+ * scatters light by the phase function of Henyey and Greenstein with the mean cosine [g]: 0 scatters equally in
+ * every direction, towards 1 more and more onwards, as haze does, which makes the shafts of light in it.
  */
-data class Medium(val density: Color, val albedo: Color) {
+data class Medium(val density: Color, val albedo: Color, val g: Double = 0.0) {
 
     /** Share of light left after [distance] through the medium, per channel. */
     fun transmittance(distance: Double): Color =
@@ -26,6 +32,32 @@ data class Medium(val density: Color, val albedo: Color) {
         /** The medium in which light travels [meanFreePath] per channel on average before it meets a particle. */
         fun ofMeanFreePath(meanFreePath: Color, albedo: Color): Medium =
             Medium(Color(1 / meanFreePath.x, 1 / meanFreePath.y, 1 / meanFreePath.z), albedo)
+    }
+}
+
+/** The phase function of Henyey and Greenstein (ADR 0014): how a particle shares out the light it scatters. */
+object HenyeyGreenstein {
+    private const val FOUR_PI = 4 * PI
+    private const val ISOTROPIC = 1e-3
+
+    /** Share of the light per steradian scattered at [cosine] from the direction it came, for the mean cosine [g]. */
+    fun density(cosine: Double, g: Double): Double {
+        val d = 1 + g * g - 2 * g * cosine
+        return (1 - g * g) / (FOUR_PI * d * sqrt(d))
+    }
+
+    /** A direction scattered from the unit [incoming] direction, drawn in proportion to [density] from [u] and [v]. */
+    fun sample(incoming: Point3, g: Double, u: Double, v: Double): Point3 {
+        val cosine = if (abs(g) < ISOTROPIC) {
+            1 - 2 * u
+        } else {
+            val s = (1 - g * g) / (1 - g + 2 * g * u)
+            ((1 + g * g - s * s) / (2 * g)).coerceIn(-1.0, 1.0)
+        }
+        val sine = sqrt(maxOf(0.0, 1 - cosine * cosine))
+        val phi = 2 * PI * v
+        val frame = Microfacets.frame(incoming)
+        return incoming * cosine + (frame.tangent * cos(phi) + frame.bitangent * sin(phi)) * sine
     }
 }
 

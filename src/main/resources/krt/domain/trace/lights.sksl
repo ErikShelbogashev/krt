@@ -55,7 +55,7 @@ float3 directLight(float3 p, float3 normal, float lobe, float medium) {
     float pdf = distanceSquared / cosine * chance;
     // PathTracing.diffuse: diffuse bounces go to a random point in the unit ball at the tip of the normal, 2 cos³ / π.
     float lit = max(0.0, dot(normal, direction));
-    float response = lobe == VOLUME ? 1.0 / (4.0 * PI) : 2.0 * lit * lit * lit / PI;
+    float response = lobe == VOLUME ? phaseDensity(dot(normal, direction), mediumG(medium)) : 2.0 * lit * lit * lit / PI;
     if (response == 0.0) { return float3(0.0); }
     float lightBase = materialStart + slot * MATERIAL_VALUES;
     float3 light = emission(lightBase, code(lightBase), point);

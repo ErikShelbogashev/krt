@@ -3,6 +3,7 @@ package krt.domain.trace
 import kotlin.math.PI
 import kotlin.random.Random
 import krt.domain.scene.model.FreeFlight
+import krt.domain.scene.model.HenyeyGreenstein
 import krt.domain.scene.model.Hit
 import krt.domain.scene.model.Interface
 import krt.domain.scene.model.Lobe
@@ -104,12 +105,20 @@ object PathTracing {
         return direct + scattered.attenuation * color(scene, scattered.ray, bounces, random, next)
     }
 
-    /** A scattering off a particle of the medium at [t] along the ray: in every direction, tinted by the albedo. */
+    /**
+     * A scattering off a particle of the medium at [t] along the ray, tinted by the albedo: in every direction, or
+     * by the medium's phase function when it scatters onwards (its g is not 0); drawn in proportion to it either way.
+     */
     private fun particle(scene: TraceScene, ray: Ray, t: Double, depth: Int, random: Random, state: State): Color {
         val medium = requireNotNull(state.medium)
         val p = ray.at(t)
         val lobe = if (state.enclosed) Lobe.ENCLOSED_VOLUME else Lobe.VOLUME
-        val scattered = Scattered(ray.next(p, Point3.randomInUnitSphere(random).unit()), Point3.ONE, lobe)
+        val direction = if (medium.g == 0.0) {
+            Point3.randomInUnitSphere(random).unit()
+        } else {
+            HenyeyGreenstein.sample(ray.direction.unit(), medium.g, random.nextDouble(), random.nextDouble())
+        }
+        val scattered = Scattered(ray.next(p, direction), Point3.ONE, lobe)
         val sampled = scene.sampleLights && lobe.samplesLights
         val direct = if (sampled) direct(scene, ray, p, Point3.ZERO, scattered, medium, random) else Point3.ZERO
         val next = State(medium, state.enclosed, !sampled)
@@ -142,7 +151,7 @@ object PathTracing {
     ): Color {
         val light = scene.lights.sample(p, ray.time, random) ?: return Point3.ZERO
         val response = when (scattered.lobe) {
-            Lobe.VOLUME -> 1 / (4 * PI)
+            Lobe.VOLUME -> HenyeyGreenstein.density(ray.direction.unit().dot(light.direction), medium?.g ?: 0.0)
             else -> diffuse(maxOf(0.0, (scattered.normal ?: normal).dot(light.direction)))
         }
         val shadow = Ray(p, light.direction, ray.time, ray.wavelength)

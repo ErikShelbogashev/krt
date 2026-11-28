@@ -38,7 +38,8 @@ import krt.platform.math.Point3
  *   and the cumulative share of the light's area; light sampling picks them when [SceneLook.sampleLights] is on;
  * - from [GpuSections.normalStart], the vertex normals of smooth triangles, [GpuScenePacking.NORMAL_VALUES] per
  *   record: the normals at the first, second and third vertex (ADR 0013);
- * - from [GpuSections.mediaStart], the media, [GpuScenePacking.MEDIUM_VALUES] each: density and albedo.
+ * - from [GpuSections.mediaStart], the media, [GpuScenePacking.MEDIUM_VALUES] each: density, albedo and the mean
+ *   cosine g of the phase function.
  */
 class GpuScene(
     val data: ByteArray,
@@ -91,7 +92,7 @@ object GpuScenePacking {
 
     const val NODE_VALUES = 9
     const val PRIMITIVE_VALUES = 14
-    const val MEDIUM_VALUES = 6
+    const val MEDIUM_VALUES = 7
     const val LIGHT_VALUES = 4
     const val MEMBER_VALUES = 2
     const val NORMAL_VALUES = 9
@@ -199,7 +200,7 @@ object GpuScenePacking {
     }
 
     private fun mediumCodes(medium: Medium): IntArray {
-        val values = listOf(medium.density, medium.albedo).flatMap { listOf(it.x, it.y, it.z) }
+        val values = listOf(medium.density, medium.albedo).flatMap { listOf(it.x, it.y, it.z) } + medium.g
         return IntArray(MEDIUM_VALUES) { encode(values[it]) }
     }
 

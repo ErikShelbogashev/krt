@@ -69,6 +69,7 @@ class PbrtTest {
             WorldBegin
             LightSource "infinite" "rgb L" [ 0.1 0.2 0.3 ]
             MakeNamedMedium "smoke" "string type" "homogeneous" "rgb sigma_a" [0.1 0.1 0.1] "rgb sigma_s" [0.3 0.3 0.3]
+                "float g" 0.7
             AttributeBegin
               AreaLightSource "diffuse" "blackbody L" [ 2700 ] "float scale" 5
               Translate 0 4 0
@@ -98,6 +99,7 @@ class PbrtTest {
         val fog = assertIs<Fog>(scene.objects[1])
         assertEquals(Color(0.4, 0.4, 0.4), fog.medium.density)
         assertEquals(0.75, fog.medium.albedo.x, 1e-12)
+        assertEquals(0.7, fog.medium.g)
         val triangle = assertIs<Triangle>(scene.objects[2])
         assertEquals(Point3(3.0, 0.0, 0.0), triangle.v1)
         assertEquals(Point3(0.0, 0.0, 1.0), triangle.normals?.n0)

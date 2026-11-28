@@ -25,9 +25,12 @@ float3 trace(float3 origin, float3 direction) {
                 float3 at = origin + direction * (flight / speed);
                 float particleLobe = enclosed ? SPECULAR : VOLUME;
                 countEmission = lightCount < 1.0 || particleLobe == SPECULAR;
-                if (!countEmission) { radiance += throughput * directLight(at, float3(0.0), VOLUME, medium); }
+                // For a particle, directLight takes the direction the ray came in where a surface's normal goes.
+                float3 incoming = normalize(direction);
+                if (!countEmission) { radiance += throughput * directLight(at, incoming, VOLUME, medium); }
                 origin = at;
-                direction = normalize(randomInUnitSphere());
+                float g = mediumG(medium);
+                direction = g == 0.0 ? normalize(randomInUnitSphere()) : phaseSample(incoming, g);
                 bounces += 1.0;
                 continue;
             }

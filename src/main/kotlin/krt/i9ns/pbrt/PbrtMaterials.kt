@@ -35,6 +35,9 @@ object PbrtMaterials {
     private const val ANISOTROPY_SPREAD = 0.9
     private const val DEFAULT_BUMP = 0.25
 
+    /** pbrt allows g in (-1, 1); at ±1 the phase function is a single direction. */
+    private const val MAX_G = 0.99
+
     /** Named metals of pbrt-v4 by their krt twins. */
     private val METALS =
         mapOf("Au" to Metals.GOLD, "Cu" to Metals.COPPER, "Ag" to Metals.SILVER, "Al" to Metals.ALUMINIUM)
@@ -85,7 +88,7 @@ object PbrtMaterials {
             PbrtValues.share(scattering.y, extinction.y),
             PbrtValues.share(scattering.z, extinction.z),
         )
-        return Medium(extinction, albedo)
+        return Medium(extinction, albedo, d.double("g", 0.0).coerceIn(-MAX_G, MAX_G))
     }
 
     private fun diffuse(d: PbrtDirective, textures: Map<String, Pattern>): Material =

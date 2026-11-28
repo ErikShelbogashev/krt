@@ -150,8 +150,9 @@ object PbrtLines {
     fun medium(name: String, medium: Medium): String {
         val scattering = medium.density * medium.albedo
         val absorption = medium.density - scattering
+        val phase = if (medium.g == 0.0) "" else " ${p("float g", medium.g)}"
         return "MakeNamedMedium \"$name\" \"string type\" \"homogeneous\" ${p("rgb sigma_a", absorption)} " +
-            "${p("rgb sigma_s", scattering)} \"float scale\" 1"
+            "${p("rgb sigma_s", scattering)} \"float scale\" 1$phase"
     }
 
     fun at(center: Point3): String = "Translate ${v(center)}"
