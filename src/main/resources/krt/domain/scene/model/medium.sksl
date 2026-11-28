@@ -1,4 +1,4 @@
-float3 mediumDensity(float medium) { return vector(mediaStart + medium * MEDIUM_VALUES); }
+float3 mediumDensity(float medium) { return positiveVector(mediaStart + medium * MEDIUM_VALUES); }
 
 float3 mediumAlbedo(float medium) { return vector(mediaStart + medium * MEDIUM_VALUES + 3.0); }
 
@@ -68,6 +68,11 @@ float3 mixtureWeight(float3 density, float distance, bool scatter) {
             density.z > 0.0 ? density.z : FAR) : density;
         float lowest = min(active.x, min(active.y, active.z));
         rates = coefficient * exp(-(active - lowest) * distance);
+        sum = rates.x + rates.y + rates.z;
+    }
+    // Large finite extinction can overflow the sum of three finite PDFs. Their common scale cancels.
+    if (sum > 1.0e38) {
+        rates *= 0.25;
         sum = rates.x + rates.y + rates.z;
     }
     return sum > 0.0 ? rates / (sum / 3.0) : float3(0.0);

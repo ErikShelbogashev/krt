@@ -66,8 +66,9 @@ object PbrtGeometry {
     ): Traceable {
         val kind = FractalKind.valueOf(d.text("kind", "mandelbulb").uppercase())
         val iterations = d.int("iterations", kind.iterations)
-        if (iterations > kind.gpuIterations) {
-            warnings += "line ${d.line}: $kind uses $iterations iterations on CPU and ${kind.gpuIterations} on GPU"
+        if (iterations !in kind.iterationRange) {
+            val effective = iterations.coerceIn(kind.iterationRange)
+            warnings += "line ${d.line}: $kind requested $iterations iterations, CPU and GPU use $effective"
         }
         return Fractal(
             kind,

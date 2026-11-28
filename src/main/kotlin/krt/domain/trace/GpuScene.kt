@@ -18,7 +18,7 @@ import krt.platform.math.Point3
 /**
  * Scene packed for the GPU shader (ADR 0009): one RGBA_8888 texture [width] texels wide, one number per texel.
  * A number is 24 bits in the R, G, B channels, alpha is always 255: a coordinate in fixed point
- * (see [GpuScenePacking.encode]), a nonnegative 24-bit float for emission, or an integer code.
+ * (see [GpuScenePacking.encode]), a nonnegative 24-bit float for emission or extinction, or an integer code.
  *
  * Six sections follow each other:
  * - [nodeCount] BVH nodes from texel 0, [GpuScenePacking.NODE_VALUES] each: box min x, y, z, max x, y, z,
@@ -210,10 +210,11 @@ object GpuScenePacking {
     }
 
     private fun mediumCodes(medium: Medium): IntArray {
-        val values = listOf(medium.density, medium.albedo).flatMap { listOf(it.x, it.y, it.z) }
+        val extinction = IntArray(3) { encodePositiveFloat(medium.density[it]) }
+        val albedo = IntArray(3) { encode(medium.albedo[it]) }
         // g has its own open interval (−1,1). A coordinate-scale code can round a finite phase peak to a pole.
         val phase = encode(medium.g * RANGE).coerceAtLeast(1)
-        return values.map(::encode).toIntArray() + phase
+        return extinction + albedo + phase
     }
 
     private fun sphereGeometry(sphere: Sphere): DoubleArray = doubleArrayOf(
@@ -246,8 +247,8 @@ object GpuScenePacking {
         return IntArray(MATERIAL_VALUES) { field ->
             when {
                 field == 0 -> kind
-                emissive && field in FIRST_COLOR -> encodeRadiance(values[field])
-                kind == GLOWING && field in SECOND_COLOR -> encodeRadiance(values[field])
+                emissive && field in FIRST_COLOR -> encodePositiveFloat(values[field])
+                kind == GLOWING && field in SECOND_COLOR -> encodePositiveFloat(values[field])
                 else -> encode(values[field])
             }
         }
@@ -270,7 +271,7 @@ object GpuScenePacking {
 // One texel carries the 8 exponent bits and the top 16 fraction bits of a nonnegative IEEE float.
 private const val UNUSED_FRACTION_BITS = 7
 
-private fun encodeRadiance(value: Double): Int {
+private fun encodePositiveFloat(value: Double): Int {
     if (!(value > 0.0)) return 0
     val finite = value.coerceAtMost(Float.MAX_VALUE.toDouble()).toFloat()
     return finite.toRawBits() ushr UNUSED_FRACTION_BITS

@@ -156,8 +156,9 @@ class GpuScenePackingTest {
         assertEquals(1, scene.code(scene.primitive(fog) + 12), "the inside medium is the first")
         assertEquals(0, scene.code(scene.primitive(fog) + 13), "clear air outside")
         val medium = scene.scene.sections.mediaStart
-        listOf(0.25, 0.25, 0.25, 0.9, 0.8, 0.7).forEachIndexed { i, value ->
-            assertEquals(value, scene.number(medium + i), 1e-3)
+        for (channel in 0..2) assertEquals(0.25f, Float.fromBits(scene.code(medium + channel) shl 7))
+        listOf(0.9, 0.8, 0.7).forEachIndexed { i, value ->
+            assertEquals(value, scene.number(medium + 3 + i), 1e-3)
         }
         assertEquals(0, scene.scene.mediumAt(Point3(0.0, 2.5, 0.0)))
         assertEquals(-1, scene.scene.mediumAt(Point3(0.0, -2.5, 0.0)))

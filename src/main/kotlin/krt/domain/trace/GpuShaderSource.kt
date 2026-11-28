@@ -55,7 +55,7 @@ object GpuShaderSource {
         appendLine("const int LEAF_SIZE = ${Bvh.LEAF_SIZE};")
         appendLine("const int MAX_PATH_CROSSINGS = ${PathTracing.MAX_PATH_CROSSINGS};")
         appendLine("const int MAX_SHADOW_CROSSINGS = ${PathTracing.MAX_CROSSINGS};")
-        FractalKind.entries.forEach { appendLine("const int ${it.name}_ITERATIONS = ${it.gpuIterations};") }
+        FractalKind.entries.forEach { appendLine("const int ${it.name}_ITERATIONS = ${it.iterationRange.last};") }
         number("TEXTURE_WIDTH", GpuScenePacking.TEXTURE_WIDTH)
         number("RANGE", GpuScenePacking.RANGE)
         number("NODE_VALUES", GpuScenePacking.NODE_VALUES)

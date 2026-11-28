@@ -17,3 +17,14 @@ float number(float index) {
 float3 vector(float index) {
     return float3(number(index), number(index + 1.0), number(index + 2.0));
 }
+
+// Packed positive float: eight exponent bits, sixteen fraction bits. The hidden bit is zero for subnormals.
+float positiveFloat(float index) {
+    float bits = code(index) / 65536.0;
+    float exponent = floor(bits);
+    return (fract(bits) + min(1.0, exponent)) * exp2(max(exponent - 127.0, -126.0));
+}
+
+float3 positiveVector(float index) {
+    return float3(positiveFloat(index), positiveFloat(index + 1.0), positiveFloat(index + 2.0));
+}
