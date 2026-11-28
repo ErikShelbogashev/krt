@@ -1,14 +1,17 @@
 package krt.domain.render
 
-import java.util.concurrent.CountDownLatch
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import krt.domain.camera.Camera
 import krt.domain.render.model.RenderMode
+import krt.domain.render.model.RenderProgress
 import krt.domain.scene.World
 import krt.domain.scene.model.Pattern
 import krt.domain.scene.model.PatternKind
@@ -50,20 +53,36 @@ class WoodConvergenceTest {
     }
 
     @Test
+    fun `progressive CPU batches keep the full frame sampling density`() {
+        RenderController(10L, 4, Random(17)).use { controller ->
+            for (stratified in listOf(false, true)) {
+                camera.stratifiedPixels = stratified
+                checkProgressiveFrame(controller)
+            }
+        }
+    }
+
+    @Test
     fun `offscreen Metal keeps the full frame sampling density over many small steps`() {
         val context = MetalContext.create()
         assumeTrue(context != null, "no Metal here")
-        camera.samplesPerPixel = 256
         camera.stratifiedPixels = true
-        val frame = Frame(COLUMNS, 1)
-        val done = CountDownLatch(1)
         OffscreenGpu(requireNotNull(context)).use { gpu ->
             RenderController(10L, 4, Random(17), offscreen = gpu).use { controller ->
                 controller.mode = RenderMode.GPU
-                controller.renderImage(frame, tracer, camera) { if (it.isDone || it.failure != null) done.countDown() }
-                assertTrue(done.await(8, TimeUnit.SECONDS), "Metal frame timed out")
+                checkProgressiveFrame(controller)
             }
         }
+    }
+
+    private fun checkProgressiveFrame(controller: RenderController) {
+        camera.samplesPerPixel = 256
+        val frame = Frame(COLUMNS, 1)
+        val done = CompletableFuture<RenderProgress>()
+        controller.renderImage(frame, tracer, camera) { if (it.isDone || it.failure != null) done.complete(it) }
+        val progress = done.get(8, TimeUnit.SECONDS)
+        assertNull(progress.failure)
+        assertEquals(camera.samplesPerPixel, progress.completedPasses)
         checkRidge(rawIntegral(), meanDiffuse(frame.pixels))
     }
 
