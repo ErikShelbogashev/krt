@@ -28,10 +28,12 @@ fun NumberField(
     range: ClosedFloatingPointRange<Double>,
     decimals: Int,
     modifier: Modifier = Modifier,
+    format: (Double, Int) -> String = NumberInput::format,
 ) {
-    var text by remember { mutableStateOf(NumberInput.format(value, decimals)) }
-    LaunchedEffect(value) {
-        if (NumberInput.parse(text, range) != value) text = NumberInput.format(value, decimals)
+    val formatted = remember(value, decimals, format) { format(value, decimals) }
+    var text by remember { mutableStateOf(formatted) }
+    LaunchedEffect(value, formatted) {
+        if (NumberInput.parse(text, range) != value) text = formatted
     }
     OutlinedTextField(
         value = text,

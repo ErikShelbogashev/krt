@@ -5,6 +5,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class NumberInputTest {
+    @Test
+    fun `editable coefficients survive changing the selected object`() {
+        for (value in listOf(0.00001, 0.0754, 0.123456789, 1e21, 0.0)) {
+            assertEquals(value, NumberInput.editable(value, 4).toDouble())
+        }
+    }
+
 
     @Test
     fun `numbers within the range are accepted, with a dot or a comma`() {

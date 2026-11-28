@@ -25,6 +25,8 @@ import krt.app.render.StatusBar
 import krt.app.render.Viewport
 import krt.app.scene.OpenSceneButton
 import krt.app.scene.SceneWarningsDialog
+import krt.app.scene.ObjectProperties
+import krt.app.scene.SamplingControls
 import krt.app.scene.SceneTab
 import krt.app.shell.Inspector
 import krt.app.shell.KrtTheme
@@ -34,6 +36,7 @@ import krt.domain.camera.model.CameraSnapshot
 import krt.domain.render.Frame
 import krt.domain.render.model.RenderProgress
 import krt.domain.scene.model.DemoScene
+import krt.domain.scene.model.ObjectOptics
 import krt.domain.scene.model.SceneCatalog
 import krt.domain.scene.model.SceneOpening
 import krt.domain.scene.model.Traceable
@@ -135,6 +138,16 @@ private fun AppInspector(app: AppContext, objects: List<Traceable>, camera: Came
                 catalog = catalog,
                 selectedId = selectedId,
                 onSelect = { selectedId = it },
+                sampling = {
+                    SamplingControls(camera.filterWood, camera.stratifiedPixels,
+                        onFilter = { enabled -> app.changeCameraSettings { filterWood = enabled } },
+                        onStratify = { enabled -> app.changeCameraSettings { stratifiedPixels = enabled } },
+                    )
+                },
+                properties = { id ->
+                    val optics = remember(objects, id) { ObjectOptics.selected(objects, id) }
+                    ObjectProperties(optics, onEdit = { app.editObject(id, it) })
+                },
                 speed = app.camera.movementSpeed,
                 onMove = { id, offset -> app.moveObject(id, offset) },
             )
