@@ -106,57 +106,52 @@ object ShowcaseScenes {
      */
     fun prism(): BuiltScene {
         val black = Lambert(c(0.02, 0.02, 0.02))
-        val wall = Lambert(c(0.75, 0.75, 0.73))
         val floor = Lambert(c(0.06, 0.06, 0.065))
         val glass = Dielectric(1.62, dispersion = 0.045)
-        val haze = Medium.grey(0.2, c(0.95, 0.95, 0.95))
-        val r = 0.45
+        val haze = Medium.grey(0.07, c(0.95, 0.95, 0.95))
+        val r = 0.6
         // Turned 35° from the beam, near the least deviation: the beam leaves at about 50°, violet to red over 17°.
         val turn = -35 * PI / 180
         val corners = listOf(PI / 2, 7 * PI / 6, 11 * PI / 6).map { p(r * cos(it + turn), 0.0, r * sin(it + turn)) }
         fun prismAt(y: Double) = corners.map { it + p(0.0, y, 0.0) }
-        val (low, high) = prismAt(0.6) to prismAt(1.4)
+        val (low, high) = prismAt(0.3) to prismAt(1.7)
+        // Wound so each face looks out of the glass: the side a ray meets it from says whether it enters or leaves.
         val prismSides = (0..2).flatMap { i ->
             val j = (i + 1) % 3
             listOf(
-                Triangle(low[i], low[j], high[j], glass),
-                Triangle(low[i], high[j], high[i], glass),
+                Triangle(low[i], high[j], low[j], glass),
+                Triangle(low[i], high[i], high[j], glass),
             )
-        } + listOf(Triangle(low[0], low[2], low[1], glass), Triangle(high[0], high[1], high[2], glass))
-        val slitX = -2.8
-        val shutter = listOf(
-            Meshes.box(Pose(p(slitX, 0.35, 0.0)), p(0.04, 0.35, 1.5), black),
-            Meshes.box(Pose(p(slitX, 1.65, 0.0)), p(0.04, 0.35, 1.5), black),
-            Meshes.box(Pose(p(slitX, 1.0, -0.8)), p(0.04, 0.3, 0.75), black),
-            Meshes.box(Pose(p(slitX, 1.0, 0.8)), p(0.04, 0.3, 0.75), black),
-            // A second slit further on keeps the beam narrow: a slit only wide enough lets light through both.
-            Meshes.box(Pose(p(-1.45, 0.55, 0.0)), p(0.02, 0.25, 0.65), black),
-            Meshes.box(Pose(p(-1.45, 1.45, 0.0)), p(0.02, 0.25, 0.65), black),
-            Meshes.box(Pose(p(-1.45, 1.0, -0.36)), p(0.02, 0.2, 0.31), black),
-            Meshes.box(Pose(p(-1.45, 1.0, 0.36)), p(0.02, 0.2, 0.31), black),
-            // The lamp house: back, roof and sides, so the lamp lights the room only through the slit.
-            Meshes.box(Pose(p(-3.3, 1.0, 0.0)), p(0.04, 1.0, 1.55), black),
-            Meshes.box(Pose(p(-3.05, 2.04, 0.0)), p(0.29, 0.04, 1.6), black),
-            Meshes.box(Pose(p(-3.05, 1.0, -1.6)), p(0.29, 1.0, 0.04), black),
-            Meshes.box(Pose(p(-3.05, 1.0, 1.6)), p(0.29, 1.0, 0.04), black),
+        } + listOf(Triangle(low[0], low[1], low[2], glass), Triangle(high[0], high[2], high[1], glass))
+        // A slit narrow across and tall: the narrow way keeps the rainbow sharp, the tall way lets light through
+        // over a wide angle, so paths from the screen find the lamp through the prism often and the rainbow settles.
+        val slitX = -1.6
+        val house = listOf(
+            Meshes.box(Pose(p(slitX, 0.95, -0.595)), p(0.03, 0.95, 0.575), black),
+            Meshes.box(Pose(p(slitX, 0.95, 0.595)), p(0.03, 0.95, 0.575), black),
+            Meshes.box(Pose(p(-2.4, 0.95, 0.0)), p(0.03, 0.95, 1.15), black),
+            Meshes.box(Pose(p(-2.0, 1.93, 0.0)), p(0.43, 0.03, 1.18), black),
+            Meshes.box(Pose(p(-2.0, 0.95, -1.15)), p(0.43, 0.95, 0.03), black),
+            Meshes.box(Pose(p(-2.0, 0.95, 1.15)), p(0.43, 0.95, 0.03), black),
         ).flatten()
         val lamp = Meshes.panel(
-            Pose(p(-3.0, 1.0, 0.0), x = p(0.0, 0.0, -1.0), y = p(0.0, 1.0, 0.0), z = p(1.0, 0.0, 0.0)), 0.12, 0.3,
-            Emissive.kelvin(6500.0, 600.0),
+            Pose(p(-2.3, 1.0, 0.0), x = p(0.0, 0.0, -1.0), y = p(0.0, 1.0, 0.0), z = p(1.0, 0.0, 0.0)), 0.05, 0.5,
+            Emissive.kelvin(6500.0, 400.0),
         )
         val objects = buildList {
             addAll(named("Floor", Meshes.panel(GROUND, 5.0, 4.0, floor)))
-            addAll(named("Slit", shutter))
+            addAll(named("Lamp house", house))
             addAll(named("Lamp", lamp))
             addAll(named("Prism", prismSides))
-            add(Sphere(p(0.0, 0.3, 0.0), 0.3, Lambert(c(0.05, 0.05, 0.05)), "Pedestal"))
             val hazeBox =
-                Meshes.box(Pose(p(-0.6, 1.05, -0.9)), p(2.15, 0.7, 1.35), Interface, MediumInterface(haze, null))
+                Meshes.box(Pose(p(-0.85, 1.0, 0.0)), p(0.72, 0.6, 0.35), Interface, MediumInterface(haze, null))
             addAll(named("Haze", hazeBox))
         }
         val look = SceneLook(
-            Sky(c(0.004, 0.004, 0.006), c(0.0, 0.0, 0.002)), fov = 48.0, aperture = 0.0, sampleLights = true,
-            start = StartView(p(1.95, 1.25, 2.35), p(-0.15, 1.0, 0.0)),
+            Sky(c(0.004, 0.004, 0.006), c(0.0, 0.0, 0.002)), fov = 50.0, aperture = 0.0, sampleLights = true,
+            // In the fanned beam, looking back: each colour leaves the prism towards the camera from another part
+            // of its face, so the slit shows across the prism as a rainbow, lit directly, not by a caustic.
+            start = StartView(p(2.0, 1.15, 1.95), p(0.0, 1.0, 0.0)),
         )
         return BuiltScene("prism", objects, look)
     }

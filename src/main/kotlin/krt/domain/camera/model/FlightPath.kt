@@ -98,7 +98,7 @@ object Flights {
         Triple(-20.0, 0.7, -0.2), Triple(-40.0, 0.85, 0.1), Triple(-15.0, 1.05, 0.3),
     )
 
-    private val PRISM = swing(Point3(0.6, 1.7, 4.2), Point3(0.2, 0.9, -1.0))
+    private val PRISM = swing(Point3(2.0, 1.15, 1.95), Point3(0.0, 1.0, 0.0))
     private val BUBBLES = swing(Point3(0.6, 1.9, 5.2), Point3(0.0, 1.2, 0.0))
     private val CANDLE = swing(Point3(0.2, 1.0, 2.6), Point3(0.0, 0.5, 0.0))
     private val TEMPLE = swing(Point3(5.2, 1.4, 3.4), Point3(-0.3, 1.5, -0.2))
