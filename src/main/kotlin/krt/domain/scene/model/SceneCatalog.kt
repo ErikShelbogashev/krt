@@ -1,5 +1,6 @@
 package krt.domain.scene.model
 
+import krt.platform.math.Aabb
 import krt.platform.math.Color
 import krt.platform.math.Point3
 
@@ -34,11 +35,22 @@ data class SceneCatalog(val featured: List<ObjectSummary>, val groups: List<Obje
         private val GLASS_COLOR = Color(0.85, 0.92, 1.0)
         private val UNKNOWN_COLOR = Color(0.5, 0.5, 0.5)
 
+        /**
+         * The catalog of [objects]: the parts that share an id are one object, as the triangles of one mesh are,
+         * listed once, at the centre of them all; so every listed object has an id of its own.
+         */
         fun of(objects: List<Traceable>): SceneCatalog {
-            val (featured, rest) = objects.partition { isFeatured(it) }
-            val groups = rest.groupBy { groupTitle(it) }
-                .map { (title, members) -> ObjectGroup(title, members.map(::summary)) }
-            return SceneCatalog(featured.map(::summary), groups)
+            val (featured, rest) = objects.groupBy { it.id }.values.partition { isFeatured(it.first()) }
+            val groups = rest.groupBy { groupTitle(it.first()) }
+                .map { (title, members) -> ObjectGroup(title, members.map(::summaryOf)) }
+            return SceneCatalog(featured.map(::summaryOf), groups)
+        }
+
+        private fun summaryOf(parts: List<Traceable>): ObjectSummary {
+            val boxes = parts.map { it.bounds() }
+            val min = Point3(boxes.minOf { it.min.x }, boxes.minOf { it.min.y }, boxes.minOf { it.min.z })
+            val max = Point3(boxes.maxOf { it.max.x }, boxes.maxOf { it.max.y }, boxes.maxOf { it.max.z })
+            return summary(parts.first()).copy(position = Aabb(min, max).center)
         }
 
         fun summary(obj: Traceable): ObjectSummary {

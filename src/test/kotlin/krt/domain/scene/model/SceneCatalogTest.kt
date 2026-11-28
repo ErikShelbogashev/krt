@@ -4,11 +4,38 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import krt.domain.scene.World
+import krt.i9ns.scenefile.SceneLibrary
 import krt.platform.math.Color
 import krt.platform.math.Point3
 
 class SceneCatalogTest {
+
+    @Test
+    fun `the triangles of one mesh are one object in the list, at the centre of them all`() {
+        val glass = Dielectric(1.5)
+        val prism = listOf(
+            Triangle(Point3.ZERO, Point3(2.0, 0.0, 0.0), Point3(0.0, 2.0, 0.0), glass, "Prism"),
+            Triangle(Point3(0.0, 0.0, 2.0), Point3(2.0, 0.0, 2.0), Point3(0.0, 2.0, 2.0), glass, "Prism"),
+        )
+        val catalog = SceneCatalog.of(prism + Sphere(Point3(5.0, 0.0, 0.0), 1.0, glass, "Ball"))
+        assertEquals(listOf("Prism", "Ball"), catalog.featured.map { it.id })
+        assertEquals(Point3(1.0, 1.0, 1.0), catalog.featured.first().position)
+    }
+
+    @Test
+    fun `every row of the list of every built-in scene has a key of its own`() {
+        val library = SceneLibrary()
+        DemoScene.entries.forEach { scene ->
+            val catalog = SceneCatalog.of(library.load(scene).objects)
+            val keys = catalog.featured.map { it.id } + catalog.groups.flatMap { group ->
+                listOf("group:${group.title}") + group.objects.map { it.id }
+            }
+            val repeated = keys.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
+            assertTrue(repeated.isEmpty(), "$scene repeats keys ${repeated.take(5)}")
+        }
+    }
 
     @Test
     fun `large and named objects are listed one by one, the rest grouped by kind`() {
