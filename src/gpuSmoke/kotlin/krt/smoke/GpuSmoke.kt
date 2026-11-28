@@ -37,6 +37,8 @@ fun main(args: Array<String>) {
     val device = Metal.defaultDevice()
     val context = DirectContext.makeMetal(device, Metal.commandQueue(device))
     val scenes = SceneLibrary()
+    // The first draw compiles the shader for Metal, a second or more: done once here, it is no step of a scene.
+    Smoke.run(context, "warm-up", scenes.load(DemoScene.CLASSIC), WARM_UP, WARM_UP)
     val cases = DemoScene.entries.map { it.name to { scenes.load(it) } } +
         (STRESS to { scenes.load(File(STRESS_SCENE)).getOrThrow() })
     val only = args.firstOrNull()?.let { name -> cases.filter { it.first.equals(name, ignoreCase = true) } }
@@ -52,6 +54,7 @@ fun main(args: Array<String>) {
 }
 
 private val SIZES = listOf(400 to 400, 800 to 600, 1024 to 1024)
+private const val WARM_UP = 16
 
 /**
  * A heavy scene kept only for this check: haze through the whole room and over a thousand small lights, the scene
