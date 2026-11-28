@@ -6,6 +6,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
+import krt.domain.scene.model.EmissionSide
 import krt.domain.scene.model.Material
 import krt.domain.scene.model.Sphere
 import krt.domain.scene.model.Traceable
@@ -68,8 +69,12 @@ class Lights(objects: List<Traceable>) {
         val phi = 2 * PI * random.nextDouble()
         val ring = sqrt(maxOf(0.0, 1 - z * z))
         val normal = Point3(ring * cos(phi), ring * sin(phi), z)
-        val target = light.centerAt(time) + normal * light.radius
-        return seen(point, target, normal, chance, light.material, twoSided = false)
+        val center = light.centerAt(time)
+        val offset = point - center
+        val outside = offset.dot(offset) >= light.radius * light.radius
+        if (!light.material.emissionSide.visible(outside)) return null
+        val target = center + normal * light.radius
+        return seen(point, target, if (outside) normal else -normal, chance, light.material, twoSided = false)
     }
 
     private fun triangle(light: Triangle, point: Point3, random: Random, chance: Double): LightSample? {
@@ -84,7 +89,10 @@ class Lights(objects: List<Traceable>) {
         val cross = edge1.cross(edge2)
         val doubleArea = cross.length()
         val target = light.v0 + edge1 * u + edge2 * v
-        return seen(point, target, cross / doubleArea, chance, light.material, twoSided = true)
+        val side = light.material.emissionSide
+        val normal = cross / doubleArea
+        return seen(point, target, if (side == EmissionSide.BACK) -normal else normal, chance, light.material,
+            twoSided = side == EmissionSide.BOTH)
     }
 
     @Suppress("LongParameterList")

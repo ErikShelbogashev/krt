@@ -4,6 +4,7 @@ import kotlin.math.sqrt
 import krt.domain.scene.model.Blackbody
 import krt.domain.scene.model.Conductor
 import krt.domain.scene.model.Dielectric
+import krt.domain.scene.model.EmissionSide
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Interface
 import krt.domain.scene.model.Lambert
@@ -68,11 +69,13 @@ object PbrtMaterials {
         }
 
     /** An `AreaLightSource "diffuse"`: its radiance by colour or by black-body temperature, times its scale. */
-    fun areaLight(d: PbrtDirective, warnings: MutableList<String>): Material {
+    fun areaLight(d: PbrtDirective, native: Boolean, warnings: MutableList<String>): Material {
         if (d.string(0) != "diffuse") warnings += "line ${d.line}: area light ${d.string(0)} drawn as diffuse"
         val scale = d.double("scale", 1.0)
         val kelvin = d.params["L"]?.takeIf { it.type == "blackbody" }?.doubles()?.first()
-        return kelvin?.let { Emissive(Blackbody.color(it), scale) } ?: Emissive(color(d, "L", Point3.ONE), scale)
+        val side = if (d.bool("twosided", native)) EmissionSide.BOTH else EmissionSide.FRONT
+        val radiance = kelvin?.let(Blackbody::color) ?: color(d, "L", Point3.ONE)
+        return Emissive(radiance, scale, side)
     }
 
     /** A `MakeNamedMedium` of type homogeneous: extinction and albedo from its absorption and scattering. */

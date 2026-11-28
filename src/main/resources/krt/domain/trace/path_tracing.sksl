@@ -7,8 +7,9 @@ float3 trace(float3 origin, float3 direction) {
     float medium = quickLook > 0.5 ? -1.0 : cameraMedium; // the medium of the path, -1 for clear air (ADR 0014)
     bool enclosed = false;          // whether a solid surface closes that medium, so its particles sample no lights
     float bounces = 0.0;            // crossings of interfaces between media do not count
-    for (int step = 0; step < MAX_STEPS_PER_PATH; step++) {
-        if (bounces >= maxDepth) { break; }
+    int crossings = 0;
+    for (int step = 0; step < MAX_SCATTER_STEPS + MAX_PATH_CROSSINGS; step++) {
+        if (bounces >= min(maxDepth, float(MAX_SCATTER_STEPS))) { break; }
 
         float slot = closestHit(origin, direction, FAR);
         if (medium >= 0.0) {
@@ -49,6 +50,7 @@ float3 trace(float3 origin, float3 direction) {
 
         if (kind == EMISSIVE || kind == GLOWING) {
             // A glowing fractal is no sampled light (Emitters): its glow counts on every bounce.
+            if (kind == EMISSIVE && (frontFace ? param : -param) < 0.0) { return radiance; }
             bool unsampled = code(primitiveStart + slot * PRIMITIVE_VALUES) == FRACTAL;
             return countEmission || unsampled ? radiance + throughput * emission(base, kind, p) : radiance;
         }
@@ -169,6 +171,8 @@ float3 trace(float3 origin, float3 direction) {
                 lobe = DIFFUSE;
             }
         } else if (kind == INTERFACE) {
+            if (crossings >= MAX_PATH_CROSSINGS) { return radiance; }
+            crossings++;
             // The edge of a medium: light passes unchanged and only the medium changes; no bounce, no new lobe.
             medium = quickLook > 0.5 ? -1.0 : mediumBeyond(slot, frontFace);
             enclosed = false;

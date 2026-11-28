@@ -197,7 +197,13 @@ class GpuScenePackingTest {
         fun assertMaterial(slot: Int, kind: Int, r: Double, g: Double, b: Double, p: Double) {
             val at = scene.materialStart + slot * GpuScenePacking.MATERIAL_VALUES
             assertEquals(kind, code(at))
-            listOf(r, g, b, p).forEachIndexed { i, expected -> assertEquals(expected, number(at + 1 + i), 1e-3) }
+            listOf(r, g, b, p).forEachIndexed { i, expected ->
+                val raw = code(at + 1 + i)
+                val value = if (kind == GpuScenePacking.EMISSIVE && i < 3) {
+                    Float.fromBits(raw shl 7).toDouble()
+                } else GpuScenePacking.decode(raw)
+                assertEquals(expected, value, 1e-3)
+            }
         }
 
         fun assertMaterialKind(slot: Int, kind: Int) =

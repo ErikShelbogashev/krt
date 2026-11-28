@@ -35,7 +35,7 @@ AttributeBegin
 AttributeEnd
 AttributeBegin
   #krt Name "Sun"
-  AreaLightSource "diffuse" "rgb L" [1.317236215527097 0.9661387746721991 0.4012898744235792] "float scale" 1400.0
+  AreaLightSource "diffuse" "rgb L" [1.317236215527097 0.9661387746721991 0.4012898744235792] "float scale" 1400.0 "bool twosided" true
   Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
   Translate -44.3 1.6 -8.0
   Shape "sphere" "float radius" 1.6

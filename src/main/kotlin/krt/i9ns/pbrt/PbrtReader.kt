@@ -36,7 +36,7 @@ object PbrtReader {
     /** The scene of [text]; [files] holds the referred files by name, their bytes as read. */
     fun read(text: String, files: Map<String, ByteArray> = emptyMap()): SceneDescription {
         val state = ReadState(files)
-        state.run(PbrtSyntax.parse(text))
+        state.run(text)
         return state.description()
     }
 }
@@ -111,14 +111,16 @@ private class ReadState(val files: Map<String, ByteArray>) {
         return SceneDescription(objects.toList(), look, warnings.toList())
     }
 
-    fun run(directives: List<PbrtDirective>) {
-        for (d in directives) {
-            if (d.krt) krt(d) else directive(d)
+    fun run(text: String) {
+        // Older krt exports omitted the flag on their two-sided emitters. Includes have their own provenance.
+        val native = text.lineSequence().firstOrNull() == PbrtText.KRT_HEADER
+        for (d in PbrtSyntax.parse(text)) {
+            if (d.krt) krt(d) else directive(d, native)
         }
     }
 
     @Suppress("CyclomaticComplexMethod")
-    private fun directive(d: PbrtDirective) {
+    private fun directive(d: PbrtDirective, native: Boolean) {
         when (d.name) {
             "WorldBegin" -> graphics.placement = Placement()
             "LookAt", "Camera" -> camera = camera.with(d, warnings)
@@ -135,10 +137,10 @@ private class ReadState(val files: Map<String, ByteArray>) {
             "MakeNamedMedium" -> media[d.string(0)] = PbrtMaterials.medium(d, warnings)
             "MediumInterface" -> mediumInterface(d)
             "AreaLightSource" -> graphics.light = pending.remove("AreaLightSource")?.let(KrtExtensions::light)
-                ?: PbrtMaterials.areaLight(d, warnings)
+                ?: PbrtMaterials.areaLight(d, native, warnings)
             "LightSource" -> lightSource(d)
             "Shape" -> shape(d)
-            "Include", "Import" -> run(PbrtSyntax.parse(String(files[d.string(0)] ?: d.fail("file not given"))))
+            "Include", "Import" -> run(String(files[d.string(0)] ?: d.fail("file not given")))
             else -> warnings += "line ${d.line}: directive ${d.name} not supported"
         }
     }

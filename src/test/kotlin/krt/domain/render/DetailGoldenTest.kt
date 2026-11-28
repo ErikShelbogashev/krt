@@ -55,30 +55,36 @@ internal class DetailView(scene: SceneDescription) {
         imageHeight = HEIGHT
         resetView(scene.look)
     }
-    private val tracer = RayTracer(World(scene.objects, scene.look), maxDepth = 7)
+    private val world = World(scene.objects, scene.look)
+    private val tracer = RayTracer(world, maxDepth = DEPTH)
 
     fun band(top: Int): IntArray {
         val rgb = IntArray(WIDTH * BAND)
         IntStream.range(0, BAND).parallel().forEach { row ->
-            val y = HEIGHT - 1 - (top + row)
-            for (x in 0 until WIDTH) {
-                val pixel = FrameSampling.Pixel(x, y)
-                var sum = Point3.ZERO
-                for (pass in 0 until SAMPLES) {
-                    val random = FrameSampling.passRandom(42L, pixel, WIDTH, HEIGHT, pass)
-                    sum += FrameSampling.sampleOnce(pixel, camera, tracer, random)
-                }
-                rgb[row * WIDTH + x] = sum.toAWTColor(SAMPLES)
-            }
+            for (x in 0 until WIDTH) rgb[row * WIDTH + x] = samplePixel(x, top + row, seed = 42L)
         }
         return rgb
     }
+
+    fun samplePixel(x: Int, imageY: Int, seed: Long, samples: Int = SAMPLES): Int {
+        val pixel = FrameSampling.Pixel(x, HEIGHT - 1 - imageY)
+        var sum = Point3.ZERO
+        for (pass in 0 until samples) {
+            val random = FrameSampling.passRandom(seed, pixel, WIDTH, HEIGHT, pass)
+            sum += FrameSampling.sampleOnce(pixel, camera, tracer, random)
+        }
+        return sum.toAWTColor(samples)
+    }
+
+    fun shaderFrame(seed: Float, samples: Int): GpuFrame =
+        GpuFrame(world.gpuScene, camera.view(), WIDTH, HEIGHT, DEPTH, samples, seed)
 
     companion object {
         const val WIDTH = 256
         const val HEIGHT = 160
         const val BAND = 20
         const val SAMPLES = 48
+        private const val DEPTH = 7
         val bands = 0 until HEIGHT step BAND
     }
 }

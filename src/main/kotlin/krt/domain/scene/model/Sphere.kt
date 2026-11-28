@@ -32,19 +32,21 @@ class Sphere(
         val center = centerAt(ray.time)
         val oc = ray.origin - center
         val a = ray.direction.dot(ray.direction)
+        if (a !in java.lang.Double.MIN_NORMAL..Double.MAX_VALUE) {
+            return Hit.withScaledDirection(this, ray, tMin, tMax)
+        }
         val halfB = oc.dot(ray.direction)
-        if (a == 0.0) return null
         val discriminant = SphereRoots.discriminant(oc, ray.direction, a, halfB, radius)
 
-        if (discriminant < 0) {
+        if (!(discriminant >= 0.0) || !discriminant.isFinite()) {
             return null
         }
 
         val sqrtD = sqrt(discriminant)
         var root = (-halfB - sqrtD) / a
-        if (root < tMin || root > tMax) {
+        if (!root.isFinite() || root !in tMin..tMax) {
             root = (-halfB + sqrtD) / a
-            if (root < tMin || root > tMax) {
+            if (!root.isFinite() || root !in tMin..tMax) {
                 return null
             }
         }

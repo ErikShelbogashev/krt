@@ -26,8 +26,11 @@ float3 directLight(float3 p, float3 normal, float lobe, float medium) {
     float base = primitiveStart + slot * PRIMITIVE_VALUES;
     float3 point;
     float3 lightNormal;
-    bool twoSided = code(base) == TRIANGLE;
-    if (twoSided) {
+    float lightBase = materialStart + slot * MATERIAL_VALUES;
+    float lightKind = code(lightBase);
+    float side = lightKind == EMISSIVE ? number(lightBase + 4.0) : 0.0;
+    bool twoSided = false;
+    if (code(base) == TRIANGLE) {
         float3 edge1 = vector(base + 4.0);
         float3 edge2 = vector(base + 7.0);
         float u = rnd();
@@ -37,14 +40,20 @@ float3 directLight(float3 p, float3 normal, float lobe, float medium) {
         float doubleArea = length(c);
         if (doubleArea == 0.0) { return float3(0.0); }
         point = vector(base + 1.0) + edge1 * u + edge2 * v;
-        lightNormal = c / doubleArea;
+        lightNormal = side < 0.0 ? -c / doubleArea : c / doubleArea;
+        twoSided = side == 0.0;
     } else {
         float radius = number(base + 4.0);
         float z = 1.0 - 2.0 * rnd();
         float phi = 2.0 * PI * rnd();
         float ring = sqrt(max(0.0, 1.0 - z * z));
         lightNormal = float3(ring * cos(phi), ring * sin(phi), z);
-        point = centerOf(base) + lightNormal * radius;
+        float3 center = centerOf(base);
+        point = center + lightNormal * radius;
+        float3 offset = p - center;
+        bool outside = dot(offset, offset) >= radius * radius;
+        if ((outside ? side : -side) < 0.0) { return float3(0.0); }
+        if (!outside) { lightNormal = -lightNormal; }
     }
     float3 toLight = point - p;
     float distanceSquared = dot(toLight, toLight);
@@ -59,7 +68,6 @@ float3 directLight(float3 p, float3 normal, float lobe, float medium) {
     float lit = max(0.0, dot(normal, direction));
     float response = lobe == VOLUME ? phaseDensity(dot(normal, direction), mediumG(medium)) : lit / PI;
     if (response == 0.0) { return float3(0.0); }
-    float lightBase = materialStart + slot * MATERIAL_VALUES;
-    float3 light = emission(lightBase, code(lightBase), point);
+    float3 light = emission(lightBase, lightKind, point);
     return light * transmittance(p, direction, distance * (1.0 - SHADOW_MARGIN), medium) * (response / pdf);
 }

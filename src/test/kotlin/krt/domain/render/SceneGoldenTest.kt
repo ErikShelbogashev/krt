@@ -39,8 +39,29 @@ class SceneGoldenTest {
                 val actual = rasterPixels(frame)
                 val reference = golden.getRGB(0, 0, WIDTH, HEIGHT, null, 0, WIDTH)
                 compareRegions(reference, actual)
+                val detail = ImageIO.read(File("src/test/resources/golden/detail/${name.substringAfterLast('/')}"))
+                val contrast = SceneDetailContrast(detail, WIDTH, HEIGHT).differences(reference, actual)
+                assertTrue(contrast.isEmpty(), contrast.joinToString("\n"))
             },
         )
+    }
+
+    @org.junit.jupiter.api.Test
+    fun `an image flattened to its tile means loses the wood and material boundaries`() {
+        val path = "src/test/resources/golden"
+        val small = ImageIO.read(File("$path/scenes/materials.png"))
+        val detail = ImageIO.read(File("$path/detail/materials.png"))
+        val pixels = small.getRGB(0, 0, WIDTH, HEIGHT, null, 0, WIDTH)
+        val flat = pixels.copyOf()
+        for (y in 0 until HEIGHT step TILE) for (x in 0 until WIDTH step TILE) {
+            val indexes = IntArray(TILE * TILE) { (y + it / TILE) * WIDTH + x + it % TILE }
+            val color = listOf(16, 8, 0).sumOf { shift ->
+                (indexes.sumOf { pixels[it] ushr shift and 255 } / indexes.size) shl shift
+            }
+            for (index in indexes) flat[index] = color
+        }
+        compareRegions(pixels, flat)
+        assertTrue(SceneDetailContrast(detail, WIDTH, HEIGHT).differences(pixels, flat).isNotEmpty())
     }
 
     private fun referenceFor(demo: DemoScene): String {

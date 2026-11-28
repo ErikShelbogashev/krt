@@ -3,6 +3,7 @@ package krt.i9ns.pbrt
 import krt.domain.scene.model.Checker
 import krt.domain.scene.model.Conductor
 import krt.domain.scene.model.Dielectric
+import krt.domain.scene.model.EmissionSide
 import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.GlowingPattern
 import krt.domain.scene.model.Interface
@@ -81,14 +82,16 @@ object PbrtMaterialWriter {
     }
 
     private fun lights(material: Material): List<String> = when (material) {
-        is Emissive -> listOf(
-            "AreaLightSource \"diffuse\" ${p("rgb L", material.emitColor)} ${p("float scale", material.intensity)}",
+        is Emissive -> listOfNotNull(
+            "ReverseOrientation".takeIf { material.emissionSide == EmissionSide.BACK },
+            "AreaLightSource \"diffuse\" ${p("rgb L", material.emitColor)} ${p("float scale", material.intensity)}" +
+                " \"bool twosided\" ${material.emissionSide == EmissionSide.BOTH}",
             BLACK,
         )
         is GlowingPattern -> listOf(
             "#krt AreaLightSource \"pattern\" ${pattern(material.pattern)} ${p("float intensity", material.intensity)}",
             "AreaLightSource \"diffuse\" ${p("rgb L", middle(material.pattern))} " +
-                p("float scale", material.intensity),
+                p("float scale", material.intensity) + " \"bool twosided\" true",
             BLACK,
         )
         Interface -> listOf("Material \"interface\"")
@@ -153,6 +156,8 @@ object PbrtMaterialWriter {
 
 /** Numbers and parameters as pbrt-v4 text: exact, so reading them back gives the same doubles. */
 object PbrtText {
+    const val KRT_HEADER = "# A krt scene in pbrt-v4's format; #krt lines are krt's own, pbrt reads them as comments."
+
     fun n(x: Double): String = x.toString()
 
     fun v(p: krt.platform.math.Point3): String = "${n(p.x)} ${n(p.y)} ${n(p.z)}"

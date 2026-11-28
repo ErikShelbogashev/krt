@@ -128,7 +128,7 @@ object PbrtLines {
     private const val HALF = 0.5
 
     fun header(look: SceneLook, start: StartView, moving: Boolean): String = buildString {
-        appendLine("# A krt scene in pbrt-v4's format; #krt lines are krt's own, pbrt reads them as comments.")
+        appendLine(PbrtText.KRT_HEADER)
         appendLine("#krt Look \"bool sampleLights\" ${look.sampleLights} \"bool motionBlur\" ${look.motionBlur}")
         appendLine("# pbrt's camera space is left-handed, krt's right-handed: the mirror keeps the picture the same.")
         appendLine("Scale -1 1 1")

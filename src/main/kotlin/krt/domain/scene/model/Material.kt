@@ -41,4 +41,5 @@ interface Material {
 
     /** Whether the material gives off light, so light sampling treats objects of it as lights (ADR 0012). */
     val emits: Boolean get() = false
+    val emissionSide: EmissionSide get() = EmissionSide.BOTH
 }

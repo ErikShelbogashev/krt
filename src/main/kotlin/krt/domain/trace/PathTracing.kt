@@ -29,7 +29,7 @@ import krt.platform.math.Ray
 object PathTracing {
 
     /** Where a path is: the medium around it, whether a solid surface closes that medium, whether it sees lights. */
-    private class State(val medium: Medium?, val enclosed: Boolean, val countEmission: Boolean)
+    private class State(val medium: Medium?, val enclosed: Boolean, val countEmission: Boolean, val crossings: Int = 0)
 
     private val CLEAR = State(null, enclosed = false, countEmission = true)
     private val CLEAR_SAMPLED = State(null, enclosed = false, countEmission = false)
@@ -77,7 +77,7 @@ object PathTracing {
     private fun surface(scene: TraceScene, ray: Ray, hit: Hit?, depth: Int, random: Random, state: State): Color {
         if (hit == null) return scene.sky.color(ray.direction)
         val scattered = hit.material.scatter(ray, hit, random)
-        val counted = state.countEmission || !hit.lightSampled
+        val counted = (state.countEmission || !hit.lightSampled) && hit.material.emissionSide.visible(hit.isFrontFace)
         val emitted = if (counted) hit.material.emitted(0.0, 0.0, hit.p) else Point3.ZERO
         return if (scattered == null) emitted else emitted + bounce(scene, ray, hit, scattered, depth, random, state)
     }
@@ -94,6 +94,7 @@ object PathTracing {
         state: State,
     ): Color {
         val crossing = hit.material === Interface
+        if (crossing && state.crossings == MAX_PATH_CROSSINGS) return Point3.ZERO
         val sampled = depth > 1 && scene.sampleLights && scattered.lobe.samplesLights
         val direct = if (sampled) {
             direct(scene, ray, hit.p, hit.normal, scattered, state.medium, random)
@@ -121,7 +122,7 @@ object PathTracing {
         val scattered = Scattered(ray.next(p, direction), Point3.ONE, lobe)
         val sampled = depth > 1 && scene.sampleLights && lobe.samplesLights
         val direct = if (sampled) direct(scene, ray, p, Point3.ZERO, scattered, medium, random) else Point3.ZERO
-        val next = State(medium, state.enclosed, !sampled)
+        val next = State(medium, state.enclosed, !sampled, state.crossings)
         val weight = FreeFlight.scatterWeight(medium, t * ray.direction.length())
         return weight * (direct + color(scene, scattered.ray, depth - 1, random, next))
     }
@@ -130,11 +131,12 @@ object PathTracing {
     private fun after(hit: Hit, scattered: Scattered, state: State, countEmission: Boolean): State {
         val media = hit.media
         val through = media != null && scattered.ray.direction.dot(hit.normal) < 0
+        val crossings = state.crossings + if (hit.material === Interface) 1 else 0
         return when {
-            !through && state.medium == null -> if (countEmission) CLEAR else CLEAR_SAMPLED
-            !through -> State(state.medium, state.enclosed, countEmission)
-            hit.isFrontFace -> State(media?.inside, hit.material !== Interface, countEmission)
-            else -> State(media?.outside, enclosed = false, countEmission = countEmission)
+            !through && state.medium == null && crossings == 0 -> if (countEmission) CLEAR else CLEAR_SAMPLED
+            !through -> State(state.medium, state.enclosed, countEmission, crossings)
+            hit.isFrontFace -> State(media.inside, hit.material !== Interface, countEmission, crossings)
+            else -> State(media.outside, enclosed = false, countEmission = countEmission, crossings = crossings)
         }
     }
 
@@ -199,6 +201,9 @@ object PathTracing {
 
     /** Shadow rays stop short of the light so they do not hit the light itself. */
     private const val SHADOW_MARGIN = 1e-4
+
+    /** Transparent interfaces on a camera path, in addition to its scattering depth. Shared with SkSL. */
+    const val MAX_PATH_CROSSINGS = 64
 
     /** Medium boundaries a shadow ray passes at most before it counts as blocked. */
     const val MAX_CROSSINGS = 8
