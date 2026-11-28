@@ -1,0 +1,144 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../filekit-core/0.17.1/filekit-core-0.17.1.module",
+    "group": "io.github.vinceglb",
+    "module": "filekit-core",
+    "version": "0.17.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.9.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-io-core",
+          "version": {
+            "requires": "0.9.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "filekit-core-jvm.jar",
+          "url": "filekit-core-jvm-0.17.1.jar",
+          "size": 157613,
+          "sha512": "3ed6649901283131e45b450fa10db8d0e4e7c00b54ba9b36ff48fa230ae77b6c74ffc6cf37c8d8606e3d95578f12c2b0153572166741fa543c24f93ef3d2cac4",
+          "sha256": "2ca385693dbb5960fb80e2c5e67f83e79aa8ca9f2d49263976f3026ebf34f916",
+          "sha1": "f631a9e872b5dae56895dff82e97cfec0c7351de",
+          "md5": "360bdf7e44fff347244167e7656206d7"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-io-core",
+          "version": {
+            "requires": "0.9.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.21"
+          }
+        },
+        {
+          "group": "net.java.dev.jna",
+          "module": "jna-platform",
+          "version": {
+            "requires": "5.19.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.11.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-core",
+          "version": {
+            "requires": "1.13.0"
+          }
+        },
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.11.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "filekit-core-jvm.jar",
+          "url": "filekit-core-jvm-0.17.1.jar",
+          "size": 157613,
+          "sha512": "3ed6649901283131e45b450fa10db8d0e4e7c00b54ba9b36ff48fa230ae77b6c74ffc6cf37c8d8606e3d95578f12c2b0153572166741fa543c24f93ef3d2cac4",
+          "sha256": "2ca385693dbb5960fb80e2c5e67f83e79aa8ca9f2d49263976f3026ebf34f916",
+          "sha1": "f631a9e872b5dae56895dff82e97cfec0c7351de",
+          "md5": "360bdf7e44fff347244167e7656206d7"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "filekit-core-jvm-sources.jar",
+          "url": "filekit-core-jvm-0.17.1-sources.jar",
+          "size": 33461,
+          "sha512": "c6483750bcf09350f00c56d25d6a5bfe3fb531124575f0c7430c2c2978a4295200c068fce7ccb4910da86887dccee548e48278404d2eb1c0e8cbf944633b2247",
+          "sha256": "8261d8ef242d8d32c47cbd46d9df9c8b8b187053f5405b2d49e0aa807a397fe5",
+          "sha1": "9253571bca468c3b2813e00620254bd0fe76235e",
+          "md5": "d3a0dcfcb7796dc6b5ece7b9586c16ed"
+        }
+      ]
+    }
+  ]
+}

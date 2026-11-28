@@ -1,0 +1,116 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-psi-utils",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-compiler",
+          "version": {
+            "requires": "2.4.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-psi-utils-2.0.0-alpha.6.jar",
+          "url": "detekt-psi-utils-2.0.0-alpha.6.jar",
+          "size": 71805,
+          "sha512": "4d30ea779da8605c38a59f58a580f1333eb8bdbbc52bb02ba9a180a18aa31145d2bd30d1817d48255f25ceccf81ce011787fd42deec880aa6f405159fcc41a18",
+          "sha256": "2a840710986d98b100b9ebc474b15a699e186440194a7b3a08b692e9668f668c",
+          "sha1": "c9e359512630bff9f18a5253c7590704db6f2adc",
+          "md5": "82bf226f582419e014a727b82f844c0a"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-compiler",
+          "version": {
+            "requires": "2.4.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-psi-utils-2.0.0-alpha.6.jar",
+          "url": "detekt-psi-utils-2.0.0-alpha.6.jar",
+          "size": 71805,
+          "sha512": "4d30ea779da8605c38a59f58a580f1333eb8bdbbc52bb02ba9a180a18aa31145d2bd30d1817d48255f25ceccf81ce011787fd42deec880aa6f405159fcc41a18",
+          "sha256": "2a840710986d98b100b9ebc474b15a699e186440194a7b3a08b692e9668f668c",
+          "sha1": "c9e359512630bff9f18a5253c7590704db6f2adc",
+          "md5": "82bf226f582419e014a727b82f844c0a"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-psi-utils-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-psi-utils-2.0.0-alpha.6-sources.jar",
+          "size": 15050,
+          "sha512": "b3a2937d36106fb239def2b11738c03a9d9ffe9270d564958bac28e46ad768f02a8ffdf5c3ea01c2e121f836741c3afc3bc21d4fb7870b28560e55ea356b0aa4",
+          "sha256": "ac0b2b39dc8c360096135764ab7f1a6b35fb2de71a8feabc8dbed356ad146062",
+          "sha1": "a31de7dbb1e8177f45c02e86cafbf2a0e9ede2e0",
+          "md5": "d36ad9776a9db750cd72ac3400e9ace0"
+        }
+      ]
+    }
+  ]
+}

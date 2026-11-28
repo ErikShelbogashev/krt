@@ -1,0 +1,6 @@
+# Preserve the upstream bytes checked by Gradle and SHA256SUMS on every platform.
+third-party/maven/** -text
+third-party/notices/** -text
+third-party/sources/** -text
+third-party/*.tsv text eol=lf
+third-party/SHA256SUMS text eol=lf

@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-rules-comments",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-comments-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-comments-2.0.0-alpha.6.jar",
+          "size": 60594,
+          "sha512": "fe1f28da9dfa44f225555d1e56b42ab6cc9b6088fde65ea3ed72718bc94a40cee693a34fb9fd1cb31c4c614276bd3e6ba8073192c766a7867d16e1d740ec0f81",
+          "sha256": "db8ee70c4f1a70b55d7e0ad5a7adcde0eb85b5cc1e345296cdf9b01aa2336a0e",
+          "sha1": "56d12f2b8d9297c9ae94f9389470714f8c97f607",
+          "md5": "f367954e327e104aba37c9a71685a8ec"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-comments-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-comments-2.0.0-alpha.6.jar",
+          "size": 60594,
+          "sha512": "fe1f28da9dfa44f225555d1e56b42ab6cc9b6088fde65ea3ed72718bc94a40cee693a34fb9fd1cb31c4c614276bd3e6ba8073192c766a7867d16e1d740ec0f81",
+          "sha256": "db8ee70c4f1a70b55d7e0ad5a7adcde0eb85b5cc1e345296cdf9b01aa2336a0e",
+          "sha1": "56d12f2b8d9297c9ae94f9389470714f8c97f607",
+          "md5": "f367954e327e104aba37c9a71685a8ec"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-rules-comments-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-rules-comments-2.0.0-alpha.6-sources.jar",
+          "size": 14476,
+          "sha512": "c96ea28fe2c8d410115795b1a34e349c85c33319cb0878de02fdbf67c067b6dc5f7cec8ce804a7f667cfac6df9fb7ccb9124f25bdb2b216b979e7c03140b8dd0",
+          "sha256": "9e5b982440c213b288d9812373931dc1cacce3628515a6c67e1c8a6badbeb5da",
+          "sha1": "81f1ab2e96943c35330496f33d71e1b39407f43f",
+          "md5": "0efebfd6a373679b4f481d09091ed206"
+        }
+      ]
+    }
+  ]
+}

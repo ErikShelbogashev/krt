@@ -1,0 +1,130 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-tooling",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-api",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-compiler",
+          "version": {
+            "requires": "2.4.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-tooling-2.0.0-alpha.6.jar",
+          "url": "detekt-tooling-2.0.0-alpha.6.jar",
+          "size": 80166,
+          "sha512": "a63fe88e769c151d1b71af56e1e99d2cb7e8a24e39568bbf34517c8fd8651a989c5a452ec4d01fd6adbb3e66a304341827effc1d2e1a536d253e009ae83a599d",
+          "sha256": "5ea31725f051d28db19ab33153b565d27d853dd8310720c7357648c3d5d6b721",
+          "sha1": "4203bb1b5fd1497d2051f3c5598da1224cc96ca4",
+          "md5": "37a49fc978affe181b4ad2b1fb18fb44"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-api",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-compiler",
+          "version": {
+            "requires": "2.4.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-tooling-2.0.0-alpha.6.jar",
+          "url": "detekt-tooling-2.0.0-alpha.6.jar",
+          "size": 80166,
+          "sha512": "a63fe88e769c151d1b71af56e1e99d2cb7e8a24e39568bbf34517c8fd8651a989c5a452ec4d01fd6adbb3e66a304341827effc1d2e1a536d253e009ae83a599d",
+          "sha256": "5ea31725f051d28db19ab33153b565d27d853dd8310720c7357648c3d5d6b721",
+          "sha1": "4203bb1b5fd1497d2051f3c5598da1224cc96ca4",
+          "md5": "37a49fc978affe181b4ad2b1fb18fb44"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-tooling-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-tooling-2.0.0-alpha.6-sources.jar",
+          "size": 16529,
+          "sha512": "b32e668514ac469167ded8fe76a31131fafaadee573b513f156f64a21b4aa10bee71e056cebcad1254b334ee722308408d5bd535825656a5e7c2d6ddd6c9b4ed",
+          "sha256": "bd866eb13173cfefb025f70bd4e3126139a11e4c7acd5bdb3eb8bd4dcc0e29da",
+          "sha1": "b7fc4b2da0a9205f4afb372f45776d8949d1ae16",
+          "md5": "ca07a126396233303d3f091c01d676ac"
+        }
+      ]
+    }
+  ]
+}

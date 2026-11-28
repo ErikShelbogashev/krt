@@ -1,0 +1,151 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../filekit-dialogs/0.17.1/filekit-dialogs-0.17.1.module",
+    "group": "io.github.vinceglb",
+    "module": "filekit-dialogs",
+    "version": "0.17.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.9.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "io.github.vinceglb",
+          "module": "filekit-core",
+          "version": {
+            "requires": "0.17.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "filekit-dialogs-jvm.jar",
+          "url": "filekit-dialogs-jvm-0.17.1.jar",
+          "size": 335486,
+          "sha512": "09c96a0a83859353fd7c7971d05100952a69478495fa424d9f38a3387749ff159877ece48dd5aea5f9d991000f3b050ad51feaf36e8e7f1fc7e6f1f70796fb69",
+          "sha256": "0d499d8d9c5b1de84942547615e4edeca9293e9c88288f5a8b672b58cafa231d",
+          "sha1": "f75c6414728589f6dad0f10e6643e52b7e63b822",
+          "md5": "2a87aefaa8a57483015ffce57a1ff8ec"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "io.github.vinceglb",
+          "module": "filekit-core",
+          "version": {
+            "requires": "0.17.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.21"
+          }
+        },
+        {
+          "group": "net.java.dev.jna",
+          "module": "jna",
+          "version": {
+            "requires": "5.19.1"
+          }
+        },
+        {
+          "group": "net.java.dev.jna",
+          "module": "jna-platform",
+          "version": {
+            "requires": "5.19.1"
+          }
+        },
+        {
+          "group": "com.github.hypfvieh",
+          "module": "dbus-java-core",
+          "version": {
+            "requires": "5.2.2"
+          }
+        },
+        {
+          "group": "com.github.hypfvieh",
+          "module": "dbus-java-transport-native-unixsocket",
+          "version": {
+            "requires": "5.2.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.11.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "filekit-dialogs-jvm.jar",
+          "url": "filekit-dialogs-jvm-0.17.1.jar",
+          "size": 335486,
+          "sha512": "09c96a0a83859353fd7c7971d05100952a69478495fa424d9f38a3387749ff159877ece48dd5aea5f9d991000f3b050ad51feaf36e8e7f1fc7e6f1f70796fb69",
+          "sha256": "0d499d8d9c5b1de84942547615e4edeca9293e9c88288f5a8b672b58cafa231d",
+          "sha1": "f75c6414728589f6dad0f10e6643e52b7e63b822",
+          "md5": "2a87aefaa8a57483015ffce57a1ff8ec"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "filekit-dialogs-jvm-sources.jar",
+          "url": "filekit-dialogs-jvm-0.17.1-sources.jar",
+          "size": 58794,
+          "sha512": "8b4e4e2ce2d34341b03272840015695ca7b983caaeaa7b9d2c7e607c56a9dc98ccf6ef6ca6f805bec42d0a04860844f41e2656d86f2d072ac79db0bb78f3d101",
+          "sha256": "a37f4da8ea1a01717e031b99325ad00b400df909fe5576b6ea804f7654333966",
+          "sha1": "f490ae1866e7b17ea31e0136fd1ba231ed39f287",
+          "md5": "fda946591a1a94a34652636ca5a81cf1"
+        }
+      ]
+    }
+  ]
+}

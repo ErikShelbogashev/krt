@@ -1,0 +1,109 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-report-sarif",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-report-sarif-2.0.0-alpha.6.jar",
+          "url": "detekt-report-sarif-2.0.0-alpha.6.jar",
+          "size": 11078,
+          "sha512": "9670da600c5a3ae72601dc23128df39985027ece98a3fb43921dff9d481e7c9f975be8f07e8d2eecc077a9400d89ee077ba58fb9bc864f79ab8194e7e5b68982",
+          "sha256": "d5399be3d48401a0ce5eeafb717acb6c8380fc4fae845625e5be42657d07259e",
+          "sha1": "bb0238291da38f2ec4d9f7e994493a25f974ad50",
+          "md5": "da67eaeef4cf5ba06db74a09d2563811"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "io.github.detekt.sarif4k",
+          "module": "sarif4k",
+          "version": {
+            "requires": "0.6.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-report-sarif-2.0.0-alpha.6.jar",
+          "url": "detekt-report-sarif-2.0.0-alpha.6.jar",
+          "size": 11078,
+          "sha512": "9670da600c5a3ae72601dc23128df39985027ece98a3fb43921dff9d481e7c9f975be8f07e8d2eecc077a9400d89ee077ba58fb9bc864f79ab8194e7e5b68982",
+          "sha256": "d5399be3d48401a0ce5eeafb717acb6c8380fc4fae845625e5be42657d07259e",
+          "sha1": "bb0238291da38f2ec4d9f7e994493a25f974ad50",
+          "md5": "da67eaeef4cf5ba06db74a09d2563811"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-report-sarif-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-report-sarif-2.0.0-alpha.6-sources.jar",
+          "size": 3035,
+          "sha512": "5afb84de97a03b36d3dd806a6455b0516c2ca519f02f756188e48bfaf68e5252ba7905e60f36986757afcf79ca40eaabf09053d82eea00ac000eca547094f0d7",
+          "sha256": "693aadbcbd33902652b242d438e737b968ecb89e5bb1dc4bc3363b94d3282ceb",
+          "sha1": "f8a07e45b5ffe23d75fee18ab8bd35cce9037160",
+          "md5": "24de4d8ecf56902487ff51a5ef619728"
+        }
+      ]
+    }
+  ]
+}

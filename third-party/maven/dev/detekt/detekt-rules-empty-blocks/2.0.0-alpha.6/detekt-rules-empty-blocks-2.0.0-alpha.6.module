@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-rules-empty-blocks",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-empty-blocks-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-empty-blocks-2.0.0-alpha.6.jar",
+          "size": 43014,
+          "sha512": "2f3dae63255eb77b93abb807677e66b57e3b4f2629ed7585428eb70067e95ffb007c90fe5394d0c3596183b220be495e9d98324255dfbb9d59afd0d0981d9623",
+          "sha256": "ba4567ee229fd411a952d6c62f445b17469a844190b5b9caa7e2b833fcf85cf1",
+          "sha1": "27243026c124b8e83f18ca20b0928261d18b9c02",
+          "md5": "1d2dfe303f2600c43fa37747a54cba10"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-empty-blocks-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-empty-blocks-2.0.0-alpha.6.jar",
+          "size": 43014,
+          "sha512": "2f3dae63255eb77b93abb807677e66b57e3b4f2629ed7585428eb70067e95ffb007c90fe5394d0c3596183b220be495e9d98324255dfbb9d59afd0d0981d9623",
+          "sha256": "ba4567ee229fd411a952d6c62f445b17469a844190b5b9caa7e2b833fcf85cf1",
+          "sha1": "27243026c124b8e83f18ca20b0928261d18b9c02",
+          "md5": "1d2dfe303f2600c43fa37747a54cba10"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-rules-empty-blocks-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-rules-empty-blocks-2.0.0-alpha.6-sources.jar",
+          "size": 11590,
+          "sha512": "f9eaf81250f396b4e2e232fbc784bd53249f7867b68f8e6d41293ba03b8a58c62d71621f531604f9327c9d052824e1313e6da95a8e184b06b4075d1361d9f9fd",
+          "sha256": "695974a2b7bb8a0c7dbe5145f0e75f6e1ecc559c5ca8fe9af7c3e70bdcde4cff",
+          "sha1": "cbe1a52d62eb1e7d93fd03ca2b7156741de20f34",
+          "md5": "6b8d374d79d32f16717dbdbf54ead9b4"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.compose.hot-reload",
+    "module": "hot-reload-gradle-plugin",
+    "version": "1.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-gradle-plugin-1.2.0-sources.jar",
+          "url": "hot-reload-gradle-plugin-1.2.0-sources.jar",
+          "size": 37801,
+          "sha512": "866b1d1be4cfc7e668b1d0e46fdc3071b48b3654009d9be5cc0fc8eaac59b7f0a10eb4bcd862b7505f668fe311ce257e5b60c0640e11ff3da0476b3ced368ad1",
+          "sha256": "0553724b6a555e0f08add492701daedbf6b5597879cfb7284f0f2985b3989202",
+          "sha1": "701028aa6642b86dce18ce4e0ea6c53925f3d30e",
+          "md5": "d116de4389adce2ade23e0529de1ec10"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-gradle-plugin-1.2.0-javadoc.jar",
+          "url": "hot-reload-gradle-plugin-1.2.0-javadoc.jar",
+          "size": 261,
+          "sha512": "69e1764f0ec0e2572116abaa9454a2ddeece3dd04e70e3b9145f9f2646a5b37fa80ee2fbc61bfed5408b51fbfecac0e28fbf2a68f7e8640933953e2123df060e",
+          "sha256": "241d4c3498f381549c0df158cca0c800e07317a9de151b0e0af4eb555ffdcf69",
+          "sha1": "1b16dacab7fe09966e5b009043acc48dcd4988e1",
+          "md5": "851385dc4ce4adf28bb78338b80f19cb"
+        }
+      ]
+    },
+    {
+      "name": "shadowRuntimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "shadowed",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-gradle-plugin-1.2.0.jar",
+          "url": "hot-reload-gradle-plugin-1.2.0.jar",
+          "size": 2093128,
+          "sha512": "7dc53b4971ee5b2cd080255516f2f966a3776a973aa44c8931cab28fbc3ac317a41c038422f1f2c78a2b710bad7c20aa91c9e7e5d83a5f6801cf6df4c7db0618",
+          "sha256": "8f57ecbd0ebd15137e0ce10a9a092e01c90cbe38152afd23bd0e60335fd5fda6",
+          "sha1": "0d14920bb191e1f9402ba7529b3e5bf4e58410dc",
+          "md5": "73f0eb836384c4a6443976e7dd35b6d7"
+        }
+      ]
+    }
+  ]
+}

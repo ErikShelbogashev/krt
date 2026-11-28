@@ -97,6 +97,10 @@ if exist "%JAVA_EXE%" goto execute
 goto exitWithErrorLevel
 
 :execute
+if not exist "%APP_HOME%\gradle\wrapper\distribution\gradle-9.9.2-bin.zip" (
+    "%JAVA_EXE%" "%APP_HOME%\gradle\wrapper\AssembleDistribution.java" "%APP_HOME%\gradle\wrapper"
+    if errorlevel 1 goto exitWithErrorLevel
+)
 @rem Setup the command line
 
 

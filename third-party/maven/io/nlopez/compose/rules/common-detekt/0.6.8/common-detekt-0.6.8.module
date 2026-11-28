@@ -1,0 +1,130 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.nlopez.compose.rules",
+    "module": "common-detekt",
+    "version": "0.6.8",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.8.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-core",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-psi-utils",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "common-detekt-0.6.8.jar",
+          "url": "common-detekt-0.6.8.jar",
+          "size": 380012,
+          "sha512": "3ccf48ccf47ac38f92e5bd02942bf6b3c0ba169cfbb6f9d0b19d63eb069560ab4cc61d62db7449b13920dfdfd0ac36ef5d4750719411eb85bc95b922edfd35fb",
+          "sha256": "888287c94182ce4e87553b386ed2bfd785a385865f05a6fcab31e517256e92f3",
+          "sha1": "2306e6547fc34520cc9faed5d0b6447820718707",
+          "md5": "260a3e0d5330d42199104a64b5d5cf5e"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-core",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-psi-utils",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "common-detekt-0.6.8.jar",
+          "url": "common-detekt-0.6.8.jar",
+          "size": 380012,
+          "sha512": "3ccf48ccf47ac38f92e5bd02942bf6b3c0ba169cfbb6f9d0b19d63eb069560ab4cc61d62db7449b13920dfdfd0ac36ef5d4750719411eb85bc95b922edfd35fb",
+          "sha256": "888287c94182ce4e87553b386ed2bfd785a385865f05a6fcab31e517256e92f3",
+          "sha1": "2306e6547fc34520cc9faed5d0b6447820718707",
+          "md5": "260a3e0d5330d42199104a64b5d5cf5e"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "common-detekt-0.6.8-sources.jar",
+          "url": "common-detekt-0.6.8-sources.jar",
+          "size": 67376,
+          "sha512": "2c2137a2454e6192244dbee2a04fbc005fff2430e5238dec3dfca573d7a0aea28fd3428262318b39e112d7a5be1e921bc95b070e2a79db9a923316a63696924c",
+          "sha256": "5d5b36ccb12c5f2fbf10ac918208a4d23642e35123053ad46b9dbd8a62bbfc86",
+          "sha1": "182fc136f69d412c377f0d2f7c8e2f18d5cd51af",
+          "md5": "65ec147de85f73e468308670027dbfeb"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+
+    <groupId>com.github.hypfvieh</groupId>
+    <artifactId>dbus-java-parent</artifactId>
+    <version>5.2.2</version>
+
+    <name>${project.artifactId}</name>
+    <url>https://github.com/hypfvieh/dbus-java</url>
+
+    <description>DBus-Java library module parent</description>
+
+    <properties>
+        <!-- Dependency versions -->
+        <junit5.version>5.13.4</junit5.version>
+        <pmd.version>7.19.0</pmd.version>
+        <checkstyle.version>12.3.0</checkstyle.version>
+        <logback.version>1.5.22</logback.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <jnr-unixsocket.version>0.38.24</jnr-unixsocket.version>
+        <junixsocket.version>2.10.1</junixsocket.version>
+
+        <!-- only for example code -->
+        <java.utils.version>1.2.2</java.utils.version>
+        
+        <!-- Plugin versions -->
+        <mvn.git.commit.id.maven.plugin>9.0.2</mvn.git.commit.id.maven.plugin>
+        <mvn.maven.bundle.plugin.version>5.1.9</mvn.maven.bundle.plugin.version>
+        <mvn.maven.checkstyle.plugin>3.6.0</mvn.maven.checkstyle.plugin>
+        <mvn.maven.clean.plugin>3.5.0</mvn.maven.clean.plugin>
+        <mvn.maven.compiler.plugin>3.14.0</mvn.maven.compiler.plugin>
+        <mvn.maven.deploy.plugin>3.1.4</mvn.maven.deploy.plugin>
+        <mvn.maven.enforcer.plugin>3.6.1</mvn.maven.enforcer.plugin>
+        <mvn.maven.gpg.plugin>3.2.8</mvn.maven.gpg.plugin>
+        <mvn.maven.install.plugin>3.1.4</mvn.maven.install.plugin>
+        <mvn.maven.jar.plugin>3.4.2</mvn.maven.jar.plugin>
+        <mvn.maven.javadoc.plugin>3.11.3</mvn.maven.javadoc.plugin>
+        <mvn.maven.pmd.plugin>3.27.0</mvn.maven.pmd.plugin>
+        <mvn.maven.project.info.reports.plugin>3.9.0</mvn.maven.project.info.reports.plugin>
+        <mvn.maven.release.plugin>3.1.1</mvn.maven.release.plugin>
+        <mvn.maven.resource.plugin>3.3.1</mvn.maven.resource.plugin>
+        <mvn.maven.site.plugin>3.21.0</mvn.maven.site.plugin>
+        <mvn.maven.source.plugin>3.3.1</mvn.maven.source.plugin>
+        <mvn.maven.surefire.plugin>3.5.4</mvn.maven.surefire.plugin>
+        <mvn.sonar.maven.plugin>5.2.0.4988</mvn.sonar.maven.plugin>
+        <mvn.versions.maven.plugin>2.19.0</mvn.versions.maven.plugin>
+        <mvn.centralpublishing.plugin.version>0.9.0</mvn.centralpublishing.plugin.version>
+
+        <!-- Code analysis -->
+        <check.skip-javadoc>false</check.skip-javadoc>
+        <check.skip-checkstyle>false</check.skip-checkstyle>
+        <check.skip-pmd>false</check.skip-pmd>
+        <check.skip-sonar>true</check.skip-sonar>
+
+        <!-- Build properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+
+        <parentDir>${maven.multiModuleProjectDirectory}</parentDir>
+        <project.build.outputTimestamp>2026-09-26T14:28:22Z</project.build.outputTimestamp>
+        <dateFormatTimeZone>UTC</dateFormatTimeZone>
+    </properties>
+
+    <modules>
+        <module>dbus-java-core</module>
+        <module>dbus-java-osgi</module>
+        <module>dbus-java-utils</module>
+        <module>dbus-java-transport-jnr-unixsocket</module>
+        <module>dbus-java-transport-junixsocket</module>
+        <module>dbus-java-transport-native-unixsocket</module>
+        <module>dbus-java-transport-tcp</module>
+        <module>dbus-java-bom</module>
+        <module>dbus-java-tests</module>
+        <module>dbus-java-examples</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>baag.default</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>test-compile</phase> <!-- fail before we do testing -->
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+            </plugin>
+
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${mvn.versions.maven.plugin}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${mvn.maven.javadoc.plugin}</version>
+                    <configuration>
+                        <skip>${check.skip-javadoc}</skip>
+                        <doclint>none</doclint>
+                        <!--  required because multi-release artifact will fuck up javadoc generation -->
+                        <failOnError>false</failOnError>
+                        <failOnWarnings>false</failOnWarnings>
+                        <tags>
+                            <tag>
+                                <name>apiNote</name>
+                                <placement>a</placement>
+                                <head>API Note:</head>
+                            </tag>
+                            <tag>
+                                <name>implSpec</name>
+                                <placement>a</placement>
+                                <head>Implementation Requirements:</head>
+                            </tag>
+                            <tag>
+                                <name>implNote</name>
+                                <placement>a</placement>
+                                <head>Implementation Note:</head>
+                            </tag>
+                        </tags>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${mvn.maven.enforcer.plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-maven</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>3.9.3</version>
+                                    </requireMavenVersion>
+                                    <requireJavaVersion>
+                                        <version>${maven.compiler.release}</version>
+                                    </requireJavaVersion>
+                                    <requireOS>
+                                        <family>unix</family>
+                                    </requireOS>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${mvn.maven.jar.plugin}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Build-Time>${git.commit.time}</Build-Time>
+                                <Git-Revision>${git.commit.id.abbrev}</Git-Revision>
+                                <Git-Author>${git.commit.user.name} &lt;${git.commit.user.email}&gt;</Git-Author>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${mvn.maven.surefire.plugin}</version>
+                    <configuration>
+                        <forkCount>1</forkCount>
+                        <reuseForks>false</reuseForks>
+                        <systemPropertyVariables>
+                            <logback.configurationFile>${basedir}/src/test/resources/logback.xml</logback.configurationFile>
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${mvn.maven.compiler.plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>compile</id>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                            <configuration>
+                                <release>${maven.compiler.source}</release>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>${mvn.maven.release.plugin}</version>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <releaseProfiles>release</releaseProfiles>
+                        <goals>deploy</goals>
+                        <pushChanges>false</pushChanges>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>${mvn.centralpublishing.plugin.version}</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <publishingServerId>central</publishingServerId>
+                        <autoPublish>true</autoPublish>
+                        <waitUntil>validated</waitUntil>
+                        <failOnBuildFailure>true</failOnBuildFailure>
+                        <checksums>all</checksums>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${mvn.maven.source.plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <!-- http://maven.apache.org/plugins/maven-pmd-plugin/ -->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${mvn.maven.pmd.plugin}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>net.sourceforge.pmd</groupId>
+                            <artifactId>pmd-core</artifactId>
+                            <version>${pmd.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>net.sourceforge.pmd</groupId>
+                            <artifactId>pmd-java</artifactId>
+                            <version>${pmd.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>net.sourceforge.pmd</groupId>
+                            <artifactId>pmd-javascript</artifactId>
+                            <version>${pmd.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>net.sourceforge.pmd</groupId>
+                            <artifactId>pmd-jsp</artifactId>
+                            <version>${pmd.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <skip>${check.skip-pmd}</skip>
+                        <failOnViolation>true</failOnViolation>
+                        <printFailingErrors>true</printFailingErrors>
+                        <includeTests>true</includeTests>
+                        <failurePriority>4</failurePriority>
+                        <!-- minimum number of tokens that need to be duplicated before it causes a violation: -->
+                        <minimumTokens>100</minimumTokens>
+                        <rulesets>
+                            <ruleset>${parentDir}/src/main/resources/pmd_rules.xml</ruleset>
+                        </rulesets>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <!-- Documentation: http://maven.apache.org/plugins/maven-checkstyle-plugin/ -->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${mvn.maven.checkstyle.plugin}</version>
+                    <configuration>
+                        <skip>${check.skip-checkstyle}</skip>
+                        <failOnViolation>true</failOnViolation>
+                        <configLocation>${parentDir}/src/main/resources/checkstyle_rules.xml</configLocation>
+                        <excludes>*.jpg,*.jpeg,*.gif,*.png,*.db,*.csv</excludes>
+                        <consoleOutput>true</consoleOutput>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <logViolationsToConsole>true</logViolationsToConsole>
+                        <violationSeverity>warning</violationSeverity>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>${checkstyle.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <plugin>
+                    <groupId>io.github.git-commit-id</groupId>
+                    <artifactId>git-commit-id-maven-plugin</artifactId>
+                    <version>${mvn.git.commit.id.maven.plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>get-the-git-infos</id>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                            <phase>initialize</phase>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                        <injectAllReactorProjects>true</injectAllReactorProjects>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${mvn.maven.deploy.plugin}</version>
+                </plugin>
+
+                <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-site-plugin</artifactId>
+                     <version>${mvn.maven.site.plugin}</version>
+                </plugin>
+                <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-project-info-reports-plugin</artifactId>
+                     <version>${mvn.maven.project.info.reports.plugin}</version>
+                </plugin>
+                <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-clean-plugin</artifactId>
+                     <version>${mvn.maven.clean.plugin}</version>
+                </plugin>
+                <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-resources-plugin</artifactId>
+                     <version>${mvn.maven.resource.plugin}</version>
+                </plugin>
+                <plugin>
+                     <groupId>org.apache.maven.plugins</groupId>
+                     <artifactId>maven-install-plugin</artifactId>
+                     <version>${mvn.maven.install.plugin}</version>
+                </plugin>
+            </plugins>
+
+        </pluginManagement>
+
+    </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <id>non-aggregate</id>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                    </reportSet>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>central</id>
+            <name>Sonatype Central Snapshots</name>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>central</id>
+            <name>Sonatype Central Staging Repository</name>
+            <url>https://central.sonatype.com</url>
+        </repository>
+        <site>
+            <id>local</id>
+            <url>file://${java.io.tmpdir}/site-prepared</url>
+        </site>
+    </distributionManagement>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <!-- JUnit testing framework. -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit5.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Base dependencies for submodules -->
+
+            <dependency>
+                <groupId>com.github.jnr</groupId>
+                <artifactId>jnr-unixsocket</artifactId>
+                <version>${jnr-unixsocket.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.kohlschutter.junixsocket</groupId>
+                <artifactId>junixsocket-core</artifactId>
+                <version>${junixsocket.version}</version>
+                <type>pom</type>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- JUnit testing framework. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- needed for IDE support -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <scm>
+        <connection>scm:git:https://github.com/hypfvieh/dbus-java.git</connection>
+        <developerConnection>scm:git:https://github.com/hypfvieh/dbus-java.git</developerConnection>
+        <url>https://github.com/hypfvieh/dbus-java.git</url>
+        <tag>dbus-java-parent-5.2.2</tag>
+    </scm>
+
+    <licenses>
+        <license>
+           <name>MIT License</name>
+           <url>https://github.com/hypfvieh/dbus-java/blob/master/LICENSE</url>
+       </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>hypfvieh</id>
+            <name>David M.</name>
+            <email>hypfvieh@googlemail.com</email>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>Matthew Johnson</name>
+            <email>src@matthew.ath.cx</email>
+        </contributor>
+
+        <contributor>
+            <name>thjomnx</name>
+            <url>https://github.com/thjomnx</url>
+        </contributor>
+        <contributor>
+            <name>RafalSumislawski</name>
+            <url>https://github.com/RafalSumislawski</url>
+        </contributor>
+        <contributor>
+            <name>lbeuster</name>
+            <url>https://github.com/lbeuster</url>
+        </contributor>
+        <contributor>
+            <name>littlefreaky</name>
+            <url>https://github.com/littlefreaky</url>
+        </contributor>
+        <contributor>
+            <name>sshort</name>
+            <url>https://github.com/sshort</url>
+        </contributor>
+        <contributor>
+            <name>michivi</name>
+            <url>https://github.com/michivi</url>
+        </contributor>
+        <contributor>
+            <name>rm5248</name>
+            <url>https://github.com/rm5248</url>
+        </contributor>
+        <contributor>
+            <name>chris-melman</name>
+            <url>https://github.com/chris-melman</url>
+        </contributor>
+        <contributor>
+            <name>mk868</name>
+            <url>https://github.com/mk868</url>
+        </contributor>
+        <contributor>
+            <name>Prototik</name>
+            <url>https://github.com/Prototik</url>
+        </contributor>
+
+    </contributors>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <properties>
+                <gpg.executable>gpg2</gpg.executable>
+            </properties>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${mvn.maven.gpg.plugin}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>fast</id>
+            <!-- Profile to skip time-consuming steps but not tests. -->
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <!-- skip _compiling_ the tests -->
+                <maven.test.skip>true</maven.test.skip>
+                <!-- skip the tests -->
+                <skipTests>true</skipTests>
+
+                <!-- skip Javadoc generation -->
+                <check.skip-javadoc>true</check.skip-javadoc>
+
+                <!-- skip time-consuming static code analysis -->
+                <check.skip-checkstyle>true</check.skip-checkstyle>
+                <check.skip-pmd>true</check.skip-pmd>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>sonarcloud</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <check.skip-sonar>false</check.skip-sonar>
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.organization>hypfvieh</sonar.organization>
+                <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
+
+                <maven.test.skip>true</maven.test.skip>
+                <skipTests>true</skipTests>
+                <check.skip-javadoc>true</check.skip-javadoc>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <version>${mvn.sonar.maven.plugin}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>sonar</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>sonarcloud-with-tests</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <check.skip-sonar>false</check.skip-sonar>
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.organization>hypfvieh</sonar.organization>
+                <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <version>${mvn.sonar.maven.plugin}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>sonar</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

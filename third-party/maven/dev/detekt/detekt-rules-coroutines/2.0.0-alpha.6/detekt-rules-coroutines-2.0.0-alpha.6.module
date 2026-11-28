@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-rules-coroutines",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-coroutines-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-coroutines-2.0.0-alpha.6.jar",
+          "size": 97600,
+          "sha512": "673d06333dff90eec95507df366353c9f061ee7fbdfdc03c63331704ab378cae91e6f216ede6ca332ac050dd26075caae74e0f3d5d3bac4a03f4e97e0c0356cc",
+          "sha256": "f827aeaf7cec376c469e85ee07621fe5b86e2e578f0c796a97d2465f81acb94a",
+          "sha1": "056cb5c33cd41775e374474fac1964c1b080380b",
+          "md5": "2c49cfcebaa42ec7b59526cca121a402"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-coroutines-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-coroutines-2.0.0-alpha.6.jar",
+          "size": 97600,
+          "sha512": "673d06333dff90eec95507df366353c9f061ee7fbdfdc03c63331704ab378cae91e6f216ede6ca332ac050dd26075caae74e0f3d5d3bac4a03f4e97e0c0356cc",
+          "sha256": "f827aeaf7cec376c469e85ee07621fe5b86e2e578f0c796a97d2465f81acb94a",
+          "sha1": "056cb5c33cd41775e374474fac1964c1b080380b",
+          "md5": "2c49cfcebaa42ec7b59526cca121a402"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-rules-coroutines-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-rules-coroutines-2.0.0-alpha.6-sources.jar",
+          "size": 17583,
+          "sha512": "0d04ddbaaf15ea01365f2a75c14c6fa3c0af716466229464a6a903cf01e3dfd29ca102d928ebde2ba5a4aafd6d6ba7df22ed0bff131ba77ee38dc56f5643f3b4",
+          "sha256": "8df3eca7ba978bb00e07daf56be73de511d5f12a43fea2e5a4917222d454068a",
+          "sha1": "a1a9e1e3985f18564a1a09cbe79c42f2f7f221c8",
+          "md5": "77d25789fa91916fc63d377fc070f82a"
+        }
+      ]
+    }
+  ]
+}

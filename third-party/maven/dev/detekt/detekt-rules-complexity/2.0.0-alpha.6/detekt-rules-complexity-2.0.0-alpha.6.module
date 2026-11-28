@@ -1,0 +1,102 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-rules-complexity",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-complexity-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-complexity-2.0.0-alpha.6.jar",
+          "size": 107759,
+          "sha512": "60145f05755cbfae98d1e4b4328fd20160c6fe0a6414aec30a8c8923a6de9e6623455a67482ae95d82ad37a2178b2b1bc20c86f0755e4b653c7040a2dfc0361a",
+          "sha256": "d392170d4c52d0790f61a6298004e7b3f5b01df9fe99c4db2df110d7d1c78e8a",
+          "sha1": "3165ec33549fa510b3fc0526bb94b8e5e5a52855",
+          "md5": "630447b9ce5ffc34682f18c31aa58f88"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-rules-complexity-2.0.0-alpha.6.jar",
+          "url": "detekt-rules-complexity-2.0.0-alpha.6.jar",
+          "size": 107759,
+          "sha512": "60145f05755cbfae98d1e4b4328fd20160c6fe0a6414aec30a8c8923a6de9e6623455a67482ae95d82ad37a2178b2b1bc20c86f0755e4b653c7040a2dfc0361a",
+          "sha256": "d392170d4c52d0790f61a6298004e7b3f5b01df9fe99c4db2df110d7d1c78e8a",
+          "sha1": "3165ec33549fa510b3fc0526bb94b8e5e5a52855",
+          "md5": "630447b9ce5ffc34682f18c31aa58f88"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-rules-complexity-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-rules-complexity-2.0.0-alpha.6-sources.jar",
+          "size": 22913,
+          "sha512": "8b3175e1b0a57b6a2309415cf9ab87fab1f4abc09fa5b54f8b1b474368f6cea326edb75d20af4cd7873b7922f4309008e99e933c132ca5419798da66d615c66f",
+          "sha256": "1a696a6a3c5470d202651ec00c0ad6d5383939541fdc1b459d1ae4e403559272",
+          "sha1": "65e9f9c166ff7f30e3f9c5c849af5c8b4ed74dfe",
+          "md5": "25005b4adbf74239ce8779b0887d190a"
+        }
+      ]
+    }
+  ]
+}

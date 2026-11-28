@@ -1,0 +1,113 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-gradle-plugin",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "detekt-gradle-plugin-2.0.0-alpha.6.jar",
+          "url": "detekt-gradle-plugin-2.0.0-alpha.6.jar",
+          "size": 302580,
+          "sha512": "65a5611033e61fb8be139aa5ff0a95af7fc979b6a980130bdaae92f8abe88914860b4564853f29d8d6c7160bbef6b9e5a2d73a70d4e59655be675866b51997d7",
+          "sha256": "fdb03af32bc409fa78ce89aedfe992e5f2145435207ccd1bf4e01200654dec89",
+          "sha1": "ae5ae80c78324d77ef1513d7cc63ab9b698bd335",
+          "md5": "c9b7ed5066dfc7763beed74502772ed9"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "io.github.detekt.sarif4k",
+          "module": "sarif4k",
+          "version": {
+            "requires": "0.6.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-gradle-plugin-2.0.0-alpha.6.jar",
+          "url": "detekt-gradle-plugin-2.0.0-alpha.6.jar",
+          "size": 302580,
+          "sha512": "65a5611033e61fb8be139aa5ff0a95af7fc979b6a980130bdaae92f8abe88914860b4564853f29d8d6c7160bbef6b9e5a2d73a70d4e59655be675866b51997d7",
+          "sha256": "fdb03af32bc409fa78ce89aedfe992e5f2145435207ccd1bf4e01200654dec89",
+          "sha1": "ae5ae80c78324d77ef1513d7cc63ab9b698bd335",
+          "md5": "c9b7ed5066dfc7763beed74502772ed9"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-gradle-plugin-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-gradle-plugin-2.0.0-alpha.6-sources.jar",
+          "size": 29322,
+          "sha512": "a27cf8a1d9598bf998a3511bd42b5fb0b1d4510f624f4650212c9619905491977500959bb263094fb076d87888a980bb9c889a630517315f12c353082edbe009",
+          "sha256": "acb97def0f7ad07d9647c8eeb93a5493d64995e808a12f86b6c2c78eb6097678",
+          "sha1": "5721dddd3884f36ee7153bf6ff90163567b45ffa",
+          "md5": "0c8ef8efcecc977a30b92276ed260b26"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-gradle-plugin-2.0.0-alpha.6-javadoc.jar",
+          "url": "detekt-gradle-plugin-2.0.0-alpha.6-javadoc.jar",
+          "size": 261,
+          "sha512": "1487e5a20c9e4d74f298e07c42e96a61be11b7a768c3fbc199ee138cd68e1fc2267d1cfe3f11f288acc05df755315344d052cc5f6f751f126ab4fe1caa5125ea",
+          "sha256": "c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3",
+          "sha1": "2ad14aed781c4a73ed4dbb421966d408a0a06686",
+          "md5": "f43436d6bec321290f6af228ad602604"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.detekt",
+    "module": "detekt-core",
+    "version": "2.0.0-alpha.6",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-api",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-tooling",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-compiler",
+          "version": {
+            "requires": "2.4.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-core-2.0.0-alpha.6.jar",
+          "url": "detekt-core-2.0.0-alpha.6.jar",
+          "size": 271725,
+          "sha512": "c1bf1d59fe75184b8cd7a16e03e5a18e4b7c3ff9ae4926b91fd23ac64ad32faa56d1059cf600815f553aff346ca878d66678f60a0a7510969b26fa6ca778f708",
+          "sha256": "8af995b6a4e164827eb227660d8d9486b596d6bd5d708bb30cb8d6f5ab5bb697",
+          "sha1": "58c7d3d88cfd659c7205e43765cb8ca800024a28",
+          "md5": "393114a03df75c9473f6d8d11c01e9ee"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "dev.detekt",
+          "module": "detekt-kotlin-analysis-api",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-kotlin-analysis-api-standalone",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "org.snakeyaml",
+          "module": "snakeyaml-engine",
+          "version": {
+            "requires": "2.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-reflect",
+          "version": {
+            "requires": "2.4.10"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-metrics",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-parser",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-psi-utils",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-utils",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-api",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "dev.detekt",
+          "module": "detekt-tooling",
+          "version": {
+            "requires": "2.0.0-alpha.6"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-compiler",
+          "version": {
+            "requires": "2.4.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "detekt-core-2.0.0-alpha.6.jar",
+          "url": "detekt-core-2.0.0-alpha.6.jar",
+          "size": 271725,
+          "sha512": "c1bf1d59fe75184b8cd7a16e03e5a18e4b7c3ff9ae4926b91fd23ac64ad32faa56d1059cf600815f553aff346ca878d66678f60a0a7510969b26fa6ca778f708",
+          "sha256": "8af995b6a4e164827eb227660d8d9486b596d6bd5d708bb30cb8d6f5ab5bb697",
+          "sha1": "58c7d3d88cfd659c7205e43765cb8ca800024a28",
+          "md5": "393114a03df75c9473f6d8d11c01e9ee"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "detekt-core-2.0.0-alpha.6-sources.jar",
+          "url": "detekt-core-2.0.0-alpha.6-sources.jar",
+          "size": 56868,
+          "sha512": "ec009a06a7408312f23144682a9fd22a8ccd6df85428a3b7b9c0259c069c8a0640aaf14027a8525347c59b7ab756635f2f3f2138389e330ceb15fd7692b51e6a",
+          "sha256": "946e489ef72ed5951587ec2f4b2ca23bf839cf896b7eb4e860505b7c54a26d8f",
+          "sha1": "fb41f025205a0c794da7071b429b87fade35f3c2",
+          "md5": "fe6c1f54462b2ae19f90758fc3589061"
+        }
+      ]
+    }
+  ]
+}
