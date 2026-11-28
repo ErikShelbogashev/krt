@@ -22,7 +22,7 @@ import krt.domain.scene.model.SelectedOptics
 
 @Composable
 fun SamplingControls(
-    filtered: Boolean, stratified: Boolean, onFilter: (Boolean) -> Unit, onStratify: (Boolean) -> Unit,
+    filtered: Boolean, stratified: Boolean, onFilter: () -> Unit, onStratify: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
@@ -32,9 +32,9 @@ fun SamplingControls(
 }
 
 @Composable
-private fun SamplingToggle(label: String, value: Boolean, onChange: (Boolean) -> Unit) {
+private fun SamplingToggle(label: String, value: Boolean, onToggle: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().toggleable(value, role = Role.Switch, onValueChange = onChange),
+        Modifier.fillMaxWidth().toggleable(value, role = Role.Switch, onValueChange = { onToggle() }),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
