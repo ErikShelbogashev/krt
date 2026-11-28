@@ -7,7 +7,7 @@
 
 ## Запуск
 
-Нужен JDK 17+.
+Нужен JDK 22+: GPU-режим на macOS достаёт Metal через Foreign Function API.
 
 ```bash
 ./gradlew run      # приложение
