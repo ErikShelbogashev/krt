@@ -47,9 +47,13 @@ internal class MediumRegions(objects: List<Traceable>) {
             val groups = EdgeGroups(indices.size)
             indices.forEachIndexed { local, index ->
                 val triangle = objects[index] as Triangle
-                groups.join(local, triangle.v0, triangle.v1)
-                groups.join(local, triangle.v1, triangle.v2)
-                groups.join(local, triangle.v2, triangle.v0)
+                // Mirroring can produce −0.0 at a duplicated vertex. +0.0 maps both signs to one edge key.
+                val a = triangle.v0 + 0.0
+                val b = triangle.v1 + 0.0
+                val c = triangle.v2 + 0.0
+                groups.join(local, a, b)
+                groups.join(local, b, c)
+                groups.join(local, c, a)
             }
             indices.indices.groupBy(groups::root).values.map { face -> face.map(indices::get) }
         }
