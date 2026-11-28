@@ -19,8 +19,8 @@ class PixelDifferentials(val dx: Point3, val dy: Point3, private val travelled: 
     /** Crossing a medium boundary preserves direction; parameters to successive boundaries add. */
     fun advanced(t: Double) = PixelDifferentials(dx, dy, travelled + t)
 
-    fun forBlock(size: Int): PixelDifferentials =
-        if (size == 1) this else PixelDifferentials(dx * size.toDouble(), dy * size.toDouble())
+    fun scaled(width: Double): PixelDifferentials =
+        if (width == 1.0) this else PixelDifferentials(dx * width, dy * width, travelled)
 
     fun onSurface(direction: Point3, normal: Point3, t: Double): PixelDifferentials {
         val incidence = direction.dot(normal)
@@ -28,5 +28,10 @@ class PixelDifferentials(val dx: Point3, val dy: Point3, private val travelled: 
         val denominator = if (incidence < 0.0) minOf(incidence, -limit) else maxOf(incidence, limit)
         fun project(d: Point3) = (d - direction * (d.dot(normal) / denominator)) * (travelled + t)
         return PixelDifferentials(project(dx), project(dy))
+    }
+
+    companion object {
+        /** Width of one texture sample covering its share of a unit-area film pixel. */
+        fun sampleWidth(samples: Int): Double = 1.0 / kotlin.math.sqrt(samples.coerceAtLeast(1).toDouble())
     }
 }

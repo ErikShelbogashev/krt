@@ -17,6 +17,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import krt.platform.math.PixelDifferentials
 import krt.domain.camera.Camera
 import krt.domain.render.model.RenderMode
 import krt.domain.render.model.RenderProgress
@@ -173,7 +174,7 @@ class RenderController(
                 while (row < height && isActive) {
                     val rows = GpuSampling.nextRows(row, height, GpuSampling.bandsOf(stepBudget.get(), width, height))
                     row = rows.last + 1
-                    val band = GpuBand(taken, rows)
+                    val band = GpuBand(taken, rows, targetSamples = passes)
                     val step = GpuFrame(scene, view, width, height, depth, samples, seed, band)
                     val shader = steps.next(step)
                     val done = GpuSampling.samplesDone(taken, samples, rows, height)
@@ -217,11 +218,12 @@ class RenderController(
         val batchPixels = batchSize
         val startedAt = clock()
         val scratch = scratchFor(width * height)
+        val footprint = camera.footprint(PixelDifferentials.sampleWidth(passes))
         val job = CoroutineScope(renderDispatcher).launch {
             // Setting up a frame of a million pixels takes a while: off the UI thread, which a dragged camera
             // asks for a new frame every repaint.
             FrameSampling.fillPixelOrder(scratch.order, random)
-            val work = FrameWork(frame, rayTracer, camera, scratch, width, batchPixels, random.nextLong())
+            val work = FrameWork(frame, rayTracer, camera, scratch, width, batchPixels, random.nextLong(), footprint)
             CpuDraft.trace(frame, camera, rayTracer, work.frameSeed, workers)
             val draftProgress = RenderProgress(passes, 0, 0.0, clock() - startedAt, isDraft = true)
             if (isActive) SwingUtilities.invokeLater { onUpdate(draftProgress) }
@@ -284,6 +286,7 @@ class RenderController(
         private val width: Int,
         private val batchPixels: Int,
         val frameSeed: Long,
+        val footprint: PixelDifferentials?,
     ) {
         private val order = scratch.order
         val accumulated = Accumulator(scratch.sums)
@@ -320,8 +323,9 @@ class RenderController(
                 FrameSampling.passRandom(pass.frameSeed, pixel, camera.imageWidth, camera.imageHeight, pass.index)
             val color = if (camera.stratifiedPixels) {
                 val shift = PixelStrata.shift(pass.frameSeed, batch.order[k])
-                FrameSampling.stratifiedSample(pixel, camera, work.rayTracer, random, pass.index, shift)
-            } else FrameSampling.sampleOnce(pixel, camera, work.rayTracer, random)
+                val cell = PixelStrata.cell(pass.index, shift)
+                FrameSampling.stratifiedSample(pixel, camera, work.rayTracer, random, cell, work.footprint)
+            } else FrameSampling.sampleOnce(pixel, camera, work.rayTracer, random, work.footprint)
             if (!isActive) return
             val index = FrameSampling.imageY(pixel, camera.imageHeight) * camera.imageWidth + pixel.i
             work.frame.pixels[index] = work.accumulated.add(index, color).toAWTColor(pass.index + 1)

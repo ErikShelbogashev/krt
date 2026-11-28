@@ -199,13 +199,18 @@ class Camera(
         pixel = PixelDifferentials(horizontal / imageWidth.toDouble(), vertical / imageHeight.toDouble())
     }
 
-    fun ray(s: Double, t: Double, random: Random, blockSize: Int = 1): Ray {
+    fun ray(s: Double, t: Double, random: Random, blockSize: Int = 1): Ray =
+        ray(s, t, random, footprint(blockSize.toDouble()))
+
+    internal fun footprint(width: Double): PixelDifferentials? = if (filterWood) pixel.scaled(width) else null
+
+    internal fun ray(s: Double, t: Double, random: Random, footprint: PixelDifferentials?): Ray {
         val rd = Point3.randomInUnitDisk(random) * lensRadius
         val offset = u * rd.x + v * rd.y
         return Ray(
             _origin + offset,
             lowerLeftCorner + horizontal * s + vertical * t - _origin - offset,
-            pixel = if (filterWood) pixel.forBlock(blockSize) else null,
+            pixel = footprint,
         )
     }
 

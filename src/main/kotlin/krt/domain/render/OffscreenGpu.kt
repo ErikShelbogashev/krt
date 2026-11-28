@@ -139,7 +139,7 @@ class OffscreenGpu internal constructor(
                 val rows = GpuSampling.nextRows(row, height, GpuSampling.bandsOf(stepBudget, width, height))
                 row = rows.last + 1
                 val marker = targets.nextMarker()
-                val band = GpuBand(taken, rows, marker = marker)
+                val band = GpuBand(taken, rows, marker = marker, targetSamples = passes)
                 val step = GpuFrame(full.scene, full.view, width, height, full.maxDepth, samples, full.seed, band)
                 stepBudget = stepBudget.after(measureStep {
                     drawStep(target, step)

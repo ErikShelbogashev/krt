@@ -27,8 +27,8 @@ float2 projectedWood(float base, float3 p, float3 direction, float3 normal, floa
     float incidence = dot(normal, direction);
     float limit = length(direction) * 1.0e-7;
     float denom = incidence < 0.0 ? min(incidence, -limit) : max(incidence, limit);
-    float3 x = camHorizontal / frameSize.x;
-    float3 y = camVertical / frameSize.y;
+    float3 x = camHorizontal * (woodSampleWidth / frameSize.x);
+    float3 y = camVertical * (woodSampleWidth / frameSize.y);
     float scale = number(base + 5.0);
     float3 dx = (x - direction * (dot(x, normal) / denom)) * (distance * scale);
     float3 dy = (y - direction * (dot(y, normal) / denom)) * (distance * scale);
