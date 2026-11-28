@@ -1,0 +1,264 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.compose.hot-reload",
+    "module": "hot-reload-analysis",
+    "version": "1.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-annotations",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-analysis-1.2.0.jar",
+          "url": "hot-reload-analysis-1.2.0.jar",
+          "size": 233052,
+          "sha512": "c3a126a23ff94a45e454e657e9bca6856c0372635c9e593549f544cd75241fadc7b8c53c1f8a95ab878c3fb5c6164a01c8cda57e889c24413d054fa3be252016",
+          "sha256": "fb71f357a1dc56e1ba5016f626415f569d66fe7c5f0b5cbae92d27134d65a0fe",
+          "sha1": "fcbc8a3476328f7bf07b60b032ba920f0f492ef0",
+          "md5": "460fc2bda75155de71b49ad986341d88"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.1.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-core",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm",
+          "version": {
+            "requires": "9.10.1"
+          }
+        },
+        {
+          "group": "org.ow2.asm",
+          "module": "asm-tree",
+          "version": {
+            "requires": "9.10.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-annotations",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-analysis-1.2.0.jar",
+          "url": "hot-reload-analysis-1.2.0.jar",
+          "size": 233052,
+          "sha512": "c3a126a23ff94a45e454e657e9bca6856c0372635c9e593549f544cd75241fadc7b8c53c1f8a95ab878c3fb5c6164a01c8cda57e889c24413d054fa3be252016",
+          "sha256": "fb71f357a1dc56e1ba5016f626415f569d66fe7c5f0b5cbae92d27134d65a0fe",
+          "sha1": "fcbc8a3476328f7bf07b60b032ba920f0f492ef0",
+          "md5": "460fc2bda75155de71b49ad986341d88"
+        }
+      ]
+    },
+    {
+      "name": "testFixturesApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-analysis",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-analysis-1.2.0-test-fixtures.jar",
+          "url": "hot-reload-analysis-1.2.0-test-fixtures.jar",
+          "size": 6402,
+          "sha512": "4c9541c839dc4508da6e3b3bc64c87f275f75ed65bd8f82a2d1de90d3aa04c27176951cbdafd5023e7d03f1127385dc8aecb66a78ccf76d2fa31c5d5cb8e5353",
+          "sha256": "a0a3e9cafe83a86d37ecd01cb42389176bef09a263cc8708af53b68699fb8f8e",
+          "sha1": "6b2fc51d8b56e1b140f2ae6641f0a13bc7d1f6d5",
+          "md5": "7588da8733866a36c8a3374736b0ffca"
+        }
+      ],
+      "capabilities": [
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "name": "hot-reload-analysis-test-fixtures",
+          "version": "1.2.0"
+        }
+      ]
+    },
+    {
+      "name": "testFixturesRuntimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-test"
+        },
+        {
+          "group": "org.junit.jupiter",
+          "module": "junit-jupiter",
+          "version": {
+            "requires": "5.14.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-core",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-core",
+          "version": {
+            "requires": "1.2.0"
+          },
+          "requestedCapabilities": [
+            {
+              "group": "org.jetbrains.compose.hot-reload",
+              "name": "hot-reload-core-test-fixtures"
+            }
+          ]
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-analysis",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "dependencyConstraints": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-test",
+          "version": {
+            "requires": "2.3.21"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-analysis-1.2.0-test-fixtures.jar",
+          "url": "hot-reload-analysis-1.2.0-test-fixtures.jar",
+          "size": 6402,
+          "sha512": "4c9541c839dc4508da6e3b3bc64c87f275f75ed65bd8f82a2d1de90d3aa04c27176951cbdafd5023e7d03f1127385dc8aecb66a78ccf76d2fa31c5d5cb8e5353",
+          "sha256": "a0a3e9cafe83a86d37ecd01cb42389176bef09a263cc8708af53b68699fb8f8e",
+          "sha1": "6b2fc51d8b56e1b140f2ae6641f0a13bc7d1f6d5",
+          "md5": "7588da8733866a36c8a3374736b0ffca"
+        }
+      ],
+      "capabilities": [
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "name": "hot-reload-analysis-test-fixtures",
+          "version": "1.2.0"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-analysis-1.2.0-sources.jar",
+          "url": "hot-reload-analysis-1.2.0-sources.jar",
+          "size": 34292,
+          "sha512": "a4ba03f182b90b236833ba71e865fec6ef4ab5498ec531f0c7f57e5f314ceee1e5420bc22970f68f4435ba8e4d5713450bab1857698260bf8ca5be7a9f30436d",
+          "sha256": "ef9108790a9995b0598ca12833a4865b467c292bc20a0f1ee13d023d1d929d96",
+          "sha1": "8a988dde9d67e2c99d0dcf20d5cad318633eeaec",
+          "md5": "e7b219ab90da4ac0e356de3f73392917"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-analysis-1.2.0-javadoc.jar",
+          "url": "hot-reload-analysis-1.2.0-javadoc.jar",
+          "size": 261,
+          "sha512": "1b4d691cc752da0588a31a5c56da71f5c468a8be69bdfcbb71499c7dfb48e906e67ce1ea6f0eaaeeec8353b94fc73c0e75238d1512d846c442fff8bd95b8b5fd",
+          "sha256": "bbe15fdbab82cfa77fb4af6bfdfd63325c32592c6bc7172f6d9843274b50901f",
+          "sha1": "65929de60b44b5bdcb586f7374bbd91ed1b8dce0",
+          "md5": "00ffa66a60d0daa9667f746b6a15428a"
+        }
+      ]
+    }
+  ]
+}

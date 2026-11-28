@@ -1,0 +1,172 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../ktor-serialization-kotlinx-json/3.4.3/ktor-serialization-kotlinx-json-3.4.3.module",
+    "group": "io.ktor",
+    "module": "ktor-serialization-kotlinx-json",
+    "version": "3.4.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.4.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-serialization-kotlinx",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json-io",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-serialization-kotlinx-json-jvm-3.4.3.jar",
+          "url": "ktor-serialization-kotlinx-json-jvm-3.4.3.jar",
+          "size": 28653,
+          "sha512": "2b5307c1b86b4fd0e24586201511b5cc7f8fd8d27b51c6e90dbd9aa699a04032320362ae98f083f1c93a1461073111bcf1e6cb8ee4986c5f8770b864573fb793",
+          "sha256": "328a27284e4cdc0d1554216b7e4acf859fe3b0cfd421cc2075c43c13e3c76127",
+          "sha1": "24821671212efaaa060be9036d4b1c680c9621cd",
+          "md5": "1096c0495cd578e430f88ec57ccb0454"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-serialization-kotlinx",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json-io",
+          "version": {
+            "requires": "1.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-serialization-kotlinx-json-jvm-3.4.3.jar",
+          "url": "ktor-serialization-kotlinx-json-jvm-3.4.3.jar",
+          "size": 28653,
+          "sha512": "2b5307c1b86b4fd0e24586201511b5cc7f8fd8d27b51c6e90dbd9aa699a04032320362ae98f083f1c93a1461073111bcf1e6cb8ee4986c5f8770b864573fb793",
+          "sha256": "328a27284e4cdc0d1554216b7e4acf859fe3b0cfd421cc2075c43c13e3c76127",
+          "sha1": "24821671212efaaa060be9036d4b1c680c9621cd",
+          "md5": "1096c0495cd578e430f88ec57ccb0454"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "ktor-serialization-kotlinx-json-jvm-3.4.3-sources.jar",
+          "url": "ktor-serialization-kotlinx-json-jvm-3.4.3-sources.jar",
+          "size": 6383,
+          "sha512": "daea55fbfec1f60c90db35d7510316a5907517d5dba69bc064258d89fdd51429b0158d88a3f4af4a03461eb88ff9beca4f00957b650273818d18e7deb7fd6f3b",
+          "sha256": "a9f0e6ce00de9a6781294532312bcb13677ffa16aed928a316172c4aed86addc",
+          "sha1": "a0ea93efb8100e15073d3512cba2b3efec90c476",
+          "md5": "76f63cfe60ca5fb1c998824b8d4c8d08"
+        }
+      ]
+    }
+  ]
+}

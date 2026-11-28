@@ -1,0 +1,138 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.kotlinx",
+    "module": "kotlinx-coroutines-swing",
+    "version": "1.11.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.11.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-bom",
+          "version": {
+            "requires": "1.11.0"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          },
+          "endorseStrictVersions": true
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlinx-coroutines-swing-1.11.0.jar",
+          "url": "kotlinx-coroutines-swing-1.11.0.jar",
+          "size": 8825,
+          "sha512": "ef883725c7d3bdc0fabd70381a36abb3b6ec1018e10efab184919f2a5610235ceb9c18400e8570fd6b17a4fa22006798071d6b956ab4c05449e4d157f01ad952",
+          "sha256": "7f658fe952b56176111faad8ac275268904608915d6c79374fa0c80fb288fb60",
+          "sha1": "3cf134b8aefd813622edc37e60d66b939b55cb36",
+          "md5": "e2b21cfe6937a29f4b6eb63570c77085"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.11.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-bom",
+          "version": {
+            "requires": "1.11.0"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          },
+          "endorseStrictVersions": true
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.20"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "kotlinx-coroutines-swing-1.11.0.jar",
+          "url": "kotlinx-coroutines-swing-1.11.0.jar",
+          "size": 8825,
+          "sha512": "ef883725c7d3bdc0fabd70381a36abb3b6ec1018e10efab184919f2a5610235ceb9c18400e8570fd6b17a4fa22006798071d6b956ab4c05449e4d157f01ad952",
+          "sha256": "7f658fe952b56176111faad8ac275268904608915d6c79374fa0c80fb288fb60",
+          "sha1": "3cf134b8aefd813622edc37e60d66b939b55cb36",
+          "md5": "e2b21cfe6937a29f4b6eb63570c77085"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "kotlinx-coroutines-swing-1.11.0-sources.jar",
+          "url": "kotlinx-coroutines-swing-1.11.0-sources.jar",
+          "size": 1938,
+          "sha512": "6255c3079dda590f8134d066b4e91202b928195c37b1999dafd999e68017249734ec5df1958674bc98bd9bc8bea700f00a0af3a74d5184f9e4823abf0852b58e",
+          "sha256": "b1c9feab47fe4bbd9840aced64a896ebdf1e3c1287f6a400a263cd1f6046338d",
+          "sha1": "99a8f6a23363196f4119b81fbfc8a6dbd7b18c40",
+          "md5": "0f87311f96ad044e653a971d5bf66f17"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../ktor-websockets/3.4.3/ktor-websockets-3.4.3.module",
+    "group": "io.ktor",
+    "module": "ktor-websockets",
+    "version": "3.4.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.4.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-utils",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-http",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-websockets-jvm-3.4.3.jar",
+          "url": "ktor-websockets-jvm-3.4.3.jar",
+          "size": 188577,
+          "sha512": "93f7d25634228e4f89d5dfa4861f573fc619ba1a3e2bf3622481ed999bc1ec8ea1c3c97bffc6dd8c0d3d95a1fb10aa25e283151ba3d2d851f2fbe8869dd31e64",
+          "sha256": "ed2fbfb81d3029cf05a62ac7b6d45b38a873a02f8ee60b04ae65346ed5299ee4",
+          "sha1": "9b13706fbdb3c7f5065d71e0d1f17eabda34dbc0",
+          "md5": "32feb11f1849664d6f12dd94156c3051"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-utils",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-http",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-websockets-jvm-3.4.3.jar",
+          "url": "ktor-websockets-jvm-3.4.3.jar",
+          "size": 188577,
+          "sha512": "93f7d25634228e4f89d5dfa4861f573fc619ba1a3e2bf3622481ed999bc1ec8ea1c3c97bffc6dd8c0d3d95a1fb10aa25e283151ba3d2d851f2fbe8869dd31e64",
+          "sha256": "ed2fbfb81d3029cf05a62ac7b6d45b38a873a02f8ee60b04ae65346ed5299ee4",
+          "sha1": "9b13706fbdb3c7f5065d71e0d1f17eabda34dbc0",
+          "md5": "32feb11f1849664d6f12dd94156c3051"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "ktor-websockets-jvm-3.4.3-sources.jar",
+          "url": "ktor-websockets-jvm-3.4.3-sources.jar",
+          "size": 37615,
+          "sha512": "eddf279c3f725703d047cd96a1aa4bc2807e6018325ab0692d0ee4a0a950b686c0be44610f553b96c28bbd89566fbf11c3968f89b26b433e9ced0f4f7bdead59",
+          "sha256": "9caa9b3e5d03003a72477c3604368354051a9062bce1a757e7816af685df40d2",
+          "sha1": "924c564dde23f225fa1f2eb0df6d09f1774dc020",
+          "md5": "0a99b02895add5cf981b493179880406"
+        }
+      ]
+    }
+  ]
+}

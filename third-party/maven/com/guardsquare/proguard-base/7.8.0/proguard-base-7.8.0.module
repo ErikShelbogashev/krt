@@ -1,0 +1,252 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.guardsquare",
+    "module": "proguard-base",
+    "version": "7.8.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.11.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.guardsquare",
+          "module": "proguard-core",
+          "version": {
+            "requires": "9.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "proguard-base-7.8.0.jar",
+          "url": "proguard-base-7.8.0.jar",
+          "size": 873042,
+          "sha512": "801a499f702956121a6e4d0176c005b1f122bc61251883836e290c8ba11e41397252d15e1aab41d3c124d36673093b516d20e618cca5e5f521ac6376fad995ca",
+          "sha256": "8bb46ae9214166f93f5ff36918c0d896b94981c0f2d798d71b6f4c9664c54147",
+          "sha1": "897103ade55cf1d2423022e92bf684d037657c6b",
+          "md5": "e197c7ce7f1a51b0caf8d1a24d23fe50"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.google.code.gson",
+          "module": "gson",
+          "version": {
+            "requires": "2.11.0"
+          }
+        },
+        {
+          "group": "org.apache.logging.log4j",
+          "module": "log4j-api",
+          "version": {
+            "requires": "2.24.2"
+          }
+        },
+        {
+          "group": "org.apache.logging.log4j",
+          "module": "log4j-core",
+          "version": {
+            "requires": "2.24.2"
+          }
+        },
+        {
+          "group": "org.json",
+          "module": "json",
+          "version": {
+            "requires": "20231013"
+          }
+        },
+        {
+          "group": "com.guardsquare",
+          "module": "proguard-core",
+          "version": {
+            "requires": "9.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "proguard-base-7.8.0.jar",
+          "url": "proguard-base-7.8.0.jar",
+          "size": 873042,
+          "sha512": "801a499f702956121a6e4d0176c005b1f122bc61251883836e290c8ba11e41397252d15e1aab41d3c124d36673093b516d20e618cca5e5f521ac6376fad995ca",
+          "sha256": "8bb46ae9214166f93f5ff36918c0d896b94981c0f2d798d71b6f4c9664c54147",
+          "sha1": "897103ade55cf1d2423022e92bf684d037657c6b",
+          "md5": "e197c7ce7f1a51b0caf8d1a24d23fe50"
+        }
+      ]
+    },
+    {
+      "name": "testFixturesApiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.guardsquare",
+          "module": "proguard-base",
+          "version": {
+            "requires": "7.8.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "proguard-base-7.8.0-test-fixtures.jar",
+          "url": "proguard-base-7.8.0-test-fixtures.jar",
+          "size": 261,
+          "sha512": "dc0ee6c79c9e7d952b4383ee97c29356e7e2b009d3df9cee547b96160b4e64df439c618277e38fd424e9ca1d027ace46e189436d47679a8f4cccbcf46a518064",
+          "sha256": "bdd238996e8ed5ce5c55954976c94be73627c6596bf762b0a50e68ec18958577",
+          "sha1": "1dc4425400b6f1aba8aa284e8332f572b8e9039c",
+          "md5": "569182e19d93e125d443ef4546aff765"
+        }
+      ],
+      "capabilities": [
+        {
+          "group": "com.guardsquare",
+          "name": "base-test-fixtures",
+          "version": "7.8.0"
+        }
+      ]
+    },
+    {
+      "name": "testFixturesRuntimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.guardsquare",
+          "module": "proguard-base",
+          "version": {
+            "requires": "7.8.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "proguard-base-7.8.0-test-fixtures.jar",
+          "url": "proguard-base-7.8.0-test-fixtures.jar",
+          "size": 261,
+          "sha512": "dc0ee6c79c9e7d952b4383ee97c29356e7e2b009d3df9cee547b96160b4e64df439c618277e38fd424e9ca1d027ace46e189436d47679a8f4cccbcf46a518064",
+          "sha256": "bdd238996e8ed5ce5c55954976c94be73627c6596bf762b0a50e68ec18958577",
+          "sha1": "1dc4425400b6f1aba8aa284e8332f572b8e9039c",
+          "md5": "569182e19d93e125d443ef4546aff765"
+        }
+      ],
+      "capabilities": [
+        {
+          "group": "com.guardsquare",
+          "name": "base-test-fixtures",
+          "version": "7.8.0"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "proguard-base-7.8.0-javadoc.jar",
+          "url": "proguard-base-7.8.0-javadoc.jar",
+          "size": 1259530,
+          "sha512": "8001d0ae485dff13e4c6e84f0dc62c390de2b81d5f2223c8066849abd4bbe656120edab5a2e128b97d8e7da1d82b9f17e7d9ef9449794ac7a2fd7581f9cf5cde",
+          "sha256": "c915e34ced8598ed71ff41fb6039d04f847a4515a33d6b2e5c8d9f7c1503527d",
+          "sha1": "52650d6646b9de312e0ad6e2e5ccf5da4a1994d3",
+          "md5": "a3e2ba091a7bd10d9e3753e48f03fd67"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "proguard-base-7.8.0-sources.jar",
+          "url": "proguard-base-7.8.0-sources.jar",
+          "size": 710954,
+          "sha512": "ba19c68b7697ffd51dfcfb42348ad3c7465cb35324284e669909020219522b8aac7a9df9ecdba72563379b31ae8bbbf9749c5bce5f94449a521393326fc3110a",
+          "sha256": "90f3dc162767743f983abd23ef32175128a2566251a4c3b3390bedf4b86e475e",
+          "sha1": "f2d1c28ff1d082f06847a9f923461f945ccf9810",
+          "md5": "485b20b20fcf701ab50930d5a2d6c8e0"
+        }
+      ]
+    }
+  ]
+}

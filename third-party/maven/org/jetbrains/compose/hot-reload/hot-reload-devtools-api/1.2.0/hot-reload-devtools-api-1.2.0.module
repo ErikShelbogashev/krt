@@ -1,0 +1,157 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.compose.hot-reload",
+    "module": "hot-reload-devtools-api",
+    "version": "1.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-annotations",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-core",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-orchestration",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-devtools-api-1.2.0.jar",
+          "url": "hot-reload-devtools-api-1.2.0.jar",
+          "size": 69308,
+          "sha512": "7c08c8e198462a1d7de8fcca5b2caa8315ee9df5e093a966fe1c47ebe626b2c3853c28d59c00cd5bc3d3a8b8b704e8879f9182e600d71a79448985d2b05032dd",
+          "sha256": "490526b1cce3448a72cf937e8d1c566a6667e5140a21d05380540fd14ee17983",
+          "sha1": "33d7788af49b43f2fb91ffdb3251f9b00cf3d184",
+          "md5": "ab8446b0dbff6df4b117401d0a3c83a3"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.1.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-annotations",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-core",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-orchestration",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-devtools-api-1.2.0.jar",
+          "url": "hot-reload-devtools-api-1.2.0.jar",
+          "size": 69308,
+          "sha512": "7c08c8e198462a1d7de8fcca5b2caa8315ee9df5e093a966fe1c47ebe626b2c3853c28d59c00cd5bc3d3a8b8b704e8879f9182e600d71a79448985d2b05032dd",
+          "sha256": "490526b1cce3448a72cf937e8d1c566a6667e5140a21d05380540fd14ee17983",
+          "sha1": "33d7788af49b43f2fb91ffdb3251f9b00cf3d184",
+          "md5": "ab8446b0dbff6df4b117401d0a3c83a3"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-devtools-api-1.2.0-sources.jar",
+          "url": "hot-reload-devtools-api-1.2.0-sources.jar",
+          "size": 14154,
+          "sha512": "1e57695f49f4fccc5e338cad4ce1bd8744a391de9257fc6c6049fb105fc23791b7f696fabf177260d04ef25e2e3ccef0291a08c25f13b3ab6653f74194cd2488",
+          "sha256": "cabeb56f08c336706d51f960d4935b5fcbe9a7cacba9e85b8dfdc2f95bc755ce",
+          "sha1": "a34b4bf4bf7742e99c5a61bc35a3c6edf4fbaffd",
+          "md5": "e35d9c9c9b10b42543249aa85c1c533c"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-devtools-api-1.2.0-javadoc.jar",
+          "url": "hot-reload-devtools-api-1.2.0-javadoc.jar",
+          "size": 261,
+          "sha512": "8cc4a17ef8d3abb3be6442337d3dda8ad781140f59a2e5add8542345e2e1f3f84559134b1ba8e5cf7bb1f9b909a0a603c4d47bc9cacfd995c7002c4b09ab89eb",
+          "sha256": "f555600b74cfac67a3449ee270c77d93701cdd8fb59eca422dd00f44d7e25026",
+          "sha1": "a3dd4a292f5c2c89f5e1e814b21e08cc8dcda9d5",
+          "md5": "7b490e6545c610f5c5db541e741dde26"
+        }
+      ]
+    }
+  ]
+}

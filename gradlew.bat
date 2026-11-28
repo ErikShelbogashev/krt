@@ -97,8 +97,11 @@ if exist "%JAVA_EXE%" goto execute
 goto exitWithErrorLevel
 
 :execute
-if not exist "%APP_HOME%\gradle\wrapper\distribution\gradle-9.9.2-bin.zip" (
-    "%JAVA_EXE%" "%APP_HOME%\gradle\wrapper\AssembleDistribution.java" "%APP_HOME%\gradle\wrapper"
+set "WRAPPER_DIR=%APP_HOME%\gradle\wrapper"
+set "DISTRIBUTION_URL="
+for /f "usebackq tokens=1,* delims==" %%A in ("%WRAPPER_DIR%\gradle-wrapper.properties") do if "%%A"=="distributionUrl" set "DISTRIBUTION_URL=%%B"
+if "%DISTRIBUTION_URL:~0,13%"=="distribution/" if not exist "%WRAPPER_DIR%\%DISTRIBUTION_URL%" (
+    "%JAVA_EXE%" "%WRAPPER_DIR%\AssembleDistribution.java" "%WRAPPER_DIR%"
     if errorlevel 1 goto exitWithErrorLevel
 )
 @rem Setup the command line

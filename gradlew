@@ -245,7 +245,13 @@ eval "set -- $(
         tr '\n' ' '
     )" '"$@"'
 
-if [ ! -f "$APP_HOME/gradle/wrapper/distribution/gradle-9.9.2-bin.zip" ]; then
-    "$JAVACMD" "$APP_HOME/gradle/wrapper/AssembleDistribution.java" "$APP_HOME/gradle/wrapper" || exit 1
-fi
+wrapper_dir=$APP_HOME/gradle/wrapper
+distribution_url=$(sed -n 's/^distributionUrl=//p' "$wrapper_dir/gradle-wrapper.properties" | tr -d '\r')
+case "$distribution_url" in
+    distribution/*.zip)
+        if [ ! -f "$wrapper_dir/$distribution_url" ]; then
+            "$JAVACMD" "$wrapper_dir/AssembleDistribution.java" "$wrapper_dir" || exit 1
+        fi
+        ;;
+esac
 exec "$JAVACMD" "$@"

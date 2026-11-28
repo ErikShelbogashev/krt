@@ -22,3 +22,16 @@ jobs:
           name: golden-mismatches
           path: build/reports/golden/**/*.png
           if-no-files-found: ignore
+
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - name: Resolve build, runtime and development tools from a cold checkout
+        env:
+          GRADLE_USER_HOME: ${{ runner.temp }}/krt-offline-gradle
+        run: ./gradlew --offline --no-daemon classes testClasses jmhJar compileGpuSmokeKotlin hotRunArgfile createDistributable

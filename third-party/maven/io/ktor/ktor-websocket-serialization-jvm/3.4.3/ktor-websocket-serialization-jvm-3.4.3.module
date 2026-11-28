@@ -1,0 +1,144 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "url": "../../ktor-websocket-serialization/3.4.3/ktor-websocket-serialization-3.4.3.module",
+    "group": "io.ktor",
+    "module": "ktor-websocket-serialization",
+    "version": "3.4.3",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.4.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "jvmApiElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-serialization",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-websocket-serialization-jvm-3.4.3.jar",
+          "url": "ktor-websocket-serialization-jvm-3.4.3.jar",
+          "size": 7238,
+          "sha512": "7c9867ce64420aa0b045df57e9fe718850c65ef2cea484ac1591d9cfbf1f4d69b29ef1478d11257be4667402aceb4a9de4306208ffef471064970223a5dfee68",
+          "sha256": "d999a7b90b3d9ad2ef0d117c4ace62b10bd7ac1345cd1c6a7680a43fffbe0ed0",
+          "sha1": "428641dfad289035953735480a20605a0a3d388e",
+          "md5": "d9283f61b56032df66348eefae12380c"
+        }
+      ]
+    },
+    {
+      "name": "jvmRuntimeElements-published",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.slf4j",
+          "module": "slf4j-api",
+          "version": {
+            "requires": "2.0.17"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.10.2"
+          }
+        },
+        {
+          "group": "io.ktor",
+          "module": "ktor-serialization",
+          "version": {
+            "requires": "3.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "ktor-websocket-serialization-jvm-3.4.3.jar",
+          "url": "ktor-websocket-serialization-jvm-3.4.3.jar",
+          "size": 7238,
+          "sha512": "7c9867ce64420aa0b045df57e9fe718850c65ef2cea484ac1591d9cfbf1f4d69b29ef1478d11257be4667402aceb4a9de4306208ffef471064970223a5dfee68",
+          "sha256": "d999a7b90b3d9ad2ef0d117c4ace62b10bd7ac1345cd1c6a7680a43fffbe0ed0",
+          "sha1": "428641dfad289035953735480a20605a0a3d388e",
+          "md5": "d9283f61b56032df66348eefae12380c"
+        }
+      ]
+    },
+    {
+      "name": "jvmSourcesElements-published",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "ktor-websocket-serialization-jvm-3.4.3-sources.jar",
+          "url": "ktor-websocket-serialization-jvm-3.4.3-sources.jar",
+          "size": 2326,
+          "sha512": "e7fe8c5d0f1bab74755507fcfc8214bec60935736c0dc1ad54f1076115ca58f63d40702f38503b3b2a3b9d8d02ba55b91d62f5d4e326b9bcb5c454859258e3f8",
+          "sha256": "e186e6ac4d88ce296ef51d91684444ca0002b4b7761a8dcd2fe55ef1dc8a7b75",
+          "sha1": "4a023f031c84e174cfcb56892d01b37de32011e9",
+          "md5": "0dca7e417fd69fd93f87b73d37846741"
+        }
+      ]
+    }
+  ]
+}

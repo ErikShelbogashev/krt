@@ -1,0 +1,157 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.jetbrains.compose.hot-reload",
+    "module": "hot-reload-mcp",
+    "version": "1.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.4"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-annotations",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-mcp-1.2.0.jar",
+          "url": "hot-reload-mcp-1.2.0.jar",
+          "size": 148642,
+          "sha512": "bc112ed93c429175b143fcc3b80eeb8cd42524aa19fa3a797faba459bc078e91eee843eb702484a1ea2e16137a7446b924d5f71dc641af571edf87924387b963",
+          "sha256": "327e5f6750ee618d133d5d948f8224fe0f27765be69da132d44840bc095cb901",
+          "sha1": "de3db147a7dbcb07396f76f6dc837ab310a6ac72",
+          "md5": "6f33a250ff215c2089897f596b2d97b2"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.1.21"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-core",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-orchestration",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-devtools-api",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "io.modelcontextprotocol",
+          "module": "kotlin-sdk-server",
+          "version": {
+            "requires": "0.13.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.compose.hot-reload",
+          "module": "hot-reload-annotations",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "hot-reload-mcp-1.2.0.jar",
+          "url": "hot-reload-mcp-1.2.0.jar",
+          "size": 148642,
+          "sha512": "bc112ed93c429175b143fcc3b80eeb8cd42524aa19fa3a797faba459bc078e91eee843eb702484a1ea2e16137a7446b924d5f71dc641af571edf87924387b963",
+          "sha256": "327e5f6750ee618d133d5d948f8224fe0f27765be69da132d44840bc095cb901",
+          "sha1": "de3db147a7dbcb07396f76f6dc837ab310a6ac72",
+          "md5": "6f33a250ff215c2089897f596b2d97b2"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-mcp-1.2.0-sources.jar",
+          "url": "hot-reload-mcp-1.2.0-sources.jar",
+          "size": 14520,
+          "sha512": "67c36971aafc6194c222c2d454409d20e60991dbfda4eeeddb4fc57203951ce668bd3bae2376e4af96f5ebb1330ca7ea3870bdd0450e8c431c2d1863facee550",
+          "sha256": "5405ef70ee0b3fc2973c2186de211e0b4e28672916461204b7caa86991d698a4",
+          "sha1": "1a7980190e5b30401058944869b7b97585eab0aa",
+          "md5": "560d53584939f24810c7abd5a69d8105"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "hot-reload-mcp-1.2.0-javadoc.jar",
+          "url": "hot-reload-mcp-1.2.0-javadoc.jar",
+          "size": 261,
+          "sha512": "5a7c6432e3d991a7d9456643801fea88e112489e9e68049aac9f096c472a3ce9eb5443fd215080e997af05a70170842312e2d515bd74399e1db0e60892ff1df1",
+          "sha256": "5ea782f1ac953dcb36b3f67d60c10b674eff8843ac3de469fd8c3105ce45e38b",
+          "sha1": "b20ac0a7ff0ef72c6edffb80e2b22e154d5f6b2a",
+          "md5": "bcebc6fd0e208f1550155ceea1d39b70"
+        }
+      ]
+    }
+  ]
+}
