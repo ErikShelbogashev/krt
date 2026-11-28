@@ -45,14 +45,15 @@ class OperationsTest {
     }
 
     @Test
-    fun `GPU mode hands the frame over as shaders, step by step`() {
+    fun `GPU mode hands the frame over step by step`() {
         val done = CountDownLatch(1)
-        app.frameBuffer.onGpuUpdate { if (app.frameBuffer.progress.isDone) done.countDown() }
         app.changeRenderSettings { repaintIntervalMs = 0 }
+        // As shaders for the window to draw, or, with a GPU context of the renderer's own, as the frame's pixels.
+        app.frameBuffer.onGpuUpdate { if (app.frameBuffer.progress.isDone) done.countDown() }
+        app.frameBuffer.onUpdate { if (app.frameBuffer.progress.isDone) done.countDown() }
         app.setRenderMode(RenderMode.GPU)
         assertTrue(done.await(30, TimeUnit.SECONDS), "GPU frame did not finish")
         assertEquals(app.camera.samplesPerPixel, app.frameBuffer.progress.completedPasses)
-        assertEquals(1, published)
     }
 
     @Test

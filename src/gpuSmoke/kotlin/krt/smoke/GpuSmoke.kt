@@ -120,7 +120,10 @@ private object Smoke {
                 while (row < height && failure == null) {
                     val rows = GpuSampling.nextRows(row, height, GpuSampling.bandsOf(budget, height))
                     seed += 0.37f
-                    frame = tracer.shader(GpuFrame(scene, view, width, height, DEPTH, samples, seed, GpuBand(taken, rows)), frame)
+                    // As OffscreenGpu does: each step reads the image the step before drew, not its picture.
+                    val earlier = surface.makeImageSnapshot().makeShader()
+                    val step = GpuFrame(scene, view, width, height, DEPTH, samples, seed, GpuBand(taken, rows))
+                    frame = tracer.shader(step, earlier)
                     val ms = draw(frame)
                     budget = budget.after(ms)
                     row = rows.last + 1

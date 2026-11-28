@@ -31,6 +31,7 @@ class RenderController(
     private val random: Random = Random.Default,
     private val clock: () -> Long = System::currentTimeMillis,
     private val gpuTracer: GpuTracer = GpuTracer(),
+    private val offscreen: OffscreenGpu? = null,
 ) : AutoCloseable {
     private var renderJob: Job? = null
     private var stillJob: Job? = null
@@ -99,7 +100,9 @@ class RenderController(
         renderJob?.cancel()
         when (mode) {
             RenderMode.WIREFRAME -> renderWireframe(frame, rayTracer.world, camera, onUpdate)
-            RenderMode.GPU -> renderGpuImage(rayTracer, camera, onGpuFrame)
+            RenderMode.GPU -> offscreen
+                ?.let { renderJob = it.render(frame, rayTracer, camera, random, clock, onUpdate) }
+                ?: renderGpuImage(rayTracer, camera, onGpuFrame)
             RenderMode.CPU -> renderJob = traceFrame(frame, rayTracer, camera, onUpdate)
         }
     }
@@ -110,7 +113,7 @@ class RenderController(
      * own, while the GPU frame stays on screen.
      */
     fun frameToSave(shown: Frame, rayTracer: RayTracer, camera: Camera, onReady: (Frame) -> Unit) {
-        if (mode != RenderMode.GPU) return onReady(shown)
+        if (mode != RenderMode.GPU || offscreen != null) return onReady(shown)
         val frame = Frame(camera.imageWidth, camera.imageHeight)
         stillJob?.cancel()
         stillJob = traceFrame(frame, rayTracer, camera) { progress -> if (progress.isDone) onReady(frame) }
@@ -359,7 +362,9 @@ class RenderController(
         /** Repaint intervals a GPU step waits at most for the window to draw the one before. */
         private const val STEP_WAIT_REPAINTS = 20
 
-        fun default(): RenderController = RenderController(50L, 50)
+        /** The window's renderer; GPU frames on [offscreen] when there is a GPU context of its own. */
+        fun default(offscreen: OffscreenGpu? = null): RenderController =
+            RenderController(50L, 50, offscreen = offscreen)
     }
 }
 

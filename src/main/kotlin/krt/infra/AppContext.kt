@@ -22,6 +22,7 @@ import krt.app.scene.MoveObjectOp
 import krt.app.scene.OpenSceneOp
 import krt.domain.camera.Camera
 import krt.domain.render.FrameBuffer
+import krt.domain.render.OffscreenGpu
 import krt.domain.render.RayTracer
 import krt.domain.render.RenderController
 import krt.domain.scene.World
@@ -29,6 +30,7 @@ import krt.domain.scene.model.DemoScene
 import krt.i9ns.png.PngFiles
 import krt.i9ns.scenefile.SceneLibrary
 import krt.i9ns.textfile.TextFiles
+import krt.platform.skia.MetalContext
 
 /**
  * Composition root (ADR 0006): creates resources and operations once and wires them together.
@@ -43,6 +45,7 @@ class AppContext(
     val scenes: SceneLibrary = SceneLibrary(),
     pngFiles: PngFiles = PngFiles(),
     textFiles: TextFiles = TextFiles(),
+    private val offscreen: OffscreenGpu? = null,
 ) : AutoCloseable {
     val redraw = RedrawOp(renderController, rayTracer, camera, frameBuffer)
     val rotateCamera = RotateCameraOp(camera, renderController, rayTracer, frameBuffer)
@@ -67,6 +70,7 @@ class AppContext(
 
     override fun close() {
         renderController.close()
+        offscreen?.close()
     }
 
     companion object {
@@ -78,12 +82,14 @@ class AppContext(
             val description = scenes.load(scene)
             val world = World(description.objects, description.look, scene)
             val camera = Camera.default().apply { resetView(description.look) }
+            val offscreen = MetalContext.create()?.let(::OffscreenGpu)
             return AppContext(
+                offscreen = offscreen,
                 scenes = scenes,
                 world = world,
                 rayTracer = RayTracer(world, DEFAULT_MAX_DEPTH),
                 camera = camera,
-                renderController = RenderController.default(),
+                renderController = RenderController.default(offscreen),
                 frameBuffer = FrameBuffer(camera.imageWidth, camera.imageHeight),
             )
         }
