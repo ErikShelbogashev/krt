@@ -15,12 +15,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 import krt.app.shell.KrtIcons
 import krt.app.shell.SectionHeader
 import krt.app.shell.SliderRow
@@ -55,6 +57,8 @@ fun RenderTab(
     }
 }
 
+private val sampleCounts = (1..50).toList() + listOf(64, 128, 256)
+
 @Composable
 private fun QualitySection(
     camera: Camera,
@@ -62,18 +66,7 @@ private fun QualitySection(
     onCameraChange: (Camera.() -> Unit) -> Unit,
     onRayTracerChange: (RayTracer.() -> Unit) -> Unit,
 ) {
-    var samples by remember { mutableFloatStateOf(camera.samplesPerPixel.toFloat()) }
-    SliderRow(
-        label = "Samples per pixel",
-        valueText = "${samples.toInt()}",
-        value = samples,
-        onValueChange = {
-            samples = it
-            onCameraChange { samplesPerPixel = it.toInt() }
-        },
-        range = 1f..50f,
-        steps = 48,
-    )
+    SampleCountSlider(camera.samplesPerPixel, onSelect = { count -> onCameraChange { samplesPerPixel = count } })
     var maxDepth by remember { mutableFloatStateOf(rayTracer.maxDepth.toFloat()) }
     SliderRow(
         label = "Max bounces",
@@ -85,6 +78,23 @@ private fun QualitySection(
         },
         range = 1f..20f,
         steps = 18,
+    )
+}
+
+/** Keeps the low-count steps precise and gives still frames longer exposures at the end of the slider. */
+@Composable
+private fun SampleCountSlider(value: Int, onSelect: (Int) -> Unit) {
+    var selected by remember(value) { mutableIntStateOf(value) }
+    SliderRow(
+        label = "Samples per pixel",
+        valueText = selected.toString(),
+        value = sampleCounts.indexOf(selected).coerceAtLeast(0).toFloat(),
+        onValueChange = { position ->
+            selected = sampleCounts[position.roundToInt()]
+            onSelect(selected)
+        },
+        range = 0f..sampleCounts.lastIndex.toFloat(),
+        steps = sampleCounts.size - 2,
     )
 }
 
