@@ -283,11 +283,11 @@ class GpuTracerTest {
         val color = Color(0.0, 0.0, 1.0)
         val scene = World(look = SceneLook.CLASSIC.copy(sky = Sky(color, color))).gpuScene
         GpuTracer().use { tracer ->
-            listOf(0f to 0x00ff00, 1f to 0xff0000).forEach { (marker, expected) ->
+            listOf(0x000001, 0x71adfe, 0xffffff).forEach { marker ->
                 val step = GpuFrame(scene, camera().view(), SIZE - 1, SIZE, 1, 1, 0f, GpuBand(marker = marker))
                 val row = tracer.hdrShader(step).use(::pixels)
                 assertTrue(row[SIZE - 2] and 0xffffff == 0x0000ff)
-                assertTrue(row[SIZE - 1] and 0xffffff == expected)
+                assertTrue(row[SIZE - 1] and 0xffffff == marker)
             }
         }
     }

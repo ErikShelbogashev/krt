@@ -8,7 +8,7 @@ float finiteRadiance(float channel) {
 }
 
 half4 main(float2 position) {
-    if (position.x >= frameSize.x) { return half4(stepMarker, 1.0 - stepMarker, 0.0, 1.0); }
+    if (position.x >= frameSize.x) { return half4(half3(stepMarker), 1.0); }
     if (position.y < bandStart || position.y >= bandEnd) { return previous.eval(position); }
     float i = floor(position.x);
     float j = frameSize.y - 1.0 - floor(position.y);

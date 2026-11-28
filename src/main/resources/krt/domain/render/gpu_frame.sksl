@@ -7,7 +7,7 @@ uniform shader scene;               // RGBA_8888, one 24-bit number per texel, s
 uniform shader previous;            // the frame of the earlier steps, with previousSamples samples per pixel
 uniform float previousSamples;
 uniform float packedWindow;         // the window caches the shared exponent in an eight-bit picture's alpha
-uniform float stepMarker;           // readback stamp in the offscreen target's extra column
+uniform float3 stepMarker;           // readback stamp in the offscreen target's extra column
 uniform float bandStart;            // the rows this step samples, from the top; the others keep the earlier frame
 uniform float bandEnd;
 uniform float nodeCount;
