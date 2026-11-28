@@ -5,6 +5,7 @@ import krt.domain.camera.CameraView
 import krt.domain.trace.GpuScene
 import krt.domain.trace.GpuShaderSource
 import krt.platform.math.Point3
+import krt.platform.math.PixelDifferentials
 import krt.platform.skia.DrawnOnceShader
 import org.jetbrains.skia.Color4f
 import org.jetbrains.skia.ColorAlphaType
@@ -42,6 +43,8 @@ data class GpuBand(
     val rows: IntRange = 0 until Int.MAX_VALUE,
     val quick: Boolean = false,
     val marker: Int = 0,
+    /** Full frame's sampling density, independent of the scheduler's steps. Standalone draws use their sample count. */
+    val targetSamples: Int? = null,
 ) {
     /** The lights a step of [scene] samples: none in a quick look. */
     fun sampledLights(scene: GpuScene): Int = if (quick) 0 else scene.sampledLights
@@ -105,7 +108,9 @@ class GpuTracer : AutoCloseable {
     private fun step(frame: GpuFrame, previous: Shader?, packed: Boolean): Shader = builder(effect).use { builder ->
         builder.uniform("packedWindow", if (packed) 1f else 0f)
         builder.child("previous", previous ?: noFrame)
-        builder.uniform("filterWood", if (frame.view.sampling.filterWood) 1f else 0f)
+        val woodWidth = if (frame.view.sampling.filterWood) PixelDifferentials.sampleWidth(
+            frame.band.targetSamples ?: frame.samples) else 0.0
+        builder.uniform("woodSampleWidth", woodWidth.toFloat())
         builder.uniform("previousSamples", frame.band.previousSamples.toFloat())
         val stamp = Color4f(frame.band.marker)
         builder.uniform("stepMarker", stamp.r, stamp.g, stamp.b)

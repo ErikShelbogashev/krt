@@ -5,6 +5,7 @@ import kotlin.random.Random
 import krt.domain.camera.Camera
 import krt.domain.scene.model.Traceable
 import krt.platform.math.Color
+import krt.platform.math.PixelDifferentials
 import krt.platform.math.Point3
 
 /**
@@ -43,30 +44,33 @@ object FrameSampling {
         Random(frameSeed + pass.toLong() * width * height + pixel.j.toLong() * width + pixel.i)
 
     /** One jittered sample of [pixel]. */
-    fun sampleOnce(pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random, blockSize: Int = 1): Color {
+    fun sampleOnce(
+        pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random,
+        footprint: PixelDifferentials? = camera.footprint(1.0),
+    ): Color {
         val u = (pixel.i.toDouble() + random.nextDouble()) / camera.imageWidth
         val v = (pixel.j.toDouble() + random.nextDouble()) / camera.imageHeight
-        return rayTracer.color(camera.ray(u, v, random, blockSize), random)
+        return rayTracer.color(camera.ray(u, v, random, footprint), random)
     }
 
     /** The same number of path and lens draws as independent jitter, with a stratified film location. */
     fun stratifiedSample(
-        pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random, pass: Int, shift: Int,
+        pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random, cell: Int, footprint: PixelDifferentials?,
     ): Color {
-        val cell = PixelStrata.cell(pass, shift)
         val u = (pixel.i + PixelStrata.offset(cell, random.nextDouble())) / camera.imageWidth
         val v = (pixel.j + PixelStrata.offset(cell ushr 1, random.nextDouble())) / camera.imageHeight
-        return rayTracer.color(camera.ray(u, v, random), random)
+        return rayTracer.color(camera.ray(u, v, random, footprint), random)
     }
 
     /** Sum of [Camera.samplesPerPixel] samples; divide by the sample count when converting. */
     fun samplePixel(pixel: Pixel, camera: Camera, rayTracer: RayTracer, random: Random): Color {
+        val footprint = camera.footprint(PixelDifferentials.sampleWidth(camera.samplesPerPixel))
         if (!camera.stratifiedPixels) return (0 until camera.samplesPerPixel).fold(Point3.ZERO) { acc, _ ->
-            acc + sampleOnce(pixel, camera, rayTracer, random)
+            acc + sampleOnce(pixel, camera, rayTracer, random, footprint)
         }
         val shift = random.nextInt(PixelStrata.CELLS)
         return (0 until camera.samplesPerPixel).fold(Point3.ZERO) { acc, pass ->
-            acc + stratifiedSample(pixel, camera, rayTracer, random, pass, shift)
+            acc + stratifiedSample(pixel, camera, rayTracer, random, PixelStrata.cell(pass, shift), footprint)
         }
     }
 

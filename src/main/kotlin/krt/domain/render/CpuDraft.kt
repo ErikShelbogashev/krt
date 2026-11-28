@@ -65,7 +65,8 @@ internal object CpuDraft {
         val y = minOf(y0 + blocks.scale / 2, blocks.height - 1)
         val pixel = FrameSampling.Pixel(x, blocks.height - 1 - y)
         val random = FrameSampling.passRandom(look.frameSeed, pixel, blocks.width, blocks.height, PASS)
-        val color = FrameSampling.sampleOnce(pixel, look.camera, look.tracer, random, blocks.scale).toAWTColor(1)
+        val footprint = look.camera.footprint(blocks.scale.toDouble())
+        val color = FrameSampling.sampleOnce(pixel, look.camera, look.tracer, random, footprint).toAWTColor(1)
         for (yy in y0 until minOf(y0 + blocks.scale, blocks.height)) {
             val rowStart = yy * blocks.width
             look.frame.pixels.fill(color, rowStart + x0, rowStart + minOf(x0 + blocks.scale, blocks.width))

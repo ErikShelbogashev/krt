@@ -62,7 +62,7 @@ float3 trace(float3 origin, float3 direction) {
         if (kind == PATTERNED) {
             // A pattern under a clear coat, as Patterned: the colour, and the bump of the normal.
             float2 filter = float2(0.0, 1.0);
-            if (filterWood > 0.5 && bounces == 0.0 && number(base + 10.0) == WOOD) {
+            if (woodSampleWidth > 0.0 && bounces == 0.0 && number(base + 10.0) == WOOD) {
                 filter = projectedWood(base, p, direction, outward, travelled + hitT);
             }
             float t = materialPattern(base, p, filter);
