@@ -89,6 +89,16 @@ class GeometryTest {
     }
 
     @Test
+    fun `a triangle with a subnormal determinant keeps finite hit parameters`() {
+        val triangle = Triangle(Point3.ZERO, Point3(1, 0, 0), Point3(0, 1, 0), Lambert(Color.ONE))
+        val direction = Point3(0.0, 0.0, -1e-310)
+        val inside = Ray(Point3(0.25, 0.25, 1e-310), direction)
+        val corner = Ray(Point3(0.0, 0.0, 1.0), direction)
+        assertEquals(1.0, assertNotNull(triangle.hit(inside, 0.0, 2.0)).t)
+        assertNull(triangle.hit(corner, 0.0, Double.POSITIVE_INFINITY))
+    }
+
+    @Test
     fun `world hit picks the closest object`() {
         val world = World()
         world.add(Sphere(Point3(0.0, 0.0, -10.0), 1.0, Lambert(Color(0.1, 0.1, 0.1))))
@@ -141,7 +151,7 @@ class GeometryTest {
     @Test
     fun `color to awt applies gamma and clamps`() {
         assertEquals(java.awt.Color(0, 0, 0).rgb, Color(0.0, 0.0, 0.0).toAWTColor(1))
-        assertEquals(java.awt.Color(253, 253, 253).rgb, Color(5.0, 5.0, 5.0).toAWTColor(1))
+        assertEquals(java.awt.Color(255, 255, 255).rgb, Color(5.0, 5.0, 5.0).toAWTColor(1))
         assertEquals(java.awt.Color(128, 128, 128).rgb, Color(1.0, 1.0, 1.0).toAWTColor(4))
     }
 }

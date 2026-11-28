@@ -4,3 +4,12 @@ float3 centerOf(float base) {
     if (motionBlur > 0.5) { center += vector(base + 5.0) * rayTime; }
     return center;
 }
+
+// SphereRoots.discriminant: a distant small sphere can disappear in halfB² - a*c in float32.
+float sphereDiscriminant(float3 oc, float3 direction, float a, float halfB, float radius) {
+    float square = halfB * halfB;
+    float difference = square - a * (dot(oc, oc) - radius * radius);
+    if (abs(difference) > square * 0.001) { return difference; }
+    float3 offset = cross(oc, direction);
+    return a * radius * radius - dot(offset, offset);
+}

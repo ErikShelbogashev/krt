@@ -89,9 +89,11 @@ class FrameSamplingTest {
 
     @Test
     fun `a pass takes no more bands than its frame has rows`() {
-        assertEquals(16, GpuSampling.bandsOf(GpuSampling.StepBudget.CAUTIOUS, 16))
-        assertEquals(GpuSampling.StepBudget.CAUTIOUS.bands, GpuSampling.bandsOf(GpuSampling.StepBudget.CAUTIOUS, 600))
-        assertEquals(1, GpuSampling.bandsOf(GpuSampling.StepBudget(), 0))
+        val cautious = GpuSampling.StepBudget.CAUTIOUS
+        assertEquals(16, GpuSampling.bandsOf(cautious, 16, 16))
+        assertEquals(cautious.bands, GpuSampling.bandsOf(cautious, 800, 600))
+        assertEquals(1, GpuSampling.bandsOf(GpuSampling.StepBudget(), 0, 0))
+        assertEquals(64, GpuSampling.bandsOf(cautious, 2048, 2048))
     }
 
     @Test

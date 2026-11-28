@@ -25,9 +25,9 @@ AttributeBegin
 AttributeEnd
 AttributeBegin
   #krt Name "Lamp"
-  AreaLightSource "diffuse" "rgb L" [0.9156217783574503 1.0143126466056676 1.1066815106486507] "float scale" 400.0
+  AreaLightSource "diffuse" "rgb L" [0.9156217783574503 1.0143126466056676 1.1066815106486507] "float scale" 5.0
   Material "diffuse" "rgb reflectance" [0.0 0.0 0.0]
-  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [-2.3 0.5 0.05 -2.3 0.5 -0.05 -2.3 1.5 -0.05 -2.3 0.5 0.05 -2.3 1.5 -0.05 -2.3 1.5 0.05]
+  Shape "trianglemesh" "integer indices" [0 1 2 3 4 5] "point3 P" [-2.3 0.5 0.18 -2.3 0.5 -0.18 -2.3 1.5 -0.18 -2.3 0.5 0.18 -2.3 1.5 -0.18 -2.3 1.5 0.18]
 AttributeEnd
 AttributeBegin
   #krt Name "Prism"

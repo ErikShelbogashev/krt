@@ -24,7 +24,7 @@ object Emitters {
 
     /** The lights of [objects], in the order they first appear. */
     fun of(objects: List<Traceable>): List<Emitter> =
-        objects.filter { materialOf(it)?.emits == true }
+        objects.filter { materialOf(it)?.emits == true && areaOf(it) > 0.0 }
             .groupBy<Traceable, Any> { if (it is Triangle) it.id else it }
             .values.map { members ->
                 val areas = DoubleArray(members.size) { areaOf(members[it]) }

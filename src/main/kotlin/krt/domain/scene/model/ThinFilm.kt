@@ -42,7 +42,7 @@ class Iridescent(val base: Color, val thickness: Double, val filmIor: Double, va
         val reflectance = ThinFilm.reflectance(ray, hit, thickness, filmIor, SUBSTRATE_IOR)
         val chance = ThinFilm.chance(reflectance)
         if (random.nextDouble() >= chance) {
-            val direction = (hit.normal + Point3.randomInUnitSphere(random)).takeIf { !it.isNearZero() } ?: hit.normal
+            val direction = hit.normal.cosineHemisphere(random)
             return Scattered(ray.next(hit.p, direction), base * (Point3.ONE - reflectance) / (1 - chance), Lobe.DIFFUSE)
         }
         val reflected = ray.direction.unit().reflect(hit.normal) + Point3.randomInUnitSphere(random) * roughness

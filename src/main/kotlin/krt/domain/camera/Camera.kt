@@ -3,6 +3,7 @@ package krt.domain.camera
 import java.awt.Point
 import kotlin.math.asin
 import kotlin.math.atan2
+import kotlin.math.floor
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.tan
@@ -216,20 +217,25 @@ class Camera(
         val halfHeight = tan(theta / 2)
         val halfWidth = aspectRatio * halfHeight
 
-        val screenX = (x / (-z * halfWidth)) * (imageWidth / 2) + (imageWidth / 2)
-        val screenY = (y / (-z * halfHeight)) * (imageHeight / 2) + (imageHeight / 2)
+        val screenX = (1.0 + x / (-z * halfWidth)) * (imageWidth * 0.5)
+        val screenY = (1.0 - y / (-z * halfHeight)) * (imageHeight * 0.5)
 
-        return Point(screenX.toInt(), imageHeight - screenY.toInt())
+        return Point(screenPixel(screenX, imageWidth), screenPixel(screenY, imageHeight))
     }
 
+    // Trigonometric projection can land a few ulps below an exact pixel boundary, including the top edge.
+    private fun screenPixel(coordinate: Double, extent: Int): Int =
+        floor(coordinate + PROJECTION_ULPS * Math.ulp(extent.toDouble())).toInt()
+
     companion object {
+        private const val PROJECTION_ULPS = 4
         private const val DRAG_SENSITIVITY = 0.1
         private const val DEFAULT_FOV = 90.0
         private const val DEFAULT_APERTURE = 0.1
         private const val DEFAULT_FOCUS_DISTANCE = 10.0
 
         /** Image sizes, in pixels, that the settings accept and the renderer draws. */
-        val IMAGE_SIZE_RANGE = 32..1024
+        val IMAGE_SIZE_RANGE = 32..2048
 
         /** The image size typed as [text], or null when it is not a number within [IMAGE_SIZE_RANGE]. */
         fun parseImageSize(text: String): Int? = text.trim().toIntOrNull()?.takeIf { it in IMAGE_SIZE_RANGE }

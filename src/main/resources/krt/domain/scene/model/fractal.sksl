@@ -3,8 +3,9 @@ float mandelbulb(float3 p, float iterations, float power) {
     float3 z = p;
     float dr = 1.0;
     float r = length(z);
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < MANDELBULB_ITERATIONS; i++) {
         if (float(i) >= iterations || r > 2.0) { break; }
+        if (r == 0.0) { return 0.0; }
         float theta = acos(clamp(z.z / r, -1.0, 1.0)) * power;
         float phi = atan(z.y, z.x) * power;
         dr = power * pow(r, power - 1.0) * dr + 1.0;
@@ -12,7 +13,7 @@ float mandelbulb(float3 p, float iterations, float power) {
         z = zr * float3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)) + p;
         r = length(z);
     }
-    return 0.5 * log(r) * r / dr;
+    return r == 0.0 ? 0.0 : 0.5 * log(r) * r / dr;
 }
 
 float boxDistance(float3 p) {
@@ -23,7 +24,7 @@ float boxDistance(float3 p) {
 float menger(float3 p, float iterations) {
     float d = boxDistance(p);
     float s = 1.0;
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < MENGER_ITERATIONS; i++) {
         if (float(i) >= iterations) { break; }
         float3 a = mod(p * s, 2.0) - 1.0;
         s *= 3.0;
@@ -37,7 +38,7 @@ float menger(float3 p, float iterations) {
 float mandelbox(float3 p, float iterations, float scale) {
     float3 z = p;
     float dr = 1.0;
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < MANDELBOX_ITERATIONS; i++) {
         if (float(i) >= iterations) { break; }
         z = clamp(z, -1.0, 1.0) * 2.0 - z;
         float r2 = dot(z, z);
@@ -49,10 +50,11 @@ float mandelbox(float3 p, float iterations, float scale) {
 }
 
 float julia(float3 p, float iterations, float3 c) {
+    if (all(equal(c, float3(0.0)))) { return length(p) - 1.0; }
     float4 q = float4(p, 0.0);
     float md2 = 1.0;
     float mz2 = dot(p, p);
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < JULIA_ITERATIONS; i++) {
         if (float(i) >= iterations || mz2 > 4.0) { break; }
         md2 *= 4.0 * mz2;
         q = float4(q.x * q.x - q.y * q.y - q.z * q.z - q.w * q.w, 2.0 * q.x * q.yzw) + float4(c, 0.0);
@@ -84,7 +86,8 @@ float intersectFractal(float base, float3 origin, float3 direction, float tMax) 
     float radius = number(base + 4.0);
     float a = dot(direction, direction);
     float halfB = dot(oc, direction);
-    float discriminant = halfB * halfB - a * (dot(oc, oc) - radius * radius);
+    if (a == 0.0) { return -1.0; }
+    float discriminant = sphereDiscriminant(oc, direction, a, halfB, radius);
     if (discriminant < 0.0) { return -1.0; }
     float root = sqrt(discriminant);
     float speed = sqrt(a);

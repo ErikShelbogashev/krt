@@ -5,15 +5,25 @@ float intersectTriangle(float base, float3 origin, float3 direction, float tMax)
     float3 edge2 = vector(base + 7.0);
     float3 h = cross(direction, edge2);
     float a = dot(edge1, h);
-    if (abs(a) < 1.0e-10) { return -1.0; }
-    float f = 1.0 / a;
     float3 s = origin - v0;
+    if (abs(a) < 1.17549435e-38) {
+        // Metal can flush subnormal triple products to zero. A common exact power-of-two scale
+        // multiplies every triple product by the same factor and preserves u, v and t.
+        const float scale = 4294967296.0; // 2^32
+        edge1 *= scale;
+        edge2 *= scale;
+        s *= scale;
+        direction *= scale;
+        h = cross(direction, edge2);
+        a = dot(edge1, h);
+        if (a == 0.0) { return -1.0; }
+    }
+    float f = 1.0 / a;
     float u = f * dot(s, h);
-    if (u < 0.0 || u > 1.0) { return -1.0; }
+    if (!(u >= 0.0 && u <= 1.0)) { return -1.0; }
     float3 q = cross(s, edge1);
     float v = f * dot(direction, q);
-    if (v < 0.0 || u + v > 1.0) { return -1.0; }
+    if (!(v >= 0.0 && u + v <= 1.0)) { return -1.0; }
     float t = f * dot(edge2, q);
-    if (t < T_MIN || t > tMax) { return -1.0; }
-    return t;
+    return t >= T_MIN && t <= tMax ? t : -1.0;
 }

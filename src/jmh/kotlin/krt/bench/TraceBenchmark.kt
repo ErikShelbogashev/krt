@@ -81,7 +81,7 @@ open class TraceBenchmark {
     @Benchmark
     fun frameRenderController() {
         val done = CountDownLatch(1)
-        renderController.renderImage(frame, rayTracer, camera) { done.countDown() }
+        renderController.renderImage(frame, rayTracer, camera) { progress -> if (progress.isDone) done.countDown() }
         check(done.await(FRAME_TIMEOUT_S, TimeUnit.SECONDS)) { "frame did not finish" }
     }
 

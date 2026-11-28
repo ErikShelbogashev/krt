@@ -13,10 +13,7 @@ enum class Lobe(val samplesLights: Boolean) {
     /** A mirror-like or refracted ray: direct light reaches it only along the ray itself. */
     SPECULAR(samplesLights = false),
 
-    /**
-     * Diffuse: the ray goes from the normal to a random point in the unit ball around its tip, as [Lambert] does;
-     * the surface is lit by [Scattered.attenuation] times the density of such directions, 2 cos³ / π.
-     */
+    /** Lambertian reflection samples the hemisphere with density cos θ / π. */
     DIFFUSE(samplesLights = true),
 
     /** Isotropic scattering in a medium: lit by [Scattered.attenuation] / 4π in every direction. */

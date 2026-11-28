@@ -27,7 +27,7 @@ data class Point3(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0)
         fun randomInUnitDisk(random: Random): Point3 {
             while (true) {
                 val p = Point3(random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0), 0.0)
-                if (p.length() < 1) return p
+                if (p.l2norm() < 1) return p
             }
         }
     }
@@ -49,11 +49,31 @@ data class Point3(val x: Double = 0.0, val y: Double = 0.0, val z: Double = 0.0)
     operator fun div(other: Point3): Point3 = Point3(x / other.x, y / other.y, z / other.z)
     operator fun div(scalar: Double): Point3 = Point3(x / scalar, y / scalar, z / scalar)
     private fun l2norm(): Double = x * x + y * y + z * z
-    fun length(): Double = sqrt(l2norm())
-    fun unit(): Point3 = this / length()
+    fun length(): Double {
+        val squared = l2norm()
+        if (squared in java.lang.Double.MIN_NORMAL..Double.MAX_VALUE) return sqrt(squared)
+        return Math.hypot(Math.hypot(x, y), z)
+    }
+
+    fun unit(): Point3 {
+        val squared = l2norm()
+        if (squared in java.lang.Double.MIN_NORMAL..Double.MAX_VALUE) return this / sqrt(squared)
+        // Scaling also preserves direction when the length itself would overflow or round to a subnormal.
+        val scaled = this / maxOf(x.absoluteValue, y.absoluteValue, z.absoluteValue)
+        return scaled / sqrt(scaled.l2norm())
+    }
     fun dot(other: Point3): Double = x * other.x + y * other.y + z * other.z
     fun cross(other: Point3): Point3 =
         Point3(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x)
+
+    /** Cosine-weighted outgoing direction about this unit normal. The disk lift is uniform on the sphere. */
+    fun cosineHemisphere(random: Random): Point3 {
+        val disk = randomInUnitDisk(random)
+        val radius2 = disk.l2norm()
+        val lift = 2 * sqrt(1 - radius2)
+        val direction = this + Point3(disk.x * lift, disk.y * lift, 1 - 2 * radius2)
+        return if (direction.isNearZero()) this else direction
+    }
 
     fun reflect(normal: Point3): Point3 = this - normal * 2.0 * this.dot(normal)
 

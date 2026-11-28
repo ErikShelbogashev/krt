@@ -5,6 +5,7 @@ import kotlin.math.roundToLong
 import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertTrue
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -15,6 +16,7 @@ import krt.domain.scene.model.Emissive
 import krt.domain.scene.model.Fog
 import krt.domain.scene.model.Lambert
 import krt.domain.scene.model.Metal
+import krt.domain.scene.model.Medium
 import krt.domain.scene.model.Plastic
 import krt.domain.scene.model.SceneLook
 import krt.domain.scene.model.Sphere
@@ -73,6 +75,18 @@ class GpuScenePackingTest {
             listOf(5.0, 0.9, 0.9, 0.9, 0.1, 1.5, 0.1, 0.1, 0.1, 0.5),
             GpuMaterials.values(checker).take(10),
         )
+    }
+
+    @Test
+    fun `finite phase peaks remain inside the physical interval after packing`() {
+        val albedo = Color.ONE
+        for (g in listOf(-0.99999999, 0.00006, 0.99999999)) {
+            val fog = Fog(Point3.ZERO, 1.0, Medium(Color.ONE, albedo, g))
+            val packed = Packed(GpuScenePacking.pack(listOf(fog)))
+            val phase = packed.number(packed.scene.sections.mediaStart + 6) / GpuScenePacking.RANGE
+            assertTrue(phase > -1 && phase < 1)
+            assertEquals(g, phase, 1.2e-7)
+        }
     }
 
     @Test

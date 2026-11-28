@@ -9,8 +9,8 @@ float intersect(float slot, float3 origin, float3 direction, float tMax) {
     float3 oc = origin - center;
     float a = dot(direction, direction);
     float halfB = dot(oc, direction);
-    float c = dot(oc, oc) - radius * radius;
-    float discriminant = halfB * halfB - a * c;
+    if (a == 0.0) { return -1.0; }
+    float discriminant = sphereDiscriminant(oc, direction, a, halfB, radius);
     if (discriminant < 0.0) { return -1.0; }
     float sqrtD = sqrt(discriminant);
     float root = (-halfB - sqrtD) / a;
@@ -38,15 +38,13 @@ float3 shadingNormal(float slot, float3 p, float3 outward) {
     float3 edge1 = vector(base + 4.0);
     float3 edge2 = vector(base + 7.0);
     float3 w = p - vector(base + 1.0);
-    float d00 = dot(edge1, edge1);
-    float d01 = dot(edge1, edge2);
-    float d11 = dot(edge2, edge2);
-    float d20 = dot(w, edge1);
-    float d21 = dot(w, edge2);
-    float denominator = d00 * d11 - d01 * d01;
-    float u = (d11 * d20 - d01 * d21) / denominator;
-    float v = (d00 * d21 - d01 * d20) / denominator;
+    // Ratios of signed areas remain usable for long, thin triangles whose Gram determinant rounds to zero.
+    float3 area = cross(edge1, edge2);
+    float denominator = dot(area, area);
+    float u = dot(cross(w, edge2), area) / denominator;
+    float v = dot(cross(edge1, w), area) / denominator;
     float at = normalStart + (record - 1.0) * NORMAL_VALUES;
-    float3 blended = normalize(vector(at) * (1.0 - u - v) + vector(at + 3.0) * u + vector(at + 6.0) * v);
+    float3 weighted = vector(at) * (1.0 - u - v) + vector(at + 3.0) * u + vector(at + 6.0) * v;
+    float3 blended = dot(weighted, weighted) > 0.0 ? normalize(weighted) : outward;
     return dot(blended, outward) < 0.0 ? -blended : blended;
 }

@@ -1,11 +1,16 @@
 // The window picture is eight-bit premultiplied RGBA. Store sqrt(radiance) at a shared power-of-two scale,
 // leaving at least 239 of the 255 codes per channel even at the maximum finite half-float value.
-half4 packRadiance(float3 color) {
+half4 packRadiance(float3 color, float rounding) {
     float peak = max(color.r, max(color.g, color.b));
-    if (peak <= 1.0) { return half4(half3(color), 1.0); }
-    float exponent = ceil(log2(peak));
-    float alpha = 1.0 - exponent / 255.0;
-    return half4(half3(color * (alpha * exp2(-exponent))), half(alpha));
+    float exponent = peak <= 1.0 ? 0.0 : ceil(log2(peak));
+    float alphaCode = 255.0 - exponent;
+    float3 codeValue = color * (alphaCode * exp2(-exponent));
+    float3 lo = floor(codeValue);
+    // Choose adjacent gamma codes so E[code²] = codeValue². Rounding to nearest at every step can
+    // freeze a channel for the rest of a long accumulation when its update is below half a code.
+    float3 probability = (codeValue - lo) * (codeValue + lo) / (2.0 * lo + 1.0);
+    float3 code = lo + floor(probability + rounding);
+    return half4(half3(code / 255.0), half(alphaCode / 255.0));
 }
 
 float3 unpackRadiance(half4 encoded) {

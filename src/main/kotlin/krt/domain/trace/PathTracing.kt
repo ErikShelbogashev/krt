@@ -65,10 +65,10 @@ object PathTracing {
         val speed = ray.direction.length()
         val flight = FreeFlight.distance(medium, random.nextDouble(), random.nextDouble())
         val surfaceDistance = (hit?.t ?: Double.POSITIVE_INFINITY) * speed
-        return when {
-            flight < surfaceDistance -> particle(scene, ray, flight / speed, depth, random, state)
-            hit == null -> Point3.ZERO
-            else -> FreeFlight.passWeight(medium, surfaceDistance) * surface(scene, ray, hit, depth, random, state)
+        return if (flight < surfaceDistance) {
+            particle(scene, ray, flight / speed, depth, random, state)
+        } else {
+            FreeFlight.passWeight(medium, surfaceDistance) * surface(scene, ray, hit, depth, random, state)
         }
     }
 
@@ -94,7 +94,7 @@ object PathTracing {
         state: State,
     ): Color {
         val crossing = hit.material === Interface
-        val sampled = scene.sampleLights && scattered.lobe.samplesLights
+        val sampled = depth > 1 && scene.sampleLights && scattered.lobe.samplesLights
         val direct = if (sampled) {
             direct(scene, ray, hit.p, hit.normal, scattered, state.medium, random)
         } else {
@@ -119,7 +119,7 @@ object PathTracing {
             HenyeyGreenstein.sample(ray.direction.unit(), medium.g, random.nextDouble(), random.nextDouble())
         }
         val scattered = Scattered(ray.next(p, direction), Point3.ONE, lobe)
-        val sampled = scene.sampleLights && lobe.samplesLights
+        val sampled = depth > 1 && scene.sampleLights && lobe.samplesLights
         val direct = if (sampled) direct(scene, ray, p, Point3.ZERO, scattered, medium, random) else Point3.ZERO
         val next = State(medium, state.enclosed, !sampled)
         val weight = FreeFlight.scatterWeight(medium, t * ray.direction.length())
@@ -191,12 +191,8 @@ object PathTracing {
         return result
     }
 
-    /**
-     * Response of a diffuse bounce to light at [cosine] to the normal: BRDF × cosine. Diffuse bounces in krt go
-     * from the normal to a random point in the unit ball around its tip (Lambert of the classic scene), whose
-     * directions have the density 2 cos³ / π, so that is what the surface does with direct light too (ADR 0012).
-     */
-    private fun diffuse(cosine: Double): Double = 2 * cosine * cosine * cosine / PI
+    /** The Lambertian BRDF times the projected solid-angle factor, for unit reflectance. */
+    private fun diffuse(cosine: Double): Double = cosine / PI
 
     /** Hits closer than this are self-intersections of the surface the ray starts on. */
     private const val T_MIN = 0.001
@@ -205,5 +201,5 @@ object PathTracing {
     private const val SHADOW_MARGIN = 1e-4
 
     /** Medium boundaries a shadow ray passes at most before it counts as blocked. */
-    private const val MAX_CROSSINGS = 8
+    const val MAX_CROSSINGS = 8
 }

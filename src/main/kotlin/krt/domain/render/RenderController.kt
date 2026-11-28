@@ -163,6 +163,7 @@ class RenderController(
             SwingUtilities.invokeLater { onGpuFrame(preview, previewProgress) }
             delay(REFINE_DELAY)
             // Rows a first pass has not reached yet show the quick look.
+            val seed = random.nextFloat()
             var taken = 0
             while (taken < passes && isActive) {
                 val samples = GpuSampling.nextStep(taken, passes, stepBudget.get().samples)
@@ -170,10 +171,9 @@ class RenderController(
                 // Bands are taken one after another, each as high as the budget allows now: a budget that grows
                 // during the pass, as from a cautious start, widens the next band at once.
                 while (row < height && isActive) {
-                    val rows = GpuSampling.nextRows(row, height, GpuSampling.bandsOf(stepBudget.get(), height))
+                    val rows = GpuSampling.nextRows(row, height, GpuSampling.bandsOf(stepBudget.get(), width, height))
                     row = rows.last + 1
                     val band = GpuBand(taken, rows)
-                    val seed = random.nextFloat()
                     val step = GpuFrame(scene, view, width, height, depth, samples, seed, band)
                     val shader = steps.next(step)
                     val done = GpuSampling.samplesDone(taken, samples, rows, height)

@@ -54,15 +54,25 @@ object PbrtGeometry {
         }
     }
 
-    fun fractal(d: PbrtDirective, placement: Placement, covering: Covering, number: Int): Traceable {
+    fun fractal(
+        d: PbrtDirective,
+        placement: Placement,
+        covering: Covering,
+        number: Int,
+        warnings: MutableList<String>,
+    ): Traceable {
         val kind = FractalKind.valueOf(d.text("kind", "mandelbulb").uppercase())
+        val iterations = d.int("iterations", kind.iterations)
+        if (iterations > kind.gpuIterations) {
+            warnings += "line ${d.line}: $kind uses $iterations iterations on CPU and ${kind.gpuIterations} on GPU"
+        }
         return Fractal(
             kind,
             placement.origin,
             d.double("radius", 1.0) * placement.scale,
             covering.material,
             covering.name ?: "Fractal[$number]",
-            d.int("iterations", kind.iterations),
+            iterations,
             d.double("parameter", kind.parameter),
             PbrtValues.vector(d, "seed") ?: Fractal.JULIA_SEED,
         )

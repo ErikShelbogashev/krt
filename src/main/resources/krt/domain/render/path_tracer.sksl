@@ -1,8 +1,10 @@
-// A sample gone NaN or infinite, from a zero density deep in a medium, is dropped: on some GPUs it would come out
-// of the clamps below as any colour at all, a magenta band.
-float3 finiteOrBlack(float3 c) {
-    bool finite = all(equal(c, c)) && max(c.r, max(c.g, c.b)) < 1e30 && min(c.r, min(c.g, c.b)) > -1e30;
-    return finite ? c : float3(0.0);
+// The square of the largest finite half (65504), used to store sqrt(mean) between steps.
+// Even one sample this bright still displays white after any positive Int number of black samples.
+const float STORE_MAX = 4290774016.0;
+const float FLOAT_MAX = 3.402823466e38;
+
+float finiteRadiance(float channel) {
+    return channel >= 0.0 && channel <= FLOAT_MAX ? min(channel, STORE_MAX) : 0.0;
 }
 
 half4 main(float2 position) {
@@ -11,25 +13,35 @@ half4 main(float2 position) {
     float i = floor(position.x);
     float j = frameSize.y - 1.0 - floor(position.y);
     pixelId = float2(i, j);
-    counter = 0.0;
 
     float3 sum = float3(0.0);
     for (int n = 0; n < MAX_SAMPLES; n++) {
         if (float(n) >= samples) { break; }
-        float s = (i + rnd()) / (frameSize.x - 1.0);
-        float t = (j + rnd()) / (frameSize.y - 1.0);
+        // Each (pixel, sample) owns its random stream regardless of how the scheduler cut the pass.
+        sampleKey = seed * 31.0 + (previousSamples + float(n)) * 0.754877666;
+        counter = 0.0;
+        float s = (i + rnd()) / frameSize.x;
+        float t = (j + rnd()) / frameSize.y;
         float2 rd = randomInUnitDisk() * lensRadius;
         float3 offset = camU * rd.x + camV * rd.y;
         float3 origin = camOrigin + offset;
         float3 direction = camLowerLeft + camHorizontal * s + camVertical * t - camOrigin - offset;
-        sum += finiteOrBlack(trace(origin, direction));
+        float3 light = trace(origin, direction);
+        sum += float3(finiteRadiance(light.r), finiteRadiance(light.g), finiteRadiance(light.b));
     }
     // The earlier steps' frame holds the square root of their mean (gamma 2): back to linear, add, average.
-    half4 prior = previous.eval(position);
-    float3 earlier = packedWindow > 0.5 ? unpackRadiance(prior) : float3(prior.rgb);
+    if (previousSamples > 0.0) {
+        half4 prior = previous.eval(position);
+        float3 earlier = packedWindow > 0.5 ? unpackRadiance(prior) : float3(prior.rgb);
+        sum += earlier * earlier * previousSamples;
+    }
     float taken = clamp(samples, 1.0, float(MAX_SAMPLES));
-    float3 mean = (earlier * earlier * previousSamples + sum) / (previousSamples + taken);
+    float3 mean = sum / (previousSamples + taken);
     float3 color = sqrt(max(mean, 0.0));
     color = min(color, float3(65504.0));
-    return packedWindow > 0.5 ? packRadiance(color) : half4(half3(color), 1.0);
+    if (packedWindow > 0.5) {
+        float rounding = hash13(float3(pixelId + 0.5, seed * 83.0 + previousSamples + taken));
+        return packRadiance(color, rounding);
+    }
+    return half4(half3(color), 1.0);
 }

@@ -95,7 +95,8 @@ class CameraTest {
         assertEquals(32, Camera.parseImageSize("32"))
         assertEquals(1024, Camera.parseImageSize("1024"))
         assertEquals(null, Camera.parseImageSize("31"))
-        assertEquals(null, Camera.parseImageSize("2000"))
+        assertEquals(2048, Camera.parseImageSize("2048"))
+        assertEquals(null, Camera.parseImageSize("2049"))
         assertEquals(null, Camera.parseImageSize("abc"))
         assertEquals(null, Camera.parseImageSize(""))
     }

@@ -35,6 +35,7 @@ float3 directLight(float3 p, float3 normal, float lobe, float medium) {
         if (u + v > 1.0) { u = 1.0 - u; v = 1.0 - v; }
         float3 c = cross(edge1, edge2);
         float doubleArea = length(c);
+        if (doubleArea == 0.0) { return float3(0.0); }
         point = vector(base + 1.0) + edge1 * u + edge2 * v;
         lightNormal = c / doubleArea;
     } else {
@@ -47,15 +48,16 @@ float3 directLight(float3 p, float3 normal, float lobe, float medium) {
     }
     float3 toLight = point - p;
     float distanceSquared = dot(toLight, toLight);
+    if (distanceSquared == 0.0) { return float3(0.0); }
     float distance = sqrt(distanceSquared);
     float3 direction = toLight / distance;
     float facing = -dot(direction, lightNormal);
     float cosine = twoSided ? abs(facing) : facing;
     if (cosine <= 1.0e-6) { return float3(0.0); }
     float pdf = distanceSquared / cosine * chance;
-    // PathTracing.diffuse: diffuse bounces go to a random point in the unit ball at the tip of the normal, 2 cos³ / π.
+    // PathTracing.diffuse: Lambertian BRDF times the projected solid-angle factor.
     float lit = max(0.0, dot(normal, direction));
-    float response = lobe == VOLUME ? phaseDensity(dot(normal, direction), mediumG(medium)) : 2.0 * lit * lit * lit / PI;
+    float response = lobe == VOLUME ? phaseDensity(dot(normal, direction), mediumG(medium)) : lit / PI;
     if (response == 0.0) { return float3(0.0); }
     float lightBase = materialStart + slot * MATERIAL_VALUES;
     float3 light = emission(lightBase, code(lightBase), point);

@@ -77,8 +77,14 @@ object GpuSampling {
     fun samplesDone(taken: Int, samples: Int, band: IntRange, height: Int): Int =
         if (band.last >= height - 1) taken + samples else taken
 
-    /** Bands a pass of a frame [height] rows high takes under [budget]: no more than it has rows. */
-    fun bandsOf(budget: StepBudget, height: Int): Int = budget.bands.coerceIn(1, maxOf(1, height))
+    /** The learned budget is in bands of a megapixel frame. Keep the work in each band bounded on larger films. */
+    fun bandsOf(budget: StepBudget, width: Int, height: Int): Int {
+        val pixels = width.toLong() * height
+        val scaled = ceil(budget.bands * maxOf(1.0, pixels.toDouble() / REFERENCE_PIXELS)).toInt()
+        return scaled.coerceIn(1, maxOf(1, height))
+    }
+
+    private const val REFERENCE_PIXELS = 1024 * 1024
 
     /** The next band of a frame [height] rows high, from row [from], one of [bands] in height. */
     fun nextRows(from: Int, height: Int, bands: Int): IntRange =
