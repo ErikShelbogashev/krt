@@ -3,14 +3,14 @@ package krt.domain.scene.model
 /** Update the outside medium of boundaries directly enclosed by an edited volume as well as its own inside. */
 internal object SceneObjectEdits {
     fun change(
-        objects: List<Traceable>, id: String, edit: ObjectChange, owner: (Traceable) -> String?,
+        objects: List<Traceable>, id: String, edit: ObjectChange, owner: (Int) -> String?,
     ): List<Traceable> = when (edit) {
         is ObjectChange.Extinction -> changeExtinction(objects, id, edit, owner)
         else -> objects.map { if (it.id == id) edit.applyTo(it) else it }
     }
 
     private fun changeExtinction(
-        objects: List<Traceable>, id: String, edit: ObjectChange.Extinction, owner: (Traceable) -> String?,
+        objects: List<Traceable>, id: String, edit: ObjectChange.Extinction, owner: (Int) -> String?,
     ): List<Traceable> {
         val replacements = mutableMapOf<Medium, Medium>()
         val updated = objects.map { part ->
@@ -21,9 +21,9 @@ internal object SceneObjectEdits {
             }
         }
         if (replacements.isEmpty()) return updated
-        return updated.map { part ->
+        return updated.mapIndexed { index, part ->
             val next = replacements[outside(part)]
-            if (next != null && part.id != id && owner(part) == id) withOutside(part, next) else part
+            if (next != null && owner(index) == id) withOutside(part, next) else part
         }
     }
 
